@@ -1,0 +1,33 @@
+:: CommandLoop:Before
+/*纯代码区，最先处理 */
+
+:: CommandLoop:After
+/*纯代码区，最后处理 */
+
+:: CommandLoop
+<div id='hidden' class='hidden'>you can't see me.</div>
+<div id='location'></div>
+<br>
+<div id='content' class='content' onClick='if(S.msg)F.ComNext();'>
+    <div id='content_message'>
+    </div>
+<div id="msg_end" style="height:0px; overflow:hidden"></div>
+</div>
+
+<div id='commandmenu'>
+
+</div>
+<br>
+<div id='commandzone'>
+
+</div>
+<div id='next'>
+</div>
+
+<script>
+F.initMainFlow()
+F.initLocation()
+F.initComMenu()
+F.initComList()
+
+</script>

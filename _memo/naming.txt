@@ -1,0 +1,37 @@
+命名规则：
+普通变量：小写开头，第二个单词首字母大写。例如：cursedLord
+class： 首字母大写
+索引字典：首字母大写 例如：Cflag, Tsv
+
+角色id：英文名。首字母大写。例如：Ayres, Isil, Besta
+物品id：分类名+数字 例如：Clothes_1, Weapon_1
+事件id：根目录首字母大写+E(event)+数字。例如：Story:SE_1, Kojo:CE_1或KE_1
+
+CE（Chara Event)与KE(Kojo Event)事件区别
+Chara事件为长剧情。在当前场景首次碰面时进行检测是否执行。
+一般来说，Chara事件一天只会执行一个。
+
+Kojo事件为短剧情，穿插在指令之间。
+
+function类
+游戏用function都挂在 F 下。
+
+四字母内的都首字母大写。
+HP,BP这种缩写类的全大写。
+
+shortcut 快捷方式：getinfo 获取信息：
+小写开头，第二个单词字母大写。如 setBase, splitSex, getTime, get。
+
+process 执行处理：
+单词首字母大写，如 ComNext, ComEvent
+
+html 文字合成、界面操作类：
+首字母大写。如 Evole
+
+tools 常用小功能类：
+全小写。
+并且必须挂在window下。 如 percent,
+
+macro js,sc通用小功能类：
+全小写。
+必须挂在window下。 如tips

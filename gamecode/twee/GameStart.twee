@@ -1,0 +1,54 @@
+
+:: Start [nosave]
+游戏初始设定<br>
+<<dashline>>
+
+<<tips '你' 'curse'>>：<<textbox "$cursedLord.name" $cursedLord.name>><br>
+<br>
+<<tips '执行者' 'arus'>>：<<textbox "$player.name" $player.name>> · $player.surname<br>
+<br>
+<<tips '伴侣' 'isil'>>：<<textbox "$target.name" $target.name>> · $target.middlename · $target.surname<br>
+<br>
+全员扶她化？ <<checkbox "_futa" _futa autocheck>><br>
+全员清除默认经验？ <<checkbox "_newbie" _newbie 1 autocheck>><br>
+主CP纯女性化？ <<checkbox "_lesCP" _lesCP autocheck>><br>
+
+<<dashline>>
+准备好了吗？ 准备好就开始吧。<br>
+
+<br>
+<<button '开始游戏' 'EventStart'>>
+    <<set $player.fullname to `${$player.name}·${$player.surname}`>>
+    <<set $target.fullname to `${$target.name}·${$target.middlename}·${$target.surname}`>>
+    <<run 
+        F.setEvent('Story','Opening')
+        if(T.futa == 2){
+            for(let i in V.chara){
+                V.chara[i].gender = 'inter';
+                V.chara[i].initSexOrgan('v');
+                if(V.chara[i].resetVirginity){
+                    V.chara[i].resetVirginity()
+                }
+            }
+        }
+
+        if(T.lesCP){
+            V.chara['Isil'].gender = 'female';
+            V.chara['Isil'].initVirginity();
+            delete V.chara['Isil'].sexstats.p;
+
+            V.chara['Ayres'].gender = 'female';
+            V.chara['Ayres'].initVirginity();
+            V.chara['Ayres'].resetVirginity()
+            delete V.chara['Ayres'].sexstats.p;
+        }
+
+        if(T.newbie){
+            for(let i in V.chara){
+                V.chara[i].initExp().initVirginity();
+            }
+        }
+
+    >>
+<</button>>
+<br><br> 

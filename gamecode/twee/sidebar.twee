@@ -1,0 +1,60 @@
+:: PassageHeader
+<<set $passage to passage()>><<set $tags to tags($passage)>>
+
+
+:: StoryCaption
+
+<<if $passage == 'Start'>>
+完全只有功能的实验性框架。<br>
+ version 0.0.1<br>
+ author: 狐千月<br>
+<<else>>
+
+/* 这里显示目前操作角色的信息 */
+
+<</if>>
+
+<div id='random_tips'>
+</div>
+<div id='update_note'>
+</div>
+
+:: PassageFooter
+
+
+:: PassageReady
+<<run
+    _passageready = true;
+    $lastsession = $passage;
+
+    //复原角色的class
+    if(G.onLoad || G.onReload){
+        F.LoadCharacters();
+        G.onLoad = false;
+        G.onReload = false;
+    };
+    $player = C[pc];
+    $target = C[tc];
+
+>>
+
+:: PassageDone
+
+
+:: StoryHeader
+<div class='headbar-container'>
+    <<showtime>>
+    <<showmoney>>
+</div>
+<div id='gametime'>
+    <<showgametime>>
+</div>
+<<repeat 1s>>
+    <<replace '#gametime'>>
+        <<showgametime>>
+    <</replace>>
+<</repeat>>
+
+
+:: StoryFooter
+

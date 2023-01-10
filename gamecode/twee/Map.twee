@@ -1,0 +1,12 @@
+:: Map
+
+<div id="Movement">
+
+<<link '学校  0:05' 'MainLoop'>><<set $location = { id:'A1', name:'魔法学院', chara:[], tag:['school'] }>><<set $aftermovement to true>><</link>><br>
+
+<<link '宿舍  0:05' 'MainLoop'>><<set $location = { id:'A0', name:'学生宿舍S302', tag:['bedroom','rest','bed','chair','desk'], chara:[]}>><<set $aftermovement to true>><</link>><br>
+
+<<link '返回' 'MainLoop'>><</link>><br>
+
+</div>
+/* 实际可移动项目与时间会根据目前所在地来计算。跟EWA旧版差不多机制。全自动生成可移动链接。 */

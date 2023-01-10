@@ -1,0 +1,965 @@
+:: Action_g1_Option[script]
+Action.set('g1')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_g1
+/* 放松 */
+<<you>>在$location.name找了个舒适的地方，坐下放松。<br>
+
+:: Action_g2_Option[script]
+Action.set('g2')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_g2
+/* 交流 */
+<<you>>在$location.name开始交流。<br>
+
+:: Action_g3_Option[script]
+Action.set('g3')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_g3
+/* 送礼 */
+<<you>>在$location.name开始送礼。<br>
+
+:: Action_g99_Option[script]
+Action.set('g99')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_g99
+/* 推倒 */
+<<you>>在$location.name开始推倒。<br>
+
+:: Action_d0_Option[script]
+Action.set('d0')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_d0
+/* 散步 */
+<<you>>在$location.name开始散步。<br>
+
+:: Action_d1_Option[script]
+Action.set('d1')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_d1
+/* 种植 */
+<<you>>在$location.name开始种植。<br>
+
+:: Action_d2_Option[script]
+Action.set('d2')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_d2
+/* 洗澡 */
+<<you>>在$location.name开始洗澡。<br>
+
+:: Action_d3_Option[script]
+Action.set('d3')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_d3
+/* 读书 */
+<<you>>在$location.name开始读书。<br>
+
+:: Action_d4_Option[script]
+Action.set('d4')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_d4
+/* 学习 */
+<<you>>在$location.name开始学习。<br>
+
+:: Action_d5_Option[script]
+Action.set('d5')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_d5
+/* 上课 */
+<<you>>在$location.name开始上课。<br>
+
+:: Action_d6_Option[script]
+Action.set('d6')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_d6
+/* 做作业 */
+<<you>>在$location.name开始做作业。<br>
+
+:: Action_d7_Option[script]
+Action.set('d7')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_d7
+/* 购物 */
+<<you>>在$location.name开始购物。<br>
+
+:: Action_t0_Option[script]
+Action.set('t0')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_t0_mouth
+/* 接吻 */
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   <<you>>吻上了$target.name的嘴唇。<br>
+<</switch>>
+
+:: Action_t1_Option[script]
+Action.set('t1')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_t1_mouth
+/* 亲吻 */
+<<switch Act[pc].use>>
+<<case 'breast'>>
+   <<you>>亲吻在了$target.name的胸部上，轻吮吸舔，试图留下自己的印记。<br>
+<<case 'penis'>>
+   <<you>>亲吻在了$target.name的阴茎上，轻吮吸舔，试图留下自己的印记。<br>
+<<case 'critoris'>>
+   <<you>>亲吻在了$target.name的阴蒂上，轻吮吸舔，试图留下自己的印记。<br>
+<<case 'ears'>>
+   <<you>>亲吻在了$target.name的耳朵上，轻吮吸舔，试图留下自己的印记。<br>
+<<case 'hands'>>
+   <<you>>亲吻在了$target.name的双手上，轻吮吸舔，试图留下自己的印记。<br>
+<<case 'foot'>>
+   <<you>>亲吻在了$target.name的脚上，轻吮吸舔，试图留下自己的印记。<br>
+<<case 'neck'>>
+   <<you>>亲吻在了$target.name的脖子上，轻吮吸舔，试图留下自己的印记。<br>
+<<case 'butts'>>
+   <<you>>亲吻在了$target.name的屁股上，轻吮吸舔，试图留下自己的印记。<br>
+<<case 'thighs'>>
+   <<you>>亲吻在了$target.name的大腿上，轻吮吸舔，试图留下自己的印记。<br>
+<<case 'abdomen'>>
+   <<you>>亲吻在了$target.name的腹部上，轻吮吸舔，试图留下自己的印记。<br>
+<</switch>>
+
+:: Action_t2_Option[script]
+Action.set('t2')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_t2_hands
+/* 抚摸 */
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   <<you>>的手轻抚着$target.name的嘴巴。<br>
+<<case 'breast'>>
+   <<you>>的手轻抚着$target.name的胸部。<br>
+<<case 'penis'>>
+   <<you>>的手轻抚着$target.name的阴茎。<br>
+<<case 'critoris'>>
+   <<you>>的手轻抚着$target.name的阴蒂。<br>
+<<case 'vagina'>>
+   <<you>>的手轻抚着$target.name的阴道。<br>
+<<case 'anal'>>
+   <<you>>的手轻抚着$target.name的肛门。<br>
+<<case 'ears'>>
+   <<you>>的手轻抚着$target.name的耳朵。<br>
+<<case 'hands'>>
+   <<you>>的手轻抚着$target.name的双手。<br>
+<<case 'foot'>>
+   <<you>>的手轻抚着$target.name的脚。<br>
+<<case 'neck'>>
+   <<you>>的手轻抚着$target.name的脖子。<br>
+<<case 'butts'>>
+   <<you>>的手轻抚着$target.name的屁股。<br>
+<<case 'thighs'>>
+   <<you>>的手轻抚着$target.name的大腿。<br>
+<<case 'abdomen'>>
+   <<you>>的手轻抚着$target.name的腹部。<br>
+<</switch>>
+
+:: Action_t3_Option[script]
+Action.set('t3')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_t3_hands
+/* 揉捏 */
+<<switch Act[pc].use>>
+<<case 'breast'>>
+   <<you>>揉捏着$target.name的胸部。<br>
+<<case 'penis'>>
+   <<you>>揉捏着$target.name的阴茎。<br>
+<<case 'critoris'>>
+   <<you>>揉捏着$target.name的阴蒂。<br>
+<<case 'ears'>>
+   <<you>>揉捏着$target.name的耳朵。<br>
+<<case 'butts'>>
+   <<you>>揉捏着$target.name的屁股。<br>
+<</switch>>
+
+:: Action_t4_Option[script]
+Action.set('t4')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_t4_mouth
+/* 吸舔 */
+<<switch Act[pc].use>>
+<<case 'penis'>>
+   <<you>>吸住了$target.name的阴茎，在上面用舌头反复舔舐着。<br>
+<<case 'critoris'>>
+   <<you>>吸住了$target.name的阴蒂，在上面用舌头反复舔舐着。<br>
+<<case 'vagina'>>
+   <<you>>吸住了$target.name的阴道，在上面用舌头反复舔舐着。<br>
+<<case 'anal'>>
+   <<you>>吸住了$target.name的肛门，在上面用舌头反复舔舐着。<br>
+<<case 'ears'>>
+   <<you>>吸住了$target.name的耳朵，在上面用舌头反复舔舐着。<br>
+<<case 'hands'>>
+   <<you>>吸住了$target.name的双手，在上面用舌头反复舔舐着。<br>
+<<case 'foot'>>
+   <<you>>吸住了$target.name的脚，在上面用舌头反复舔舐着。<br>
+<<case 'neck'>>
+   <<you>>吸住了$target.name的脖子，在上面用舌头反复舔舐着。<br>
+<<case 'butts'>>
+   <<you>>吸住了$target.name的屁股，在上面用舌头反复舔舐着。<br>
+<<case 'nipple'>>
+   <<you>>吸住了$target.name的乳头，在上面用舌头反复舔舐着。<br>
+<<case 'thighs'>>
+   <<you>>吸住了$target.name的大腿，在上面用舌头反复舔舐着。<br>
+<<case 'abdomen'>>
+   <<you>>吸住了$target.name的腹部，在上面用舌头反复舔舐着。<br>
+<</switch>>
+
+:: Action_t5_Option[script]
+Action.set('t5')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_t5_mouth
+/* 吸咬 */
+<<switch Act[pc].use>>
+<<case 'penis'>>
+   <<you>>含住$target.name的阴茎，吸吮轻咬着。<br>
+<<case 'critoris'>>
+   <<you>>含住$target.name的阴蒂，吸吮轻咬着。<br>
+<<case 'ears'>>
+   <<you>>含住$target.name的耳朵，吸吮轻咬着。<br>
+<<case 'hands'>>
+   <<you>>含住$target.name的双手，吸吮轻咬着。<br>
+<<case 'foot'>>
+   <<you>>含住$target.name的脚，吸吮轻咬着。<br>
+<<case 'neck'>>
+   <<you>>含住$target.name的脖子，吸吮轻咬着。<br>
+<<case 'butts'>>
+   <<you>>含住$target.name的屁股，吸吮轻咬着。<br>
+<<case 'nipple'>>
+   <<you>>含住$target.name的乳头，吸吮轻咬着。<br>
+<<case 'thighs'>>
+   <<you>>含住$target.name的大腿，吸吮轻咬着。<br>
+<</switch>>
+
+:: Action_t6_Option[script]
+Action.set('t6')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_t6_hands
+/* 逗弄 */
+<<switch Act[pc].use>>
+<<case 'penis'>>
+   <<you>>反复逗弄着$target.name的阴茎。<br>
+<<case 'critoris'>>
+   <<you>>反复逗弄着$target.name的阴蒂。<br>
+<<case 'vagina'>>
+   <<you>>反复逗弄着$target.name的阴道。<br>
+<<case 'anal'>>
+   <<you>>反复逗弄着$target.name的肛门。<br>
+<<case 'ears'>>
+   <<you>>反复逗弄着$target.name的耳朵。<br>
+<<case 'nipple'>>
+   <<you>>反复逗弄着$target.name的乳头。<br>
+<</switch>>
+
+:: Action_t7_Option[script]
+Action.set('t7')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_t7_hands
+/* 指交 */
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   <<you>>的手指浅浅插入$target.name的嘴巴，在入口附近摩擦着。<br>
+<<case 'vagina'>>
+   <<you>>的手指浅浅插入$target.name的阴道，在入口附近摩擦着。<br>
+<<case 'anal'>>
+   <<you>>的手指浅浅插入$target.name的肛门，在入口附近摩擦着。<br>
+<<case 'urin'>>
+   <<you>>的手指浅浅插入$target.name的尿道，在入口附近摩擦着。<br>
+<</switch>>
+
+:: Action_t8_Option[script]
+Action.set('t8')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_t8_penis
+/* 插入 */
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   <<you>>以{4}的姿势用阴茎插入了$target.name的嘴巴。<br>
+<<case 'vagina'>>
+   <<you>>以{4}的姿势用阴茎插入了$target.name的阴道。<br>
+<<case 'anal'>>
+   <<you>>以{4}的姿势用阴茎插入了$target.name的肛门。<br>
+<</switch>>
+
+:: Action_t8_hands
+/* 插入 */
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   <<you>>以{4}的姿势用双手插入了$target.name的嘴巴。<br>
+<<case 'vagina'>>
+   <<you>>以{4}的姿势用双手插入了$target.name的阴道。<br>
+<<case 'anal'>>
+   <<you>>以{4}的姿势用双手插入了$target.name的肛门。<br>
+<</switch>>
+
+:: Action_t9_Option[script]
+Action.set('t9')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_t9_penis
+/* 抽插 */
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   <<you>>活动腰身，在$target.name的嘴巴反复出入着。<br>
+<<case 'vagina'>>
+   <<you>>活动腰身，在$target.name的阴道反复出入着。<br>
+<<case 'anal'>>
+   <<you>>活动腰身，在$target.name的肛门反复出入着。<br>
+<</switch>>
+
+:: Action_t9_hands
+/* 抽插 */
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   <<you>>活动腰身，在$target.name的嘴巴反复出入着。<br>
+<<case 'vagina'>>
+   <<you>>活动腰身，在$target.name的阴道反复出入着。<br>
+<<case 'anal'>>
+   <<you>>活动腰身，在$target.name的肛门反复出入着。<br>
+<</switch>>
+
+:: Action_t10_Option[script]
+Action.set('t10')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_t10_hands
+/* 撸动 */
+<<switch Act[pc].use>>
+<<case 'penis'>>
+   <<you>>握住$target.name的阴茎，前后撸动着。<br>
+<</switch>>
+
+:: Action_o0
+/* 跳蛋 */
+<<switch Act[pc].use>>
+<<case 'vagina'>>
+   <<you>>将跳蛋贴在$target.name的阴道，刺激着。<br>
+<<case 'anal'>>
+   <<you>>将跳蛋贴在$target.name的肛门，刺激着。<br>
+<<case 'nipple'>>
+   <<you>>将跳蛋贴在$target.name的乳头，刺激着。<br>
+<<case 'penis'>>
+   <<you>>将跳蛋贴在$target.name的阴茎，刺激着。<br>
+<<case 'critoris'>>
+   <<you>>将跳蛋贴在$target.name的阴蒂，刺激着。<br>
+<</switch>>
+
+:: Action_o1
+/* 震动棒 */
+<<switch Act[pc].use>>
+<<case 'vagina'>>
+   <<you>>将震动棒放进了$target.name的阴道。<br>
+<<case 'anal'>>
+   <<you>>将震动棒放进了$target.name的肛门。<br>
+<</switch>>
+
+:: Action_x0_Option[script]
+Action.set('x0')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_x0_tentacles
+/* 揉捏 */
+<<switch Act[pc].use>>
+<<case 'breast'>>
+   触手缠绕在$target.name的胸部上，巧妙地反复揉捏给予刺激。<br>
+<<case 'penis'>>
+   触手缠绕在$target.name的阴茎上，巧妙地反复揉捏给予刺激。<br>
+<<case 'critoris'>>
+   触手缠绕在$target.name的阴蒂上，巧妙地反复揉捏给予刺激。<br>
+<<case 'nipple'>>
+   触手缠绕在$target.name的乳头上，巧妙地反复揉捏给予刺激。<br>
+<</switch>>
+
+:: Action_x1_Option[script]
+Action.set('x1')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_x1_tentacles
+/* 逗弄 */
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   蠕动、摩擦、按捏。触手反复逗弄着$target.name的嘴巴，给予极大的刺激。<br>
+<<case 'penis'>>
+   蠕动、摩擦、按捏。触手反复逗弄着$target.name的阴茎，给予极大的刺激。<br>
+<<case 'critoris'>>
+   蠕动、摩擦、按捏。触手反复逗弄着$target.name的阴蒂，给予极大的刺激。<br>
+<<case 'vagina'>>
+   蠕动、摩擦、按捏。触手反复逗弄着$target.name的阴道，给予极大的刺激。<br>
+<<case 'anal'>>
+   蠕动、摩擦、按捏。触手反复逗弄着$target.name的肛门，给予极大的刺激。<br>
+<<case 'urin'>>
+   蠕动、摩擦、按捏。触手反复逗弄着$target.name的尿道，给予极大的刺激。<br>
+<<case 'ears'>>
+   蠕动、摩擦、按捏。触手反复逗弄着$target.name的耳朵，给予极大的刺激。<br>
+<<case 'nipple'>>
+   蠕动、摩擦、按捏。触手反复逗弄着$target.name的乳头，给予极大的刺激。<br>
+<</switch>>
+
+:: Action_x2_Option[script]
+Action.set('x2')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_x2_tentacles
+/* 吸舔 */
+<<switch Act[pc].use>>
+<<case 'nipple'>>
+   吸盘触手吸附在$target.name的乳头上，反复吸舔着。<br>
+<<case 'penis'>>
+   吸盘触手吸附在$target.name的阴茎上，反复吸舔着。<br>
+<<case 'critoris'>>
+   吸盘触手吸附在$target.name的阴蒂上，反复吸舔着。<br>
+<</switch>>
+
+:: Action_x3_Option[script]
+Action.set('x3')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_x3_tentacles
+/* 吸咬 */
+<<switch Act[pc].use>>
+<<case 'nipple'>>
+   口器触手含住$target.name的乳头，吸吮轻咬着。<br>
+<<case 'penis'>>
+   口器触手含住$target.name的阴茎，吸吮轻咬着。<br>
+<<case 'critoris'>>
+   口器触手含住$target.name的阴蒂，吸吮轻咬着。<br>
+<</switch>>
+
+:: Action_x4_Option[script]
+Action.set('x4')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_x4_tentacles
+/* 撸动 */
+<<switch Act[pc].use>>
+<<case 'penis'>>
+   触手缠绕住$target.name的阴茎，反复撸动着。<br>
+<</switch>>
+
+:: Action_x5_Option[script]
+Action.set('x5')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_x5_tentacles
+/* 插入 */
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   触手钻进了$target.name敞开的嘴巴，缓缓往内深入。<br>
+<<case 'vagina'>>
+   触手钻进了$target.name敞开的阴道，缓缓往内深入。<br>
+<<case 'anal'>>
+   触手钻进了$target.name敞开的肛门，缓缓往内深入。<br>
+<<case 'urin'>>
+   触手钻进了$target.name敞开的尿道，缓缓往内深入。<br>
+<<case 'ears'>>
+   触手钻进了$target.name敞开的耳朵，缓缓往内深入。<br>
+<</switch>>
+
+:: Action_x6_Option[script]
+Action.set('x6')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_x6_tentacles
+/* 蠕动 */
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   触手在$target.name的嘴巴慢慢蠕动着。<br>
+<<case 'breast'>>
+   触手在$target.name的胸部慢慢蠕动着。<br>
+<<case 'penis'>>
+   触手在$target.name的阴茎慢慢蠕动着。<br>
+<<case 'critoris'>>
+   触手在$target.name的阴蒂慢慢蠕动着。<br>
+<<case 'vagina'>>
+   触手在$target.name的阴道慢慢蠕动着。<br>
+<<case 'anal'>>
+   触手在$target.name的肛门慢慢蠕动着。<br>
+<<case 'urin'>>
+   触手在$target.name的尿道慢慢蠕动着。<br>
+<<case 'ears'>>
+   触手在$target.name的耳朵慢慢蠕动着。<br>
+<<case 'neck'>>
+   触手在$target.name的脖子慢慢蠕动着。<br>
+<<case 'butts'>>
+   触手在$target.name的屁股慢慢蠕动着。<br>
+<<case 'nipple'>>
+   触手在$target.name的乳头慢慢蠕动着。<br>
+<<case 'thighs'>>
+   触手在$target.name的大腿慢慢蠕动着。<br>
+<</switch>>
+
+:: Action_x7_Option[script]
+Action.set('x7')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_x7_tentacles
+/* 抽插 */
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   触手不停在$target.name的嘴巴进出，抽插蠕动着。<br>
+<<case 'vagina'>>
+   触手不停在$target.name的阴道进出，抽插蠕动着。<br>
+<<case 'anal'>>
+   触手不停在$target.name的肛门进出，抽插蠕动着。<br>
+<<case 'urin'>>
+   触手不停在$target.name的尿道进出，抽插蠕动着。<br>
+<<case 'ears'>>
+   触手不停在$target.name的耳朵进出，抽插蠕动着。<br>
+<</switch>>
+
+:: Action_x8_Option[script]
+Action.set('x8')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_x8_tentacles
+/* 深入 */
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   触手往$target.name的嘴巴内部发出了进攻，往更深处蠕进。<br>
+<<case 'vagina'>>
+   触手往$target.name的阴道内部发出了进攻，往更深处蠕进。<br>
+<<case 'anal'>>
+   触手往$target.name的肛门内部发出了进攻，往更深处蠕进。<br>
+<<case 'urin'>>
+   触手往$target.name的尿道内部发出了进攻，往更深处蠕进。<br>
+<</switch>>
+
+:: Action_x9_Option[script]
+Action.set('x9')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_x9_tentacles
+/* 抽送 */
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   触手激烈地在$target.name的嘴巴进出着，反复抽送着触身给予莫大的刺激。<br>
+<<case 'vagina'>>
+   触手激烈地在$target.name的阴道进出着，反复抽送着触身给予莫大的刺激。<br>
+<<case 'anal'>>
+   触手激烈地在$target.name的肛门进出着，反复抽送着触身给予莫大的刺激。<br>
+<<case 'urin'>>
+   触手激烈地在$target.name的尿道进出着，反复抽送着触身给予莫大的刺激。<br>
+<</switch>>
+
+:: Action_x10_Option[script]
+Action.set('x10')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_x10_tentacles
+/* 鞭打 */
+<<switch Act[pc].use>>
+<<case 'breast'>>
+   触手甩动触鞭，用巧妙的力度鞭打在$target.name的胸部上。<br>
+<<case 'penis'>>
+   触手甩动触鞭，用巧妙的力度鞭打在$target.name的阴茎上。<br>
+<<case 'critoris'>>
+   触手甩动触鞭，用巧妙的力度鞭打在$target.name的阴蒂上。<br>
+<<case 'anal'>>
+   触手甩动触鞭，用巧妙的力度鞭打在$target.name的肛门上。<br>
+<<case 'butts'>>
+   触手甩动触鞭，用巧妙的力度鞭打在$target.name的屁股上。<br>
+<<case 'nipple'>>
+   触手甩动触鞭，用巧妙的力度鞭打在$target.name的乳头上。<br>
+<<case 'thighs'>>
+   触手甩动触鞭，用巧妙的力度鞭打在$target.name的大腿上。<br>
+<</switch>>
+
+:: Action_x11_Option[script]
+Action.set('x11')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_x11_tentacles
+/* 刺入 */
+<<switch Act[pc].use>>
+<<case 'penis'>>
+   触手伸出尖锐的细针，狠狠地刺入了$target.name的阴茎。<br>
+<<case 'critoris'>>
+   触手伸出尖锐的细针，狠狠地刺入了$target.name的阴蒂。<br>
+<<case 'vagina'>>
+   触手伸出尖锐的细针，狠狠地刺入了$target.name的阴道。<br>
+<<case 'anal'>>
+   触手伸出尖锐的细针，狠狠地刺入了$target.name的肛门。<br>
+<<case 'neck'>>
+   触手伸出尖锐的细针，狠狠地刺入了$target.name的脖子。<br>
+<<case 'nipple'>>
+   触手伸出尖锐的细针，狠狠地刺入了$target.name的乳头。<br>
+<<case 'butts'>>
+   触手伸出尖锐的细针，狠狠地刺入了$target.name的屁股。<br>
+<</switch>>
+
+:: Action_x12_Option[script]
+Action.set('x12')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_x12_tentacles
+/* 灌入 */
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   触手往$target.name的嘴巴灌入大量的药液。<br>
+<<case 'vagina'>>
+   触手往$target.name的阴道灌入大量的药液。<br>
+<<case 'anal'>>
+   触手往$target.name的肛门灌入大量的药液。<br>
+<</switch>>
+
+:: Action_x13_Option[script]
+Action.set('x13')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_x13_tentacles
+/* 注射 */
+<<switch Act[pc].use>>
+<<case 'breast'>>
+   触手伸出尖锐的针头，刺入$target.name的胸部并注入药液。<br>
+<<case 'penis'>>
+   触手伸出尖锐的针头，刺入$target.name的阴茎并注入药液。<br>
+<<case 'critoris'>>
+   触手伸出尖锐的针头，刺入$target.name的阴蒂并注入药液。<br>
+<<case 'vagina'>>
+   触手伸出尖锐的针头，刺入$target.name的阴道并注入药液。<br>
+<<case 'anal'>>
+   触手伸出尖锐的针头，刺入$target.name的肛门并注入药液。<br>
+<<case 'urin'>>
+   触手伸出尖锐的针头，刺入$target.name的尿道并注入药液。<br>
+<<case 'neck'>>
+   触手伸出尖锐的针头，刺入$target.name的脖子并注入药液。<br>
+<<case 'butts'>>
+   触手伸出尖锐的针头，刺入$target.name的屁股并注入药液。<br>
+<<case 'nipple'>>
+   触手伸出尖锐的针头，刺入$target.name的乳头并注入药液。<br>
+<<case 'abdomen'>>
+   触手伸出尖锐的针头，刺入$target.name的腹部并注入药液。<br>
+<</switch>>
+
+:: Action_a0_Option[script]
+Action.set('a0')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+:: Action_a0
+/* 直播 */
+<<you>>在$location.name开始直播。<br>
+

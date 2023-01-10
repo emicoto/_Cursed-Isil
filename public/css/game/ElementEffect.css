@@ -1,0 +1,43 @@
+﻿.none {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.delay {
+  animation: fadeIn linear 0.75s;
+  -webkit-animation: fadeIn linear 0.75s;
+  -moz-animation: fadeIn linear 0.75s;
+  -o-animation: fadeIn linear 0.75s;
+  -ms-animation: fadeIn linear 0.75s;
+}
+
+.hidden {
+	display: none !important;
+}
+
+.hide {
+  visibility: hidden;
+}
+
+.show {
+  visibility: visible !important;
+}
+
+.Abc {
+  text-transform: capitalize;
+}
+
+.ABC {
+  text-transform: uppercase;
+}
+
+.abc {
+  text-transform: lowercase;
+}
+
+.graytext {
+  color: #888;
+}
+.goldtext {
+    color: #e7bd00;
+}

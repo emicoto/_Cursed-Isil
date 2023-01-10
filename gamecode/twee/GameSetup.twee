@@ -1,0 +1,52 @@
+:: StoryData
+{
+"ifid": "1926DC5A-5199-4C1A-8E3D-5C68BC061323",
+"format": "SugarCube",
+"format-version": "2.36.1"
+}
+
+:: StoryTitle
+Era the Cursed
+
+:: StoryDisplayTitle
+Era the Cursed
+
+:: StoryInit
+<<run F.initGame(); F.initCharacters(); >>
+
+<<set $debt to 0>>
+<<set $wallet to 5000>>
+
+
+<<set D.date = [4062,3,14]>>
+<<set $date = {
+    year:4062, month:3, day:14, week:1, time:1120
+}>>
+
+/* total=以4062-3-14 0:00为基准的绝对时间, 与Date()同理, 每月固定30天。*/
+<<set $time = {
+    passed:0, wakeup:450, total:1120
+}>>
+
+<<set $location = {
+    id:'A0', name:'学生宿舍S302', tag:['bedroom','rest','bed','chair','desk'], chara:['Ayres', 'Isil']
+}>>
+
+
+/*诅咒相关 */
+<<set $cursedLord= {
+    name:'诅咒之触',
+    level: 0,
+    MP:0,
+    abl:{
+        len:0,
+        thick:0,
+        num:0,
+        form:0,
+        drug:0,
+        hypnos:0,
+        cum:0,
+        scale:0,
+    },
+    trait:['光滑'],
+}>>

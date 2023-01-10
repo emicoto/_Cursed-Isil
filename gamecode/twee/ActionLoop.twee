@@ -1,0 +1,39 @@
+:: MainLoop:Before
+/*纯代码区，最先处理 */
+
+:: MainLoop:After
+/*纯代码区，最后处理 */
+
+:: MainLoop
+<div id='hidden' class='hidden'>you can't see me.</div>
+<div id='location'></div>
+<br>
+<div id='content' class='content' onClick='if(S.msg)F.ComNext();'>
+    <div id='content_message'>
+    </div>
+<div id="msg_end" style="height:0px; overflow:hidden"></div>
+</div>
+
+<div id='actionMenu_1'>
+行动：
+</div>
+
+<div id= 'actionMenu_2'>
+/* 角色互动模式下，行动有下分类时的可用动作 */
+动作：
+</div>
+
+<div id='actionMenu_3'>
+/* 可用的动作目标 */
+目标：
+</div>
+
+<div id='next'>
+
+</div>
+
+<script>
+F.initMainFlow()
+F.initLocation()
+
+</script>

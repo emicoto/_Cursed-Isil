@@ -1,0 +1,11 @@
+node_modules
+yarn.lock
+yarn-error.log
+Decompile/*
+Material
+_templet
+_oldfile
+*.zip
+*.rar
+*.7z
+.twine
