@@ -59,7 +59,7 @@ D.basecolor = {
     hydration:[65, 255, 233],
     nutrient:[134,255,79],
 
-    esstacy:[255,95,202],
+    ecstacy:[255,95,202],
     esM:[255,95,202],
     esB:[255,95,202],
     esC:[255,95,202],
@@ -294,3 +294,97 @@ D.mutant = [
     '光滑', '吸盘', '口器', '隆起', '针', '软刺', '阴茎' 
 ]
 
+
+D.bodyparts = {
+    head:'头部',
+    mouth:'嘴巴',
+    torso:'胴体',
+    body:'身体',
+    top:'上身',
+    bottom:'下身',
+    genital:'生殖器',
+    organ:'器官',
+    private:'私处',
+    groin:'腹股沟',
+    slimebody:'史莱姆身',
+    snakebody:'蛇身',
+    tailbody:'尾身',
+    nipple:'乳头',
+    wings:'翅膀',
+    wingL:'左翼',
+    wingR:'右翼',
+    horns:'角',
+    tails:'尾巴',
+    tentacles:'触手',
+    face:'面部',
+    eyes:'双眼',
+    eyeL:'左眼',
+    eyeR:'右眼',
+    nose:'鼻子',
+    ears:'耳朵',
+    earL:'左耳',
+    earR:'右耳',
+    shoulder:'肩部',
+    breast:'胸部',
+    abdomen:'腹部',
+    arms:'手臂',
+    armL:'左臂',
+    armR:'右臂',
+    legs:'腿部',
+    legL:'左腿',
+    legR:'右腿',
+    thighs:'大腿',
+    hips:'臀部',
+    buttL:'左臀',
+    buttR:'右臀',
+    butts:'屁股',
+    thighL:'左大腿',
+    thighR:'右大腿',
+    ankles:'脚踝',
+    wrists:'手腕',
+    ankleL:'左脚踝',
+    ankleR:'右脚踝',
+    feet:'双脚',
+    hands:'双手',
+    footL:'左脚',
+    footR:'右脚',
+    handL:'左手',
+    handR:'右手',
+    critoris:'阴蒂',
+    anal:'肛门',
+    penis:'阴茎',
+    vagina:'阴道',
+    womb:'子宫',
+    anus:'肛门',
+    urin:'尿道',
+    foot:'脚',
+    hairs:'头发',
+    neck:'脖子',
+    hand:'手'
+}
+
+D.ComTypes = [
+    ['G','常规'],
+    ['T','挑逗'],
+    ['S','性交'],
+    ['A','肛门'],
+    ['U','尿道'],
+    ['X','触手'],
+    ['I','道具'],
+    ['M','SM'],
+    ['K','魔法'],
+    ['P','情景'],
+    ['O','其他'],
+]
+
+D.ComFilterGeneral = [
+    '常规', '挑逗', '魔法', '其他'
+]
+
+D.ComFilterTrain = [
+    '前戏','道具','性交', '尿道', 'SM', '鬼畜', '触手', '情景'
+]
+
+D.ActionTypes = []
+
+D.defaultExit = 'MainLoop'

@@ -198,8 +198,8 @@ if ( e.phase === S.dialog[ch].length ){
 
     else {
 
-        if( !e.config?.ext ){
-            e.config.exit = 'MainLoop';
+        if( !e.config?.exit ){
+            e.config.exit = D.defaultExit;
             e.config.exitlink = 'Continue';
         }
         V.system.mode = 'normal'

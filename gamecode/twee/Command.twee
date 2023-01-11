@@ -1,7 +1,7 @@
 
-:: commemo//
+:: //commemo
 指令类型：
-日常 - 日常模式下所有常规指令。包括 移动、休息、地点互动、友好的交流互动
+常规 - 日常模式下所有常规指令。包括 移动、休息、地点互动、友好的交流互动
 调教 - 调教模式下所有常规指令。包括前戏、道具调戏、性交、肛交、尿道开发、SM。
 
 挑逗 - 日常模式下的挑逗类指令，如抛媚眼、诱惑、接吻、抚摸敏感部位等。也包括性骚扰类、日常用调教类指令。
@@ -16,10 +16,7 @@ SM   - 捆绑鞭打等SM行为
 鬼畜 - 反人性的指令。包含NTR。
 触手 - 触手相关指令。
 
-/no, name, tags, time
-/name最大六个字，tag从缺时会根据id顺序自动分配 */
-
-:: CommandSystem//
+:: //CommandSystem
 
 采用 TiTS + eraTW模式
 日常交流模式相对简化，改成事件模式。
@@ -27,30 +24,35 @@ SM   - 捆绑鞭打等SM行为
 
 调教模式下，动作指令相对简化。可以用 linkreplace，comselect（新的选项方式，类似eventselect但用于com模式）的方式对动作分支进行展开以及重复动作。
 
+/list表格顺
+/no, name, tags, time
+/name最大六个字，主分类tag会根据id首字母自动分配。tag中可以补充小分类，用|分割。
+/G-常规指令，T-挑逗、前戏等身体轻度接触指令，S-性交类指令，A-肛门类指令，U-尿道类指令
+/X-觸手类指令，I-道具类指令，M-SM、鬼畜等虐待系行为指令，P-各种情景play系开关，O-其他
+
 :: ComList[list]
 
 /* 常规指令 */
-0,移动,交流,1
-1,放松,休息,15
-2,聊天,交流,0
+G0,移动,交流,1
+G1,放松,休息,15
+G2,聊天,交流,0
 
-/* 挑逗、前戏 20-49  */
-20,抚摸,挑逗|日常
-21,摸胸,
-22,玩乳头,
-23,吸乳头,
-24,撸阴茎,
-25,指交,
-30,推倒,挑逗|日常,
+/* 挑逗、前戏  */
+T0,抚摸,常规
+T1,摸胸,
+T2,玩乳头,
+T3,吸乳头,
+T4,撸阴茎,
+T5,指交,
+T99,推倒,常规,
 
 /* 触手专用，触手都可持续。同时进行数看部位是否被占用以及触手数量。
-/* 或许修改成 部位 对 部位 使用 什么 进行 动作的方式？
-/* 50-80 */
-50,玩乳头(触)
-51,吸乳头(触)
-52,撸阴茎(触)
-53,玩后穴(触)
-54,玩私穴(触)
+/* 或许修改成 部位 对 部位 使用 什么 进行 动作的方式？ */
+X1,玩乳头(触)
+X2,吸乳头(触)
+X3,撸阴茎(触)
+X4,玩后穴(触)
+X5,玩私穴(触)
 
 :: RegistAllCom[script]
 
@@ -151,14 +153,14 @@ Com.set('G0')
 
 
 
-:: Com_0
+:: Com_G0
 /* 迟些切换成overlay？ */
 <<goto 'Map'>>
 
 
-:: Com_1::Script[script]
+:: Com_G1::Script[script]
 /* 注册指令事件*/
-Com.set(1)
+Com.set('G1')
     .Check(()=>{ 
         return F.baseCheck(player, 'stamina', 'max')
     })
@@ -167,10 +169,10 @@ Com.set(1)
     })
 
 /* 事件文本，before执行前文本，after执行后文本，cancel执行取消时文本 */
-:: Com_1::Cancel
+:: Com_G1::Cancel
 暂时不用休息。<br>
 
-:: Com_1
+:: Com_G1
 <<if $location.tag.includes('chair')>>
 坐在椅子上休息了下，
 <<elseif $location.tag.includes('bed')>>
@@ -181,8 +183,8 @@ Com.set(1)
 恢复了 $player.sup.stamina 点体力。<br>
 
 
-:: Com_2::Script[script]
-Com.set(2)
+:: Com_G2::Script[script]
+Com.set('G2')
     .Check(()=>{
         return random(1,100) <= target.mood + 10 && !target.state.contains('失声','失聪')
     })
@@ -191,7 +193,7 @@ Com.set(2)
     })
     
 
-:: Com_2::Cancel
+:: Com_G2::Cancel
 <<you>>试着跟对方搭话，
 <<if !F.canSpeak($target)>>
 可惜$target.name没有能力回应<<you>>。
@@ -199,55 +201,56 @@ Com.set(2)
 但$target.name并没有心情理会<<you>>。
 <</if>><br>
 
-:: Com_2
+:: Com_G2
 <<you>>试着跟$target.name搭话。<br>
-<<=F.Kojo($target.kojo, 'Com', 2)>>
+<<=F.Kojo($target.kojo, 'Com', 'G2')>>
 
-:: Com_2::Before//
+\
+:: Com_G2::Before//
 /*取消前的文本sample */
 $player.name走近$target.name准备搭话。<br>
 <<linkreplace '取消'>><<resetLink>><<resetScene>><</linkreplace>><br>
 
-:: Com_2::After//
+:: Com_G2::After//
 /*指令结束时的文本sample */
 好感增加了一点。<br>
 
-:: Com_20
+:: Com_T0
 <<you>>的手在$target.name的身上四处游走着。<br>
-<<=F.Kojo($target.kojo, 'Com', 20)>>
+<<=F.Kojo($target.kojo, 'Com', 'T0')>>
 <br>
 
-:: Com_21
+:: Com_T1
 <<you>>把手覆盖在$target.name的胸上开始抚摸。<br>
-<<=F.Kojo($target.kojo, 'Com', 21)>><br>
+<<=F.Kojo($target.kojo, 'Com', 'T1')>><br>
 
-:: Com_22
+:: Com_T2
 <<you>>用手轻轻捏住了$target.name的乳头<br>
-<<=F.Kojo($target.kojo, 'Com', 22)>>
+<<=F.Kojo($target.kojo, 'Com', 'T2')>>
 <br>
 
-:: Com_23
+:: Com_T3
 <<you>>用嘴含住了$target.name的乳头，吮吸着。<br>
-<<=F.Kojo($target.kojo, 'Com', 23)>>
+<<=F.Kojo($target.kojo, 'Com', 'T3')>>
 <br>
 
-:: Com_24::Script[script]
-Com.set(24)
+:: Com_T4::Script[script]
+Com.set('T4')
    .Filter(()=>{
         return target.gender !== 'female'
    })
 
-:: Com_24
+:: Com_T4
 <<you>>轻轻握住了$target.name的阴茎，缓缓地前后撸动。<br>
-<<=F.Kojo($target.kojo, 'Com', 24)>>
+<<=F.Kojo($target.kojo, 'Com', 'T4')>>
 
-:: Com_25
+:: Com_T5
 <<you>>将手指探入$target.name的<<=F.splitSex($target,'菊穴','秘穴')>>在入口附近摩擦着。<br>
-<<=F.Kojo($target.kojo, 'Com', 25)>>
+<<=F.Kojo($target.kojo, 'Com', 'T5')>>
 
 
-:: Com_30::Script[script]
-Com.set(30)
+:: Com_T99::Script[script]
+Com.set('T99')
    .Name(()=>{
         if(V.system.mode !== 'train'){
             if(F.uncons(target)){
@@ -262,8 +265,12 @@ Com.set(30)
    .Check(()=>{
         if(V.debug)
             return true;
+
+        if(F.uncons(target)){
+            return true;
+        }
         
-        if(Cflag[tc].favo < 1000){
+        if(Cflag[tc].favo < 1000 && V.system.mode !== 'train'){
             T.reason += '【好感不足】'
             return false
         }
@@ -287,19 +294,19 @@ Com.set(30)
         }
    })
 
-:: Com_30
+:: Com_T99
 <<if $system.mode !== 'train' >>
 <<you>>将$target.name带到没人注意到的角落。<br>
-<<=F.Kojo($target.kojo, 'Com', 30, 'start')>>
+<<=F.Kojo($target.kojo, 'Com', 'T99', 'start')>>
 
 <<else>>
 <<you>>帮$target.name整理好衣服。<br>
-<<=F.Kojo($target.kojo, 'Com', 30, 'finish')>>
+<<=F.Kojo($target.kojo, 'Com', 'T99', 'finish')>>
 <</if>>
 
 
-:: Com_50::Script[script]
-Com.set(50)
+:: Com_X1::Script[script]
+Com.set('X1')
     .Check(()=>{
         //能跑进来时已经过滤掉的情况：非合意且对象具备抵抗能力
         //触手系都需要堕落flag，或者性依存高于2500，或者具有服从系陷落素质后，才能在清醒时执行。
@@ -315,34 +322,34 @@ Com.set(50)
     })
     .Effect(()=>{
         Source[tc].esB += 100
-        Source[tc].resist += Math.floor(1000 - F.Exp(tx, '触手')/5)
+        Source[tc].resist += Math.floor(1000 - F.Exp(tc, '触手奸')/5)
 
-        F.getExp(target, '触手', random(3));
+        F.getExp(target, '触手奸', random(3));
         F.getExp(target, 'B', random(2));
     })
     .ForceAble()
 
-:: Com_50
+:: Com_X1
 触手<<=(T.force? `强行爬上${$target.name}的身躯，` : '' )>>沿着$target.name的肌肤往胸部游走，缠绕在乳尖上开始蠕动。<br>
 <<=either([
     '缠绕、蠕动。','揉捏、摩擦。','挑弄、点拨。','蠕动、揉捏。','挑逗、缠绕、扭捏。'
 ])>>触手不停地反复着动作，时重时轻地对乳尖反复进行刺激。
 <br>
-<<=F.Kojo($target.kojo, 'Com', 50)>>
+<<=F.Kojo($target.kojo, 'Com', 'X1')>>
 
-:: //Com_50:Fail
+:: //Com_X1:Fail
 因为对方不配合而取消时的文本。
 口上分支是 Kojo_Chara_Com_id:Failed
 
-:: //Com_50:Force
+:: //Com_X1:Force
 整个事件脉络都不一样时。
 直接用:Force做分支。
 口上分支是 Kojo_Chara_Com_id:Force;
 
-:: Com_51
+:: Com_X2
 
-:: Com_52
+:: Com_X3
 
-:: Com_53
+:: Com_X4
 
-:: Com_54
+:: Com_X5

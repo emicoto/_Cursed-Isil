@@ -8,6 +8,7 @@ const stats = {}
 const exp = {}
 const juel = {}
 const action = {}
+const using = {}
 
 Object.defineProperties(window, {
 	V: {
@@ -121,6 +122,12 @@ Object.defineProperties(window, {
 	Act:{
 		get:function(){
 			return action
+		}
+	},
+
+	Using:{
+		get:function(){
+			return using
 		}
 	}
 	

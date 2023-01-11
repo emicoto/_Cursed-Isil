@@ -1942,6 +1942,396 @@ Object.defineProperty(Math, 'clamp', {
 	console.log(lan("\u6E38\u620F\u5F00\u59CB", "game start"));
 
 })();</script>
+<script id="script-module-initData" type="text/javascript">D.base = {
+    health:'健康',
+    stamina:'体力',
+    sanity:'理智',
+    mana:'魔力',
+
+    hydration:'水分',
+    nutrient:'营养',
+    dirty:'污迹',
+
+    drug:'药物',
+    alcohol:'酒精',
+    stress:'压力',
+}
+
+D.palam = {
+    ecstacy:'快感', //判定射精or普通高潮， 高潮时获得性依存度，快乐刻印
+
+    //受方palam
+    arousal:'欲情', //转换为欲情珠，升级欲望lv, 角色进入休息状态时就会进行转换。
+    surrend:'屈从', //转换为服从珠，升级顺从。屈从lv累计到一定值时获得刻印。指令执行成功时获得服从度
+    fear:'恐惧', //恐惧刻印
+    mortify:'羞耻', //羞耻刻印。露出类指令。
+    humiliate:'受辱', //耻辱刻印。 羞辱类指令
+    pain:'疼痛', //痛苦刻印
+    depress:'抑郁', //压力值
+    resist:'抵触', //反抗刻印
+    favo:'好意', //好感转换
+    uncomfort:'不适', //减少mood，根据情况转换为疼痛、抵触、压抑。影响体力与健康的消耗。可能触发生病flag
+
+    //攻方palam
+    eager:'渴望', //行为时间拉长，动作变急切。依存up
+    angry:'愤怒',//mood down，动作会变粗暴。
+    satisfy:'满意',//评价up 好感up
+    superior:'优越', // 支配度up
+
+    //部位palam
+    esM:'快M',
+    esB:'快B', //同时也是喷乳判定条
+    esC:'快C',
+    esU:'快U',
+    esV:'快V',
+    esA:'快A',
+
+    paM:'痛M',
+    paB:"痛B",
+    paC:'痛C',
+    paU:'痛U',
+    paV:'痛V', 
+    paA:"痛A",
+}
+
+D.basecolor = {
+    health:[255, 92, 79],
+    stamina:[223, 236, 15],
+    sanity:[12, 163, 238],
+    mana:[160, 35, 231],
+
+    hydration:[65, 255, 233],
+    nutrient:[134,255,79],
+
+    ecstacy:[255,95,202],
+    esM:[255,95,202],
+    esB:[255,95,202],
+    esC:[255,95,202],
+    esU:[255,95,202],
+    esV:[255,95,202],
+    esA:[255,95,202],
+
+    pain:[87, 29, 243],
+    paM:[87, 29, 243],
+    paB:[87, 29, 243],
+    paC:[87, 29, 243],
+    paU:[87, 29, 243],
+    paV:[87, 29, 243],
+    paA:[87, 29, 243],
+
+}
+
+D.mark = {
+    hypno:['催眠刻印','Hypnosis Mark'],
+    ecstacy:['快乐刻印','Ecstacy Mark'],//the ecstacy ethed on mind
+    surrend:['屈服刻印','Surrender Mark'],
+    pain:['痛苦刻印','Pain Mark'],
+    fear:['恐惧刻印','Fear Mark'],
+    humiliate:['耻辱刻印','Humiliated Mark'],
+    mortify:['羞耻刻印', 'Mortify Mark'],
+    resist:['反抗刻印','Resistance Mark'],
+}
+
+D.stats = ["ATK", "DEF", "MTK", "MDF", "STR", "CON", "DEX", "INT", "WIL", "PSY", "ALR", "LUK"]
+
+D.abl = {
+    magica:'魔法等级',//影响魔法技能上限
+    lumen:'光魔法',
+    ark:'暗魔法',
+    flare:'火魔法',
+    ions:'水魔法',
+    vitae:'木魔法',
+    terra:'土魔法',
+    electron:'电魔法',
+    //----- 
+    sword:'剑术',
+    wrestle:'格斗',
+    //-----
+    cooking:'料理',     
+    plant:'种植',
+    medicine:'药物',
+    craft:'制作',
+    fishing:'钓鱼',
+    gathering:'采集',
+}
+
+D.sbl = {
+    // max 12, sens max 20
+    knowledge:'性知识',
+    technique:'性技巧',
+    endurance:'性耐性',
+    submissive:'顺从',
+    refuse:'抗拒', //影响指令执行与心理数值、素质的获得
+    hypnosis:'催眠',
+    desire:'欲望',
+    service:'侍奉',
+    exhibition:'露出',
+    promscuity:'滥交',
+    sexaddic:'性瘾',
+    drugaddic:'药瘾',
+    masochist:'受虐',
+    semenaddic:'饮精中毒',
+    vagiejac:'内射中毒',
+    analejac:'肛射中毒',
+    deviancy:'兽奸中毒',
+    gangbang:'轮奸中毒',
+    tentacles:'触手中毒',
+}
+
+D.exp = [
+    'M','B','C','U','V','A',
+    'M高潮','B高潮','C高潮','U高潮','V高潮','A高潮',
+    '高潮','强烈高潮','深度强烈高潮','多重高潮',
+    '接吻','射精','喷乳','放尿','饮精',
+    '肛交','性交','乳交','口交','内射','肛射',
+    '乳头开发', '后穴开发', '尿道开发', '子宫开发',
+
+    '插入', '道具', '受虐', '露出', '被拍摄', 
+    '怀孕','产卵', '轮奸', '兽奸', '触手奸',
+
+    '眠奸', '强奸', '迷奸', '性转',
+    '同性', '爱情', '侍奉', '自慰',
+    '嗑药', '服从', '催眠', '调教', '施虐',
+]
+
+D.equip = {
+    weapon:'武器',
+    shield:'护盾',
+
+    head:'头饰',
+    cover:'外套',
+    outfitUp:'上衣',
+    outfitBt:'下衣',
+    innerUp:'内衣',
+    innerBt:'内裤',
+    hands:'手套',
+    legs:'袜子',
+
+    face:'面具',
+    ears:'耳饰',
+    chest:'乳饰',//乳环、跳弹
+    bottom:'插件',//跳弹、肛塞、震动棒
+}
+
+D.covergroupA = {
+    //覆盖度。 决定肌肤暴露部位。
+    shoulder:['shoulder'],
+    arms:['arms'],    
+
+    chest:['breast','back'],
+    waist:['abdomen','waistback'], 
+    topB:['back','waistback'],
+
+    chestF:['breast'],
+    belly:['abdomen','private'],
+
+    crotch:['genital','anus'],
+
+    thighs:['thighs'],
+    legs:['thighs','feet'],
+    butts:['butts']
+}
+
+D.covergroupB = {
+    fullhead:['face','neck'],
+    fullbody:Object.keys(D.covergroupA).concat(['face','neck']),
+
+    torso:['chest','waist','genital','butts'],
+
+    top:['shoulder','chest','waist','arms'],
+    bottom:['crotch','butts','thighs'],
+
+    topF:['chestF','belly'],
+    hips:['private','butts'],
+
+}
+
+D.coverlistA = Object.keys(D.covergroupA)
+D.coverlistB = Object.keys(D.covergroupB)
+
+
+D.skinlayer = [
+    'face','neck',
+    'shoulder','arms',
+    'breast', 'abdomen', 'back', 'waistback','private',
+    'buttL','buttR','thighs',
+    'penis', 'vagina', 'anus',]
+
+
+D.tips = {
+    mage:{title:['法师'],content:['对魔法有所了解，能灵活运用各种攻击魔法进行战斗的职业。']},
+    scholar:{ title:['学者'], content:['了解魔法理论，对各种魔法术式与魔法物品进行研究，擅长分析的职业。']},
+    warrior:{ title:['魔战士'], content:['善于运用魔力强化自身，通过格斗或使用近程武器进行战斗的战士。']},
+    ranger:{ title:['魔枪手'], content:['善于运用魔力强化武器，使用远程武器进行战斗的枪手。']},
+    medics:{ title:['治疗师'], content:['对药物、人体、生物有所了解，擅长用魔法给人或生物进行治疗的职业。'] },
+    paladin:{ title:['圣骑士'], content:['信仰圣灵，擅长圣灵魔法与防御术法，使用盾牌与魔法屏障在前排抵御伤害的职业。']},
+    alchemist:{ title:['炼金术师'], content:['对魔法物理与化学有所了解，能合成、改造物品的职业。']},
+
+    curse: { title:['魔咒'], content:['被施加在伊希尔（精灵主角）身上的诅咒。诅咒的本体是？']},
+    arus: { title:['艾瑞斯'], content:['作为半魔人的主角。默认性别为男性，男性时外貌是灰皮白色短发帅哥，扶她以及女性时外貌是灰皮白色长发大胸美女。诅咒之主的化身。游戏主控角色，剧情主角，调教时的第一执行者。']},
+    isil: { title:['伊希露'], content:['作为光精灵的主角。默认性别为男性，男性是外貌是白肤淡金长发美少年，扶她以及女性时外貌是白肤淡金长发平胸美少女。被诅咒寄生的人。游戏主控角色，剧情主角，主要调教对象。']},
+}
+
+D.virginity = ["kiss", "oral", "penis", "anal", "analsex", "vigina", "viginasex", "handholding", "footjob"];
+
+//战斗技能。 战斗中使用。
+D.skill = {
+    fire_ball:'火球术',
+    light_shower:'光雨',
+    magica_shield:'魔力屏障',
+    green_grow:'生长术',
+    lightning:'闪电',
+    fire_sowrd:'火焰剑',
+    dark_cage:'黑暗牢笼',
+    clear_mind:'清心咒',
+    water_bubble:'水球术',
+    ice_arrow:'冰箭术',
+    clean_body:'净身咒',
+    object_control:'念动术',
+}
+
+D.liquidtype = ['juice','cum','rub','slime','nectar']
+
+//string[]管理，用has检测。方便对应多个状态。
+//事件判定用, 临时计时器在tsv. 长期计时器在flag
+D.state = [
+    '睡眠', //睡觉时，受到一定刺激可能会醒来。
+    '疲劳', //体力低于5% 并持续 3小时
+    '生病', //健康低于80% 并持续 5天
+    '缺魔', //魔力低于10% 并持续 3天
+    '失眠', //连续三天不睡觉
+    '欲求不满', //欲求(flag值) 大于80%
+    '营养不良', //营养低于30% 并持续 2天
+    '缺水',  //水分低于 10%并持续 2小时
+    '晕厥', //体力与理智低于5% 持续五小时，或双双归零后会晕厥过去。受强烈刺激可能醒来。
+    '昏睡', //药物效果。药效散之前绝对不会醒来。虽然无知觉但身体依然有反应。
+
+    '发情', //周期 or 药物
+    '自闭', //压力到达上限 100%
+    '精神崩溃', // 压力达到上限 200%
+    '梦魇', // 高压力状态睡觉概率触发
+    '毒瘾发作', // 药隐Lv2后, 断药计时器到达阈值
+    '性瘾发作', // 性瘾Lv2后, 禁断计时器到达阈值
+    '寸止', // 允许快感超过上限, 解除时获得强高潮
+    '性兴奋', // 欲情超过上限时
+    
+    '失明', //看不到, 长久状态, 影响指令
+    '失聪', //听不到
+    '失声', //不能说
+    '石化', //全身无法动弹
+    '口球', //装备效果, 不能说
+    '眼罩', //不能看
+    '束缚', //动弹不得
+    '怀孕', 
+    '肠内受孕', 
+    '寄生', 
+    '中毒', //中毒计时器作用期间,健康持续减少
+]
+
+D.tsv = [
+    'oksign', //合意。没有就是强奸。
+    'sleepDepth', //睡眠深度。低于500时随时可能醒来。
+    'sleepCurse', //昏睡剂or昏睡咒效果
+]
+
+D.mutant = [
+    '光滑', '吸盘', '口器', '隆起', '针', '软刺', '阴茎' 
+]
+
+
+D.bodyparts = {
+    head:'头部',
+    mouth:'嘴巴',
+    torso:'胴体',
+    body:'身体',
+    top:'上身',
+    bottom:'下身',
+    genital:'生殖器',
+    organ:'器官',
+    private:'私处',
+    groin:'腹股沟',
+    slimebody:'史莱姆身',
+    snakebody:'蛇身',
+    tailbody:'尾身',
+    nipple:'乳头',
+    wings:'翅膀',
+    wingL:'左翼',
+    wingR:'右翼',
+    horns:'角',
+    tails:'尾巴',
+    tentacles:'触手',
+    face:'面部',
+    eyes:'双眼',
+    eyeL:'左眼',
+    eyeR:'右眼',
+    nose:'鼻子',
+    ears:'耳朵',
+    earL:'左耳',
+    earR:'右耳',
+    shoulder:'肩部',
+    breast:'胸部',
+    abdomen:'腹部',
+    arms:'手臂',
+    armL:'左臂',
+    armR:'右臂',
+    legs:'腿部',
+    legL:'左腿',
+    legR:'右腿',
+    thighs:'大腿',
+    hips:'臀部',
+    buttL:'左臀',
+    buttR:'右臀',
+    butts:'屁股',
+    thighL:'左大腿',
+    thighR:'右大腿',
+    ankles:'脚踝',
+    wrists:'手腕',
+    ankleL:'左脚踝',
+    ankleR:'右脚踝',
+    feet:'双脚',
+    hands:'双手',
+    footL:'左脚',
+    footR:'右脚',
+    handL:'左手',
+    handR:'右手',
+    critoris:'阴蒂',
+    anal:'肛门',
+    penis:'阴茎',
+    vagina:'阴道',
+    womb:'子宫',
+    anus:'肛门',
+    urin:'尿道',
+    foot:'脚',
+    hairs:'头发',
+    neck:'脖子',
+    hand:'手'
+}
+
+D.ComTypes = [
+    ['G','常规'],
+    ['T','挑逗'],
+    ['S','性交'],
+    ['A','肛门'],
+    ['U','尿道'],
+    ['X','触手'],
+    ['I','道具'],
+    ['M','SM'],
+    ['K','魔法'],
+    ['P','情景'],
+    ['O','其他'],
+]
+
+D.ComFilterGeneral = [
+    '常规', '挑逗', '魔法', '其他'
+]
+
+D.ComFilterTrain = [
+    '前戏','道具','性交', '尿道', 'SM', '鬼畜', '触手', '情景'
+]
+
+D.ActionTypes = []
+
+D.defaultExit = 'MainLoop'</script>
 <link type="image/png" rel="icon" sizes="24x24" href="icon.svg" />
 <link rel="stylesheet" href="css/jquery-ui.css">
 <link rel="stylesheet" href="css/shake-macro-set.css">
@@ -1961,7 +2351,7 @@ Object.defineProperty(Math, 'clamp', {
 		<div id="init-lacking"><p>Browser lacks capabilities required to play.</p><p>Upgrade or switch to another browser.</p></div>
 		<div id="init-loading"><div>Loading&hellip;</div></div>
 	</div>
-	<!-- UUID://1926DC5A-5199-4C1A-8E3D-5C68BC061323// --><tw-storydata name="Era the Cursed" startnode="46" creator="Tweego" creator-version="2.1.1+81d1d71" ifid="1926DC5A-5199-4C1A-8E3D-5C68BC061323" zoom="1" format="SugarCube" format-version="2.36.1" options="" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css"></style><script role="script" id="twine-user-script" type="text/twine-javascript">/* twine-user-script #1: "00-loadfirst.js" */
+	<!-- UUID://1926DC5A-5199-4C1A-8E3D-5C68BC061323// --><tw-storydata name="Era the Cursed" startnode="88" creator="Tweego" creator-version="2.1.1+81d1d71" ifid="1926DC5A-5199-4C1A-8E3D-5C68BC061323" zoom="1" format="SugarCube" format-version="2.36.1" options="" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css"></style><script role="script" id="twine-user-script" type="text/twine-javascript">/* twine-user-script #1: "00-loadfirst.js" */
 
 setup.Path = "";  // Running in a browser
 setup.ImagePath = setup.Path + "image/";
@@ -2351,6 +2741,7 @@ const stats = {}
 const exp = {}
 const juel = {}
 const action = {}
+const using = {}
 
 Object.defineProperties(window, {
 	V: {
@@ -2464,6 +2855,12 @@ Object.defineProperties(window, {
 	Act:{
 		get:function(){
 			return action
+		}
+	},
+
+	Using:{
+		get:function(){
+			return using
 		}
 	}
 	
@@ -4213,304 +4610,7 @@ V.time = {
 }
 
 }
-/* twine-user-script #20: "01-initdata.js" */
-D.base = {
-    health:'健康',
-    stamina:'体力',
-    sanity:'理智',
-    mana:'魔力',
-
-    hydration:'水分',
-    nutrient:'营养',
-    dirty:'污迹',
-
-    drug:'药物',
-    alcohol:'酒精',
-    stress:'压力',
-}
-
-D.palam = {
-    ecstacy:'快感', //判定射精or普通高潮， 高潮时获得性依存度，快乐刻印
-
-    //受方palam
-    arousal:'欲情', //转换为欲情珠，升级欲望lv, 角色进入休息状态时就会进行转换。
-    surrend:'屈从', //转换为服从珠，升级顺从。屈从lv累计到一定值时获得刻印。指令执行成功时获得服从度
-    fear:'恐惧', //恐惧刻印
-    mortify:'羞耻', //羞耻刻印。露出类指令。
-    humiliate:'受辱', //耻辱刻印。 羞辱类指令
-    pain:'疼痛', //痛苦刻印
-    depress:'抑郁', //压力值
-    resist:'抵触', //反抗刻印
-    favo:'好意', //好感转换
-    uncomfort:'不适', //减少mood，根据情况转换为疼痛、抵触、压抑。影响体力与健康的消耗。可能触发生病flag
-
-    //攻方palam
-    eager:'渴望', //行为时间拉长，动作变急切。依存up
-    angry:'愤怒',//mood down，动作会变粗暴。
-    satisfy:'满意',//评价up 好感up
-    superior:'优越', // 支配度up
-
-    //部位palam
-    esM:'快M',
-    esB:'快B', //同时也是喷乳判定条
-    esC:'快C',
-    esU:'快U',
-    esV:'快V',
-    esA:'快A',
-
-    paM:'痛M',
-    paB:"痛B",
-    paC:'痛C',
-    paU:'痛U',
-    paV:'痛V', 
-    paA:"痛A",
-}
-
-D.basecolor = {
-    health:[255, 92, 79],
-    stamina:[223, 236, 15],
-    sanity:[12, 163, 238],
-    mana:[160, 35, 231],
-
-    hydration:[65, 255, 233],
-    nutrient:[134,255,79],
-
-    esstacy:[255,95,202],
-    esM:[255,95,202],
-    esB:[255,95,202],
-    esC:[255,95,202],
-    esU:[255,95,202],
-    esV:[255,95,202],
-    esA:[255,95,202],
-
-    pain:[87, 29, 243],
-    paM:[87, 29, 243],
-    paB:[87, 29, 243],
-    paC:[87, 29, 243],
-    paU:[87, 29, 243],
-    paV:[87, 29, 243],
-    paA:[87, 29, 243],
-
-}
-
-D.mark = {
-    hypno:['催眠刻印','Hypnosis Mark'],
-    ecstacy:['快乐刻印','Ecstacy Mark'],//the ecstacy ethed on mind
-    surrend:['屈服刻印','Surrender Mark'],
-    pain:['痛苦刻印','Pain Mark'],
-    fear:['恐惧刻印','Fear Mark'],
-    humiliate:['耻辱刻印','Humiliated Mark'],
-    mortify:['羞耻刻印', 'Mortify Mark'],
-    resist:['反抗刻印','Resistance Mark'],
-}
-
-D.stats = ["ATK", "DEF", "MTK", "MDF", "STR", "CON", "DEX", "INT", "WIL", "PSY", "ALR", "LUK"]
-
-D.abl = {
-    magica:'魔法等级',//影响魔法技能上限
-    lumen:'光魔法',
-    ark:'暗魔法',
-    flare:'火魔法',
-    ions:'水魔法',
-    vitae:'木魔法',
-    terra:'土魔法',
-    electron:'电魔法',
-    //----- 
-    sword:'剑术',
-    wrestle:'格斗',
-    //-----
-    cooking:'料理',     
-    plant:'种植',
-    medicine:'药物',
-    craft:'制作',
-    fishing:'钓鱼',
-    gathering:'采集',
-}
-
-D.sbl = {
-    // max 12, sens max 20
-    knowledge:'性知识',
-    technique:'性技巧',
-    endurance:'性耐性',
-    submissive:'顺从',
-    refuse:'抗拒', //影响指令执行与心理数值、素质的获得
-    hypnosis:'催眠',
-    desire:'欲望',
-    service:'侍奉',
-    exhibition:'露出',
-    promscuity:'滥交',
-    sexaddic:'性瘾',
-    drugaddic:'药瘾',
-    masochist:'受虐',
-    semenaddic:'饮精中毒',
-    vagiejac:'内射中毒',
-    analejac:'肛射中毒',
-    deviancy:'兽奸中毒',
-    gangbang:'轮奸中毒',
-    tentacles:'触手中毒',
-}
-
-D.exp = [
-    'M','B','C','U','V','A',
-    'M高潮','B高潮','C高潮','U高潮','V高潮','A高潮',
-    '高潮','强烈高潮','深度强烈高潮','多重高潮',
-    '接吻','射精','喷乳','放尿','饮精',
-    '肛交','性交','乳交','口交','内射','肛射',
-    '乳头开发', '后穴开发', '尿道开发', '子宫开发',
-
-    '插入', '道具', '受虐', '露出', '被拍摄', 
-    '怀孕','产卵', '轮奸', '兽奸', '触手奸',
-
-    '眠奸', '强奸', '迷奸', '性转',
-    '同性', '爱情', '侍奉', '自慰',
-    '嗑药', '服从', '催眠', '调教', '施虐',
-]
-
-D.equip = {
-    weapon:'武器',
-    shield:'护盾',
-
-    head:'头饰',
-    cover:'外套',
-    outfitUp:'上衣',
-    outfitBt:'下衣',
-    innerUp:'内衣',
-    innerBt:'内裤',
-    hands:'手套',
-    legs:'袜子',
-
-    face:'面具',
-    ears:'耳饰',
-    chest:'乳饰',//乳环、跳弹
-    bottom:'插件',//跳弹、肛塞、震动棒
-}
-
-D.covergroupA = {
-    //覆盖度。 决定肌肤暴露部位。
-    shoulder:['shoulder'],
-    arms:['arms'],    
-
-    chest:['breast','back'],
-    waist:['abdomen','waistback'], 
-    topB:['back','waistback'],
-
-    chestF:['breast'],
-    belly:['abdomen','private'],
-
-    crotch:['genital','anus'],
-
-    thighs:['thighs'],
-    legs:['thighs','feet'],
-    butts:['butts']
-}
-
-D.covergroupB = {
-    fullhead:['face','neck'],
-    fullbody:Object.keys(D.covergroupA).concat(['face','neck']),
-
-    torso:['chest','waist','genital','butts'],
-
-    top:['shoulder','chest','waist','arms'],
-    bottom:['crotch','butts','thighs'],
-
-    topF:['chestF','belly'],
-    hips:['private','butts'],
-
-}
-
-D.coverlistA = Object.keys(D.covergroupA)
-D.coverlistB = Object.keys(D.covergroupB)
-
-
-D.skinlayer = [
-    'face','neck',
-    'shoulder','arms',
-    'breast', 'abdomen', 'back', 'waistback','private',
-    'buttL','buttR','thighs',
-    'penis', 'vagina', 'anus',]
-
-
-D.tips = {
-    mage:{title:['法师'],content:['对魔法有所了解，能灵活运用各种攻击魔法进行战斗的职业。']},
-    scholar:{ title:['学者'], content:['了解魔法理论，对各种魔法术式与魔法物品进行研究，擅长分析的职业。']},
-    warrior:{ title:['魔战士'], content:['善于运用魔力强化自身，通过格斗或使用近程武器进行战斗的战士。']},
-    ranger:{ title:['魔枪手'], content:['善于运用魔力强化武器，使用远程武器进行战斗的枪手。']},
-    medics:{ title:['治疗师'], content:['对药物、人体、生物有所了解，擅长用魔法给人或生物进行治疗的职业。'] },
-    paladin:{ title:['圣骑士'], content:['信仰圣灵，擅长圣灵魔法与防御术法，使用盾牌与魔法屏障在前排抵御伤害的职业。']},
-    alchemist:{ title:['炼金术师'], content:['对魔法物理与化学有所了解，能合成、改造物品的职业。']},
-
-    curse: { title:['魔咒'], content:['被施加在伊希尔（精灵主角）身上的诅咒。诅咒的本体是？']},
-    arus: { title:['艾瑞斯'], content:['作为半魔人的主角。默认性别为男性，男性时外貌是灰皮白色短发帅哥，扶她以及女性时外貌是灰皮白色长发大胸美女。诅咒之主的化身。游戏主控角色，剧情主角，调教时的第一执行者。']},
-    isil: { title:['伊希露'], content:['作为光精灵的主角。默认性别为男性，男性是外貌是白肤淡金长发美少年，扶她以及女性时外貌是白肤淡金长发平胸美少女。被诅咒寄生的人。游戏主控角色，剧情主角，主要调教对象。']},
-}
-
-D.virginity = ["kiss", "oral", "penis", "anal", "analsex", "vigina", "viginasex", "handholding", "footjob"];
-
-//战斗技能。 战斗中使用。
-D.skill = {
-    fire_ball:'火球术',
-    light_shower:'光雨',
-    magica_shield:'魔力屏障',
-    green_grow:'生长术',
-    lightning:'闪电',
-    fire_sowrd:'火焰剑',
-    dark_cage:'黑暗牢笼',
-    clear_mind:'清心咒',
-    water_bubble:'水球术',
-    ice_arrow:'冰箭术',
-    clean_body:'净身咒',
-    object_control:'念动术',
-}
-
-D.liquidtype = ['juice','cum','rub','slime','nectar']
-
-//string[]管理，用has检测。方便对应多个状态。
-//事件判定用, 临时计时器在tsv. 长期计时器在flag
-D.state = [
-    '睡眠', //睡觉时，受到一定刺激可能会醒来。
-    '疲劳', //体力低于5% 并持续 3小时
-    '生病', //健康低于80% 并持续 5天
-    '缺魔', //魔力低于10% 并持续 3天
-    '失眠', //连续三天不睡觉
-    '欲求不满', //欲求(flag值) 大于80%
-    '营养不良', //营养低于30% 并持续 2天
-    '缺水',  //水分低于 10%并持续 2小时
-    '晕厥', //体力与理智低于5% 持续五小时，或双双归零后会晕厥过去。受强烈刺激可能醒来。
-    '昏睡', //药物效果。药效散之前绝对不会醒来。虽然无知觉但身体依然有反应。
-
-    '发情', //周期 or 药物
-    '自闭', //压力到达上限 100%
-    '精神崩溃', // 压力达到上限 200%
-    '梦魇', // 高压力状态睡觉概率触发
-    '毒瘾发作', // 药隐Lv2后, 断药计时器到达阈值
-    '性瘾发作', // 性瘾Lv2后, 禁断计时器到达阈值
-    '寸止', // 允许快感超过上限, 解除时获得强高潮
-    '性兴奋', // 欲情超过上限时
-    
-    '失明', //看不到, 长久状态, 影响指令
-    '失聪', //听不到
-    '失声', //不能说
-    '石化', //全身无法动弹
-    '口球', //装备效果, 不能说
-    '眼罩', //不能看
-    '束缚', //动弹不得
-    '怀孕', 
-    '肠内受孕', 
-    '寄生', 
-    '中毒', //中毒计时器作用期间,健康持续减少
-]
-
-D.tsv = [
-    'oksign', //合意。没有就是强奸。
-    'sleepDepth', //睡眠深度。低于500时随时可能醒来。
-    'sleepCurse', //昏睡剂or昏睡咒效果
-]
-
-D.mutant = [
-    '光滑', '吸盘', '口器', '隆起', '针', '软刺', '阴茎' 
-]
-
-/* twine-user-script #21: "02-initChara.js" */
+/* twine-user-script #20: "02-initChara.js" */
 F.initChara = {}
 
 F.initChara.m0 = function(){
@@ -4727,7 +4827,7 @@ F.initChara.Nanaly = function(){
 
 		return chara
 }
-/* twine-user-script #22: "03-initplayer.js" */
+/* twine-user-script #21: "03-initplayer.js" */
 //beauty=ALR*100+wearbuff+traitbuff
 F.LoadCharacters = function(){
 	for(let i in V.chara){
@@ -5134,81 +5234,14 @@ F.initAction = function(cid){
         ];
     }
     else{
-        let list = ['hands', 'mouth', 'penis', 'vagina', 'anal']
+        let list = ['handR', 'handL' ,'mouth', 'penis', 'vagina', 'anal', 'feet']
 
         list.forEach((k)=>{
             Act[cid][k] = { tc:'', act:'', use:'' };
         })
     }
 }
-/* twine-user-script #23: "actions.js" */
-
-D.bodyparts = {
-    head:'头部',
-    mouth:'嘴巴',
-    torso:'胴体',
-    body:'身体',
-    top:'上身',
-    bottom:'下身',
-    genital:'生殖器',
-    organ:'器官',
-    private:'私处',
-    groin:'腹股沟',
-    slimebody:'史莱姆身',
-    snakebody:'蛇身',
-    tailbody:'尾身',
-    nipple:'乳头',
-    wings:'翅膀',
-    wingL:'左翼',
-    wingR:'右翼',
-    horns:'角',
-    tails:'尾巴',
-    tentacles:'触手',
-    face:'面部',
-    eyes:'双眼',
-    eyeL:'左眼',
-    eyeR:'右眼',
-    nose:'鼻子',
-    ears:'耳朵',
-    earL:'左耳',
-    earR:'右耳',
-    shoulder:'肩部',
-    breast:'胸部',
-    abdomen:'腹部',
-    arms:'手臂',
-    armL:'左臂',
-    armR:'右臂',
-    legs:'腿部',
-    legL:'左腿',
-    legR:'右腿',
-    thighs:'大腿',
-    hips:'臀部',
-    buttL:'左臀',
-    buttR:'右臀',
-    butts:'屁股',
-    thighL:'左大腿',
-    thighR:'右大腿',
-    ankles:'脚踝',
-    wrists:'手腕',
-    ankleL:'左脚踝',
-    ankleR:'右脚踝',
-    feet:'双脚',
-    hands:'双手',
-    footL:'左脚',
-    footR:'右脚',
-    handL:'左手',
-    handR:'右手',
-    critoris:'阴蒂',
-    anal:'肛门',
-    penis:'阴茎',
-    vagina:'阴道',
-    womb:'子宫',
-    anus:'肛门',
-    urin:'尿道',
-    foot:'脚',
-    hairs:'头发',
-    neck:'脖子'
-}
+/* twine-user-script #22: "actions.js" */
 
 F.initList = function(path, menu, option){
     const rawtxt = Story.get(path).text.split('\n')
@@ -5224,18 +5257,19 @@ F.initList = function(path, menu, option){
                 newobj[k] = option(v[i], k)
             }
         })
+        newobj.type = id
         arr.push(newobj)   
     }
 
     const makeObj = (line)=>{
-        const keys = line.replace('#|','').split(',')
+        const keys = line.slice(3).split(',')
         obj = {}
         keys.forEach((k)=>{
             obj[k] = null;
         })
     }
 
-    var obj
+    var obj, id
     const arr = {}
     if(!menu) arr.a = []
 
@@ -5243,15 +5277,16 @@ F.initList = function(path, menu, option){
         raw = raw.replace(/\s/g, '')
         if(raw[0] == '#') {
             makeObj(raw);
+            id = raw[1]
         }
         else if(raw.match(/^\/\*(.+)\*\/|^\/(.+)/) || raw === ''){
             //注释和空行要过滤掉
         }
         else{
             if(menu){
-                if(!arr[raw[0]])
-                    arr[raw[0]] = [];
-                convert(raw, arr[raw[0]])
+                if(!arr[id])
+                    arr[id] = [];
+                convert(raw, arr[id])
             }
             else{
                 convert(raw, arr['a'])                
@@ -5268,10 +5303,17 @@ F.initList = function(path, menu, option){
     return result
 }
 
-F.extendParts = function(raw, key){
-    if( key !== 'targetPart' && key !== 'usePart') return raw
-    if( !raw ) return raw
+F.extendTags = function(raw){
+    return raw.split('|')
+}
 
+F.extendsRaw = function(raw, key){
+    if( key == 'locationTags' ) return F.extendTags(raw)
+    if( key == 'targetPart' || key == 'usePart') return F.extendParts(raw)
+    return raw
+}
+
+F.extendParts = function(raw){
     let list = 'mbpcvauehfnsrgd'
     let re = raw
 
@@ -5287,21 +5329,21 @@ F.extendParts = function(raw, key){
         re = list
     }
 
-    const part = {m:'mouth', b:'breast', p:'penis', c:'critoris', v:'vagina', a:'anal', u:'urin', e:'ears', h:'hands', f:'foot', n:'neck', s:'butts', r:'nipple', g:'thighs', d:'abdomen' }
+    const part = {m:'mouth', b:'breast', p:'penis', c:'critoris', v:'vagina', a:'anal', u:'urin', e:'ears', h:['handL','handR'], f:'foot', n:'neck', s:'butts', r:'nipple', g:'thighs', d:'abdomen' }
 
-    const arr = re.split('').map(char => part[char]);
+    const arr = re.split('').map(char => part[char]).flat();
     return arr   
 }
 
 const actList = {}
 
 class Action{
-    constructor(id, name, { time = 5, mode = 0, usePart, targetPart, option, defaultText } = {} ){
+    constructor(id, name, { time = 5, mode = 0, usePart, targetPart, option, defaultText, type } = {} ){
 
-        const typeMap = new Map([['g', '常规'], ['d', '场所'], ['t', '调教'], ['x', '触手'],['a','其他'],['o','道具']])
+        const typeMap = new Map([['G', '常规'], ['T', '接触'], ['X', '触手'],['O','其他'],['I','道具'],['R','被动']],)
         this.id = id;
         this.name = name;
-        this.type = typeMap.get(id[0]);
+        this.type = typeMap.get(type);
         this.time = parseInt(time);
         this.mode = parseInt(mode);
 
@@ -5338,13 +5380,14 @@ class Action{
     }
 
     static set(id){
+        //console.log(id, Action.data[id])
         return Action.data[id]
     }
     
     static create(data, mode){
         const { name, templet } = data
 
-        let txt = `:: Action_${data.id}_Option[script]\nAction.set('${data.id}')\n     .Filter(()=>{\n         return 1\n      })\n     .Check(()=>{\n         return 1\n      })\n     .Order(()=>{\n         return 0\n      })\n\n`
+        let txt = `:: Action_${data.id}_Option[script]\n/* ${name} */\nAction.set('${data.id}')\n     .Filter(()=>{\n         return 1\n      })\n     .Check(()=>{\n         return 1\n      })\n     .Order(()=>{\n         return 0\n      })\n\n`
 
         if(mode == 'kojo' ) txt = ''
 
@@ -5361,13 +5404,18 @@ class Action{
 
         let title = `:: ${mode=='kojo' ? 'Kojo_cid_' : ''}Action_${data.id}`
 
+        if( mode == 'script'){
+            return txt
+        }
+        
         if( ['调教', '触手'].includes(data.type) ){
             txt +=  data.usePart.map(k => {
-                return `${title}_${k}\n/* ${name} */\n<<switch Act[pc].use>>\n${ctx(k)}<</switch>>\n\n`
+                return `${title}\n/* ${name} */\n<<switch F.checkUse(tc, '${data.id}')>>\n${ctx(k)}<</switch>>\n\n`
             }).join('')
         }
-        else if(data.type == '道具'){
-            return `${title}\n/* ${name} */\n<<switch Act[pc].use>>\n${ctx('hands')}<</switch>>\n\n`
+        
+        if(data.type == '道具'){
+            return `${title}\n/* ${name} */\n<<switch F.checkUse(tc, '${data.id}')>>\n${ctx('hand')}<</switch>>\n\n`
         }
         else{
             txt += `${title}\n/* ${name} */\n<<you>>在$location.name开始${name}。<br>\n\n`
@@ -5377,7 +5425,7 @@ class Action{
 
     }
     static init(){
-        let arr = F.initList('ActionList', 1 ,F.extendParts)
+        let arr = F.initList('ActionList', 1 ,F.extendsRaw)
         console.log(arr)
          arr.forEach((obj)=>{
             Action.add(obj.id, obj.name, obj)
@@ -5407,18 +5455,102 @@ class Action{
         this.forceAble = true;
         return this
     }
+    setEvent(){
+        this.event = true;
+        return this
+    }
 }
 
 window.Action = Action;
 Action.data = actList;
-
-Action.init()
 
 Action.globalCheck = function(){
 
 }
 
 Action.globalFilter = function(){
+
+}
+
+Action.globalOrder = function(){
+
+}
+
+
+Action.init()
+/* twine-user-script #23: "ActionMode.js" */
+F.hideActions = function(){
+    new Wikifier(null, '<<replace #actionMenu_1>> <</replace>>')
+    new Wikifier(null, '<<replace #actionMenu_2>> <</replace>>')
+    new Wikifier(null, '<<replace #actionMenu_3>> <</replace>>')
+}
+
+F.resetActScene = function(){
+    V.target = C[tc]
+    V.player = C[pc]
+
+    F.initLocation()
+    //F.initActionMenu()
+    //F.initActionselect()
+
+    return ''
+}
+
+F.DoNext = function(){
+    let html = `<<link 'Do'>><<run F.NextAction()>><</link>>`
+    new Wikifier('#next', `<<replace #next>>${html}<</replace>>`)
+}
+
+
+//----->> 初始化 <<---------------------------//
+
+F.initMainFlow = function(){
+    //在这里初始化信息板。 插入移动后的文本。不是经由移动初始化时会有对应的flag判定。
+    //V.aftermovement
+    const local = V.location
+    let text = F.playerName()
+
+    if(local.id == 'A0'){
+
+        text +=  `你回到了宿舍房间。<br>`
+        if(pc == 'Ayres'){
+            text += `${C['Isil'].name}在房间里。`
+        }
+        else{
+            text += `${C['Ayres'].name}在房间里。`
+        }
+    }
+    else{
+        text += `你来到了学院广场公园。<br>你注意到了${C['Besta'].name}在这里散步。`
+
+    }
+
+    F.summonChara();
+    F.resetTarget();
+
+    if(V.aftermovement)
+        delete V.aftermovement
+
+    setTimeout(()=>{
+        F.txtFlow(text,30,1)
+        setTimeout(()=>{
+            F.charaEvent(tc)
+        },500)
+    },100)
+
+    return ''
+}
+
+F.initActMenu = function(){
+    const list = [
+        [(V.mode == 'normal'), '移动', 'Map', ''],
+        [(V.location.id == 'A0'), '下沉', 'Basement', ''],
+        [(V.location.id == 'A0' && (V.date.time >= 1200 || F.baseCheck(player, 'stamina', 50))), '睡觉', 'Sleep', ''],
+    ]
+
+    const local = Action.get('type', '场所')
+    const general = Action.get('type', '常规')
+    
 
 }
 /* twine-user-script #24: "Dialog.js" */
@@ -5783,8 +5915,8 @@ if ( e.phase === S.dialog[ch].length ){
 
     else {
 
-        if( !e.config?.ext ){
-            e.config.exit = 'MainLoop';
+        if( !e.config?.exit ){
+            e.config.exit = D.defaultExit;
             e.config.exitlink = 'Continue';
         }
         V.system.mode = 'normal'
@@ -5980,45 +6112,6 @@ F.shownext = function(){
 }
 
 //----->> 初始化 <<---------------------------//
-F.initMainFlow = function(){
-    //在这里初始化信息板。 插入移动后的文本。不是经由移动初始化时会有对应的flag判定。
-    //V.aftermovement
-    const local = V.location
-    let text = F.playerName()
-    console.log(text)
-
-    if(local.id == 'A0'){
-
-        text +=  `你回到了宿舍房间。<br>`
-        if(pc == 'Ayres'){
-            text += `${C['Isil'].name}在房间里。`
-        }
-        else{
-            text += `${C['Ayres'].name}在房间里。`
-        }
-    }
-    else{
-        text += `你来到了学院广场公园。<br>你注意到了${C['Besta'].name}在这里散步。`
-
-    }
-
-    F.summonChara();
-    F.resetTarget();
-
-    if(V.aftermovement)
-        delete V.aftermovement
-
-    setTimeout(()=>{
-        F.txtFlow(text,30,1)
-        setTimeout(()=>{
-            F.charaEvent(tc)
-        },500)
-    },100)
-
-    return ''
-}
-
-
 F.initComMenu = function(){
     const list = [
         [(V.location.id == 'A0'), '下沉', 'Basement',''],
@@ -6116,6 +6209,10 @@ F.ComCheck = function(id){
     T.comAble = Com.globalCond(id) && com.cond();
     T.msgid = 0
 
+    //如果对方无反抗之力，目标值强行变零。
+    if(F.uncons(target) || !F.canMove(target))
+        T.orderGoal = 0
+
     T.comPhase = 'before'
 
     let txt = F.playerName()
@@ -6199,14 +6296,14 @@ F.ComEvent = function(id, next){
     else if(T.comAble){
 
         //确认对象愿意配合执行
-        if( ( T.comorder >= T.orderGoal ) || com?.forceAble || V.system.debug ){
+        if( ( T.orderGoal > 0 && T.comorder >= T.orderGoal ) || T.orderGoal === 0 || com?.forceAble || V.system.debug ){
             V.passtime = com.time;
             txt = txt + Story.get(title).text
 
             if(com?.forceAble && T.comorder < T.orderGoal && !V.system.debug){
-                S.msg.push(`配合度不足：${T.order}＝${T.comorder}/${T.orderGoal}<br><br>`)
+                S.msg.push(`配合度不足：${T.order}＝${T.comorder}/${T.orderGoal}<br>${com?.forceAble ? '<<run F.ComNext()>>' : ''}<br>`)
 
-                if(Story.get(title+':Force'))
+                if(Story.has(title+':Force'))
                     txt = txt + Story.get(title+':Force').text
 
                 T.force = true
@@ -6214,7 +6311,7 @@ F.ComEvent = function(id, next){
             txt = F.convertKojo(txt)
             F.ComMsg(txt)
 
-            F.ComMsg(`<<run comdata[${id}].source(); F.passtime(V.passtime); F.ComResult()>>`, 1)
+            F.ComMsg(`<<run comdata['${id}'].source(); F.passtime(V.passtime); F.ComResult()>>`, 1)
 
             //确认After事件。如果有就添加到 Msg中。
             if(Story.has(title+'::After')){
@@ -6500,7 +6597,7 @@ Macro.add('com',{
 
         let output = `<div id='com_${T.comcount}' class='command'>
         <<button '${args[0]}'>>
-        <<set $selectCom to ${comId}>><<set $passtime to ${args[1]}>>
+        <<set $selectCom to '${comId}'>><<set $passtime to ${args[1]}>>
         ${contents}
         <</button>>
         </div>`
@@ -6513,7 +6610,7 @@ Macro.add('com',{
 })
 
 
-window.comdata = new Array(200)
+window.comdata = {}
 class Com {
 	static new(id, name, tags, time){
 		comdata[id] = new Com(id, name, tags, time)
@@ -6533,28 +6630,13 @@ class Com {
         const list = []
         raw.forEach((k)=>{
             if( !k.includes('/*') && k !== '' ){
-                let r = k.split(',')
+                let r = k.replace(/\s/g,'').split(',')
                 let info = {
-                    no: parseInt(r[0]),
+                    no: r[0],
                     name: r[1] ? r[1] : 'Com' + r[0],
                     tags:r[2] ? r[2].split('|') : [],
                     time: r[3] ? parseInt(r[3]) : 5,
                 }
-
-                const select = new SelectCase()
-
-                select.case(20, '日常')
-                      .case(50, '前戏')
-                      .case(80, '触手')
-                      .case(160, '性交')
-                      .case(200, '肛交')
-                
-                let tag = select.isLT(info.no)
-                info.tags.push(tag)
-
-                if(inrange(info.no,20,200))
-                    info.tags.push('调教')
-
                 //console.log(info)
                 list.push(info)
             }
@@ -6566,9 +6648,15 @@ class Com {
     }
 
 	constructor(id, name, tags, time){
+        const typeMap = new Map(D.ComTypes)
+
 		this.id = id
 		this.name = name
-		this.tag = tags
+		this.tag = [typeMap.get(id[0])]
+
+        if(tags.length)
+            this.tag = this.tag.concat(tags)
+
         this.filter = ()=>{ return true } //特定的过滤器。
         this.cond = ()=>{ return true }
         this.source = ()=>{}
@@ -6620,8 +6708,8 @@ class Com {
 window.Com = Com
 
 F.ComFilters = function(){
-    const general = ['日常','挑逗','魔法']
-    const train = ['前戏','道具','性交', '尿道', 'SM', '鬼畜', '触手']
+    const general = clone(D.ComFilterGeneral)
+    const train = clone(D.ComFilterTrain)
     const end = '<<=F.initComList()>><</link>>'
     const generalink = []
     const trainlink = []
@@ -6641,7 +6729,8 @@ F.initComList = function(){
 
     const command = []
 
-    comdata.forEach( (com, i) =>{
+    Object.values(comdata).forEach( (com) =>{
+        const { id, time } = com
         let name = ''
 
         if(typeof com.name === 'function') name = com.name();
@@ -6649,8 +6738,8 @@ F.initComList = function(){
 
         let txt = ''
 
-        if( com.filter() && Com.globalFilter(i)){
-            txt = `<<com '${name}' ${com.time} ${i}>><<run F.ComCheck(${i})>><</com>>`
+        if( com.filter() && Com.globalFilter(id)){
+            txt = `<<com '${name}' ${time} ${id}>><<run F.ComCheck('${id}')>><</com>>`
         }
         else if( V.system.showAllCommand ){
            txt = `<div class='command unable'><<button '${name}'>><</button>></div>`
@@ -6779,6 +6868,54 @@ F.playerName = function(){
 }
 DefineMacroS('pcnameTag', F.playerName)
 DefineMacroS('nameTag', F.charaName)
+
+F.actChara = function(){
+	if(T.ac == V.pc) return F.yourName();
+	else return C[T.ac].name
+}
+
+DefineMacroS('actChara', F.actChara)
+
+F.targetChara = function(){
+	if(T.tc == V.pc) return F.yourName();
+	else return C[T.tc].name
+}
+
+DefineMacroS('targetChara', F.targetChara)
+
+F.targetPart = function(){
+	const p = F.checkUse(T.tc, T.actId)
+	//之后根据特定部位弄点差分。主要是胸部、秘穴、菊穴、阴茎这几个部位。
+	return D.bodyparts[p]
+}
+F.actPart = function(){
+	//阴茎会有特殊描述处理？
+	return D.bodyparts[T.acp]
+}
+
+DefineMacroS('targetPart', F.targetPart)
+DefineMacroS('actPart', F.actPart)
+
+F.checkUse = function(cid, act){
+	T.actId = act
+	for(let i in Using[cid]){
+		const info = Using[cid][i]
+		if(info.act == act) return i;
+	}
+	return 'hands'
+}
+
+F.Actor = function(pc, tc, act, acp){
+	T.ac = pc;
+	T.tc = tc;
+	T.actId = act;
+	T.acp = acp;
+return ''
+}
+DefineMacroS('setActor', F.Actor)
+
+//在执行文本时以print的方式加在文本前面。
+//<<setActor '${T.ac}' '${T.tc}' '${actId}'>>
 /* twine-user-script #32: "hover.js" */
 /* HoverTxt - Start */
 var HTIntervalID = 0;
@@ -7295,6 +7432,14 @@ F.metToday = function(cid){
 
 	return 'met'
 }
+
+F.hasPenis = function(cid){
+	return C[cid].gender !== 'female'
+}
+
+F.hasVagina = function(cid){
+	return C[cid].gender !== 'male'
+}
 /* twine-user-script #36: "timeprocess.js" */
 
 const weeks = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
@@ -7490,9 +7635,9 @@ Com.globalCond = function(id){
 
     return true
 }
-/* twine-user-script #38: "Com_1::Script" */
+/* twine-user-script #38: "Com_G1::Script" */
 /* 注册指令事件*/
-Com.set(1)
+Com.set('G1')
     .Check(()=>{ 
         return F.baseCheck(player, 'stamina', 'max')
     })
@@ -7501,21 +7646,21 @@ Com.set(1)
     })
 
 /* 事件文本，before执行前文本，after执行后文本，cancel执行取消时文本 */
-/* twine-user-script #39: "Com_2::Script" */
-Com.set(2)
+/* twine-user-script #39: "Com_G2::Script" */
+Com.set('G2')
     .Check(()=>{
         return random(1,100) <= target.mood + 10 && !target.state.contains('失声','失聪')
     })
     .Effect(()=>{
         Source[tc].favo += 10
     })
-/* twine-user-script #40: "Com_24::Script" */
-Com.set(24)
+/* twine-user-script #40: "Com_T4::Script" */
+Com.set('T4')
    .Filter(()=>{
         return target.gender !== 'female'
    })
-/* twine-user-script #41: "Com_30::Script" */
-Com.set(30)
+/* twine-user-script #41: "Com_T99::Script" */
+Com.set('T99')
    .Name(()=>{
         if(V.system.mode !== 'train'){
             if(F.uncons(target)){
@@ -7530,8 +7675,12 @@ Com.set(30)
    .Check(()=>{
         if(V.debug)
             return true;
+
+        if(F.uncons(target)){
+            return true;
+        }
         
-        if(Cflag[tc].favo < 1000){
+        if(Cflag[tc].favo < 1000 && V.system.mode !== 'train'){
             T.reason += '【好感不足】'
             return false
         }
@@ -7554,8 +7703,8 @@ Com.set(30)
             }
         }
    })
-/* twine-user-script #42: "Com_50::Script" */
-Com.set(50)
+/* twine-user-script #42: "Com_X1::Script" */
+Com.set('X1')
     .Check(()=>{
         //能跑进来时已经过滤掉的情况：非合意且对象具备抵抗能力
         //触手系都需要堕落flag，或者性依存高于2500，或者具有服从系陷落素质后，才能在清醒时执行。
@@ -7571,9 +7720,9 @@ Com.set(50)
     })
     .Effect(()=>{
         Source[tc].esB += 100
-        Source[tc].resist += Math.floor(1000 - F.Exp(tx, '触手')/5)
+        Source[tc].resist += Math.floor(1000 - F.Exp(tc, '触手奸')/5)
 
-        F.getExp(target, '触手', random(3));
+        F.getExp(target, '触手奸', random(3));
         F.getExp(target, 'B', random(2));
     })
     .ForceAble()
@@ -7599,8 +7748,20 @@ Kojo.set('Nanaly','#66CCFF')//颜色其实没仔细找，先塞一个在这
 .Home('学生宿舍A201')
 .Relation('Isil', '青梅竹马', 110)
 .Schedule() //日程表
-/* twine-user-script #45: "Action_g1_Option" */
-Action.set('g1')
+/* twine-user-script #45: "Action_General_Option" */
+Action.set('Talk') // comunicate
+     .Filter(()=>{
+         return V.pc !== V.tc
+     })
+     .setEvent()
+
+Action.set('Gift') // present
+     .Filter(()=>{
+         return V.pc !== V.tc
+      })
+      .setEvent()
+
+Action.set('TrySex') // try sex
      .Filter(()=>{
          return 1
       })
@@ -7610,8 +7771,19 @@ Action.set('g1')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #46: "Action_g2_Option" */
-Action.set('g2')
+
+Action.set('Relax') // relax
+     .Filter(()=>{ 
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+Action.set('Walk') // walking
      .Filter(()=>{
          return 1
       })
@@ -7621,8 +7793,8 @@ Action.set('g2')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #47: "Action_g3_Option" */
-Action.set('g3')
+
+Action.set('Plant') // plant
      .Filter(()=>{
          return 1
       })
@@ -7632,8 +7804,8 @@ Action.set('g3')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #48: "Action_g99_Option" */
-Action.set('g99')
+
+Action.set('Bath') // shower
      .Filter(()=>{
          return 1
       })
@@ -7643,8 +7815,8 @@ Action.set('g99')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #49: "Action_d0_Option" */
-Action.set('d0')
+
+Action.set('Read') // reading
      .Filter(()=>{
          return 1
       })
@@ -7654,8 +7826,8 @@ Action.set('d0')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #50: "Action_d1_Option" */
-Action.set('d1')
+
+Action.set('Learn') // learning
      .Filter(()=>{
          return 1
       })
@@ -7665,8 +7837,8 @@ Action.set('d1')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #51: "Action_d2_Option" */
-Action.set('d2')
+
+Action.set('Class')// attend class
      .Filter(()=>{
          return 1
       })
@@ -7676,8 +7848,8 @@ Action.set('d2')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #52: "Action_d3_Option" */
-Action.set('d3')
+
+Action.set('HomeWork') // do homework
      .Filter(()=>{
          return 1
       })
@@ -7687,8 +7859,8 @@ Action.set('d3')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #53: "Action_d4_Option" */
-Action.set('d4')
+
+Action.set('Shop')// shop
      .Filter(()=>{
          return 1
       })
@@ -7698,40 +7870,8 @@ Action.set('d4')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #54: "Action_d5_Option" */
-Action.set('d5')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
-/* twine-user-script #55: "Action_d6_Option" */
-Action.set('d6')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
-/* twine-user-script #56: "Action_d7_Option" */
-Action.set('d7')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
-/* twine-user-script #57: "Action_t0_Option" */
+/* twine-user-script #46: "Action_t0_Option" */
+/* 接吻 */
 Action.set('t0')
      .Filter(()=>{
          return 1
@@ -7742,7 +7882,8 @@ Action.set('t0')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #58: "Action_t1_Option" */
+
+/* 亲吻部位 */
 Action.set('t1')
      .Filter(()=>{
          return 1
@@ -7753,7 +7894,8 @@ Action.set('t1')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #59: "Action_t2_Option" */
+
+/* 抚摸部位  */
 Action.set('t2')
      .Filter(()=>{
          return 1
@@ -7764,7 +7906,8 @@ Action.set('t2')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #60: "Action_t3_Option" */
+
+/* 揉捏部位 */
 Action.set('t3')
      .Filter(()=>{
          return 1
@@ -7775,7 +7918,8 @@ Action.set('t3')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #61: "Action_t4_Option" */
+
+/* 吸舔部位 */
 Action.set('t4')
      .Filter(()=>{
          return 1
@@ -7786,7 +7930,8 @@ Action.set('t4')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #62: "Action_t5_Option" */
+      
+/* 吸咬部位 */
 Action.set('t5')
      .Filter(()=>{
          return 1
@@ -7797,7 +7942,8 @@ Action.set('t5')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #63: "Action_t6_Option" */
+
+/* 逗弄部位 */
 Action.set('t6')
      .Filter(()=>{
          return 1
@@ -7808,7 +7954,8 @@ Action.set('t6')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #64: "Action_t7_Option" */
+
+/* 指交 */
 Action.set('t7')
      .Filter(()=>{
          return 1
@@ -7819,7 +7966,8 @@ Action.set('t7')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #65: "Action_t8_Option" */
+
+/* 插入 */
 Action.set('t8')
      .Filter(()=>{
          return 1
@@ -7830,7 +7978,8 @@ Action.set('t8')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #66: "Action_t9_Option" */
+
+/* 抽插 */
 Action.set('t9')
      .Filter(()=>{
          return 1
@@ -7841,7 +7990,8 @@ Action.set('t9')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #67: "Action_t10_Option" */
+
+/* 撸动 */
 Action.set('t10')
      .Filter(()=>{
          return 1
@@ -7852,7 +8002,20 @@ Action.set('t10')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #68: "Action_x0_Option" */
+/* twine-user-script #47: "Action_UseItem_Option" */
+/* 使用跳弹 */
+Action.set('Rotor')
+   .Filter(()=>{
+      return 1
+   })
+
+/* 使用震动棒 */
+Action.set('Vibrator')
+   .Filter(()=>{
+      return 1
+   })
+/* twine-user-script #48: "Action_Tentacles_Option" */
+/* 揉捏 */
 Action.set('x0')
      .Filter(()=>{
          return 1
@@ -7863,7 +8026,8 @@ Action.set('x0')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #69: "Action_x1_Option" */
+
+/* 逗弄 */
 Action.set('x1')
      .Filter(()=>{
          return 1
@@ -7874,7 +8038,8 @@ Action.set('x1')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #70: "Action_x2_Option" */
+
+/* 吸舔 */
 Action.set('x2')
      .Filter(()=>{
          return 1
@@ -7885,7 +8050,8 @@ Action.set('x2')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #71: "Action_x3_Option" */
+
+/* 吸咬 */
 Action.set('x3')
      .Filter(()=>{
          return 1
@@ -7896,7 +8062,8 @@ Action.set('x3')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #72: "Action_x4_Option" */
+
+/* 撸动 */
 Action.set('x4')
      .Filter(()=>{
          return 1
@@ -7907,7 +8074,8 @@ Action.set('x4')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #73: "Action_x5_Option" */
+
+/* 插入 */
 Action.set('x5')
      .Filter(()=>{
          return 1
@@ -7918,7 +8086,9 @@ Action.set('x5')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #74: "Action_x6_Option" */
+
+
+/* 蠕动 */
 Action.set('x6')
      .Filter(()=>{
          return 1
@@ -7929,7 +8099,8 @@ Action.set('x6')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #75: "Action_x7_Option" */
+
+/* 抽插 */
 Action.set('x7')
      .Filter(()=>{
          return 1
@@ -7940,7 +8111,8 @@ Action.set('x7')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #76: "Action_x8_Option" */
+
+/* 深入 */
 Action.set('x8')
      .Filter(()=>{
          return 1
@@ -7951,7 +8123,8 @@ Action.set('x8')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #77: "Action_x9_Option" */
+
+/* 抽送 */
 Action.set('x9')
      .Filter(()=>{
          return 1
@@ -7962,7 +8135,8 @@ Action.set('x9')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #78: "Action_x10_Option" */
+
+/* 鞭打 */
 Action.set('x10')
      .Filter(()=>{
          return 1
@@ -7973,7 +8147,8 @@ Action.set('x10')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #79: "Action_x11_Option" */
+
+/* 刺入 */
 Action.set('x11')
      .Filter(()=>{
          return 1
@@ -7984,7 +8159,8 @@ Action.set('x11')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #80: "Action_x12_Option" */
+
+/* 灌入 */
 Action.set('x12')
      .Filter(()=>{
          return 1
@@ -7995,7 +8171,8 @@ Action.set('x12')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #81: "Action_x13_Option" */
+
+/* 注射 */
 Action.set('x13')
      .Filter(()=>{
          return 1
@@ -8006,8 +8183,9 @@ Action.set('x13')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #82: "Action_a0_Option" */
-Action.set('a0')
+/* twine-user-script #49: "Action_Other_Option" */
+/* 直播 */
+Action.set('Stream')
      .Filter(()=>{
          return 1
       })
@@ -8016,27 +8194,38 @@ Action.set('a0')
       })
      .Order(()=>{
          return 0
-      })</script><tw-passagedata pid="1" name="ActionList" tags="list" position="100,100" size="100,100">#| id, name, time, option
-g1, 放松, 15, noTarget
-g2, 交流, 5, needActiveTarget
-g3, 送礼, 2, needActiveTarget
+      })</script><tw-passagedata pid="1" name="Action_Talk" tags="" position="100,100" size="100,100">/* 交流 */
+&lt;&lt;you&gt;&gt;在$location.name开始交流。&lt;br&gt;</tw-passagedata><tw-passagedata pid="2" name="Action_Gift" tags="" position="225,100" size="100,100">/* 送礼 */
+&lt;&lt;you&gt;&gt;在$location.name开始送礼。&lt;br&gt;</tw-passagedata><tw-passagedata pid="3" name="Action_TrySex" tags="" position="350,100" size="100,100">/* 推倒 */
+&lt;&lt;you&gt;&gt;在$location.name开始推倒。&lt;br&gt;</tw-passagedata><tw-passagedata pid="4" name="Action_Relax" tags="" position="475,100" size="100,100">/* 放松 */
+&lt;&lt;you&gt;&gt;在$location.name找了个舒适的地方，坐下放松。&lt;br&gt;</tw-passagedata><tw-passagedata pid="5" name="Action_Walk" tags="" position="600,100" size="100,100">/* 散步 */
+&lt;&lt;you&gt;&gt;在$location.name开始散步。&lt;br&gt;</tw-passagedata><tw-passagedata pid="6" name="Action_Plant" tags="" position="725,100" size="100,100">/* 种植 */
+&lt;&lt;you&gt;&gt;在$location.name开始种植。&lt;br&gt;</tw-passagedata><tw-passagedata pid="7" name="Action_Bath" tags="" position="850,100" size="100,100">/* 洗澡 */
+&lt;&lt;you&gt;&gt;在$location.name开始洗澡。&lt;br&gt;</tw-passagedata><tw-passagedata pid="8" name="Action_Read" tags="" position="975,100" size="100,100">/* 读书 */
+&lt;&lt;you&gt;&gt;在$location.name开始读书。&lt;br&gt;</tw-passagedata><tw-passagedata pid="9" name="Action_Learn" tags="" position="1100,100" size="100,100">/* 学习 */
+&lt;&lt;you&gt;&gt;在$location.name开始学习。&lt;br&gt;</tw-passagedata><tw-passagedata pid="10" name="Action_Class" tags="" position="1225,100" size="100,100">/* 上课 */
+&lt;&lt;you&gt;&gt;在$location.name开始上课。&lt;br&gt;</tw-passagedata><tw-passagedata pid="11" name="Action_HomeWork" tags="" position="100,225" size="100,100">/* 做作业 */
+&lt;&lt;you&gt;&gt;在$location.name开始做作业。&lt;br&gt;</tw-passagedata><tw-passagedata pid="12" name="Action_Shop" tags="" position="225,225" size="100,100">/* 购物 */
+&lt;&lt;you&gt;&gt;在$location.name开始购物。&lt;br&gt;</tw-passagedata><tw-passagedata pid="13" name="Action_Stream" tags="" position="350,225" size="100,100">/* 直播 */
+&lt;&lt;you&gt;&gt;在$location.name开始直播。&lt;br&gt;</tw-passagedata><tw-passagedata pid="14" name="ActionList" tags="list" position="475,225" size="100,100">/* level:所在层数，time：花费时间，locationTags：需求的地点标签，option：额外设置 */
+#G| id, name, time, locationTags, option1
+Relax, 放松, 15, 床|椅子|休息
+Walk, 散步, 15, 室外
+Plant, 种植, 30, 菜园
+Bath, 洗澡, 30, 浴室
+Read, 读书, 60, 书g
+Learn, 学习, 60, 书桌
+Class, 上课, 90, 教室
+HomeWork, 做作业, 120, 书桌
+Shop, 购物, 20, 商店
 
-g99, 推倒, 0, withoutSight
+Talk, 交流, 5, 角色 ,needActiveTarget
+Gift, 送礼, 2, needActiveTarget
+TrySex, 推倒, 1, 隐匿|私室|阴影, needTarget
 
-#| id, name, time, locationTags
-d0, 散步, 15, 室外
-d1, 种植, 30, 菜园
-d2, 洗澡, 30, 浴室
-d3, 读书, 60, 书
-d4, 学习, 60, 书桌
-d5, 上课, 90, 教室
-d6, 做作业, 120, 书桌
-d7, 购物, 20, 商店
-
-/* 道具/魔法的使用, 到底占用哪个部位, 能对哪使用, 要看道具本身设定
+/* 攻受通用 = 部分攻方 */
 /* mode: 1: normal, 1.5: between 1 and 2,  2: harassment/affection, 3: woohoo */
-#| id, name, mode, usePart, targetPart, defaultText, option
-
+#T| id, name, mode,  usePart, targetPart, defaultText
 t0, 接吻, 1, m, m, {0}吻上了{1}的嘴唇。
 t1, 亲吻, 2, m, --mvaur, {0}亲吻在了{1}的{2}上，轻吮吸舔，试图留下自己的印记。
 t2, 抚摸, 1.5, h, --ur, {0}的手轻抚着{1}的{2}。
@@ -8046,19 +8235,25 @@ t4, 吸舔, 2, m, --mub, {0}吸住了{1}的{2}，在上面用舌头反复舔舐�
 t5, 吸咬, 3, m, --mbvaud, {0}含住{1}的{2}，吸吮轻咬着。
 t6, 逗弄, 2, h, pcvaer, {0}反复逗弄着{1}的{2}。
 t7, 指交, 3, h, mvau, {0}的手指浅浅插入{1}的{2}，在入口附近摩擦着。
-t8, 插入, 2.5, ph, mva, {0}以{4}的姿势用{3}插入了{1}的{2}。
-t9, 抽插, 3, ph, mva, {0}活动腰身，在{1}的{2}反复出入着。
+t8, 性交, 2.5, p, mva, {0}以{4}的姿势用{3}插入了{1}的{2}。
+t9, 抽插, 3, p, mva, {0}活动腰身，在{1}的{2}反复出入着。
 t10, 撸动, 3, h, p, {0}握住{1}的{2}，前后撸动着。
+t11, 拳交, 3, h, va, {0}的拳头粗暴地捅进了{1}的{2}里面，反复抽插着。
+
+/* 大概是受方专用动作？ */
+#R| id, name, mode, level, usePart, targetPart, defaultText
+r0, 握住, 1, h, hpf, {0}的{3}握住了{1}的{2}。
+r1, 收紧, 3, va, ph, {0}控制自身{3}，紧紧夹住了{1}的{2}。
 
 /* 道具使用类 */
-#| id, name, mode, targetPart, defaultText, option
-o0, 跳蛋, 2, varpc, {0}将跳蛋贴在{1}的{2}，刺激着。
-o1, 震动棒, 2, va, {0}将震动棒放进了{1}的{2}。
+/* 道具/魔法的使用, 到底占用哪个部位, 能对哪使用, 要看道具本身设定 */
+#I| id, name, mode, targetPart, defaultText
+Rotor, 跳蛋, 2, varpc, {0}将跳蛋贴在{1}的{2}，刺激着。
+Vibrator, 震动棒, 2, va, {0}将震动棒放进了{1}的{2}。
 
 
 /* mode: 1:daytime 2:both 3:nightime */
-#| id, name, mode, targetPart, defaultText, option
-
+#X| id, name, mode, targetPart, defaultText
 x0, 揉捏, 2, bpcr, 触手缠绕在{1}的{2}上，巧妙地反复揉捏给予刺激。
 x1, 逗弄, 2, --bhfnsgd, 蠕动、摩擦、按捏。触手反复逗弄着{1}的{2}，给予极大的刺激。
 x2, 吸舔, 2, rpc, 吸盘触手吸附在{1}的{2}上，反复吸舔着。
@@ -8075,8 +8270,8 @@ x12, 灌入, 3, mva, 触手往{1}的{2}灌入大量的药液。
 x13, 注射, 3, --mehfg, 触手伸出尖锐的针头，刺入{1}的{2}并注入药液。
 
 /* 其他，特殊类? */
-#| id, name, option
-a0, 直播</tw-passagedata><tw-passagedata pid="2" name="MainLoop:Before" tags="" position="225,100" size="100,100">/*纯代码区，最先处理 */</tw-passagedata><tw-passagedata pid="3" name="MainLoop:After" tags="" position="350,100" size="100,100">/*纯代码区，最后处理 */</tw-passagedata><tw-passagedata pid="4" name="MainLoop" tags="" position="475,100" size="100,100">&lt;div id=&#39;hidden&#39; class=&#39;hidden&#39;&gt;you can&#39;t see me.&lt;/div&gt;
+#O| id, name, option
+Stream, 直播</tw-passagedata><tw-passagedata pid="15" name="MainLoop:Before" tags="" position="600,225" size="100,100">/*纯代码区，最先处理 */</tw-passagedata><tw-passagedata pid="16" name="MainLoop:After" tags="" position="725,225" size="100,100">/*纯代码区，最后处理 */</tw-passagedata><tw-passagedata pid="17" name="MainLoop" tags="" position="850,225" size="100,100">&lt;div id=&#39;hidden&#39; class=&#39;hidden&#39;&gt;you can&#39;t see me.&lt;/div&gt;
 &lt;div id=&#39;location&#39;&gt;&lt;/div&gt;
 &lt;br&gt;
 &lt;div id=&#39;content&#39; class=&#39;content&#39; onClick=&#39;if(S.msg)F.ComNext();&#39;&gt;
@@ -8086,7 +8281,7 @@ a0, 直播</tw-passagedata><tw-passagedata pid="2" name="MainLoop:Before" tags="
 &lt;/div&gt;
 
 &lt;div id=&#39;actionMenu_1&#39;&gt;
-行动：
+行动：&lt;&lt;link &#39;下沉&#39; &#39;Basement&#39;&gt;&gt;&lt;&lt;/link&gt;&gt;
 &lt;/div&gt;
 
 &lt;div id= &#39;actionMenu_2&#39;&gt;
@@ -8107,7 +8302,142 @@ a0, 直播</tw-passagedata><tw-passagedata pid="2" name="MainLoop:Before" tags="
 F.initMainFlow()
 F.initLocation()
 
-&lt;/script&gt;</tw-passagedata><tw-passagedata pid="5" name="Basement" tags="" position="600,100" size="100,100">&lt;&lt;link &#39;苏醒&#39; &#39;MainLoop&#39;&gt;&gt;&lt;&lt;set $system.mode to &#39;normal&#39;&gt;&gt;&lt;&lt;set $date.time to 900&gt;&gt;&lt;&lt;run F.lostState(C[&#39;Isil&#39;], &#39;睡眠&#39;)&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;br&gt;
+&lt;/script&gt;</tw-passagedata><tw-passagedata pid="18" name="Action_t0_mouth" tags="" position="975,225" size="100,100">/* 接吻 */
+&lt;&lt;actChara&gt;&gt;吻上了&lt;&lt;targetChara&gt;&gt;的嘴唇。&lt;br&gt;
+&lt;&lt;=F.Kojo(T.tc, &#39;Action&#39;, &#39;t0_mouth&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="19" name="Action_t1_mouth" tags="" position="1100,225" size="100,100">/* 亲吻 */
+&lt;&lt;actChara&gt;&gt;亲吻在了&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;上，轻吮吸舔，试图留下自己的印记。&lt;br&gt;
+&lt;&lt;=F.kojo(T.tc, &#39;Action&#39;, &#39;t1_mouth&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="20" name="Action_t2_hands" tags="" position="1225,225" size="100,100">/* 抚摸 */
+&lt;&lt;actChara&gt;&gt;的手轻抚着&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;。&lt;br&gt;
+&lt;&lt;=F.kojo(T.tc, &#39;Action&#39;, &#39;t2_hands&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="21" name="Action_t3_hands" tags="" position="100,350" size="100,100">/* 揉捏 */
+&lt;&lt;actChara&gt;&gt;揉捏着&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;。&lt;br&gt;
+&lt;&lt;=F.kojo(T.tc, &#39;Action&#39;, &#39;t3_hands&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="22" name="Action_t4_mouth" tags="" position="225,350" size="100,100">/* 吸舔 */
+&lt;&lt;actChara&gt;&gt;
+&lt;&lt;switch F.checkUse(T.tc, &#39;t4&#39;)&gt;&gt;
+&lt;&lt;case &#39;penis&#39;, &#39;critoris&#39;, &#39;nipple&#39;&gt;&gt;
+   吸住了&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;，在上面用舌头反复舔舐着。&lt;br&gt;
+&lt;&lt;case &#39;vagina&#39;, &#39;anal&#39;&gt;&gt;
+   把头埋在&lt;&lt;targetChara&gt;&gt;的跨间，把舌头探入&lt;&lt;targetPart&gt;&gt;，贪婪地吸舔着&lt;&lt;targetChara&gt;&gt;的汁液与气息。&lt;br&gt;
+&lt;&lt;case &#39;ears&#39;&gt;&gt;
+   含住了&lt;&lt;targetChara&gt;&gt;的耳坠，又吸又舔地感受着耳朵的柔软。&lt;br&gt;
+&lt;&lt;case &#39;hands&#39;, &#39;foot&#39;&gt;&gt;
+   含住了&lt;&lt;targetChara&gt;&gt;的&lt;&lt;= F.checkUse(T.tc, &#39;t0&#39;) == &#39;hands&#39; ? &#39;手指&#39; : &#39;脚趾&#39; &gt;&gt;，像舔舐糖果般吸舔着。&lt;br&gt;
+&lt;&lt;case &#39;neck&#39;, &#39;butts&#39;, &#39;thighs&#39;, &#39;abdomen&#39;&gt;&gt;
+   在&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;上面用舌头又吸又舔地感受着对方的气味。&lt;br&gt;
+&lt;&lt;/switch&gt;&gt;
+&lt;&lt;=F.kojo(T.tc, &#39;Action&#39;, &#39;t4_mouth&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="23" name="Action_t5_mouth" tags="" position="350,350" size="100,100">/* 吸咬 */
+&lt;&lt;actChara&gt;&gt;
+&lt;&lt;switch F.checkUse(T.tc, &#39;t5&#39;)&gt;&gt;
+&lt;&lt;case &#39;penis&#39;, &#39;critoris&#39;, &#39;nipple&#39;, &#39;ears&#39;&gt;&gt;
+   含住&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;，吸吮轻咬着。&lt;br&gt;
+&lt;&lt;default&gt;&gt;
+   轻咬在&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;上，品味着对方的气息，不时轻啃慢咬试图留下自己的痕迹。&lt;br&gt;
+&lt;&lt;/switch&gt;&gt;
+&lt;&lt;=F.kojo(T.tc, &#39;Action&#39;, &#39;t5_mouth&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="24" name="Action_t6_hands" tags="" position="475,350" size="100,100">/* 逗弄 */
+&lt;&lt;actChara&gt;&gt;
+&lt;&lt;switch F.checkUse(T.tc, &#39;t6&#39;)&gt;&gt;
+&lt;&lt;case &#39;penis&#39;&gt;&gt;
+   用手套住&lt;&lt;targetChara&gt;&gt;的龟头，不时用手指拨弄刺激在敏感带上。&lt;br&gt;
+&lt;&lt;case &#39;critoris&#39;, &#39;nipple&#39;&gt;&gt;
+   拨弄着&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;，不时轻捏揉搓刺激在敏感的尖端。&lt;br&gt;
+&lt;&lt;case &#39;vagina&#39;, &#39;anal&#39;&gt;&gt;
+   将手指往内深入，在&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;扣弄着，不时刺激在脆弱的敏感点上。&lt;br&gt;
+&lt;&lt;case &#39;ears&#39;&gt;&gt;
+   反复逗弄着&lt;&lt;targetChara&gt;&gt;的耳朵。&lt;br&gt;
+&lt;&lt;/switch&gt;&gt;
+&lt;&lt;=F.kojo(T.tc, &#39;Action&#39;, &#39;t6_hands&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="25" name="Action_t7_hands" tags="" position="600,350" size="100,100">/* 指交 */
+&lt;&lt;actChara&gt;&gt;
+&lt;&lt;switch F.checkUse(T.tc, &#39;t7&#39;)&gt;&gt;
+&lt;&lt;case &#39;mouth&#39;&gt;&gt;
+ 把手指伸入&lt;&lt;targetChara&gt;&gt;的嘴巴，不时玩弄着对方的舌头，模拟性交的动作抽插着。&lt;br&gt;
+&lt;&lt;case &#39;vagina&#39;, &#39;anal&#39;&gt;&gt;
+ 的手指浅浅插入&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;，在入口附近摩擦着。&lt;br&gt;
+&lt;&lt;case &#39;urin&#39;&gt;&gt;
+ 的手指浅浅插入&lt;&lt;targetChara&gt;&gt;的尿道，在入口附近摩擦着。&lt;br&gt;
+&lt;&lt;/switch&gt;&gt;
+&lt;&lt;=F.kojo(T.tc, &#39;Action&#39;, &#39;t7_hands&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="26" name="Action_t8_penis" tags="" position="725,350" size="100,100">/* 插入 */
+&lt;&lt;actChara&gt;&gt;
+&lt;&lt;switch F.checkUse(T.tc, &#39;t8&#39;)&gt;&gt;
+&lt;&lt;case &#39;mouth&#39;&gt;&gt;
+   用阴茎插入了&lt;&lt;targetChara&gt;&gt;的嘴巴。&lt;br&gt;
+&lt;&lt;case &#39;vagina&#39;&gt;&gt;
+   以{0}的姿势，用阴茎顶在&lt;&lt;targetChara&gt;&gt;的秘穴入口处，挺动腰身缓缓进入。&lt;br&gt;
+&lt;&lt;case &#39;anal&#39;&gt;&gt;
+   以{0}的姿势，用阴茎撑开&lt;&lt;targetChara&gt;&gt;的菊穴，缓缓地进入。&lt;br&gt;
+&lt;&lt;/switch&gt;&gt;
+&lt;&lt;=F.kojo(T.tc, &#39;Action&#39;, &#39;t8_penis&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="27" name="Action_t8_hands" tags="" position="850,350" size="100,100">/* 插入 */
+&lt;&lt;actChara&gt;&gt;把整个手插入了&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;。&lt;br&gt;
+&lt;&lt;=F.kojo(T.tc, &#39;Action&#39;, &#39;t8_hands&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="28" name="Action_t9_penis" tags="" position="975,350" size="100,100">/* 抽插 */
+&lt;&lt;actChara&gt;&gt;活动腰身，在&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;反复出入着。&lt;br&gt;
+&lt;&lt;=F.kojo(T.tc, &#39;Action&#39;, &#39;t9_penis&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="29" name="Action_t9_hands" tags="" position="1100,350" size="100,100">/* 抽插 */
+&lt;&lt;actChara&gt;&gt;模拟性交的动作，活动右手在&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;反复进出着。&lt;br&gt;
+&lt;&lt;=F.kojo(T.tc, &#39;Action&#39;, &#39;t9_hands&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="30" name="Action_t10_hands" tags="" position="1225,350" size="100,100">/* 撸动 */
+&lt;&lt;actChara&gt;&gt;握住&lt;&lt;targetChara&gt;&gt;的阴茎，前后撸动着。&lt;br&gt;
+&lt;&lt;=F.kojo(T.tc, &#39;Action&#39;, &#39;t10_hands&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="31" name="Action_Rotor" tags="" position="100,475" size="100,100">/* 跳蛋 */
+&lt;&lt;actChara&gt;&gt;
+&lt;&lt;switch F.checkUse(T.tc, &#39;o0&#39;)&gt;&gt;
+&lt;&lt;case &#39;vagina&#39;, &#39;anal&#39;&gt;&gt;
+将跳蛋放入了&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;。&lt;br&gt;
+&lt;&lt;default&gt;&gt;
+将跳蛋贴在&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;，刺激着。&lt;br&gt;
+&lt;&lt;/switch&gt;&gt;
+&lt;&lt;=F.kojo(T.tc, &#39;Action&#39;, &#39;o0&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="32" name="Action_Vibrator" tags="" position="225,475" size="100,100">/* 震动棒 */
+&lt;&lt;actChara&gt;&gt;将震动棒塞进了&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;。&lt;br&gt;
+&lt;&lt;=F.kojo(T.tc, &#39;Action&#39;, &#39;o1&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="33" name="Action_x0_tentacles" tags="" position="350,475" size="100,100">/* 揉捏 */
+触手
+&lt;&lt;switch F.checkUse(T.tc, &#39;x0&#39;)&gt;&gt;
+&lt;&lt;case &#39;breast&#39;&gt;&gt;
+   缠绕在&lt;&lt;targetChara&gt;&gt;的胸部上，巧妙地反复揉捏给予刺激。&lt;br&gt;
+&lt;&lt;case &#39;penis&#39;&gt;&gt;
+   缠绕在&lt;&lt;targetChara&gt;&gt;的阴茎上，巧妙地反复揉捏给予刺激。&lt;br&gt;
+&lt;&lt;case &#39;critoris&#39;&gt;&gt;
+   缠绕在&lt;&lt;targetChara&gt;&gt;的阴蒂上，巧妙地反复揉捏给予刺激。&lt;br&gt;
+&lt;&lt;case &#39;nipple&#39;&gt;&gt;
+   缠绕在&lt;&lt;targetChara&gt;&gt;的乳头上，巧妙地反复揉捏给予刺激。&lt;br&gt;
+&lt;&lt;/switch&gt;&gt;
+&lt;&lt;=F.kojo(T.tc, &#39;Action&#39;, &#39;x0_tentacles&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="34" name="Action_x1_tentacles" tags="" position="475,475" size="100,100">/* 逗弄 */
+&lt;&lt;switch F.checkUse(T.tc, &#39;x1&#39;)&gt;&gt;
+&lt;&lt;case &#39;mouth&#39;&gt;&gt;
+   深入、缠绕、蠕动。触手反复逗弄着&lt;&lt;targetChara&gt;&gt;的口腔，给予极大的刺激。&lt;br&gt;
+&lt;&lt;case &#39;penis&#39;, &#39;critoris&#39;, &#39;ears&#39;, &#39;nipple&#39;&gt;&gt;
+   缠绕、蠕动、拨弄。触手反复逗弄着&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;，给予极大的刺激。&lt;br&gt;
+&lt;&lt;case &#39;vagina&#39;, &#39;anal&#39;&gt;&gt;
+   蠕动、摩擦、按揉。触手反复逗弄着&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;，给予极大的刺激。&lt;br&gt;
+&lt;&lt;case &#39;urin&#39;&gt;&gt;
+   刺探、深入、蠕动。触手反复逗弄着&lt;&lt;targetChara&gt;&gt;的尿道，给予极大的刺激。&lt;br&gt;
+&lt;&lt;/switch&gt;&gt;
+&lt;&lt;=F.kojo(T.tc, &#39;Action&#39;, &#39;x1_tentacles&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="35" name="Action_x2_tentacles" tags="" position="600,475" size="100,100">/* 吸舔 */
+吸盘触手吸附在&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;上，反复吸舔着。&lt;br&gt;
+&lt;&lt;=F.kojo(T.tc, &#39;Action&#39;, &#39;x2_tentacles&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="36" name="Action_x3_tentacles" tags="" position="725,475" size="100,100">/* 吸咬 */
+口器触手含住&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;，吸吮轻咬着。&lt;br&gt;
+&lt;&lt;=F.kojo(T.tc, &#39;Action&#39;, &#39;x3_tentacles&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="37" name="Action_x4_tentacles" tags="" position="850,475" size="100,100">/* 撸动 */
+触手缠绕住&lt;&lt;targetChara&gt;&gt;的阴茎，反复撸动着。&lt;br&gt;
+&lt;&lt;=F.kojo(T.tc, &#39;Action&#39;, &#39;x4_tentacles&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="38" name="Action_x5_tentacles" tags="" position="975,475" size="100,100">/* 插入 */
+触手钻进了&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;，缓缓往内深入。&lt;br&gt;
+&lt;&lt;=F.kojo(T.tc, &#39;Action&#39;, &#39;x5_tentacles&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="39" name="Action_x6_tentacles" tags="" position="1100,475" size="100,100">/* 蠕动 */
+触手
+&lt;&lt;switch F.checkUse(T.tc, &#39;x6&#39;)&gt;&gt;
+&lt;&lt;case &#39;mouth&#39;, &#39;vagina&#39;, &#39;anal&#39;, &#39;urin&#39;&gt;&gt;
+ 在&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;内部扭动着触身，慢慢蠕动着。&lt;br&gt;
+&lt;&lt;case &#39;penis&#39;&gt;&gt;
+缠绕着&lt;&lt;targetChara&gt;&gt;的阴茎，在表面慢慢蠕动着。&lt;br&gt;
+&lt;&lt;default&gt;&gt;
+缠绕着&lt;&lt;targetChara&gt;&gt;的身躯，在&lt;&lt;targetPart&gt;&gt;表面攀爬蠕动着。&lt;br&gt;
+&lt;&lt;/switch&gt;&gt;
+&lt;&lt;=F.kojo(T.tc, &#39;Action&#39;, &#39;x6_tentacles&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="40" name="Action_x7_tentacles" tags="" position="1225,475" size="100,100">/* 抽插 */
+触手不停在&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;进出，抽插蠕动着。&lt;br&gt;
+&lt;&lt;=F.kojo(T.tc, &#39;Action&#39;, &#39;x7_tentacles&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="41" name="Action_x8_tentacles" tags="" position="100,600" size="100,100">/* 深入 */
+触手往&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;内部发出了进攻，往更深处蠕进。&lt;br&gt;
+&lt;&lt;=F.kojo(T.tc, &#39;Action&#39;, &#39;x8_tentacles&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="42" name="Action_x9_tentacles" tags="" position="225,600" size="100,100">/* 抽送 */
+触手激烈地在&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;进出着，反复抽送着触身给予莫大的刺激。&lt;br&gt;
+&lt;&lt;=F.kojo(T.tc, &#39;Action&#39;, &#39;x9_tentacles&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="43" name="Action_x10_tentacles" tags="" position="350,600" size="100,100">/* 鞭打 */
+触手甩动触鞭，用巧妙的力度鞭打在&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;上。&lt;br&gt;
+&lt;&lt;=F.kojo(T.tc, &#39;Action&#39;, &#39;x10_tentacles&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="44" name="Action_x11_tentacles" tags="" position="475,600" size="100,100">/* 刺入 */
+触手伸出尖锐的细针，狠狠地刺入了&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;。&lt;br&gt;
+&lt;&lt;=F.kojo(T.tc, &#39;Action&#39;, &#39;x11_tentacles&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="45" name="Action_x12_tentacles" tags="" position="600,600" size="100,100">/* 灌入 */
+触手往&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;深处灌入大量的药液。&lt;br&gt;
+&lt;&lt;=F.kojo(T.tc, &#39;Action&#39;, &#39;x12_tentacles&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="46" name="Action_x13_tentacles" tags="" position="725,600" size="100,100">/* 注射 */
+触手伸出尖锐的针头，刺入&lt;&lt;targetChara&gt;&gt;的&lt;&lt;targetPart&gt;&gt;并注入药液。&lt;br&gt;
+&lt;&lt;=F.kojo(T.tc, &#39;Action&#39;, &#39;x13_tentacles&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="47" name="Basement" tags="" position="850,600" size="100,100">&lt;&lt;link &#39;苏醒&#39; &#39;MainLoop&#39;&gt;&gt;&lt;&lt;set $system.mode to &#39;normal&#39;&gt;&gt;&lt;&lt;set $date.time to 900&gt;&gt;&lt;&lt;run F.lostState(C[&#39;Isil&#39;], &#39;睡眠&#39;)&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;br&gt;
 
 &lt;&lt;link &#39;情报&#39;&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;br&gt;
 
@@ -8117,9 +8447,11 @@ F.initLocation()
 
 &lt;&lt;link &#39;调教&#39; &#39;MainLoop&#39;&gt;&gt;&lt;&lt;set $system.mode to &#39;train&#39;&gt;&gt;&lt;&lt;set $date.time to 1350&gt;&gt;&lt;&lt;run F.getState(C[&#39;Isil&#39;], &#39;睡眠&#39;)&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;br&gt;
 
+&lt;&lt;link &#39;经典模式&#39; &#39;CommandLoop&#39;&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;br&gt;
+
 &lt;&lt;link &#39;设定&#39;&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;br&gt;
 
-&lt;&lt;checkbox &quot;$system.debug&quot; 0 1 autocheck&gt;&gt;Debug模式？&lt;br&gt;</tw-passagedata><tw-passagedata pid="6" name="CursedCore" tags="" position="725,100" size="100,100">/* 触手升级界面 */
+&lt;&lt;checkbox &quot;$system.debug&quot; 0 1 autocheck&gt;&gt;Debug模式？&lt;br&gt;</tw-passagedata><tw-passagedata pid="48" name="CursedCore" tags="" position="975,600" size="100,100">/* 触手升级界面 */
 /* len长度, thick粗细, count数量, forms形状, drug性毒, hypnos催眠， */
 &lt;&lt;set _abl to $cursedLord.abl&gt;&gt;
 触手目前的等级Lv_abl.scale  &lt;&lt;=F.Evole(&#39;scale&#39;)&gt;&gt;&lt;br&gt;
@@ -8145,8 +8477,8 @@ F.initLocation()
 
 &lt;&lt;dashline&gt;&gt;
 
-&lt;&lt;link &#39;返回&#39; &#39;Basement&#39;&gt;&gt;&lt;&lt;/link&gt;&gt;</tw-passagedata><tw-passagedata pid="7" name="commemo//" tags="" position="850,100" size="100,100">指令类型：
-日常 - 日常模式下所有常规指令。包括 移动、休息、地点互动、友好的交流互动
+&lt;&lt;link &#39;返回&#39; &#39;Basement&#39;&gt;&gt;&lt;&lt;/link&gt;&gt;</tw-passagedata><tw-passagedata pid="49" name="//commemo" tags="" position="1100,600" size="100,100">指令类型：
+常规 - 日常模式下所有常规指令。包括 移动、休息、地点互动、友好的交流互动
 调教 - 调教模式下所有常规指令。包括前戏、道具调戏、性交、肛交、尿道开发、SM。
 
 挑逗 - 日常模式下的挑逗类指令，如抛媚眼、诱惑、接吻、抚摸敏感部位等。也包括性骚扰类、日常用调教类指令。
@@ -8159,85 +8491,89 @@ F.initLocation()
 SM   - 捆绑鞭打等SM行为
 
 鬼畜 - 反人性的指令。包含NTR。
-触手 - 触手相关指令。
-
-/no, name, tags, time
-/name最大六个字，tag从缺时会根据id顺序自动分配 */</tw-passagedata><tw-passagedata pid="8" name="CommandSystem//" tags="" position="975,100" size="100,100">采用 TiTS + eraTW模式
+触手 - 触手相关指令。</tw-passagedata><tw-passagedata pid="50" name="//CommandSystem" tags="" position="1225,600" size="100,100">采用 TiTS + eraTW模式
 日常交流模式相对简化，改成事件模式。
 或许更接近eraMaid或school的感觉。
 
-调教模式下，动作指令相对简化。可以用 linkreplace，comselect（新的选项方式，类似eventselect但用于com模式）的方式对动作分支进行展开以及重复动作。</tw-passagedata><tw-passagedata pid="9" name="ComList" tags="list" position="1100,100" size="100,100">/* 常规指令 */
-0,移动,交流,1
-1,放松,休息,15
-2,聊天,交流,0
+调教模式下，动作指令相对简化。可以用 linkreplace，comselect（新的选项方式，类似eventselect但用于com模式）的方式对动作分支进行展开以及重复动作。
 
-/* 挑逗、前戏 20-49  */
-20,抚摸,挑逗|日常
-21,摸胸,
-22,玩乳头,
-23,吸乳头,
-24,撸阴茎,
-25,指交,
-30,推倒,挑逗|日常,
+/list表格顺
+/no, name, tags, time
+/name最大六个字，主分类tag会根据id首字母自动分配。tag中可以补充小分类，用|分割。
+/G-常规指令，T-挑逗、前戏等身体轻度接触指令，S-性交类指令，A-肛门类指令，U-尿道类指令
+/X-觸手类指令，I-道具类指令，M-SM、鬼畜等虐待系行为指令，P-各种情景play系开关，O-其他</tw-passagedata><tw-passagedata pid="51" name="ComList" tags="list" position="100,725" size="100,100">/* 常规指令 */
+G0,移动,交流,1
+G1,放松,休息,15
+G2,聊天,交流,0
+
+/* 挑逗、前戏  */
+T0,抚摸,常规
+T1,摸胸,
+T2,玩乳头,
+T3,吸乳头,
+T4,撸阴茎,
+T5,指交,
+T99,推倒,常规,
 
 /* 触手专用，触手都可持续。同时进行数看部位是否被占用以及触手数量。
-/* 或许修改成 部位 对 部位 使用 什么 进行 动作的方式？
-/* 50-80 */
-50,玩乳头(触)
-51,吸乳头(触)
-52,撸阴茎(触)
-53,玩后穴(触)
-54,玩私穴(触)</tw-passagedata><tw-passagedata pid="10" name="Command::Before" tags="" position="1225,100" size="100,100">/* 指令执行前的通用文本。时间段提示、场景变换等。如果有运行代码不放这里。*/
+/* 或许修改成 部位 对 部位 使用 什么 进行 动作的方式？ */
+X1,玩乳头(触)
+X2,吸乳头(触)
+X3,撸阴茎(触)
+X4,玩后穴(触)
+X5,玩私穴(触)</tw-passagedata><tw-passagedata pid="52" name="Command::Before" tags="" position="225,725" size="100,100">/* 指令执行前的通用文本。时间段提示、场景变换等。如果有运行代码不放这里。*/
 &lt;&lt;if $date.time &gt;= 1080 &amp;&amp; !_timeCheckNight&gt;&gt;
 &lt;&lt;set _timeCheckNight to true&gt;&gt;
 天开始暗下来了……&lt;br&gt;
-&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="11" name="Command::After" tags="" position="100,225" size="100,100">/* 指令执行完毕时的通用事件文本。*/</tw-passagedata><tw-passagedata pid="12" name="Command_G0" tags="" position="225,225" size="100,100">休息了下</tw-passagedata><tw-passagedata pid="13" name="Command_G0::Script" tags="" position="350,225" size="100,100">&lt;&lt;script&gt;&gt;
+&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="53" name="Command::After" tags="" position="350,725" size="100,100">/* 指令执行完毕时的通用事件文本。*/</tw-passagedata><tw-passagedata pid="54" name="Command_G0" tags="" position="475,725" size="100,100">休息了下</tw-passagedata><tw-passagedata pid="55" name="Command_G0::Script" tags="" position="600,725" size="100,100">&lt;&lt;script&gt;&gt;
 Com.set(&#39;G0&#39;)
     .Check(()=&gt;{})
     .Effect(()=&gt;{})
 
-&lt;&lt;/script&gt;&gt;</tw-passagedata><tw-passagedata pid="14" name="Com_0" tags="" position="475,225" size="100,100">/* 迟些切换成overlay？ */
-&lt;&lt;goto &#39;Map&#39;&gt;&gt;</tw-passagedata><tw-passagedata pid="15" name="Com_1::Cancel" tags="" position="600,225" size="100,100">暂时不用休息。&lt;br&gt;</tw-passagedata><tw-passagedata pid="16" name="Com_1" tags="" position="725,225" size="100,100">&lt;&lt;if $location.tag.includes(&#39;chair&#39;)&gt;&gt;
+&lt;&lt;/script&gt;&gt;</tw-passagedata><tw-passagedata pid="56" name="Com_G0" tags="" position="725,725" size="100,100">/* 迟些切换成overlay？ */
+&lt;&lt;goto &#39;Map&#39;&gt;&gt;</tw-passagedata><tw-passagedata pid="57" name="Com_G1::Cancel" tags="" position="850,725" size="100,100">暂时不用休息。&lt;br&gt;</tw-passagedata><tw-passagedata pid="58" name="Com_G1" tags="" position="975,725" size="100,100">&lt;&lt;if $location.tag.includes(&#39;chair&#39;)&gt;&gt;
 坐在椅子上休息了下，
 &lt;&lt;elseif $location.tag.includes(&#39;bed&#39;)&gt;&gt;
 在床上躺下放松，
 &lt;&lt;else&gt;&gt;
 找了个合适的地方坐下休息了一会，
 &lt;&lt;/if&gt;&gt;
-恢复了 $player.sup.stamina 点体力。&lt;br&gt;</tw-passagedata><tw-passagedata pid="17" name="Com_2::Cancel" tags="" position="850,225" size="100,100">&lt;&lt;you&gt;&gt;试着跟对方搭话，
+恢复了 $player.sup.stamina 点体力。&lt;br&gt;</tw-passagedata><tw-passagedata pid="59" name="Com_G2::Cancel" tags="" position="1100,725" size="100,100">&lt;&lt;you&gt;&gt;试着跟对方搭话，
 &lt;&lt;if !F.canSpeak($target)&gt;&gt;
 可惜$target.name没有能力回应&lt;&lt;you&gt;&gt;。
 &lt;&lt;else&gt;&gt;
 但$target.name并没有心情理会&lt;&lt;you&gt;&gt;。
-&lt;&lt;/if&gt;&gt;&lt;br&gt;</tw-passagedata><tw-passagedata pid="18" name="Com_2" tags="" position="975,225" size="100,100">&lt;&lt;you&gt;&gt;试着跟$target.name搭话。&lt;br&gt;
-&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, 2)&gt;&gt;</tw-passagedata><tw-passagedata pid="19" name="Com_2::Before//" tags="" position="1100,225" size="100,100">/*取消前的文本sample */
+&lt;&lt;/if&gt;&gt;&lt;br&gt;</tw-passagedata><tw-passagedata pid="60" name="Com_G2" tags="" position="1225,725" size="100,100">&lt;&lt;you&gt;&gt;试着跟$target.name搭话。&lt;br&gt;
+&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, &#39;G2&#39;)&gt;&gt;
+
+\</tw-passagedata><tw-passagedata pid="61" name="Com_G2::Before//" tags="" position="100,850" size="100,100">/*取消前的文本sample */
 $player.name走近$target.name准备搭话。&lt;br&gt;
-&lt;&lt;linkreplace &#39;取消&#39;&gt;&gt;&lt;&lt;resetLink&gt;&gt;&lt;&lt;resetScene&gt;&gt;&lt;&lt;/linkreplace&gt;&gt;&lt;br&gt;</tw-passagedata><tw-passagedata pid="20" name="Com_2::After//" tags="" position="1225,225" size="100,100">/*指令结束时的文本sample */
-好感增加了一点。&lt;br&gt;</tw-passagedata><tw-passagedata pid="21" name="Com_20" tags="" position="100,350" size="100,100">&lt;&lt;you&gt;&gt;的手在$target.name的身上四处游走着。&lt;br&gt;
-&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, 20)&gt;&gt;
-&lt;br&gt;</tw-passagedata><tw-passagedata pid="22" name="Com_21" tags="" position="225,350" size="100,100">&lt;&lt;you&gt;&gt;把手覆盖在$target.name的胸上开始抚摸。&lt;br&gt;
-&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, 21)&gt;&gt;&lt;br&gt;</tw-passagedata><tw-passagedata pid="23" name="Com_22" tags="" position="350,350" size="100,100">&lt;&lt;you&gt;&gt;用手轻轻捏住了$target.name的乳头&lt;br&gt;
-&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, 22)&gt;&gt;
-&lt;br&gt;</tw-passagedata><tw-passagedata pid="24" name="Com_23" tags="" position="475,350" size="100,100">&lt;&lt;you&gt;&gt;用嘴含住了$target.name的乳头，吮吸着。&lt;br&gt;
-&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, 23)&gt;&gt;
-&lt;br&gt;</tw-passagedata><tw-passagedata pid="25" name="Com_24" tags="" position="600,350" size="100,100">&lt;&lt;you&gt;&gt;轻轻握住了$target.name的阴茎，缓缓地前后撸动。&lt;br&gt;
-&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, 24)&gt;&gt;</tw-passagedata><tw-passagedata pid="26" name="Com_25" tags="" position="725,350" size="100,100">&lt;&lt;you&gt;&gt;将手指探入$target.name的&lt;&lt;=F.splitSex($target,&#39;菊穴&#39;,&#39;秘穴&#39;)&gt;&gt;在入口附近摩擦着。&lt;br&gt;
-&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, 25)&gt;&gt;</tw-passagedata><tw-passagedata pid="27" name="Com_30" tags="" position="850,350" size="100,100">&lt;&lt;if $system.mode !== &#39;train&#39; &gt;&gt;
+&lt;&lt;linkreplace &#39;取消&#39;&gt;&gt;&lt;&lt;resetLink&gt;&gt;&lt;&lt;resetScene&gt;&gt;&lt;&lt;/linkreplace&gt;&gt;&lt;br&gt;</tw-passagedata><tw-passagedata pid="62" name="Com_G2::After//" tags="" position="225,850" size="100,100">/*指令结束时的文本sample */
+好感增加了一点。&lt;br&gt;</tw-passagedata><tw-passagedata pid="63" name="Com_T0" tags="" position="350,850" size="100,100">&lt;&lt;you&gt;&gt;的手在$target.name的身上四处游走着。&lt;br&gt;
+&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, &#39;T0&#39;)&gt;&gt;
+&lt;br&gt;</tw-passagedata><tw-passagedata pid="64" name="Com_T1" tags="" position="475,850" size="100,100">&lt;&lt;you&gt;&gt;把手覆盖在$target.name的胸上开始抚摸。&lt;br&gt;
+&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, &#39;T1&#39;)&gt;&gt;&lt;br&gt;</tw-passagedata><tw-passagedata pid="65" name="Com_T2" tags="" position="600,850" size="100,100">&lt;&lt;you&gt;&gt;用手轻轻捏住了$target.name的乳头&lt;br&gt;
+&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, &#39;T2&#39;)&gt;&gt;
+&lt;br&gt;</tw-passagedata><tw-passagedata pid="66" name="Com_T3" tags="" position="725,850" size="100,100">&lt;&lt;you&gt;&gt;用嘴含住了$target.name的乳头，吮吸着。&lt;br&gt;
+&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, &#39;T3&#39;)&gt;&gt;
+&lt;br&gt;</tw-passagedata><tw-passagedata pid="67" name="Com_T4" tags="" position="850,850" size="100,100">&lt;&lt;you&gt;&gt;轻轻握住了$target.name的阴茎，缓缓地前后撸动。&lt;br&gt;
+&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, &#39;T4&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="68" name="Com_T5" tags="" position="975,850" size="100,100">&lt;&lt;you&gt;&gt;将手指探入$target.name的&lt;&lt;=F.splitSex($target,&#39;菊穴&#39;,&#39;秘穴&#39;)&gt;&gt;在入口附近摩擦着。&lt;br&gt;
+&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, &#39;T5&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="69" name="Com_T99" tags="" position="1100,850" size="100,100">&lt;&lt;if $system.mode !== &#39;train&#39; &gt;&gt;
 &lt;&lt;you&gt;&gt;将$target.name带到没人注意到的角落。&lt;br&gt;
-&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, 30, &#39;start&#39;)&gt;&gt;
+&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, &#39;T99&#39;, &#39;start&#39;)&gt;&gt;
 
 &lt;&lt;else&gt;&gt;
 &lt;&lt;you&gt;&gt;帮$target.name整理好衣服。&lt;br&gt;
-&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, 30, &#39;finish&#39;)&gt;&gt;
-&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="28" name="Com_50" tags="" position="975,350" size="100,100">触手&lt;&lt;=(T.force? `强行爬上${$target.name}的身躯，` : &#39;&#39; )&gt;&gt;沿着$target.name的肌肤往胸部游走，缠绕在乳尖上开始蠕动。&lt;br&gt;
+&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, &#39;T99&#39;, &#39;finish&#39;)&gt;&gt;
+&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="70" name="Com_X1" tags="" position="1225,850" size="100,100">触手&lt;&lt;=(T.force? `强行爬上${$target.name}的身躯，` : &#39;&#39; )&gt;&gt;沿着$target.name的肌肤往胸部游走，缠绕在乳尖上开始蠕动。&lt;br&gt;
 &lt;&lt;=either([
     &#39;缠绕、蠕动。&#39;,&#39;揉捏、摩擦。&#39;,&#39;挑弄、点拨。&#39;,&#39;蠕动、揉捏。&#39;,&#39;挑逗、缠绕、扭捏。&#39;
 ])&gt;&gt;触手不停地反复着动作，时重时轻地对乳尖反复进行刺激。
 &lt;br&gt;
-&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, 50)&gt;&gt;</tw-passagedata><tw-passagedata pid="29" name="//Com_50:Fail" tags="" position="1100,350" size="100,100">因为对方不配合而取消时的文本。
-口上分支是 Kojo_Chara_Com_id:Failed</tw-passagedata><tw-passagedata pid="30" name="//Com_50:Force" tags="" position="1225,350" size="100,100">整个事件脉络都不一样时。
+&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, &#39;X1&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="71" name="//Com_X1:Fail" tags="" position="100,975" size="100,100">因为对方不配合而取消时的文本。
+口上分支是 Kojo_Chara_Com_id:Failed</tw-passagedata><tw-passagedata pid="72" name="//Com_X1:Force" tags="" position="225,975" size="100,100">整个事件脉络都不一样时。
 直接用:Force做分支。
-口上分支是 Kojo_Chara_Com_id:Force;</tw-passagedata><tw-passagedata pid="31" name="Com_51" tags="" position="100,475" size="100,100"></tw-passagedata><tw-passagedata pid="32" name="Com_52" tags="" position="225,475" size="100,100"></tw-passagedata><tw-passagedata pid="33" name="Com_53" tags="" position="350,475" size="100,100"></tw-passagedata><tw-passagedata pid="34" name="Com_54" tags="" position="475,475" size="100,100"></tw-passagedata><tw-passagedata pid="35" name="CommandLoop:Before" tags="" position="600,475" size="100,100">/*纯代码区，最先处理 */</tw-passagedata><tw-passagedata pid="36" name="CommandLoop:After" tags="" position="725,475" size="100,100">/*纯代码区，最后处理 */</tw-passagedata><tw-passagedata pid="37" name="CommandLoop" tags="" position="850,475" size="100,100">&lt;div id=&#39;hidden&#39; class=&#39;hidden&#39;&gt;you can&#39;t see me.&lt;/div&gt;
+口上分支是 Kojo_Chara_Com_id:Force;</tw-passagedata><tw-passagedata pid="73" name="Com_X2" tags="" position="350,975" size="100,100"></tw-passagedata><tw-passagedata pid="74" name="Com_X3" tags="" position="475,975" size="100,100"></tw-passagedata><tw-passagedata pid="75" name="Com_X4" tags="" position="600,975" size="100,100"></tw-passagedata><tw-passagedata pid="76" name="Com_X5" tags="" position="725,975" size="100,100"></tw-passagedata><tw-passagedata pid="77" name="CommandLoop:Before" tags="" position="850,975" size="100,100">/*纯代码区，最先处理 */</tw-passagedata><tw-passagedata pid="78" name="CommandLoop:After" tags="" position="975,975" size="100,100">/*纯代码区，最后处理 */</tw-passagedata><tw-passagedata pid="79" name="CommandLoop" tags="" position="1100,975" size="100,100">&lt;div id=&#39;hidden&#39; class=&#39;hidden&#39;&gt;you can&#39;t see me.&lt;/div&gt;
 &lt;div id=&#39;location&#39;&gt;&lt;/div&gt;
 &lt;br&gt;
 &lt;div id=&#39;content&#39; class=&#39;content&#39; onClick=&#39;if(S.msg)F.ComNext();&#39;&gt;
@@ -8262,7 +8598,7 @@ F.initLocation()
 F.initComMenu()
 F.initComList()
 
-&lt;/script&gt;</tw-passagedata><tw-passagedata pid="38" name="EventStart:Before" tags="" position="975,475" size="100,100">&lt;&lt;run F.initEvent()&gt;&gt;</tw-passagedata><tw-passagedata pid="39" name="EventStart" tags="system" position="1100,475" size="100,100">&lt;&lt;if Story.has(_beforecheck)&gt;&gt;
+&lt;/script&gt;</tw-passagedata><tw-passagedata pid="80" name="EventStart:Before" tags="" position="1225,975" size="100,100">&lt;&lt;run F.initEvent()&gt;&gt;</tw-passagedata><tw-passagedata pid="81" name="EventStart" tags="system" position="100,1100" size="100,100">&lt;&lt;if Story.has(_beforecheck)&gt;&gt;
     &lt;&lt;include _beforecheck&gt;&gt;
 &lt;&lt;/if&gt;&gt;
 
@@ -8270,7 +8606,7 @@ F.initComList()
     &lt;&lt;timed 30ms&gt;&gt;&lt;&lt;goto EventLoop&gt;&gt;&lt;&lt;/timed&gt;&gt;
 &lt;&lt;else&gt;&gt;
     &lt;div class=&quot;error-view&quot;&gt;&lt;span class=&quot;error&quot;&gt;Error: 跳转失败。跳转目标：$event.fullname&lt;/span&gt;&lt;/div&gt;
-&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="40" name="EventLoop" tags="" position="1225,475" size="100,100">&lt;div id=&#39;content&#39; class=&#39;content&#39; onClick=&#39;if(!V.event?.afterselect)F.nextDialog(); else delete V.event.afterselect;&#39;&gt;
+&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="82" name="EventLoop" tags="" position="225,1100" size="100,100">&lt;div id=&#39;content&#39; class=&#39;content&#39; onClick=&#39;if(!V.event?.afterselect)F.nextDialog(); else delete V.event.afterselect;&#39;&gt;
     &lt;div id=&#39;content_message&#39; &gt;
     &lt;/div&gt;
 &lt;div id=&quot;msg_end&quot; style=&quot;height:0px; overflow:hidden&quot;&gt;&lt;/div&gt;
@@ -8289,10 +8625,10 @@ F.initComList()
 
 &lt;script&gt;
     F.initDialog()
-&lt;/script&gt;</tw-passagedata><tw-passagedata pid="41" name="EventLoop:After" tags="" position="100,600" size="100,100">&lt;&lt;run
+&lt;/script&gt;</tw-passagedata><tw-passagedata pid="83" name="EventLoop:After" tags="" position="350,1100" size="100,100">&lt;&lt;run
     if(Config.debug)
         console.log(&#39;postEventLoop&#39;);
-&gt;&gt;</tw-passagedata><tw-passagedata pid="42" name="EventEnd:Before" tags="" position="225,600" size="100,100"></tw-passagedata><tw-passagedata pid="43" name="EventEnd" tags="system" position="350,600" size="100,100">&lt;&lt;set _aftercheck = `${$event.fullname}::After`&gt;&gt;
+&gt;&gt;</tw-passagedata><tw-passagedata pid="84" name="EventEnd:Before" tags="" position="475,1100" size="100,100"></tw-passagedata><tw-passagedata pid="85" name="EventEnd" tags="system" position="600,1100" size="100,100">&lt;&lt;set _aftercheck = `${$event.fullname}::After`&gt;&gt;
 
 &lt;&lt;if Story.has(_aftercheck)&gt;&gt;
     &lt;&lt;include _aftercheck&gt;&gt;
@@ -8306,7 +8642,7 @@ F.initComList()
 &lt;&lt;else&gt;&gt;
     &lt;div class=&quot;error-view&quot;&gt;&lt;span class=&quot;error&quot;&gt;Error: 跳转失败。跳转目标：$event.exit&lt;/span&gt;&lt;/div&gt;
 &lt;&lt;/if&gt;&gt;
-&lt;&lt;/timed&gt;&gt;</tw-passagedata><tw-passagedata pid="44" name="StoryDisplayTitle" tags="" position="475,600" size="100,100">Era the Cursed</tw-passagedata><tw-passagedata pid="45" name="StoryInit" tags="" position="600,600" size="100,100">&lt;&lt;run F.initGame(); F.initCharacters(); &gt;&gt;
+&lt;&lt;/timed&gt;&gt;</tw-passagedata><tw-passagedata pid="86" name="StoryDisplayTitle" tags="" position="725,1100" size="100,100">Era the Cursed</tw-passagedata><tw-passagedata pid="87" name="StoryInit" tags="" position="850,1100" size="100,100">&lt;&lt;run F.initGame(); F.initCharacters(); &gt;&gt;
 
 &lt;&lt;set $debt to 0&gt;&gt;
 &lt;&lt;set $wallet to 5000&gt;&gt;
@@ -8343,7 +8679,7 @@ F.initComList()
         scale:0,
     },
     trait:[&#39;光滑&#39;],
-}&gt;&gt;</tw-passagedata><tw-passagedata pid="46" name="Start" tags="nosave" position="725,600" size="100,100">游戏初始设定&lt;br&gt;
+}&gt;&gt;</tw-passagedata><tw-passagedata pid="88" name="Start" tags="nosave" position="975,1100" size="100,100">游戏初始设定&lt;br&gt;
 &lt;&lt;dashline&gt;&gt;
 
 &lt;&lt;tips &#39;你&#39; &#39;curse&#39;&gt;&gt;：&lt;&lt;textbox &quot;$cursedLord.name&quot; $cursedLord.name&gt;&gt;&lt;br&gt;
@@ -8394,23 +8730,23 @@ F.initComList()
 
     &gt;&gt;
 &lt;&lt;/button&gt;&gt;
-&lt;br&gt;&lt;br&gt;</tw-passagedata><tw-passagedata pid="47" name="LeftSide" tags="" position="850,600" size="100,100">&lt;&lt;if $mode is &quot;normal&quot;&gt;&gt;
+&lt;br&gt;&lt;br&gt;</tw-passagedata><tw-passagedata pid="89" name="LeftSide" tags="" position="1100,1100" size="100,100">&lt;&lt;if $mode is &quot;normal&quot;&gt;&gt;
 	&lt;&lt;include &quot;LeftSidePanel&quot;&gt;&gt;
 &lt;&lt;else&gt;&gt;
-&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="48" name="RightSide" tags="" position="975,600" size="100,100">&lt;&lt;if $mode is &quot;normal&quot;&gt;&gt;
+&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="90" name="RightSide" tags="" position="1225,1100" size="100,100">&lt;&lt;if $mode is &quot;normal&quot;&gt;&gt;
 	&lt;&lt;include &quot;RightSidePanel&quot;&gt;&gt;
 &lt;&lt;else&gt;&gt;
-&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="49" name="LeftSidePanel" tags="" position="1100,600" size="100,100">&lt;div id=&quot;ui-bar&quot;&gt;
+&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="91" name="LeftSidePanel" tags="" position="100,1225" size="100,100">&lt;div id=&quot;ui-bar&quot;&gt;
 	&lt;div id=&quot;story-caption&quot;&gt;
 		show caption
 	&lt;/div&gt;
-&lt;/div&gt;</tw-passagedata><tw-passagedata pid="50" name="RightSidePanel" tags="" position="1225,600" size="100,100">&lt;div id=&quot;sidebar&quot;&gt;
+&lt;/div&gt;</tw-passagedata><tw-passagedata pid="92" name="RightSidePanel" tags="" position="225,1225" size="100,100">&lt;div id=&quot;sidebar&quot;&gt;
 	&lt;div id=&quot;story-caption&quot;&gt;
 		show character status
 	&lt;/div&gt;
-&lt;/div&gt;</tw-passagedata><tw-passagedata pid="51" name="StoryMenu" tags="" position="100,725" size="100,100">&lt;&lt;link &#39;Inventory&#39;&gt;&gt;&lt;&lt;/link&gt;&gt;
+&lt;/div&gt;</tw-passagedata><tw-passagedata pid="93" name="StoryMenu" tags="" position="350,1225" size="100,100">&lt;&lt;link &#39;Inventory&#39;&gt;&gt;&lt;&lt;/link&gt;&gt;
 &lt;&lt;link &#39;Profile&#39; &#39;Profile&#39;&gt;&gt;&lt;&lt;/link&gt;&gt;
-&lt;&lt;link &#39;Magicom&#39;&gt;&gt;&lt;&lt;/link&gt;&gt;</tw-passagedata><tw-passagedata pid="52" name="Invenory" tags="" position="225,725" size="100,100">&lt;&lt;link &#39;返回&#39; $lastsession&gt;&gt;&lt;&lt;/link&gt;&gt;</tw-passagedata><tw-passagedata pid="53" name="Profile" tags="" position="350,725" size="100,100">&lt;div id=&#39;profile&#39;&gt;
+&lt;&lt;link &#39;Magicom&#39;&gt;&gt;&lt;&lt;/link&gt;&gt;</tw-passagedata><tw-passagedata pid="94" name="Invenory" tags="" position="475,1225" size="100,100">&lt;&lt;link &#39;返回&#39; $lastsession&gt;&gt;&lt;&lt;/link&gt;&gt;</tw-passagedata><tw-passagedata pid="95" name="Profile" tags="" position="600,1225" size="100,100">&lt;div id=&#39;profile&#39;&gt;
 $target.fullname
 &lt;br&gt;&lt;hr&gt;
 
@@ -8516,16 +8852,16 @@ MP: $target.base.mana[0] / $target.base.mana[1]&lt;br&gt;
 &lt;br&gt;&lt;hr&gt;
 
 &lt;/div&gt;
-&lt;&lt;link &#39;返回&#39; $lastsession&gt;&gt;&lt;&lt;/link&gt;&gt;</tw-passagedata><tw-passagedata pid="54" name="Magicon" tags="" position="475,725" size="100,100">&lt;&lt;link &#39;返回&#39; $lastsession&gt;&gt;&lt;&lt;/link&gt;&gt;</tw-passagedata><tw-passagedata pid="55" name="Kojo_Isil" tags="widget" position="600,725" size="100,100">/* macro定义区 */</tw-passagedata><tw-passagedata pid="56" name="Kojo_Isil_Event_First::Before" tags="" position="725,725" size="100,100">&lt;&lt;set $event.id = &#39;CE_1&#39;&gt;&gt;
-&lt;&lt;run F.setMemory(&#39;CE_1&#39;,`${C[&#39;Isil&#39;].name} - 初遇`,&#39;Isil&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="57" name="Kojo_Isil_Event_Test" tags="" position="850,725" size="100,100">一个测试。</tw-passagedata><tw-passagedata pid="58" name="Kojo_Isil_Event_First" tags="" position="975,725" size="100,100">/* 首次登场 */
+&lt;&lt;link &#39;返回&#39; $lastsession&gt;&gt;&lt;&lt;/link&gt;&gt;</tw-passagedata><tw-passagedata pid="96" name="Magicon" tags="" position="725,1225" size="100,100">&lt;&lt;link &#39;返回&#39; $lastsession&gt;&gt;&lt;&lt;/link&gt;&gt;</tw-passagedata><tw-passagedata pid="97" name="Kojo_Isil" tags="widget" position="850,1225" size="100,100">/* macro定义区 */</tw-passagedata><tw-passagedata pid="98" name="Kojo_Isil_Event_First::Before" tags="" position="975,1225" size="100,100">&lt;&lt;set $event.id = &#39;CE_1&#39;&gt;&gt;
+&lt;&lt;run F.setMemory(&#39;CE_1&#39;,`${C[&#39;Isil&#39;].name} - 初遇`,&#39;Isil&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="99" name="Kojo_Isil_Event_Test" tags="" position="1100,1225" size="100,100">一个测试。</tw-passagedata><tw-passagedata pid="100" name="Kojo_Isil_Event_First" tags="" position="1225,1225" size="100,100">/* 首次登场 */
 当&lt;&lt;you&gt;&gt;回到宿舍时，就发现伊希露已经早早回到了宿舍中。
 
 回想着昨天的画面，不禁多看了伊希露几眼，却惨遭对方嫌弃。
 “……我脸上有什么吗？”
 &lt;fr&gt;
 “看你好看啊。” &lt;&lt;you&gt;&gt;轻松地避开了对方白眼，浅笑道，“魔力增长的感觉到底是怎样的？”
-“也就这样。”伊希露摇了摇头，“就多了两三点。”</tw-passagedata><tw-passagedata pid="59" name="Kojo_Isil_Daily_First" tags="" position="1100,725" size="100,100">/* 每日第一次接触时 */
-“……早。”伊希露冷冷地打个招呼就去洗漱了。&lt;br&gt;</tw-passagedata><tw-passagedata pid="60" name="Kojo_Isil_Com" tags="" position="1225,725" size="100,100">/* 纯代码区。每次指令执行时进行flag检测的地方 */
+“也就这样。”伊希露摇了摇头，“就多了两三点。”</tw-passagedata><tw-passagedata pid="101" name="Kojo_Isil_Daily_First" tags="" position="100,1350" size="100,100">/* 每日第一次接触时 */
+“……早。”伊希露冷冷地打个招呼就去洗漱了。&lt;br&gt;</tw-passagedata><tw-passagedata pid="102" name="Kojo_Isil_Com" tags="" position="225,1350" size="100,100">/* 纯代码区。每次指令执行时进行flag检测的地方 */
 /* 选择的Com在$selectCom */
 /* 如果要强制取消某个指令的执行，也可以在这里处理。 */
 &lt;&lt;script&gt;&gt;
@@ -8540,7 +8876,7 @@ if(!Cflag[&#39;Isil&#39;].fallen &amp;&amp; $selectCom == 30){
     _reason += &#39;【未陷落不可推倒】&#39;
 }
 
-&lt;&lt;/script&gt;&gt;</tw-passagedata><tw-passagedata pid="61" name="Kojo_Isil_Com_2:Before" tags="" position="100,850" size="100,100">单个:属于文本分支。
+&lt;&lt;/script&gt;&gt;</tw-passagedata><tw-passagedata pid="103" name="Kojo_Isil_Com_G2:Before" tags="" position="350,1350" size="100,100">单个:属于文本分支。
 两个::属于功能分支。
 
 确认执行前的事件文本。
@@ -8552,9 +8888,9 @@ if(!Cflag[&#39;Isil&#39;].fallen &amp;&amp; $selectCom == 30){
 &lt;&lt;selection replace&gt;&gt;
 &lt;&lt;pick &#39;分支？&#39;&gt;&gt;123
 &lt;&lt;pick &#39;分支2？？&#39;&gt;&gt;abc
-&lt;&lt;/selection&gt;&gt;</tw-passagedata><tw-passagedata pid="62" name="//Kojo_Isil_Com_2:Cancel" tags="" position="225,850" size="100,100">指令取消时的事件文本。
-可以进行flag操作。但尽量不要有数据处理。</tw-passagedata><tw-passagedata pid="63" name="//Kojo_Isil_Com_2:Failed" tags="" position="350,850" size="100,100">指令失败时的事件文本。
-可以进行flag操作。但尽量不要有数据处理。</tw-passagedata><tw-passagedata pid="64" name="//Kojo_Isil_Com_2:Force" tags="" position="475,850" size="100,100">指令无视角色意志强制执行的事件文本。
+&lt;&lt;/selection&gt;&gt;</tw-passagedata><tw-passagedata pid="104" name="//Kojo_Isil_Com_G2:Cancel" tags="" position="475,1350" size="100,100">指令取消时的事件文本。
+可以进行flag操作。但尽量不要有数据处理。</tw-passagedata><tw-passagedata pid="105" name="//Kojo_Isil_Com_G2:Failed" tags="" position="600,1350" size="100,100">指令失败时的事件文本。
+可以进行flag操作。但尽量不要有数据处理。</tw-passagedata><tw-passagedata pid="106" name="//Kojo_Isil_Com_G2:Force" tags="" position="725,1350" size="100,100">指令无视角色意志强制执行的事件文本。
 如果不是整个脉络都不一样，就不需要:Force分支。
 直接在Com文本内根据_force flag是否存在来进行分支判断就好。
 &lt;&lt;=(_force ? &#39;强制时的小分支&#39; : &#39;正常时的小分支&#39;)&gt;&gt;
@@ -8562,8 +8898,8 @@ if(!Cflag[&#39;Isil&#39;].fallen &amp;&amp; $selectCom == 30){
     强制时的段落分支。&lt;br&gt;
 &lt;&lt;else&gt;&gt;
     正常是的段落分支。&lt;br&gt;
-&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="65" name="//Kojo_Isil_Com_2:After" tags="" position="600,850" size="100,100">执行结束时的事件文本。
-可以进行flag操作。但尽量不要有数据处理。</tw-passagedata><tw-passagedata pid="66" name="Kojo_Isil_Com_2" tags="" position="725,850" size="100,100">/* 聊天指令 */
+&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="107" name="//Kojo_Isil_Com_G2:After" tags="" position="850,1350" size="100,100">执行结束时的事件文本。
+可以进行flag操作。但尽量不要有数据处理。</tw-passagedata><tw-passagedata pid="108" name="Kojo_Isil_Com_G2" tags="" position="975,1350" size="100,100">/* 聊天指令 */
 “有什么事吗？”&lt;br&gt;
 “嗯……这个术式是……”&lt;br&gt;
 $target.name敷衍地附和着你的话。&lt;br&gt;
@@ -8572,15 +8908,15 @@ $target.name敷衍地附和着你的话。&lt;br&gt;
 &lt;fr&gt;
 翻页！&lt;br&gt;
 &lt;fr&gt;
-最后一页啦</tw-passagedata><tw-passagedata pid="67" name="Kojo_Isil_Com_50" tags="" position="850,850" size="100,100">/* 触手，玩弄乳头 */
+最后一页啦</tw-passagedata><tw-passagedata pid="109" name="Kojo_Isil_Com_X1" tags="" position="1100,1350" size="100,100">/* 触手，玩弄乳头 */
 &lt;&lt;if F.uncons(target)&gt;&gt; /* F.uncons() 判定是否失去意识 */
 &quot;……嗯唔……&quot;&lt;br&gt;
 沉睡中的伊希露难受地呼吸着。&lt;br&gt;
 &lt;&lt;else&gt;&gt;
 “…………”&lt;br&gt;
 伊希露咬紧牙关，忍受着触手带来的不适感。&lt;br&gt;
-&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="68" name="PCKojo" tags="" position="975,850" size="100,100">/* Isil作为PC时所说的话。只有Isil和Ayres有PCKojo */</tw-passagedata><tw-passagedata pid="69" name="Kojo_Nanaly" tags="widget" position="1100,850" size="100,100">/* macro定义区 */</tw-passagedata><tw-passagedata pid="70" name="Kojo_Nanaly_Event_First::Before" tags="" position="1225,850" size="100,100">&lt;&lt;set $event.id = &#39;CE_1&#39;&gt;&gt;
-&lt;&lt;run F.setMemory(&#39;CE_1&#39;,&#39;娜娜莉 - 初遇&#39;,&#39;Nanaly&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="71" name="Kojo_Nanaly_Event_First" tags="" position="100,975" size="100,100">/*首次登场*/
+&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="110" name="PCKojo" tags="" position="1225,1350" size="100,100">/* Isil作为PC时所说的话。只有Isil和Ayres有PCKojo */</tw-passagedata><tw-passagedata pid="111" name="Kojo_Nanaly" tags="widget" position="100,1475" size="100,100">/* macro定义区 */</tw-passagedata><tw-passagedata pid="112" name="Kojo_Nanaly_Event_First::Before" tags="" position="225,1475" size="100,100">&lt;&lt;set $event.id = &#39;CE_1&#39;&gt;&gt;
+&lt;&lt;run F.setMemory(&#39;CE_1&#39;,&#39;娜娜莉 - 初遇&#39;,&#39;Nanaly&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="113" name="Kojo_Nanaly_Event_First" tags="" position="350,1475" size="100,100">/*首次登场*/
 #:{ &quot;type&quot;:&quot;endPhase&quot; }
 &lt;&lt;if $pc is &#39;Isil&#39;&gt;&gt;
   &lt;&lt;if $location.name is &#39;博物馆&#39;&gt;&gt;
@@ -8599,9 +8935,9 @@ $target.name敷衍地附和着你的话。&lt;br&gt;
 &lt;&lt;else&gt;&gt;
   &lt;&lt;set $event.ep to 4&gt;&gt;
   &lt;&lt;you&gt;&gt;注意到了一个头上长着晶龙角的少女，并试着上前搭讪。&lt;br&gt;&lt;br&gt;
-&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="72" name="Kojo_Nanaly_Event_First_ep4" tags="" position="225,975" size="100,100">“啊，你好。有什么事吗？”少女礼貌地跟你问好。
+&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="114" name="Kojo_Nanaly_Event_First_ep4" tags="" position="475,1475" size="100,100">“啊，你好。有什么事吗？”少女礼貌地跟你问好。
 &lt;&lt;you&gt;&gt;向对方自我介绍着，少女也礼貌地告诉了你她的名字。
-“你好，我叫娜娜莉，请多多指教。”</tw-passagedata><tw-passagedata pid="73" name="Kojo_Nanaly_Event_First_ep1" tags="" position="350,975" size="100,100">/*在学校初次见面的场合*/
+“你好，我叫娜娜莉，请多多指教。”</tw-passagedata><tw-passagedata pid="115" name="Kojo_Nanaly_Event_First_ep1" tags="" position="600,1475" size="100,100">/*在学校初次见面的场合*/
 “啪嗒啪嗒啪嗒”
 
 一个娇小的少女小跑在教学楼的走廊里，晶龙族的尾巴随着跑动一晃一晃。
@@ -8621,7 +8957,7 @@ $target.name敷衍地附和着你的话。&lt;br&gt;
 少女的神色变得泫然欲泣，露出了不自禁的笑容
 &lt;&lt;you&gt;&gt;想起来，这孩子应该是童年&lt;&lt;you&gt;&gt;的青梅竹马，叫做娜娜莉的姑娘
 “太好了，太好了！”她猛地抱住了&lt;&lt;you&gt;&gt;，随后抱着怀里的资料跑了起来
-“人家很快就回来！以后也要请&lt;&lt;you&gt;&gt;多多指教啦！”</tw-passagedata><tw-passagedata pid="74" name="Kojo_Nanaly_Event_First_ep2" tags="" position="475,975" size="100,100">/* 在博物馆初次见面的场合 */
+“人家很快就回来！以后也要请&lt;&lt;you&gt;&gt;多多指教啦！”</tw-passagedata><tw-passagedata pid="116" name="Kojo_Nanaly_Event_First_ep2" tags="" position="725,1475" size="100,100">/* 在博物馆初次见面的场合 */
  窗明几净的馆内，孩子们围绕着一个少女的讲解员，伴随着少女甜美的声影的解说，游览着博物馆的展品。
 少女穿着一身纯白的衣裙，轻飘飘地，与白金色的齐胸长发颇为相称，好像妖精一般可爱。
 可爱的姑娘让&lt;&lt;you&gt;&gt;心生好感，于是&lt;&lt;you&gt;&gt;便随着她一路走去……
@@ -8640,7 +8976,7 @@ $target.name敷衍地附和着你的话。&lt;br&gt;
 
 你们不约而同地说出了彼此的名字。
 没想到能在这座城市和儿时的青梅竹马重逢，或许命运会让你们的故事重新继续下去。
-“以后也要请你多多指教啦~”她歪过头，笑颜如花。</tw-passagedata><tw-passagedata pid="75" name="Kojo_Nanaly_Event_First_ep3" tags="" position="600,975" size="100,100">/* 在海洋馆初次见面的场合 */
+“以后也要请你多多指教啦~”她歪过头，笑颜如花。</tw-passagedata><tw-passagedata pid="117" name="Kojo_Nanaly_Event_First_ep3" tags="" position="850,1475" size="100,100">/* 在海洋馆初次见面的场合 */
 不过这并不影响&lt;&lt;you&gt;&gt;前去亲近可爱的动物们，以及一览水下风光。
 “啪啪啪啪啪”一阵很有节奏的拍打声引起了&lt;&lt;you&gt;&gt;的注意。
 &lt;fr&gt;
@@ -8665,33 +9001,33 @@ $target.name敷衍地附和着你的话。&lt;br&gt;
 “你怎么知道我的名字？”
 &lt;&lt;you&gt;&gt;笑着指了指那枚宝石挂坠。
 海豹钻回了水里，探出黑珍珠般的大眼睛注视着抱在一起的两人。
-奥兰尼亚是一座神奇的城市，也是&lt;&lt;you&gt;&gt;们两人的故事的新的开始。</tw-passagedata><tw-passagedata pid="76" name="Kojo_Nanaly_Daily_First" tags="" position="725,975" size="100,100">/* 每日第一次接触时 */
+奥兰尼亚是一座神奇的城市，也是&lt;&lt;you&gt;&gt;们两人的故事的新的开始。</tw-passagedata><tw-passagedata pid="118" name="Kojo_Nanaly_Daily_First" tags="" position="975,1475" size="100,100">/* 每日第一次接触时 */
 &lt;&lt;if F.metToday(tc) is &#39;both&#39;&gt;&gt;/* 两人都在场且都没打招呼的的情况 */
 “早上好呀！”娜娜莉很有精神地向&lt;&lt;you&gt;&gt;和&lt;&lt;partner&gt;&gt;打招呼，胸前的宝石挂坠在阳光下熠熠生辉，“今天也要努力加油喔！”&lt;br&gt;
 &lt;&lt;elseif F.metToday(tc) is &#39;Isil&#39;&gt;&gt; /* 只有伊希露的情况 */
 “早上好呀！”娜娜莉很有精神地向&lt;&lt;you&gt;&gt;打招呼，胸前的宝石挂坠在阳光下熠熠生辉，“今天也要努力加油喔！”&lt;br&gt;
 &lt;&lt;else&gt;&gt; /* 只有艾瑞斯的情况  1 */
 “早。”娜娜莉礼貌地向&lt;&lt;you&gt;&gt;打招呼，“今天也请加油。”&lt;br&gt;
-&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="77" name="Kojo_Nanaly_Com" tags="" position="850,975" size="100,100">/* 纯代码区。每次指令执行时进行flag检测的地方 */</tw-passagedata><tw-passagedata pid="78" name="Kojo_Nanaly_Com_2" tags="" position="975,975" size="100,100">/* 聊天指令 Com_id */
+&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="119" name="Kojo_Nanaly_Com" tags="" position="1100,1475" size="100,100">/* 纯代码区。每次指令执行时进行flag检测的地方 */</tw-passagedata><tw-passagedata pid="120" name="Kojo_Nanaly_Com_2" tags="" position="1225,1475" size="100,100">/* 聊天指令 Com_id */
 “嗯？想聊天吗？人家很乐意哟~”&lt;br&gt;
 听到&lt;&lt;you&gt;&gt;的请求，娜娜莉露出了无邪的微笑，坐在&lt;&lt;you&gt;&gt;的身边&lt;br&gt;
-$target.name和&lt;&lt;you&gt;&gt;聊起了今天发生的事，&lt;&lt;you&gt;&gt;们聊得很开心&lt;br&gt;</tw-passagedata><tw-passagedata pid="79" name="Kojo_Nanaly_Com_20" tags="" position="1100,975" size="100,100">/* 爱抚调情 */
+$target.name和&lt;&lt;you&gt;&gt;聊起了今天发生的事，&lt;&lt;you&gt;&gt;们聊得很开心&lt;br&gt;</tw-passagedata><tw-passagedata pid="121" name="Kojo_Nanaly_Com_20" tags="" position="100,1600" size="100,100">/* 爱抚调情 */
 &lt;&lt;you&gt;&gt;轻轻抚摸少女的肌肤，白皙幼嫩的皮肤在&lt;&lt;you&gt;&gt;的爱抚下渐渐变得粉红，惹人怜爱&lt;br&gt;
 “啊~嗯……&lt;&lt;you&gt;&gt;的手指……”&lt;br&gt;
-$target.name随着&lt;&lt;you&gt;&gt;的手指的游移，发出甜美的叹息&lt;br&gt;</tw-passagedata><tw-passagedata pid="80" name="Kojo_Nanaly_Com_21" tags="" position="1225,975" size="100,100">/* 摸胸 */
+$target.name随着&lt;&lt;you&gt;&gt;的手指的游移，发出甜美的叹息&lt;br&gt;</tw-passagedata><tw-passagedata pid="122" name="Kojo_Nanaly_Com_21" tags="" position="225,1600" size="100,100">/* 摸胸 */
 &lt;&lt;you&gt;&gt;抚上了$target.name的胸部，虽然算不上大，但也盈盈一握，柔软细腻的触感就像水馒头一般惹人喜爱&lt;br&gt;
 “啊……胸部……”&lt;br&gt;
-少女的声音像是呻吟，又像是叹息，随着胸前的柔软任由&lt;&lt;you&gt;&gt;的揉搓变形而完全沉醉其中&lt;br&gt;</tw-passagedata><tw-passagedata pid="81" name="Kojo_Nanaly_Com_22" tags="" position="100,1100" size="100,100">/* 玩乳头 */
+少女的声音像是呻吟，又像是叹息，随着胸前的柔软任由&lt;&lt;you&gt;&gt;的揉搓变形而完全沉醉其中&lt;br&gt;</tw-passagedata><tw-passagedata pid="123" name="Kojo_Nanaly_Com_22" tags="" position="350,1600" size="100,100">/* 玩乳头 */
 “那里很敏感……”&lt;br&gt;
 看到&lt;&lt;you&gt;&gt;将手探向胸前的蓓蕾，$target.name有些紧张地呼出了声&lt;br&gt;
 “呀！”&lt;br&gt;
 随着小巧的肉粒被&lt;&lt;you&gt;&gt;捏住，少女几乎立刻发出了惊呼，身体仿佛有电流流过般地微微一颤&lt;br&gt;
 “呜呜♥嗯♥……乳头、被责弄着……”&lt;br&gt;
-随着&lt;&lt;you&gt;&gt;指尖的力量，少女仿佛成为了最悦耳的乐器，在&lt;&lt;you&gt;&gt;手中婉转啼吟&lt;br&gt;</tw-passagedata><tw-passagedata pid="82" name="Kojo_Nanaly_Com_23" tags="" position="225,1100" size="100,100">/* 吸乳头 */
+随着&lt;&lt;you&gt;&gt;指尖的力量，少女仿佛成为了最悦耳的乐器，在&lt;&lt;you&gt;&gt;手中婉转啼吟&lt;br&gt;</tw-passagedata><tw-passagedata pid="124" name="Kojo_Nanaly_Com_23" tags="" position="475,1600" size="100,100">/* 吸乳头 */
 &lt;&lt;you&gt;&gt;亲吻着$target.name的乳头，像是想要吸吮汁水一般地轻咬轻吸&lt;br&gt;
 敏感的皮肤将轻微的刺激转化为了强烈的快感，令少女发出甜美的声音&lt;br&gt;
 $target.name轻轻抚摸着&lt;&lt;you&gt;&gt;的脑袋，使其靠在自己的胸上，露出了混杂着柔和的母性和甘美的快乐的神情&lt;br&gt;
-“人家的胸部，美味吗？呵呵，真实的，像小宝宝一样……”&lt;br&gt;</tw-passagedata><tw-passagedata pid="83" name="Map" tags="" position="350,1100" size="100,100">&lt;div id=&quot;Movement&quot;&gt;
+“人家的胸部，美味吗？呵呵，真实的，像小宝宝一样……”&lt;br&gt;</tw-passagedata><tw-passagedata pid="125" name="Map" tags="" position="600,1600" size="100,100">&lt;div id=&quot;Movement&quot;&gt;
 
 &lt;&lt;link &#39;学校  0:05&#39; &#39;MainLoop&#39;&gt;&gt;&lt;&lt;set $location = { id:&#39;A1&#39;, name:&#39;魔法学院&#39;, chara:[], tag:[&#39;school&#39;] }&gt;&gt;&lt;&lt;set $aftermovement to true&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;br&gt;
 
@@ -8700,390 +9036,7 @@ $target.name轻轻抚摸着&lt;&lt;you&gt;&gt;的脑袋，使其靠在自己的�
 &lt;&lt;link &#39;返回&#39; &#39;MainLoop&#39;&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;br&gt;
 
 &lt;/div&gt;
-/* 实际可移动项目与时间会根据目前所在地来计算。跟EWA旧版差不多机制。全自动生成可移动链接。 */</tw-passagedata><tw-passagedata pid="84" name="Messsage_Com_2" tags="" position="475,1100" size="100,100">$target.name随意地敷衍着你&lt;br&gt;</tw-passagedata><tw-passagedata pid="85" name="Message_Com_20" tags="" position="600,1100" size="100,100"></tw-passagedata><tw-passagedata pid="86" name="Action_g1" tags="" position="725,1100" size="100,100">/* 放松 */
-&lt;&lt;you&gt;&gt;在$location.name找了个舒适的地方，坐下放松。&lt;br&gt;</tw-passagedata><tw-passagedata pid="87" name="Action_g2" tags="" position="850,1100" size="100,100">/* 交流 */
-&lt;&lt;you&gt;&gt;在$location.name开始交流。&lt;br&gt;</tw-passagedata><tw-passagedata pid="88" name="Action_g3" tags="" position="975,1100" size="100,100">/* 送礼 */
-&lt;&lt;you&gt;&gt;在$location.name开始送礼。&lt;br&gt;</tw-passagedata><tw-passagedata pid="89" name="Action_g99" tags="" position="1100,1100" size="100,100">/* 推倒 */
-&lt;&lt;you&gt;&gt;在$location.name开始推倒。&lt;br&gt;</tw-passagedata><tw-passagedata pid="90" name="Action_d0" tags="" position="1225,1100" size="100,100">/* 散步 */
-&lt;&lt;you&gt;&gt;在$location.name开始散步。&lt;br&gt;</tw-passagedata><tw-passagedata pid="91" name="Action_d1" tags="" position="100,1225" size="100,100">/* 种植 */
-&lt;&lt;you&gt;&gt;在$location.name开始种植。&lt;br&gt;</tw-passagedata><tw-passagedata pid="92" name="Action_d2" tags="" position="225,1225" size="100,100">/* 洗澡 */
-&lt;&lt;you&gt;&gt;在$location.name开始洗澡。&lt;br&gt;</tw-passagedata><tw-passagedata pid="93" name="Action_d3" tags="" position="350,1225" size="100,100">/* 读书 */
-&lt;&lt;you&gt;&gt;在$location.name开始读书。&lt;br&gt;</tw-passagedata><tw-passagedata pid="94" name="Action_d4" tags="" position="475,1225" size="100,100">/* 学习 */
-&lt;&lt;you&gt;&gt;在$location.name开始学习。&lt;br&gt;</tw-passagedata><tw-passagedata pid="95" name="Action_d5" tags="" position="600,1225" size="100,100">/* 上课 */
-&lt;&lt;you&gt;&gt;在$location.name开始上课。&lt;br&gt;</tw-passagedata><tw-passagedata pid="96" name="Action_d6" tags="" position="725,1225" size="100,100">/* 做作业 */
-&lt;&lt;you&gt;&gt;在$location.name开始做作业。&lt;br&gt;</tw-passagedata><tw-passagedata pid="97" name="Action_d7" tags="" position="850,1225" size="100,100">/* 购物 */
-&lt;&lt;you&gt;&gt;在$location.name开始购物。&lt;br&gt;</tw-passagedata><tw-passagedata pid="98" name="Action_t0_mouth" tags="" position="975,1225" size="100,100">/* 接吻 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;mouth&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;吻上了$target.name的嘴唇。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="99" name="Action_t1_mouth" tags="" position="1100,1225" size="100,100">/* 亲吻 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;breast&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;亲吻在了$target.name的胸部上，轻吮吸舔，试图留下自己的印记。&lt;br&gt;
-&lt;&lt;case &#39;penis&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;亲吻在了$target.name的阴茎上，轻吮吸舔，试图留下自己的印记。&lt;br&gt;
-&lt;&lt;case &#39;critoris&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;亲吻在了$target.name的阴蒂上，轻吮吸舔，试图留下自己的印记。&lt;br&gt;
-&lt;&lt;case &#39;ears&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;亲吻在了$target.name的耳朵上，轻吮吸舔，试图留下自己的印记。&lt;br&gt;
-&lt;&lt;case &#39;hands&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;亲吻在了$target.name的双手上，轻吮吸舔，试图留下自己的印记。&lt;br&gt;
-&lt;&lt;case &#39;foot&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;亲吻在了$target.name的脚上，轻吮吸舔，试图留下自己的印记。&lt;br&gt;
-&lt;&lt;case &#39;neck&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;亲吻在了$target.name的脖子上，轻吮吸舔，试图留下自己的印记。&lt;br&gt;
-&lt;&lt;case &#39;butts&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;亲吻在了$target.name的屁股上，轻吮吸舔，试图留下自己的印记。&lt;br&gt;
-&lt;&lt;case &#39;thighs&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;亲吻在了$target.name的大腿上，轻吮吸舔，试图留下自己的印记。&lt;br&gt;
-&lt;&lt;case &#39;abdomen&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;亲吻在了$target.name的腹部上，轻吮吸舔，试图留下自己的印记。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="100" name="Action_t2_hands" tags="" position="1225,1225" size="100,100">/* 抚摸 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;mouth&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;的手轻抚着$target.name的嘴巴。&lt;br&gt;
-&lt;&lt;case &#39;breast&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;的手轻抚着$target.name的胸部。&lt;br&gt;
-&lt;&lt;case &#39;penis&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;的手轻抚着$target.name的阴茎。&lt;br&gt;
-&lt;&lt;case &#39;critoris&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;的手轻抚着$target.name的阴蒂。&lt;br&gt;
-&lt;&lt;case &#39;vagina&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;的手轻抚着$target.name的阴道。&lt;br&gt;
-&lt;&lt;case &#39;anal&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;的手轻抚着$target.name的肛门。&lt;br&gt;
-&lt;&lt;case &#39;ears&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;的手轻抚着$target.name的耳朵。&lt;br&gt;
-&lt;&lt;case &#39;hands&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;的手轻抚着$target.name的双手。&lt;br&gt;
-&lt;&lt;case &#39;foot&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;的手轻抚着$target.name的脚。&lt;br&gt;
-&lt;&lt;case &#39;neck&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;的手轻抚着$target.name的脖子。&lt;br&gt;
-&lt;&lt;case &#39;butts&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;的手轻抚着$target.name的屁股。&lt;br&gt;
-&lt;&lt;case &#39;thighs&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;的手轻抚着$target.name的大腿。&lt;br&gt;
-&lt;&lt;case &#39;abdomen&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;的手轻抚着$target.name的腹部。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="101" name="Action_t3_hands" tags="" position="100,1350" size="100,100">/* 揉捏 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;breast&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;揉捏着$target.name的胸部。&lt;br&gt;
-&lt;&lt;case &#39;penis&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;揉捏着$target.name的阴茎。&lt;br&gt;
-&lt;&lt;case &#39;critoris&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;揉捏着$target.name的阴蒂。&lt;br&gt;
-&lt;&lt;case &#39;ears&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;揉捏着$target.name的耳朵。&lt;br&gt;
-&lt;&lt;case &#39;butts&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;揉捏着$target.name的屁股。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="102" name="Action_t4_mouth" tags="" position="225,1350" size="100,100">/* 吸舔 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;penis&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;吸住了$target.name的阴茎，在上面用舌头反复舔舐着。&lt;br&gt;
-&lt;&lt;case &#39;critoris&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;吸住了$target.name的阴蒂，在上面用舌头反复舔舐着。&lt;br&gt;
-&lt;&lt;case &#39;vagina&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;吸住了$target.name的阴道，在上面用舌头反复舔舐着。&lt;br&gt;
-&lt;&lt;case &#39;anal&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;吸住了$target.name的肛门，在上面用舌头反复舔舐着。&lt;br&gt;
-&lt;&lt;case &#39;ears&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;吸住了$target.name的耳朵，在上面用舌头反复舔舐着。&lt;br&gt;
-&lt;&lt;case &#39;hands&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;吸住了$target.name的双手，在上面用舌头反复舔舐着。&lt;br&gt;
-&lt;&lt;case &#39;foot&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;吸住了$target.name的脚，在上面用舌头反复舔舐着。&lt;br&gt;
-&lt;&lt;case &#39;neck&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;吸住了$target.name的脖子，在上面用舌头反复舔舐着。&lt;br&gt;
-&lt;&lt;case &#39;butts&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;吸住了$target.name的屁股，在上面用舌头反复舔舐着。&lt;br&gt;
-&lt;&lt;case &#39;nipple&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;吸住了$target.name的乳头，在上面用舌头反复舔舐着。&lt;br&gt;
-&lt;&lt;case &#39;thighs&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;吸住了$target.name的大腿，在上面用舌头反复舔舐着。&lt;br&gt;
-&lt;&lt;case &#39;abdomen&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;吸住了$target.name的腹部，在上面用舌头反复舔舐着。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="103" name="Action_t5_mouth" tags="" position="350,1350" size="100,100">/* 吸咬 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;penis&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;含住$target.name的阴茎，吸吮轻咬着。&lt;br&gt;
-&lt;&lt;case &#39;critoris&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;含住$target.name的阴蒂，吸吮轻咬着。&lt;br&gt;
-&lt;&lt;case &#39;ears&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;含住$target.name的耳朵，吸吮轻咬着。&lt;br&gt;
-&lt;&lt;case &#39;hands&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;含住$target.name的双手，吸吮轻咬着。&lt;br&gt;
-&lt;&lt;case &#39;foot&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;含住$target.name的脚，吸吮轻咬着。&lt;br&gt;
-&lt;&lt;case &#39;neck&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;含住$target.name的脖子，吸吮轻咬着。&lt;br&gt;
-&lt;&lt;case &#39;butts&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;含住$target.name的屁股，吸吮轻咬着。&lt;br&gt;
-&lt;&lt;case &#39;nipple&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;含住$target.name的乳头，吸吮轻咬着。&lt;br&gt;
-&lt;&lt;case &#39;thighs&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;含住$target.name的大腿，吸吮轻咬着。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="104" name="Action_t6_hands" tags="" position="475,1350" size="100,100">/* 逗弄 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;penis&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;反复逗弄着$target.name的阴茎。&lt;br&gt;
-&lt;&lt;case &#39;critoris&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;反复逗弄着$target.name的阴蒂。&lt;br&gt;
-&lt;&lt;case &#39;vagina&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;反复逗弄着$target.name的阴道。&lt;br&gt;
-&lt;&lt;case &#39;anal&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;反复逗弄着$target.name的肛门。&lt;br&gt;
-&lt;&lt;case &#39;ears&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;反复逗弄着$target.name的耳朵。&lt;br&gt;
-&lt;&lt;case &#39;nipple&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;反复逗弄着$target.name的乳头。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="105" name="Action_t7_hands" tags="" position="600,1350" size="100,100">/* 指交 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;mouth&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;的手指浅浅插入$target.name的嘴巴，在入口附近摩擦着。&lt;br&gt;
-&lt;&lt;case &#39;vagina&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;的手指浅浅插入$target.name的阴道，在入口附近摩擦着。&lt;br&gt;
-&lt;&lt;case &#39;anal&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;的手指浅浅插入$target.name的肛门，在入口附近摩擦着。&lt;br&gt;
-&lt;&lt;case &#39;urin&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;的手指浅浅插入$target.name的尿道，在入口附近摩擦着。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="106" name="Action_t8_penis" tags="" position="725,1350" size="100,100">/* 插入 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;mouth&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;以{4}的姿势用阴茎插入了$target.name的嘴巴。&lt;br&gt;
-&lt;&lt;case &#39;vagina&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;以{4}的姿势用阴茎插入了$target.name的阴道。&lt;br&gt;
-&lt;&lt;case &#39;anal&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;以{4}的姿势用阴茎插入了$target.name的肛门。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="107" name="Action_t8_hands" tags="" position="850,1350" size="100,100">/* 插入 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;mouth&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;以{4}的姿势用双手插入了$target.name的嘴巴。&lt;br&gt;
-&lt;&lt;case &#39;vagina&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;以{4}的姿势用双手插入了$target.name的阴道。&lt;br&gt;
-&lt;&lt;case &#39;anal&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;以{4}的姿势用双手插入了$target.name的肛门。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="108" name="Action_t9_penis" tags="" position="975,1350" size="100,100">/* 抽插 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;mouth&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;活动腰身，在$target.name的嘴巴反复出入着。&lt;br&gt;
-&lt;&lt;case &#39;vagina&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;活动腰身，在$target.name的阴道反复出入着。&lt;br&gt;
-&lt;&lt;case &#39;anal&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;活动腰身，在$target.name的肛门反复出入着。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="109" name="Action_t9_hands" tags="" position="1100,1350" size="100,100">/* 抽插 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;mouth&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;活动腰身，在$target.name的嘴巴反复出入着。&lt;br&gt;
-&lt;&lt;case &#39;vagina&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;活动腰身，在$target.name的阴道反复出入着。&lt;br&gt;
-&lt;&lt;case &#39;anal&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;活动腰身，在$target.name的肛门反复出入着。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="110" name="Action_t10_hands" tags="" position="1225,1350" size="100,100">/* 撸动 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;penis&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;握住$target.name的阴茎，前后撸动着。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="111" name="Action_o0" tags="" position="100,1475" size="100,100">/* 跳蛋 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;vagina&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;将跳蛋贴在$target.name的阴道，刺激着。&lt;br&gt;
-&lt;&lt;case &#39;anal&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;将跳蛋贴在$target.name的肛门，刺激着。&lt;br&gt;
-&lt;&lt;case &#39;nipple&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;将跳蛋贴在$target.name的乳头，刺激着。&lt;br&gt;
-&lt;&lt;case &#39;penis&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;将跳蛋贴在$target.name的阴茎，刺激着。&lt;br&gt;
-&lt;&lt;case &#39;critoris&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;将跳蛋贴在$target.name的阴蒂，刺激着。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="112" name="Action_o1" tags="" position="225,1475" size="100,100">/* 震动棒 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;vagina&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;将震动棒放进了$target.name的阴道。&lt;br&gt;
-&lt;&lt;case &#39;anal&#39;&gt;&gt;
-   &lt;&lt;you&gt;&gt;将震动棒放进了$target.name的肛门。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="113" name="Action_x0_tentacles" tags="" position="350,1475" size="100,100">/* 揉捏 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;breast&#39;&gt;&gt;
-   触手缠绕在$target.name的胸部上，巧妙地反复揉捏给予刺激。&lt;br&gt;
-&lt;&lt;case &#39;penis&#39;&gt;&gt;
-   触手缠绕在$target.name的阴茎上，巧妙地反复揉捏给予刺激。&lt;br&gt;
-&lt;&lt;case &#39;critoris&#39;&gt;&gt;
-   触手缠绕在$target.name的阴蒂上，巧妙地反复揉捏给予刺激。&lt;br&gt;
-&lt;&lt;case &#39;nipple&#39;&gt;&gt;
-   触手缠绕在$target.name的乳头上，巧妙地反复揉捏给予刺激。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="114" name="Action_x1_tentacles" tags="" position="475,1475" size="100,100">/* 逗弄 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;mouth&#39;&gt;&gt;
-   蠕动、摩擦、按捏。触手反复逗弄着$target.name的嘴巴，给予极大的刺激。&lt;br&gt;
-&lt;&lt;case &#39;penis&#39;&gt;&gt;
-   蠕动、摩擦、按捏。触手反复逗弄着$target.name的阴茎，给予极大的刺激。&lt;br&gt;
-&lt;&lt;case &#39;critoris&#39;&gt;&gt;
-   蠕动、摩擦、按捏。触手反复逗弄着$target.name的阴蒂，给予极大的刺激。&lt;br&gt;
-&lt;&lt;case &#39;vagina&#39;&gt;&gt;
-   蠕动、摩擦、按捏。触手反复逗弄着$target.name的阴道，给予极大的刺激。&lt;br&gt;
-&lt;&lt;case &#39;anal&#39;&gt;&gt;
-   蠕动、摩擦、按捏。触手反复逗弄着$target.name的肛门，给予极大的刺激。&lt;br&gt;
-&lt;&lt;case &#39;urin&#39;&gt;&gt;
-   蠕动、摩擦、按捏。触手反复逗弄着$target.name的尿道，给予极大的刺激。&lt;br&gt;
-&lt;&lt;case &#39;ears&#39;&gt;&gt;
-   蠕动、摩擦、按捏。触手反复逗弄着$target.name的耳朵，给予极大的刺激。&lt;br&gt;
-&lt;&lt;case &#39;nipple&#39;&gt;&gt;
-   蠕动、摩擦、按捏。触手反复逗弄着$target.name的乳头，给予极大的刺激。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="115" name="Action_x2_tentacles" tags="" position="600,1475" size="100,100">/* 吸舔 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;nipple&#39;&gt;&gt;
-   吸盘触手吸附在$target.name的乳头上，反复吸舔着。&lt;br&gt;
-&lt;&lt;case &#39;penis&#39;&gt;&gt;
-   吸盘触手吸附在$target.name的阴茎上，反复吸舔着。&lt;br&gt;
-&lt;&lt;case &#39;critoris&#39;&gt;&gt;
-   吸盘触手吸附在$target.name的阴蒂上，反复吸舔着。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="116" name="Action_x3_tentacles" tags="" position="725,1475" size="100,100">/* 吸咬 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;nipple&#39;&gt;&gt;
-   口器触手含住$target.name的乳头，吸吮轻咬着。&lt;br&gt;
-&lt;&lt;case &#39;penis&#39;&gt;&gt;
-   口器触手含住$target.name的阴茎，吸吮轻咬着。&lt;br&gt;
-&lt;&lt;case &#39;critoris&#39;&gt;&gt;
-   口器触手含住$target.name的阴蒂，吸吮轻咬着。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="117" name="Action_x4_tentacles" tags="" position="850,1475" size="100,100">/* 撸动 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;penis&#39;&gt;&gt;
-   触手缠绕住$target.name的阴茎，反复撸动着。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="118" name="Action_x5_tentacles" tags="" position="975,1475" size="100,100">/* 插入 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;mouth&#39;&gt;&gt;
-   触手钻进了$target.name敞开的嘴巴，缓缓往内深入。&lt;br&gt;
-&lt;&lt;case &#39;vagina&#39;&gt;&gt;
-   触手钻进了$target.name敞开的阴道，缓缓往内深入。&lt;br&gt;
-&lt;&lt;case &#39;anal&#39;&gt;&gt;
-   触手钻进了$target.name敞开的肛门，缓缓往内深入。&lt;br&gt;
-&lt;&lt;case &#39;urin&#39;&gt;&gt;
-   触手钻进了$target.name敞开的尿道，缓缓往内深入。&lt;br&gt;
-&lt;&lt;case &#39;ears&#39;&gt;&gt;
-   触手钻进了$target.name敞开的耳朵，缓缓往内深入。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="119" name="Action_x6_tentacles" tags="" position="1100,1475" size="100,100">/* 蠕动 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;mouth&#39;&gt;&gt;
-   触手在$target.name的嘴巴慢慢蠕动着。&lt;br&gt;
-&lt;&lt;case &#39;breast&#39;&gt;&gt;
-   触手在$target.name的胸部慢慢蠕动着。&lt;br&gt;
-&lt;&lt;case &#39;penis&#39;&gt;&gt;
-   触手在$target.name的阴茎慢慢蠕动着。&lt;br&gt;
-&lt;&lt;case &#39;critoris&#39;&gt;&gt;
-   触手在$target.name的阴蒂慢慢蠕动着。&lt;br&gt;
-&lt;&lt;case &#39;vagina&#39;&gt;&gt;
-   触手在$target.name的阴道慢慢蠕动着。&lt;br&gt;
-&lt;&lt;case &#39;anal&#39;&gt;&gt;
-   触手在$target.name的肛门慢慢蠕动着。&lt;br&gt;
-&lt;&lt;case &#39;urin&#39;&gt;&gt;
-   触手在$target.name的尿道慢慢蠕动着。&lt;br&gt;
-&lt;&lt;case &#39;ears&#39;&gt;&gt;
-   触手在$target.name的耳朵慢慢蠕动着。&lt;br&gt;
-&lt;&lt;case &#39;neck&#39;&gt;&gt;
-   触手在$target.name的脖子慢慢蠕动着。&lt;br&gt;
-&lt;&lt;case &#39;butts&#39;&gt;&gt;
-   触手在$target.name的屁股慢慢蠕动着。&lt;br&gt;
-&lt;&lt;case &#39;nipple&#39;&gt;&gt;
-   触手在$target.name的乳头慢慢蠕动着。&lt;br&gt;
-&lt;&lt;case &#39;thighs&#39;&gt;&gt;
-   触手在$target.name的大腿慢慢蠕动着。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="120" name="Action_x7_tentacles" tags="" position="1225,1475" size="100,100">/* 抽插 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;mouth&#39;&gt;&gt;
-   触手不停在$target.name的嘴巴进出，抽插蠕动着。&lt;br&gt;
-&lt;&lt;case &#39;vagina&#39;&gt;&gt;
-   触手不停在$target.name的阴道进出，抽插蠕动着。&lt;br&gt;
-&lt;&lt;case &#39;anal&#39;&gt;&gt;
-   触手不停在$target.name的肛门进出，抽插蠕动着。&lt;br&gt;
-&lt;&lt;case &#39;urin&#39;&gt;&gt;
-   触手不停在$target.name的尿道进出，抽插蠕动着。&lt;br&gt;
-&lt;&lt;case &#39;ears&#39;&gt;&gt;
-   触手不停在$target.name的耳朵进出，抽插蠕动着。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="121" name="Action_x8_tentacles" tags="" position="100,1600" size="100,100">/* 深入 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;mouth&#39;&gt;&gt;
-   触手往$target.name的嘴巴内部发出了进攻，往更深处蠕进。&lt;br&gt;
-&lt;&lt;case &#39;vagina&#39;&gt;&gt;
-   触手往$target.name的阴道内部发出了进攻，往更深处蠕进。&lt;br&gt;
-&lt;&lt;case &#39;anal&#39;&gt;&gt;
-   触手往$target.name的肛门内部发出了进攻，往更深处蠕进。&lt;br&gt;
-&lt;&lt;case &#39;urin&#39;&gt;&gt;
-   触手往$target.name的尿道内部发出了进攻，往更深处蠕进。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="122" name="Action_x9_tentacles" tags="" position="225,1600" size="100,100">/* 抽送 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;mouth&#39;&gt;&gt;
-   触手激烈地在$target.name的嘴巴进出着，反复抽送着触身给予莫大的刺激。&lt;br&gt;
-&lt;&lt;case &#39;vagina&#39;&gt;&gt;
-   触手激烈地在$target.name的阴道进出着，反复抽送着触身给予莫大的刺激。&lt;br&gt;
-&lt;&lt;case &#39;anal&#39;&gt;&gt;
-   触手激烈地在$target.name的肛门进出着，反复抽送着触身给予莫大的刺激。&lt;br&gt;
-&lt;&lt;case &#39;urin&#39;&gt;&gt;
-   触手激烈地在$target.name的尿道进出着，反复抽送着触身给予莫大的刺激。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="123" name="Action_x10_tentacles" tags="" position="350,1600" size="100,100">/* 鞭打 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;breast&#39;&gt;&gt;
-   触手甩动触鞭，用巧妙的力度鞭打在$target.name的胸部上。&lt;br&gt;
-&lt;&lt;case &#39;penis&#39;&gt;&gt;
-   触手甩动触鞭，用巧妙的力度鞭打在$target.name的阴茎上。&lt;br&gt;
-&lt;&lt;case &#39;critoris&#39;&gt;&gt;
-   触手甩动触鞭，用巧妙的力度鞭打在$target.name的阴蒂上。&lt;br&gt;
-&lt;&lt;case &#39;anal&#39;&gt;&gt;
-   触手甩动触鞭，用巧妙的力度鞭打在$target.name的肛门上。&lt;br&gt;
-&lt;&lt;case &#39;butts&#39;&gt;&gt;
-   触手甩动触鞭，用巧妙的力度鞭打在$target.name的屁股上。&lt;br&gt;
-&lt;&lt;case &#39;nipple&#39;&gt;&gt;
-   触手甩动触鞭，用巧妙的力度鞭打在$target.name的乳头上。&lt;br&gt;
-&lt;&lt;case &#39;thighs&#39;&gt;&gt;
-   触手甩动触鞭，用巧妙的力度鞭打在$target.name的大腿上。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="124" name="Action_x11_tentacles" tags="" position="475,1600" size="100,100">/* 刺入 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;penis&#39;&gt;&gt;
-   触手伸出尖锐的细针，狠狠地刺入了$target.name的阴茎。&lt;br&gt;
-&lt;&lt;case &#39;critoris&#39;&gt;&gt;
-   触手伸出尖锐的细针，狠狠地刺入了$target.name的阴蒂。&lt;br&gt;
-&lt;&lt;case &#39;vagina&#39;&gt;&gt;
-   触手伸出尖锐的细针，狠狠地刺入了$target.name的阴道。&lt;br&gt;
-&lt;&lt;case &#39;anal&#39;&gt;&gt;
-   触手伸出尖锐的细针，狠狠地刺入了$target.name的肛门。&lt;br&gt;
-&lt;&lt;case &#39;neck&#39;&gt;&gt;
-   触手伸出尖锐的细针，狠狠地刺入了$target.name的脖子。&lt;br&gt;
-&lt;&lt;case &#39;nipple&#39;&gt;&gt;
-   触手伸出尖锐的细针，狠狠地刺入了$target.name的乳头。&lt;br&gt;
-&lt;&lt;case &#39;butts&#39;&gt;&gt;
-   触手伸出尖锐的细针，狠狠地刺入了$target.name的屁股。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="125" name="Action_x12_tentacles" tags="" position="600,1600" size="100,100">/* 灌入 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;mouth&#39;&gt;&gt;
-   触手往$target.name的嘴巴灌入大量的药液。&lt;br&gt;
-&lt;&lt;case &#39;vagina&#39;&gt;&gt;
-   触手往$target.name的阴道灌入大量的药液。&lt;br&gt;
-&lt;&lt;case &#39;anal&#39;&gt;&gt;
-   触手往$target.name的肛门灌入大量的药液。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="126" name="Action_x13_tentacles" tags="" position="725,1600" size="100,100">/* 注射 */
-&lt;&lt;switch Act[pc].use&gt;&gt;
-&lt;&lt;case &#39;breast&#39;&gt;&gt;
-   触手伸出尖锐的针头，刺入$target.name的胸部并注入药液。&lt;br&gt;
-&lt;&lt;case &#39;penis&#39;&gt;&gt;
-   触手伸出尖锐的针头，刺入$target.name的阴茎并注入药液。&lt;br&gt;
-&lt;&lt;case &#39;critoris&#39;&gt;&gt;
-   触手伸出尖锐的针头，刺入$target.name的阴蒂并注入药液。&lt;br&gt;
-&lt;&lt;case &#39;vagina&#39;&gt;&gt;
-   触手伸出尖锐的针头，刺入$target.name的阴道并注入药液。&lt;br&gt;
-&lt;&lt;case &#39;anal&#39;&gt;&gt;
-   触手伸出尖锐的针头，刺入$target.name的肛门并注入药液。&lt;br&gt;
-&lt;&lt;case &#39;urin&#39;&gt;&gt;
-   触手伸出尖锐的针头，刺入$target.name的尿道并注入药液。&lt;br&gt;
-&lt;&lt;case &#39;neck&#39;&gt;&gt;
-   触手伸出尖锐的针头，刺入$target.name的脖子并注入药液。&lt;br&gt;
-&lt;&lt;case &#39;butts&#39;&gt;&gt;
-   触手伸出尖锐的针头，刺入$target.name的屁股并注入药液。&lt;br&gt;
-&lt;&lt;case &#39;nipple&#39;&gt;&gt;
-   触手伸出尖锐的针头，刺入$target.name的乳头并注入药液。&lt;br&gt;
-&lt;&lt;case &#39;abdomen&#39;&gt;&gt;
-   触手伸出尖锐的针头，刺入$target.name的腹部并注入药液。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="127" name="Action_a0" tags="" position="850,1600" size="100,100">/* 直播 */
-&lt;&lt;you&gt;&gt;在$location.name开始直播。&lt;br&gt;</tw-passagedata><tw-passagedata pid="128" name="Story_Opening::Before" tags="" position="975,1600" size="100,100">/* 这里做前置设置。 */
+/* 实际可移动项目与时间会根据目前所在地来计算。跟EWA旧版差不多机制。全自动生成可移动链接。 */</tw-passagedata><tw-passagedata pid="126" name="Messsage_Com_2" tags="" position="725,1600" size="100,100">$target.name随意地敷衍着你&lt;br&gt;</tw-passagedata><tw-passagedata pid="127" name="Message_Com_20" tags="" position="850,1600" size="100,100"></tw-passagedata><tw-passagedata pid="128" name="Story_Opening::Before" tags="" position="975,1600" size="100,100">/* 这里做前置设置。 */
 &lt;&lt;set $event.id = &#39;SE_0&#39;&gt;&gt;
 &lt;&lt;run F.setMemory(&#39;SE_0&#39;,&#39;序章 - 故事开头&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="129" name="Story_Opening::After" tags="" position="1100,1600" size="100,100">/* 剧情结束时做的处理。 */</tw-passagedata><tw-passagedata pid="130" name="Story_Opening" tags="" position="1225,1600" size="100,100">#:{ &quot;test&quot;:true }
 “嗷呜……总算通关了这个遗迹，这次月考也太磨人了。”
@@ -9121,9 +9074,6 @@ $target.name轻轻抚摸着&lt;&lt;you&gt;&gt;的脑袋，使其靠在自己的�
 卡尔特大量了下伊希尔脖子上的黑环，又看了看地上的碎片，说：“也不知道是吉还是祸。毕竟这个壶看着太诡异了。注意点好。”
 &lt;&lt;eventSelect&gt;&gt;
 &lt;&lt;select &#39;赞同&#39;&gt;&gt;
-&lt;&lt;run   /* */
-    console.log(&#39;肯定&#39;) /* */
-&gt;&gt;
 /L伊希尔点头表示赞同：“我也同意。摘不掉这点就有点像诅咒装备。目前看着没有任何影响，但也只是一时的。也不知什么时候会触发怎样的效果。”
 艾瑞斯听了后若有所思地说：“诅咒装备啊……诅咒的话多少会有些许魔力才对。或许可以找安德鲁教授用解析魔法分析看看。”
 &lt;&lt;select &#39;否定&#39;&gt;&gt;

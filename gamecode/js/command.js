@@ -14,7 +14,7 @@ Macro.add('com',{
 
         let output = `<div id='com_${T.comcount}' class='command'>
         <<button '${args[0]}'>>
-        <<set $selectCom to ${comId}>><<set $passtime to ${args[1]}>>
+        <<set $selectCom to '${comId}'>><<set $passtime to ${args[1]}>>
         ${contents}
         <</button>>
         </div>`
@@ -27,7 +27,7 @@ Macro.add('com',{
 })
 
 
-window.comdata = new Array(200)
+window.comdata = {}
 class Com {
 	static new(id, name, tags, time){
 		comdata[id] = new Com(id, name, tags, time)
@@ -47,28 +47,13 @@ class Com {
         const list = []
         raw.forEach((k)=>{
             if( !k.includes('/*') && k !== '' ){
-                let r = k.split(',')
+                let r = k.replace(/\s/g,'').split(',')
                 let info = {
-                    no: parseInt(r[0]),
+                    no: r[0],
                     name: r[1] ? r[1] : 'Com' + r[0],
                     tags:r[2] ? r[2].split('|') : [],
                     time: r[3] ? parseInt(r[3]) : 5,
                 }
-
-                const select = new SelectCase()
-
-                select.case(20, '日常')
-                      .case(50, '前戏')
-                      .case(80, '触手')
-                      .case(160, '性交')
-                      .case(200, '肛交')
-                
-                let tag = select.isLT(info.no)
-                info.tags.push(tag)
-
-                if(inrange(info.no,20,200))
-                    info.tags.push('调教')
-
                 //console.log(info)
                 list.push(info)
             }
@@ -80,9 +65,15 @@ class Com {
     }
 
 	constructor(id, name, tags, time){
+        const typeMap = new Map(D.ComTypes)
+
 		this.id = id
 		this.name = name
-		this.tag = tags
+		this.tag = [typeMap.get(id[0])]
+
+        if(tags.length)
+            this.tag = this.tag.concat(tags)
+
         this.filter = ()=>{ return true } //特定的过滤器。
         this.cond = ()=>{ return true }
         this.source = ()=>{}
@@ -134,8 +125,8 @@ class Com {
 window.Com = Com
 
 F.ComFilters = function(){
-    const general = ['日常','挑逗','魔法']
-    const train = ['前戏','道具','性交', '尿道', 'SM', '鬼畜', '触手']
+    const general = clone(D.ComFilterGeneral)
+    const train = clone(D.ComFilterTrain)
     const end = '<<=F.initComList()>><</link>>'
     const generalink = []
     const trainlink = []
@@ -155,7 +146,8 @@ F.initComList = function(){
 
     const command = []
 
-    comdata.forEach( (com, i) =>{
+    Object.values(comdata).forEach( (com) =>{
+        const { id, time } = com
         let name = ''
 
         if(typeof com.name === 'function') name = com.name();
@@ -163,8 +155,8 @@ F.initComList = function(){
 
         let txt = ''
 
-        if( com.filter() && Com.globalFilter(i)){
-            txt = `<<com '${name}' ${com.time} ${i}>><<run F.ComCheck(${i})>><</com>>`
+        if( com.filter() && Com.globalFilter(id)){
+            txt = `<<com '${name}' ${time} ${id}>><<run F.ComCheck('${id}')>><</com>>`
         }
         else if( V.system.showAllCommand ){
            txt = `<div class='command unable'><<button '${name}'>><</button>></div>`

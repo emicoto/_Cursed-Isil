@@ -404,7 +404,7 @@ F.initAction = function(cid){
         ];
     }
     else{
-        let list = ['hands', 'mouth', 'penis', 'vagina', 'anal']
+        let list = ['handR', 'handL' ,'mouth', 'penis', 'vagina', 'anal', 'feet']
 
         list.forEach((k)=>{
             Act[cid][k] = { tc:'', act:'', use:'' };

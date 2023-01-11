@@ -113,3 +113,51 @@ F.playerName = function(){
 }
 DefineMacroS('pcnameTag', F.playerName)
 DefineMacroS('nameTag', F.charaName)
+
+F.actChara = function(){
+	if(T.ac == V.pc) return F.yourName();
+	else return C[T.ac].name
+}
+
+DefineMacroS('actChara', F.actChara)
+
+F.targetChara = function(){
+	if(T.tc == V.pc) return F.yourName();
+	else return C[T.tc].name
+}
+
+DefineMacroS('targetChara', F.targetChara)
+
+F.targetPart = function(){
+	const p = F.checkUse(T.tc, T.actId)
+	//之后根据特定部位弄点差分。主要是胸部、秘穴、菊穴、阴茎这几个部位。
+	return D.bodyparts[p]
+}
+F.actPart = function(){
+	//阴茎会有特殊描述处理？
+	return D.bodyparts[T.acp]
+}
+
+DefineMacroS('targetPart', F.targetPart)
+DefineMacroS('actPart', F.actPart)
+
+F.checkUse = function(cid, act){
+	T.actId = act
+	for(let i in Using[cid]){
+		const info = Using[cid][i]
+		if(info.act == act) return i;
+	}
+	return 'hands'
+}
+
+F.Actor = function(pc, tc, act, acp){
+	T.ac = pc;
+	T.tc = tc;
+	T.actId = act;
+	T.acp = acp;
+return ''
+}
+DefineMacroS('setActor', F.Actor)
+
+//在执行文本时以print的方式加在文本前面。
+//<<setActor '${T.ac}' '${T.tc}' '${actId}'>>

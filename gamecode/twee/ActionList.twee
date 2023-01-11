@@ -18,28 +18,25 @@ r：乳头， g：大腿， d：腹部
 */
 
 :: ActionList[list]
+/* level:所在层数，time：花费时间，locationTags：需求的地点标签，option：额外设置 */
+#G| id, name, time, locationTags, option1
+Relax, 放松, 15, 床|椅子|休息
+Walk, 散步, 15, 室外
+Plant, 种植, 30, 菜园
+Bath, 洗澡, 30, 浴室
+Read, 读书, 60, 书g
+Learn, 学习, 60, 书桌
+Class, 上课, 90, 教室
+HomeWork, 做作业, 120, 书桌
+Shop, 购物, 20, 商店
 
-#| id, name, time, option
-g1, 放松, 15, noTarget
-g2, 交流, 5, needActiveTarget
-g3, 送礼, 2, needActiveTarget
+Talk, 交流, 5, 角色 ,needActiveTarget
+Gift, 送礼, 2, needActiveTarget
+TrySex, 推倒, 1, 隐匿|私室|阴影, needTarget
 
-g99, 推倒, 0, withoutSight
-
-#| id, name, time, locationTags
-d0, 散步, 15, 室外
-d1, 种植, 30, 菜园
-d2, 洗澡, 30, 浴室
-d3, 读书, 60, 书
-d4, 学习, 60, 书桌
-d5, 上课, 90, 教室
-d6, 做作业, 120, 书桌
-d7, 购物, 20, 商店
-
-/* 道具/魔法的使用, 到底占用哪个部位, 能对哪使用, 要看道具本身设定
+/* 攻受通用 = 部分攻方 */
 /* mode: 1: normal, 1.5: between 1 and 2,  2: harassment/affection, 3: woohoo */
-#| id, name, mode, usePart, targetPart, defaultText, option
-
+#T| id, name, mode,  usePart, targetPart, defaultText
 t0, 接吻, 1, m, m, {0}吻上了{1}的嘴唇。
 t1, 亲吻, 2, m, --mvaur, {0}亲吻在了{1}的{2}上，轻吮吸舔，试图留下自己的印记。
 t2, 抚摸, 1.5, h, --ur, {0}的手轻抚着{1}的{2}。
@@ -49,19 +46,25 @@ t4, 吸舔, 2, m, --mub, {0}吸住了{1}的{2}，在上面用舌头反复舔舐�
 t5, 吸咬, 3, m, --mbvaud, {0}含住{1}的{2}，吸吮轻咬着。
 t6, 逗弄, 2, h, pcvaer, {0}反复逗弄着{1}的{2}。
 t7, 指交, 3, h, mvau, {0}的手指浅浅插入{1}的{2}，在入口附近摩擦着。
-t8, 插入, 2.5, ph, mva, {0}以{4}的姿势用{3}插入了{1}的{2}。
-t9, 抽插, 3, ph, mva, {0}活动腰身，在{1}的{2}反复出入着。
+t8, 性交, 2.5, p, mva, {0}以{4}的姿势用{3}插入了{1}的{2}。
+t9, 抽插, 3, p, mva, {0}活动腰身，在{1}的{2}反复出入着。
 t10, 撸动, 3, h, p, {0}握住{1}的{2}，前后撸动着。
+t11, 拳交, 3, h, va, {0}的拳头粗暴地捅进了{1}的{2}里面，反复抽插着。
+
+/* 大概是受方专用动作？ */
+#R| id, name, mode, level, usePart, targetPart, defaultText
+r0, 握住, 1, h, hpf, {0}的{3}握住了{1}的{2}。
+r1, 收紧, 3, va, ph, {0}控制自身{3}，紧紧夹住了{1}的{2}。
 
 /* 道具使用类 */
-#| id, name, mode, targetPart, defaultText, option
-o0, 跳蛋, 2, varpc, {0}将跳蛋贴在{1}的{2}，刺激着。
-o1, 震动棒, 2, va, {0}将震动棒放进了{1}的{2}。
+/* 道具/魔法的使用, 到底占用哪个部位, 能对哪使用, 要看道具本身设定 */
+#I| id, name, mode, targetPart, defaultText
+Rotor, 跳蛋, 2, varpc, {0}将跳蛋贴在{1}的{2}，刺激着。
+Vibrator, 震动棒, 2, va, {0}将震动棒放进了{1}的{2}。
 
 
 /* mode: 1:daytime 2:both 3:nightime */
-#| id, name, mode, targetPart, defaultText, option
-
+#X| id, name, mode, targetPart, defaultText
 x0, 揉捏, 2, bpcr, 触手缠绕在{1}的{2}上，巧妙地反复揉捏给予刺激。
 x1, 逗弄, 2, --bhfnsgd, 蠕动、摩擦、按捏。触手反复逗弄着{1}的{2}，给予极大的刺激。
 x2, 吸舔, 2, rpc, 吸盘触手吸附在{1}的{2}上，反复吸舔着。
@@ -78,5 +81,5 @@ x12, 灌入, 3, mva, 触手往{1}的{2}灌入大量的药液。
 x13, 注射, 3, --mehfg, 触手伸出尖锐的针头，刺入{1}的{2}并注入药液。
 
 /* 其他，特殊类? */
-#| id, name, option
-a0, 直播
+#O| id, name, option
+Stream, 直播

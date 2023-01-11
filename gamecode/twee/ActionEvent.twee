@@ -1,0 +1,62 @@
+
+:: Action_Talk
+/* 交流 */
+<<you>>在$location.name开始交流。<br>
+
+
+:: Action_Gift
+/* 送礼 */
+<<you>>在$location.name开始送礼。<br>
+
+
+:: Action_TrySex
+/* 推倒 */
+<<you>>在$location.name开始推倒。<br>
+
+
+:: Action_Relax
+/* 放松 */
+<<you>>在$location.name找了个舒适的地方，坐下放松。<br>
+
+:: Action_Walk
+/* 散步 */
+<<you>>在$location.name开始散步。<br>
+
+
+:: Action_Plant
+/* 种植 */
+<<you>>在$location.name开始种植。<br>
+
+
+:: Action_Bath
+/* 洗澡 */
+<<you>>在$location.name开始洗澡。<br>
+
+
+:: Action_Read
+/* 读书 */
+<<you>>在$location.name开始读书。<br>
+
+
+:: Action_Learn
+/* 学习 */
+<<you>>在$location.name开始学习。<br>
+
+:: Action_Class
+/* 上课 */
+<<you>>在$location.name开始上课。<br>
+
+
+:: Action_HomeWork
+/* 做作业 */
+<<you>>在$location.name开始做作业。<br>
+
+
+:: Action_Shop
+/* 购物 */
+<<you>>在$location.name开始购物。<br>
+
+
+:: Action_Stream
+/* 直播 */
+<<you>>在$location.name开始直播。<br>

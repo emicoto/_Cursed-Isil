@@ -145,3 +145,11 @@ F.metToday = function(cid){
 
 	return 'met'
 }
+
+F.hasPenis = function(cid){
+	return C[cid].gender !== 'female'
+}
+
+F.hasVagina = function(cid){
+	return C[cid].gender !== 'male'
+}

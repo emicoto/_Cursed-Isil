@@ -1,71 +1,4 @@
 
-D.bodyparts = {
-    head:'头部',
-    mouth:'嘴巴',
-    torso:'胴体',
-    body:'身体',
-    top:'上身',
-    bottom:'下身',
-    genital:'生殖器',
-    organ:'器官',
-    private:'私处',
-    groin:'腹股沟',
-    slimebody:'史莱姆身',
-    snakebody:'蛇身',
-    tailbody:'尾身',
-    nipple:'乳头',
-    wings:'翅膀',
-    wingL:'左翼',
-    wingR:'右翼',
-    horns:'角',
-    tails:'尾巴',
-    tentacles:'触手',
-    face:'面部',
-    eyes:'双眼',
-    eyeL:'左眼',
-    eyeR:'右眼',
-    nose:'鼻子',
-    ears:'耳朵',
-    earL:'左耳',
-    earR:'右耳',
-    shoulder:'肩部',
-    breast:'胸部',
-    abdomen:'腹部',
-    arms:'手臂',
-    armL:'左臂',
-    armR:'右臂',
-    legs:'腿部',
-    legL:'左腿',
-    legR:'右腿',
-    thighs:'大腿',
-    hips:'臀部',
-    buttL:'左臀',
-    buttR:'右臀',
-    butts:'屁股',
-    thighL:'左大腿',
-    thighR:'右大腿',
-    ankles:'脚踝',
-    wrists:'手腕',
-    ankleL:'左脚踝',
-    ankleR:'右脚踝',
-    feet:'双脚',
-    hands:'双手',
-    footL:'左脚',
-    footR:'右脚',
-    handL:'左手',
-    handR:'右手',
-    critoris:'阴蒂',
-    anal:'肛门',
-    penis:'阴茎',
-    vagina:'阴道',
-    womb:'子宫',
-    anus:'肛门',
-    urin:'尿道',
-    foot:'脚',
-    hairs:'头发',
-    neck:'脖子'
-}
-
 F.initList = function(path, menu, option){
     const rawtxt = Story.get(path).text.split('\n')
 
@@ -80,18 +13,19 @@ F.initList = function(path, menu, option){
                 newobj[k] = option(v[i], k)
             }
         })
+        newobj.type = id
         arr.push(newobj)   
     }
 
     const makeObj = (line)=>{
-        const keys = line.replace('#|','').split(',')
+        const keys = line.slice(3).split(',')
         obj = {}
         keys.forEach((k)=>{
             obj[k] = null;
         })
     }
 
-    var obj
+    var obj, id
     const arr = {}
     if(!menu) arr.a = []
 
@@ -99,15 +33,16 @@ F.initList = function(path, menu, option){
         raw = raw.replace(/\s/g, '')
         if(raw[0] == '#') {
             makeObj(raw);
+            id = raw[1]
         }
         else if(raw.match(/^\/\*(.+)\*\/|^\/(.+)/) || raw === ''){
             //注释和空行要过滤掉
         }
         else{
             if(menu){
-                if(!arr[raw[0]])
-                    arr[raw[0]] = [];
-                convert(raw, arr[raw[0]])
+                if(!arr[id])
+                    arr[id] = [];
+                convert(raw, arr[id])
             }
             else{
                 convert(raw, arr['a'])                
@@ -124,10 +59,17 @@ F.initList = function(path, menu, option){
     return result
 }
 
-F.extendParts = function(raw, key){
-    if( key !== 'targetPart' && key !== 'usePart') return raw
-    if( !raw ) return raw
+F.extendTags = function(raw){
+    return raw.split('|')
+}
 
+F.extendsRaw = function(raw, key){
+    if( key == 'locationTags' ) return F.extendTags(raw)
+    if( key == 'targetPart' || key == 'usePart') return F.extendParts(raw)
+    return raw
+}
+
+F.extendParts = function(raw){
     let list = 'mbpcvauehfnsrgd'
     let re = raw
 
@@ -143,21 +85,21 @@ F.extendParts = function(raw, key){
         re = list
     }
 
-    const part = {m:'mouth', b:'breast', p:'penis', c:'critoris', v:'vagina', a:'anal', u:'urin', e:'ears', h:'hands', f:'foot', n:'neck', s:'butts', r:'nipple', g:'thighs', d:'abdomen' }
+    const part = {m:'mouth', b:'breast', p:'penis', c:'critoris', v:'vagina', a:'anal', u:'urin', e:'ears', h:['handL','handR'], f:'foot', n:'neck', s:'butts', r:'nipple', g:'thighs', d:'abdomen' }
 
-    const arr = re.split('').map(char => part[char]);
+    const arr = re.split('').map(char => part[char]).flat();
     return arr   
 }
 
 const actList = {}
 
 class Action{
-    constructor(id, name, { time = 5, mode = 0, usePart, targetPart, option, defaultText } = {} ){
+    constructor(id, name, { time = 5, mode = 0, usePart, targetPart, option, defaultText, type } = {} ){
 
-        const typeMap = new Map([['g', '常规'], ['d', '场所'], ['t', '调教'], ['x', '触手'],['a','其他'],['o','道具']])
+        const typeMap = new Map([['G', '常规'], ['T', '接触'], ['X', '触手'],['O','其他'],['I','道具'],['R','被动']],)
         this.id = id;
         this.name = name;
-        this.type = typeMap.get(id[0]);
+        this.type = typeMap.get(type);
         this.time = parseInt(time);
         this.mode = parseInt(mode);
 
@@ -194,13 +136,14 @@ class Action{
     }
 
     static set(id){
+        //console.log(id, Action.data[id])
         return Action.data[id]
     }
     
     static create(data, mode){
         const { name, templet } = data
 
-        let txt = `:: Action_${data.id}_Option[script]\nAction.set('${data.id}')\n     .Filter(()=>{\n         return 1\n      })\n     .Check(()=>{\n         return 1\n      })\n     .Order(()=>{\n         return 0\n      })\n\n`
+        let txt = `:: Action_${data.id}_Option[script]\n/* ${name} */\nAction.set('${data.id}')\n     .Filter(()=>{\n         return 1\n      })\n     .Check(()=>{\n         return 1\n      })\n     .Order(()=>{\n         return 0\n      })\n\n`
 
         if(mode == 'kojo' ) txt = ''
 
@@ -217,13 +160,18 @@ class Action{
 
         let title = `:: ${mode=='kojo' ? 'Kojo_cid_' : ''}Action_${data.id}`
 
+        if( mode == 'script'){
+            return txt
+        }
+        
         if( ['调教', '触手'].includes(data.type) ){
             txt +=  data.usePart.map(k => {
-                return `${title}_${k}\n/* ${name} */\n<<switch Act[pc].use>>\n${ctx(k)}<</switch>>\n\n`
+                return `${title}\n/* ${name} */\n<<switch F.checkUse(tc, '${data.id}')>>\n${ctx(k)}<</switch>>\n\n`
             }).join('')
         }
-        else if(data.type == '道具'){
-            return `${title}\n/* ${name} */\n<<switch Act[pc].use>>\n${ctx('hands')}<</switch>>\n\n`
+        
+        if(data.type == '道具'){
+            return `${title}\n/* ${name} */\n<<switch F.checkUse(tc, '${data.id}')>>\n${ctx('hand')}<</switch>>\n\n`
         }
         else{
             txt += `${title}\n/* ${name} */\n<<you>>在$location.name开始${name}。<br>\n\n`
@@ -233,7 +181,7 @@ class Action{
 
     }
     static init(){
-        let arr = F.initList('ActionList', 1 ,F.extendParts)
+        let arr = F.initList('ActionList', 1 ,F.extendsRaw)
         console.log(arr)
          arr.forEach((obj)=>{
             Action.add(obj.id, obj.name, obj)
@@ -263,12 +211,14 @@ class Action{
         this.forceAble = true;
         return this
     }
+    setEvent(){
+        this.event = true;
+        return this
+    }
 }
 
 window.Action = Action;
 Action.data = actList;
-
-Action.init()
 
 Action.globalCheck = function(){
 
@@ -277,3 +227,10 @@ Action.globalCheck = function(){
 Action.globalFilter = function(){
 
 }
+
+Action.globalOrder = function(){
+
+}
+
+
+Action.init()

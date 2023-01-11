@@ -44,45 +44,6 @@ F.shownext = function(){
 }
 
 //----->> 初始化 <<---------------------------//
-F.initMainFlow = function(){
-    //在这里初始化信息板。 插入移动后的文本。不是经由移动初始化时会有对应的flag判定。
-    //V.aftermovement
-    const local = V.location
-    let text = F.playerName()
-    console.log(text)
-
-    if(local.id == 'A0'){
-
-        text +=  `你回到了宿舍房间。<br>`
-        if(pc == 'Ayres'){
-            text += `${C['Isil'].name}在房间里。`
-        }
-        else{
-            text += `${C['Ayres'].name}在房间里。`
-        }
-    }
-    else{
-        text += `你来到了学院广场公园。<br>你注意到了${C['Besta'].name}在这里散步。`
-
-    }
-
-    F.summonChara();
-    F.resetTarget();
-
-    if(V.aftermovement)
-        delete V.aftermovement
-
-    setTimeout(()=>{
-        F.txtFlow(text,30,1)
-        setTimeout(()=>{
-            F.charaEvent(tc)
-        },500)
-    },100)
-
-    return ''
-}
-
-
 F.initComMenu = function(){
     const list = [
         [(V.location.id == 'A0'), '下沉', 'Basement',''],
@@ -180,6 +141,10 @@ F.ComCheck = function(id){
     T.comAble = Com.globalCond(id) && com.cond();
     T.msgid = 0
 
+    //如果对方无反抗之力，目标值强行变零。
+    if(F.uncons(target) || !F.canMove(target))
+        T.orderGoal = 0
+
     T.comPhase = 'before'
 
     let txt = F.playerName()
@@ -263,14 +228,14 @@ F.ComEvent = function(id, next){
     else if(T.comAble){
 
         //确认对象愿意配合执行
-        if( ( T.comorder >= T.orderGoal ) || com?.forceAble || V.system.debug ){
+        if( ( T.orderGoal > 0 && T.comorder >= T.orderGoal ) || T.orderGoal === 0 || com?.forceAble || V.system.debug ){
             V.passtime = com.time;
             txt = txt + Story.get(title).text
 
             if(com?.forceAble && T.comorder < T.orderGoal && !V.system.debug){
-                S.msg.push(`配合度不足：${T.order}＝${T.comorder}/${T.orderGoal}<br><br>`)
+                S.msg.push(`配合度不足：${T.order}＝${T.comorder}/${T.orderGoal}<br>${com?.forceAble ? '<<run F.ComNext()>>' : ''}<br>`)
 
-                if(Story.get(title+':Force'))
+                if(Story.has(title+':Force'))
                     txt = txt + Story.get(title+':Force').text
 
                 T.force = true
@@ -278,7 +243,7 @@ F.ComEvent = function(id, next){
             txt = F.convertKojo(txt)
             F.ComMsg(txt)
 
-            F.ComMsg(`<<run comdata[${id}].source(); F.passtime(V.passtime); F.ComResult()>>`, 1)
+            F.ComMsg(`<<run comdata['${id}'].source(); F.passtime(V.passtime); F.ComResult()>>`, 1)
 
             //确认After事件。如果有就添加到 Msg中。
             if(Story.has(title+'::After')){

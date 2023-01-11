@@ -10,6 +10,8 @@
 
 <<link '调教' 'MainLoop'>><<set $system.mode to 'train'>><<set $date.time to 1350>><<run F.getState(C['Isil'], '睡眠')>><</link>><br>
 
+<<link '经典模式' 'CommandLoop'>><</link>><br>
+
 <<link '设定'>><</link>><br>
 
 <<checkbox "$system.debug" 0 1 autocheck>>Debug模式？<br>

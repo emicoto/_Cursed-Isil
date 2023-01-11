@@ -15,7 +15,7 @@
 </div>
 
 <div id='actionMenu_1'>
-行动：
+行动：<<link '下沉' 'Basement'>><</link>>
 </div>
 
 <div id= 'actionMenu_2'>
