@@ -1,0 +1,487 @@
+/* 默认的文本就是自动生成的系统文本. 口上会在系统文的后面出来.记得把系统文删干净写 */
+/* cid请替换为角色ID, 也就是英文名 */
+/* 标题后加:After 或:Before可以让这部分在动作执行完毕or准备执行的阶段显示 */
+/* 例:Kojo_cid_Act_g2:After */
+/* 如果角色不允许玩家修改名称, 推荐将$target.name替换成角色名  */
+
+:: Kojo_Nanaly_Act_g2
+/* 话题可以自由添加. */
+<<selection replace>>
+<<pick '观察'>>
+   角色外观描述+穿着打扮.<br>
+   打扮可以根据现在套装分支.<br>
+   <<switch $chara.Nanaly.outfitset >>
+   <<case '套装名'>>
+   <</switch>>
+<<pick '闲聊'>>
+   “嗯？想聊天吗？人家很乐意哟~”<br>
+   听到<<you>>的请求，娜娜莉露出了无邪的微笑，坐在<<you>>的身边<br>
+   $target.name和<<you>>聊起了今天发生的事，<<you>>们聊得很开心<br>
+<<pick '近况'>>
+   谈论近况的内容。可以根据角色事件flag进行分支。<br>
+   flagname替换成对应的变量名<br>
+   <<if $chara.Nanaly.flag.flagname >>
+      分支内容<br>
+   <</if>>
+   <fr>
+   内容过长时可以用分页符进行分页<br>
+   <fr>
+   最后一页了. 指令模式下, 可不要忘记换行符哦!<br>
+<<pick '自定义话题A'>>
+<<pick '自定义话题B'>>
+<<pick '摸头'>>
+   摸头时的内容<br>
+<<pick '抛媚眼'>>
+   抛媚眼时的内容
+<<pick '调情'>>
+   玩家角色(艾瑞斯)对攻略角色进行调情时的内容<br>
+   调情就是只口花花跑火车啦. 没有肢体接触.<br>
+   伊希露没堕落的话是不会主动调情的. 基本都是艾瑞斯这个海王在到处勾搭.<br>
+<</selection>>
+
+:: Kojo_Nanaly_Act_g3
+收到礼物时.<br>
+<<switch Tsv[tc].present>>
+<<case '钢笔'>>
+<<case '笔记本'>>
+<<case '魔法吊坠'>>
+<<case '魔晶耳环'>>
+<</switch>>
+
+:: Kojo_Nanaly_Act_g99
+<<if Tsv[tc].oksign>>
+合意时的内容
+
+<<elseif Tsv[tc].force>>
+强推成功的内容
+
+<<else>>
+强推失败的内容
+
+<</if>>
+
+
+:: Kojo_Nanaly_Act_t0_mouth
+
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   <<you>>的嘴巴在$target.name的嘴巴接吻着。<br>
+<</switch>>
+
+:: Kojo_Nanaly_Act_t1_mouth
+
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   <<you>>的嘴巴在$target.name的嘴巴亲吻着。<br>
+<<case 'breast'>>
+   <<you>>的嘴巴在$target.name的胸部亲吻着。<br>
+<<case 'penis'>>
+   <<you>>的嘴巴在$target.name的阴茎亲吻着。<br>
+<<case 'critoris'>>
+   <<you>>的嘴巴在$target.name的阴蒂亲吻着。<br>
+<<case 'hands'>>
+   <<you>>的嘴巴在$target.name的双手亲吻着。<br>
+<<case 'foot'>>
+   <<you>>的嘴巴在$target.name的脚亲吻着。<br>
+<<case 'body'>>
+   <<you>>的嘴巴在$target.name的身体亲吻着。<br>
+<<case 'face'>>
+   <<you>>的嘴巴在$target.name的面部亲吻着。<br>
+<<case 'butts'>>
+   <<you>>的嘴巴在$target.name的屁股亲吻着。<br>
+<</switch>>
+
+:: Kojo_Nanaly_Act_t2_hands
+
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   <<you>>的双手在$target.name的嘴巴抚摸着。<br>
+<<case 'breast'>>
+   /* 摸胸 */
+   <<you>>抚上了$target.name的胸部，虽然算不上大，但也盈盈一握，柔软细腻的触感就像水馒头一般惹人喜爱<br>
+   “啊……胸部……”<br>
+   少女的声音像是呻吟，又像是叹息，随着胸前的柔软任由<<you>>的揉搓变形而完全沉醉其中<br>
+<<case 'penis'>>
+   <<you>>的双手在$target.name的阴茎抚摸着。<br>
+<<case 'critoris'>>
+   <<you>>的双手在$target.name的阴蒂抚摸着。<br>
+<<case 'vagina'>>
+   <<you>>的双手在$target.name的阴道抚摸着。<br>
+<<case 'anal'>>
+   <<you>>的双手在$target.name的肛门抚摸着。<br>
+<<case 'ears'>>
+   <<you>>的双手在$target.name的耳朵抚摸着。<br>
+<<case 'hands'>>
+   <<you>>的双手在$target.name的双手抚摸着。<br>
+<<case 'foot'>>
+   <<you>>的双手在$target.name的脚抚摸着。<br>
+<<case 'body'>>
+   <<you>>的双手在$target.name的身体抚摸着。<br>
+<<case 'face'>>
+   <<you>>的双手在$target.name的面部抚摸着。<br>
+<<case 'butts'>>
+   <<you>>的双手在$target.name的屁股抚摸着。<br>
+<</switch>>
+
+:: Kojo_Nanaly_Act_t3_hands
+
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   <<you>>的双手在$target.name的嘴巴揉捏着。<br>
+<<case 'breast'>>
+   /* 玩乳头 */
+   “那里很敏感……”<br>
+   看到<<you>>将手探向胸前的蓓蕾，$target.name有些紧张地呼出了声<br>
+   “呀！”<br>
+   随着小巧的肉粒被<<you>>捏住，少女几乎立刻发出了惊呼，身体仿佛有电流流过般地微微一颤<br>
+   “呜呜♥嗯♥……乳头、被责弄着……”<br>
+   随着<<you>>指尖的力量，少女仿佛成为了最悦耳的乐器，在<<you>>手中婉转啼吟<br>
+<<case 'penis'>>
+   <<you>>的双手在$target.name的阴茎揉捏着。<br>
+<<case 'critoris'>>
+   <<you>>的双手在$target.name的阴蒂揉捏着。<br>
+<<case 'vagina'>>
+   <<you>>的双手在$target.name的阴道揉捏着。<br>
+<<case 'anal'>>
+   <<you>>的双手在$target.name的肛门揉捏着。<br>
+<<case 'ears'>>
+   <<you>>的双手在$target.name的耳朵揉捏着。<br>
+<<case 'hands'>>
+   <<you>>的双手在$target.name的双手揉捏着。<br>
+<<case 'butts'>>
+   <<you>>的双手在$target.name的屁股揉捏着。<br>
+<</switch>>
+
+:: Kojo_Nanaly_Act_t4_mouth
+
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   <<you>>的嘴巴在$target.name的嘴巴吸舔着。<br>
+<<case 'breast'>>
+   <<you>>的嘴巴在$target.name的胸部吸舔着。<br>
+<<case 'penis'>>
+   <<you>>的嘴巴在$target.name的阴茎吸舔着。<br>
+<<case 'critoris'>>
+   <<you>>的嘴巴在$target.name的阴蒂吸舔着。<br>
+<<case 'vagina'>>
+   <<you>>的嘴巴在$target.name的阴道吸舔着。<br>
+<<case 'anal'>>
+   <<you>>的嘴巴在$target.name的肛门吸舔着。<br>
+<<case 'ears'>>
+   <<you>>的嘴巴在$target.name的耳朵吸舔着。<br>
+<<case 'hands'>>
+   <<you>>的嘴巴在$target.name的双手吸舔着。<br>
+<<case 'butts'>>
+   <<you>>的嘴巴在$target.name的屁股吸舔着。<br>
+<</switch>>
+
+:: Kojo_Nanaly_Act_t5_mouth
+
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   <<you>>的嘴巴在$target.name的嘴巴吸咬着。<br>
+<<case 'breast'>>
+   /* 吸乳头 */
+   <<you>>亲吻着$target.name的乳头，像是想要吸吮汁水一般地轻咬轻吸<br>
+   敏感的皮肤将轻微的刺激转化为了强烈的快感，令少女发出甜美的声音<br>
+   $target.name轻轻抚摸着<<you>>的脑袋，使其靠在自己的胸上，露出了混杂着柔和的母性和甘美的快乐的神情<br>
+   “人家的胸部，美味吗？呵呵，真实的，像小宝宝一样……”<br>
+<<case 'penis'>>
+   <<you>>的嘴巴在$target.name的阴茎吸咬着。<br>
+<<case 'critoris'>>
+   <<you>>的嘴巴在$target.name的阴蒂吸咬着。<br>
+<<case 'vagina'>>
+   <<you>>的嘴巴在$target.name的阴道吸咬着。<br>
+<<case 'anal'>>
+   <<you>>的嘴巴在$target.name的肛门吸咬着。<br>
+<<case 'ears'>>
+   <<you>>的嘴巴在$target.name的耳朵吸咬着。<br>
+<<case 'hands'>>
+   <<you>>的嘴巴在$target.name的双手吸咬着。<br>
+<<case 'butts'>>
+   <<you>>的嘴巴在$target.name的屁股吸咬着。<br>
+<</switch>>
+
+:: Kojo_Nanaly_Act_t6_hands
+
+<<switch Act[pc].use>>
+<<case 'breast'>>
+   <<you>>的双手在$target.name的胸部逗弄着。<br>
+<<case 'penis'>>
+   <<you>>的双手在$target.name的阴茎逗弄着。<br>
+<<case 'critoris'>>
+   <<you>>的双手在$target.name的阴蒂逗弄着。<br>
+<<case 'vagina'>>
+   <<you>>的双手在$target.name的阴道逗弄着。<br>
+<<case 'anal'>>
+   <<you>>的双手在$target.name的肛门逗弄着。<br>
+<<case 'urin'>>
+   <<you>>的双手在$target.name的尿道逗弄着。<br>
+<<case 'ears'>>
+   <<you>>的双手在$target.name的耳朵逗弄着。<br>
+<</switch>>
+
+:: Kojo_Nanaly_Act_t7_hands
+
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   <<you>>的双手在$target.name的嘴巴指交着。<br>
+<<case 'vagina'>>
+   <<you>>的双手在$target.name的阴道指交着。<br>
+<<case 'anal'>>
+   <<you>>的双手在$target.name的肛门指交着。<br>
+<<case 'urin'>>
+   <<you>>的双手在$target.name的尿道指交着。<br>
+<</switch>>
+
+:: Kojo_Nanaly_Act_t8_penis
+
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   <<you>>的阴茎在$target.name的嘴巴插入着。<br>
+<<case 'vagina'>>
+   <<you>>的阴茎在$target.name的阴道插入着。<br>
+<<case 'anal'>>
+   <<you>>的阴茎在$target.name的肛门插入着。<br>
+<</switch>>
+
+:: Kojo_Nanaly_Act_t9_penis
+
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   <<you>>的阴茎在$target.name的嘴巴抽插着。<br>
+<<case 'vagina'>>
+   <<you>>的阴茎在$target.name的阴道抽插着。<br>
+<<case 'anal'>>
+   <<you>>的阴茎在$target.name的肛门抽插着。<br>
+<</switch>>
+
+:: Kojo_Nanaly_Act_t10_hands
+
+<<switch Act[pc].use>>
+<<case 'penis'>>
+   <<you>>的双手在$target.name的阴茎撸动着。<br>
+<</switch>>
+
+:: Kojo_Nanaly_Act_t11_hands
+
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   <<you>>的双手在$target.name的嘴巴使用道具着。<br>
+<<case 'breast'>>
+   <<you>>的双手在$target.name的胸部使用道具着。<br>
+<<case 'penis'>>
+   <<you>>的双手在$target.name的阴茎使用道具着。<br>
+<<case 'critoris'>>
+   <<you>>的双手在$target.name的阴蒂使用道具着。<br>
+<<case 'vagina'>>
+   <<you>>的双手在$target.name的阴道使用道具着。<br>
+<<case 'anal'>>
+   <<you>>的双手在$target.name的肛门使用道具着。<br>
+<<case 'urin'>>
+   <<you>>的双手在$target.name的尿道使用道具着。<br>
+<<case 'ears'>>
+   <<you>>的双手在$target.name的耳朵使用道具着。<br>
+<<case 'hands'>>
+   <<you>>的双手在$target.name的双手使用道具着。<br>
+<<case 'foot'>>
+   <<you>>的双手在$target.name的脚使用道具着。<br>
+<<case 'body'>>
+   <<you>>的双手在$target.name的身体使用道具着。<br>
+<<case 'face'>>
+   <<you>>的双手在$target.name的面部使用道具着。<br>
+<<case 'butts'>>
+   <<you>>的双手在$target.name的屁股使用道具着。<br>
+<</switch>>
+
+:: Kojo_Nanaly_Act_x0_tentacles
+
+<<switch Act[pc].use>>
+<<case 'breast'>>
+   <<you>>的触手在$target.name的胸部揉捏着。<br>
+<<case 'penis'>>
+   <<you>>的触手在$target.name的阴茎揉捏着。<br>
+<<case 'critoris'>>
+   <<you>>的触手在$target.name的阴蒂揉捏着。<br>
+<</switch>>
+
+:: Kojo_Nanaly_Act_x1_tentacles
+
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   <<you>>的触手在$target.name的嘴巴逗弄着。<br>
+<<case 'breast'>>
+   <<you>>的触手在$target.name的胸部逗弄着。<br>
+<<case 'penis'>>
+   <<you>>的触手在$target.name的阴茎逗弄着。<br>
+<<case 'critoris'>>
+   <<you>>的触手在$target.name的阴蒂逗弄着。<br>
+<<case 'vagina'>>
+   <<you>>的触手在$target.name的阴道逗弄着。<br>
+<<case 'anal'>>
+   <<you>>的触手在$target.name的肛门逗弄着。<br>
+<<case 'urin'>>
+   <<you>>的触手在$target.name的尿道逗弄着。<br>
+<</switch>>
+
+:: Kojo_Nanaly_Act_x2_tentacles
+
+<<switch Act[pc].use>>
+<<case 'breast'>>
+   <<you>>的触手在$target.name的胸部吸舔着。<br>
+<<case 'penis'>>
+   <<you>>的触手在$target.name的阴茎吸舔着。<br>
+<<case 'critoris'>>
+   <<you>>的触手在$target.name的阴蒂吸舔着。<br>
+<</switch>>
+
+:: Kojo_Nanaly_Act_x3_tentacles
+
+<<switch Act[pc].use>>
+<<case 'breast'>>
+   <<you>>的触手在$target.name的胸部吸咬着。<br>
+<<case 'penis'>>
+   <<you>>的触手在$target.name的阴茎吸咬着。<br>
+<<case 'critoris'>>
+   <<you>>的触手在$target.name的阴蒂吸咬着。<br>
+<</switch>>
+
+:: Kojo_Nanaly_Act_x4_tentacles
+
+<<switch Act[pc].use>>
+<<case 'penis'>>
+   <<you>>的触手在$target.name的阴茎撸动着。<br>
+<</switch>>
+
+:: Kojo_Nanaly_Act_x5_tentacles
+
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   <<you>>的触手在$target.name的嘴巴插入着。<br>
+<<case 'vagina'>>
+   <<you>>的触手在$target.name的阴道插入着。<br>
+<<case 'anal'>>
+   <<you>>的触手在$target.name的肛门插入着。<br>
+<<case 'urin'>>
+   <<you>>的触手在$target.name的尿道插入着。<br>
+<<case 'ears'>>
+   <<you>>的触手在$target.name的耳朵插入着。<br>
+<</switch>>
+
+:: Kojo_Nanaly_Act_x6_tentacles
+
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   <<you>>的触手在$target.name的嘴巴蠕动着。<br>
+<<case 'breast'>>
+   <<you>>的触手在$target.name的胸部蠕动着。<br>
+<<case 'penis'>>
+   <<you>>的触手在$target.name的阴茎蠕动着。<br>
+<<case 'critoris'>>
+   <<you>>的触手在$target.name的阴蒂蠕动着。<br>
+<<case 'vagina'>>
+   <<you>>的触手在$target.name的阴道蠕动着。<br>
+<<case 'anal'>>
+   <<you>>的触手在$target.name的肛门蠕动着。<br>
+<<case 'urin'>>
+   <<you>>的触手在$target.name的尿道蠕动着。<br>
+<<case 'ears'>>
+   <<you>>的触手在$target.name的耳朵蠕动着。<br>
+<<case 'hands'>>
+   <<you>>的触手在$target.name的双手蠕动着。<br>
+<<case 'foot'>>
+   <<you>>的触手在$target.name的脚蠕动着。<br>
+<<case 'body'>>
+   <<you>>的触手在$target.name的身体蠕动着。<br>
+<<case 'face'>>
+   <<you>>的触手在$target.name的面部蠕动着。<br>
+<<case 'butts'>>
+   <<you>>的触手在$target.name的屁股蠕动着。<br>
+<</switch>>
+
+:: Kojo_Nanaly_Act_x7_tentacles
+
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   <<you>>的触手在$target.name的嘴巴抽插着。<br>
+<<case 'vagina'>>
+   <<you>>的触手在$target.name的阴道抽插着。<br>
+<<case 'anal'>>
+   <<you>>的触手在$target.name的肛门抽插着。<br>
+<<case 'urin'>>
+   <<you>>的触手在$target.name的尿道抽插着。<br>
+<<case 'ears'>>
+   <<you>>的触手在$target.name的耳朵抽插着。<br>
+<</switch>>
+
+:: Kojo_Nanaly_Act_x8_tentacles
+
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   <<you>>的触手在$target.name的嘴巴深入着。<br>
+<<case 'vagina'>>
+   <<you>>的触手在$target.name的阴道深入着。<br>
+<<case 'anal'>>
+   <<you>>的触手在$target.name的肛门深入着。<br>
+<<case 'urin'>>
+   <<you>>的触手在$target.name的尿道深入着。<br>
+<</switch>>
+
+:: Kojo_Nanaly_Act_x9_tentacles
+
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   <<you>>的触手在$target.name的嘴巴抽送着。<br>
+<<case 'vagina'>>
+   <<you>>的触手在$target.name的阴道抽送着。<br>
+<<case 'anal'>>
+   <<you>>的触手在$target.name的肛门抽送着。<br>
+<<case 'urin'>>
+   <<you>>的触手在$target.name的尿道抽送着。<br>
+<</switch>>
+
+:: Kojo_Nanaly_Act_x10_tentacles
+
+<<switch Act[pc].use>>
+<<case 'breast'>>
+   <<you>>的触手在$target.name的胸部鞭打着。<br>
+<<case 'penis'>>
+   <<you>>的触手在$target.name的阴茎鞭打着。<br>
+<<case 'body'>>
+   <<you>>的触手在$target.name的身体鞭打着。<br>
+<<case 'butts'>>
+   <<you>>的触手在$target.name的屁股鞭打着。<br>
+<</switch>>
+
+:: Kojo_Nanaly_Act_x11_tentacles
+
+<<switch Act[pc].use>>
+<<case 'breast'>>
+   <<you>>的触手在$target.name的胸部刺入着。<br>
+<<case 'penis'>>
+   <<you>>的触手在$target.name的阴茎刺入着。<br>
+<<case 'critoris'>>
+   <<you>>的触手在$target.name的阴蒂刺入着。<br>
+<<case 'anal'>>
+   <<you>>的触手在$target.name的肛门刺入着。<br>
+<<case 'body'>>
+   <<you>>的触手在$target.name的身体刺入着。<br>
+<</switch>>
+
+:: Kojo_Nanaly_Act_x12_tentacles
+
+<<switch Act[pc].use>>
+<<case 'mouth'>>
+   <<you>>的触手在$target.name的嘴巴注射着。<br>
+<<case 'breast'>>
+   <<you>>的触手在$target.name的胸部注射着。<br>
+<<case 'penis'>>
+   <<you>>的触手在$target.name的阴茎注射着。<br>
+<<case 'critoris'>>
+   <<you>>的触手在$target.name的阴蒂注射着。<br>
+<<case 'vagina'>>
+   <<you>>的触手在$target.name的阴道注射着。<br>
+<<case 'anal'>>
+   <<you>>的触手在$target.name的肛门注射着。<br>
+<</switch>>
+

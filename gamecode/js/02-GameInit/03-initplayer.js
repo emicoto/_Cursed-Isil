@@ -283,7 +283,8 @@ F.fixBase = function(chara,mode){
     base.mana[1] = stats.INT[1] * 25 * F.raceBonus(race, 'mana')
 
 	traits.forEach( key =>{
-		Trait.get(key, 'onFix')(chara.base)
+		const trait = Trait.get(key);
+		if(trait.onFix) trait.onFix(base);
 	})
 
     if(mode){

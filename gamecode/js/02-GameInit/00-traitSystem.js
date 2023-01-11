@@ -3,10 +3,10 @@ const traitdata = {};
 
 class Trait {
 	static get(name, key = null, event) {
-		if (!Trait.data[name]) return
-		if (!key || !Trait.data[name][key]) return Trait.data[name]
+		if (!key) return Trait.data[name]
 		if (event) return Trait.data[name][key](event)
-		else return Trait.data[name][key]
+		else if(key && Trait.data[name][key]) return Trait.data[name][key]
+		else return
 	}
 
 	static set(name) {

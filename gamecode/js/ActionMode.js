@@ -67,7 +67,6 @@ F.initActMenu = function(){
         [(V.location.id == 'A0' && (V.date.time >= 1200 || F.baseCheck(player, 'stamina', 50))), '睡觉', 'Sleep', ''],
     ]
 
-    const local = Action.get('type', '场所')
     const general = Action.get('type', '常规')
     
 
