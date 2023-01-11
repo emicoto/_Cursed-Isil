@@ -228,11 +228,16 @@ F.ComEvent = function(id, next){
     else if(T.comAble){
 
         //确认对象愿意配合执行
-        if( ( T.orderGoal > 0 && T.comorder >= T.orderGoal ) || T.orderGoal === 0 || com?.forceAble || V.system.debug ){
+        if( 
+            T.orderGoal === 0
+            || V.system.debug 
+            || ( T.orderGoal > 0 && T.comorder >= T.orderGoal )
+            || (com?.forceAble && T.comorder + D.ignoreOrder >= T.orderGoal )
+        ){
             V.passtime = com.time;
             txt = txt + Story.get(title).text
 
-            if(com?.forceAble && T.comorder < T.orderGoal && !V.system.debug){
+            if( T.comorder < T.orderGoal && !V.system.debug ){
                 S.msg.push(`配合度不足：${T.order}＝${T.comorder}/${T.orderGoal}<br>${com?.forceAble ? '<<run F.ComNext()>>' : ''}<br>`)
 
                 if(Story.has(title+':Force'))

@@ -39,12 +39,6 @@ class Trait {
 			})
 		}
 
-		this.onSource = (arg, ...args)=>{};
-		this.onRest = (arg, ...args)=>{};
-		this.onFix = (arg, ...args)=>{};
-		this.onOrder = (arg, ...args)=>{};
-		this.effect = (arg, ...args)=>{};
-
 	}
 
 	Effect(callback){
@@ -118,6 +112,7 @@ Trait.set('M倾向')
 			Source[cid][`es${k}`] += Source[cid][`pa${k}`] * 0.3
 		}
 	})
+	return 1
 })
 
 /* 

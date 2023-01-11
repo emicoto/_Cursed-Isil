@@ -86,6 +86,8 @@ F.Kojo = function(cid, type, id, branch){
 	else
 		branch = ''
 
+	if(C[cid].kojo) cid = C[cid].kojo // 如果使用口上与id不一致，则覆盖
+
 
     let title = `Kojo_${cid}_${type}${id ? '_' + id : ''}${branch}`
     let text = ''

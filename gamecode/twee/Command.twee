@@ -33,26 +33,26 @@ SM   - 捆绑鞭打等SM行为
 :: ComList[list]
 
 /* 常规指令 */
-G0,移动,交流,1
-G1,放松,休息,15
-G2,聊天,交流,0
+G0, 移动, 交流,1
+G1, 放松, 休息,15
+G2, 聊天, 交流,0
 
 /* 挑逗、前戏  */
-T0,抚摸,常规
-T1,摸胸,
-T2,玩乳头,
-T3,吸乳头,
-T4,撸阴茎,
-T5,指交,
-T99,推倒,常规,
+T0, 抚摸, 常规
+T1, 摸胸,
+T2, 玩乳头,
+T3, 吸乳头,
+T4, 撸阴茎,
+T5, 指交,
+T99, 推倒, 常规,
 
 /* 触手专用，触手都可持续。同时进行数看部位是否被占用以及触手数量。
 /* 或许修改成 部位 对 部位 使用 什么 进行 动作的方式？ */
-X1,玩乳头(触)
-X2,吸乳头(触)
-X3,撸阴茎(触)
-X4,玩后穴(触)
-X5,玩私穴(触)
+X1, 玩乳头(触)
+X2, 吸乳头(触)
+X3, 撸阴茎(触)
+X4, 玩后穴(触)
+X5, 玩私穴(触)
 
 :: RegistAllCom[script]
 
@@ -203,7 +203,7 @@ Com.set('G2')
 
 :: Com_G2
 <<you>>试着跟$target.name搭话。<br>
-<<=F.Kojo($target.kojo, 'Com', 'G2')>>
+<<=F.Kojo($tc, 'Com', 'G2')>>
 
 \
 :: Com_G2::Before//
@@ -217,21 +217,21 @@ $player.name走近$target.name准备搭话。<br>
 
 :: Com_T0
 <<you>>的手在$target.name的身上四处游走着。<br>
-<<=F.Kojo($target.kojo, 'Com', 'T0')>>
+<<=F.Kojo($tc, 'Com', 'T0')>>
 <br>
 
 :: Com_T1
 <<you>>把手覆盖在$target.name的胸上开始抚摸。<br>
-<<=F.Kojo($target.kojo, 'Com', 'T1')>><br>
+<<=F.Kojo($tc, 'Com', 'T1')>><br>
 
 :: Com_T2
 <<you>>用手轻轻捏住了$target.name的乳头<br>
-<<=F.Kojo($target.kojo, 'Com', 'T2')>>
+<<=F.Kojo($tc, 'Com', 'T2')>>
 <br>
 
 :: Com_T3
 <<you>>用嘴含住了$target.name的乳头，吮吸着。<br>
-<<=F.Kojo($target.kojo, 'Com', 'T3')>>
+<<=F.Kojo($tc, 'Com', 'T3')>>
 <br>
 
 :: Com_T4::Script[script]
@@ -242,11 +242,11 @@ Com.set('T4')
 
 :: Com_T4
 <<you>>轻轻握住了$target.name的阴茎，缓缓地前后撸动。<br>
-<<=F.Kojo($target.kojo, 'Com', 'T4')>>
+<<=F.Kojo($tc, 'Com', 'T4')>>
 
 :: Com_T5
 <<you>>将手指探入$target.name的<<=F.splitSex($target,'菊穴','秘穴')>>在入口附近摩擦着。<br>
-<<=F.Kojo($target.kojo, 'Com', 'T5')>>
+<<=F.Kojo($tc, 'Com', 'T5')>>
 
 
 :: Com_T99::Script[script]
@@ -297,11 +297,11 @@ Com.set('T99')
 :: Com_T99
 <<if $system.mode !== 'train' >>
 <<you>>将$target.name带到没人注意到的角落。<br>
-<<=F.Kojo($target.kojo, 'Com', 'T99', 'start')>>
+<<=F.Kojo($tc, 'Com', 'T99', 'start')>>
 
 <<else>>
 <<you>>帮$target.name整理好衣服。<br>
-<<=F.Kojo($target.kojo, 'Com', 'T99', 'finish')>>
+<<=F.Kojo($tc, 'Com', 'T99', 'finish')>>
 <</if>>
 
 
@@ -335,7 +335,7 @@ Com.set('X1')
     '缠绕、蠕动。','揉捏、摩擦。','挑弄、点拨。','蠕动、揉捏。','挑逗、缠绕、扭捏。'
 ])>>触手不停地反复着动作，时重时轻地对乳尖反复进行刺激。
 <br>
-<<=F.Kojo($target.kojo, 'Com', 'X1')>>
+<<=F.Kojo($tc, 'Com', 'X1')>>
 
 :: //Com_X1:Fail
 因为对方不配合而取消时的文本。
@@ -346,7 +346,34 @@ Com.set('X1')
 直接用:Force做分支。
 口上分支是 Kojo_Chara_Com_id:Force;
 
+
+:: Com_X2::Script[script]
+Com.set('X2')
+    .Check(()=>{
+        //能跑进来时已经过滤掉的情况：非合意且对象具备抵抗能力
+        //触手系都需要堕落flag，或者性依存高于2500，或者具有服从系陷落素质后，才能在清醒时执行。
+        //触手相关指令受触手等级限制
+        //Check这里进行具体的条件筛选
+
+        return true
+    })
+    .ComOrder(()=>{
+        //order这里看对方配合度。数值就是需求的配合值。
+        return 50 //return的是需求的配合度。
+
+    })
+    .Effect(()=>{
+        Source[tc].esB += 100
+        Source[tc].resist += Math.floor(1000 - F.Exp(tc, '触手奸')/5)
+
+        F.getExp(target, '触手奸', random(3));
+        F.getExp(target, 'B', random(2));
+    })
+
+
 :: Com_X2
+
+触手<<=(T.force? `强行爬上${$target.name}的身躯，` : '' )>>沿着$target.name的肌肤往胸部游走，张开吸盘吸附在乳尖上，伸出触须吸舔乳尖。<br>
 
 :: Com_X3
 

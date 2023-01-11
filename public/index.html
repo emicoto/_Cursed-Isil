@@ -2331,7 +2331,15 @@ D.ComFilterTrain = [
 
 D.ActionTypes = []
 
-D.defaultExit = 'MainLoop'</script>
+D.defaultExit = 'MainLoop'
+
+D.ignoreOrder = 20
+
+//palam lv的初期値
+D.palamLv = [ 0, 200, 600, 1800, 3200, 10000, 30000, 60000, 100000, 150000, 250000, 500000, 1000000, 2500000, 5000000, 10000000 ]
+
+//exp lv的初期値
+D.expLv = [ 0, 3, 10, 30, 100, 200, 400, 600, 800, 1200, 1600, 2000, 2400, 3200, 5000]</script>
 <link type="image/png" rel="icon" sizes="24x24" href="icon.svg" />
 <link rel="stylesheet" href="css/jquery-ui.css">
 <link rel="stylesheet" href="css/shake-macro-set.css">
@@ -4422,12 +4430,6 @@ class Trait {
 			})
 		}
 
-		this.onSource = (arg, ...args)=>{};
-		this.onRest = (arg, ...args)=>{};
-		this.onFix = (arg, ...args)=>{};
-		this.onOrder = (arg, ...args)=>{};
-		this.effect = (arg, ...args)=>{};
-
 	}
 
 	Effect(callback){
@@ -4501,6 +4503,7 @@ Trait.set('M倾向')
 			Source[cid][`es${k}`] += Source[cid][`pa${k}`] * 0.3
 		}
 	})
+	return 1
 })
 
 /* 
@@ -5553,519 +5556,7 @@ F.initActMenu = function(){
     
 
 }
-/* twine-user-script #24: "Dialog.js" */
-/**
- * 
- * @param {string} text 
- */
-F.tranSelect = function(text){
-    let replace = text.includes('@replace')
-    let txt, html
-
-    if(replace){
-        txt = text.match(/#:select@replace:(.+):#/)
-    }
-    else{
-        txt = text.match(/#:select:(.+):#/)
-    }
-    
-    let pick = txt[1].split('|')
-    let selection = ''
-    pick.forEach(v=>{
-        let t = `<<pick`
-        let content = ''
-        let check = v.split(',')
-
-        check.forEach(k=>{
-            if(k=='auto')
-                t+= ` auto`;
-            else if(k.match(/%(.+)%/))
-                content = k.match(/%(.+)%/)[1]
-            else if(parseInt(k))
-                t+= ` ${k}`;
-            else
-                t += ` '${k}'`;
-        })
-        t += '>>'+content
-        selection += t
-    })
-    
-    if(replace){
-        html = `<br><<selection replace>>${selection}<</selection>>`
-    }
-    else{
-        html = `<br><<selection>>${selection}<</selection>>`
-    }
-    return text.replace(txt[0],html)
-}
-
-F.transTips = function(text){
-    let txt = text.match(/:tips:(.+)\|(.+):/)
-    return text.replace(txt[0],`<<tips '${txt[1]}' '${txt[2]}'>>`)
-}
-
-/**
- * 
- * @param {string | string[]} text 
- */
-window.txtp = function(text){
-
-    const trans = function(t){
-        if(t.includes(':tips:'))
-            t = F.transTips(t);
-        if(t.includes(':select:'))
-            t = F.tranSelect(t);
-        if(t.includes('/L'))
-            t = t.replace('/L','<br>');
-
-        if(t.includes('<fr>')){
-            t = t.replace('<fr>','<br>')
-        }
-        else if(t.includes('/* */')){
-            t = t.replace('/* */','')
-        }
-        else{
-            if(t.has('if','switch','case','<</','select','<br>','replace','div','<<pick','<<event','<<run','<<set') === false){
-                t += '<br>'
-            };
-        }
-
-        return t
-    }
-
-    if(typeof text === 'string') return trans(text);
-
-    const txt = []
-
-    for(let i=0; i<text.length; i++){
-        txt[i] = trans(text[i])
-    }
-
-  return txt.join('')
-}
-
-
-window.Dlog = function(text, config){
-    const ch = T.passage
-    S.dialog[ch].push({ txt:text, config:config })
-    return ''
-}
-
-F.resetEvent = function(){
-    V.event = {
-        type:'', eid:'', name:'', ch:'', ep:0, phase:0, sp:0, lastId:0, lastPhase:0,
-    }
-    return ''
-}
-
-F.setEvent = function(type, name, eid, ch, ep){
-    V.event.type = type ? type : 'Event';
-    V.event.name = name ? name : '';
-    V.event.eid = eid ? eid : '';    
-    V.event.ch = ch? ch : '';
-    V.event.ep = ep? ep : 0;
-    V.system.mode = 'event';
-    return ''
-}
-
-F.setMemory = function(id, title, chara){
-    const e = V.event
-
-    if(!V.memory[e.type]){
-        V.memory[e.type] = {}
-    }
-
-    if(e.type !== 'Kojo'){
-        V.memory[e.type][id] = {
-            name: e.type.name,
-            title: title,
-            ep:[],
-            sp:[],
-        }        
-    }
-    else{
-        if(!V.memory[chara]) V.memory[chara] = {};
-            V.memory[chara][id] = {
-                name: e.type.name,
-                title: title,
-                ep:[],
-                sp:[],
-        }
-    }
-}
-
-F.recEventPoint = function(t){
-    const c = V.event.type
-    const v = V.event[t]
-    const id = V.event.id
-    let k
-
-    if(t=='sp' && V.event.ep){
-        k = `ep${V.event.ep}:sp${v}`
-    }
-    else{
-        k = t+v
-    }
-
-    if(V.memory[c][id] && V.memory[c][id][t].includes(k) === false )
-       V.memory[c][id][t].push(k);
-}
-
-F.recKojoCom = function(){
-    
-}
-/* twine-user-script #25: "EventDialog.js" */
-
-F.txtFlow = function(txt, time ,dashline){
-    if(!time) time = 60;
-
-    new Wikifier(null, `<<append #content_message transition>><<timed ${time}ms>>${txt}${ dashline ? '<<dashline>>' : '' }<</timed>><</append>>`)
-
-    setTimeout(() => {
-        msg_end.scrollIntoView()
-    }, time);
-
-    msg_end.scrollIntoView()
-}
-
-F.nextLink = function(){
-    let next = V.event.next
-    console.log(V.event.next)
-    if(!next) next = 'Next'
-    return `<<link '${next}'>><<run F.nextDialog()>><</link>>`
-}
-DefineMacroS('eventnext',F.nextLink)
-
-F.initText = function(title){
-    const input = Story.get(title).text.split('\n')
-
-    S.dialog[title] = []
-    let text = []
-    let config = {}
-
-    input.forEach((t)=>{
-        if(t.includes('#:{')){
-            t = t.replace('#:','')
-            config = JSON.parse(t)
-        }
-        else if(t.match(/^\/\*(.+)\*\/$/)){
-            //注释要扣掉
-        }
-        else{
-            text.push(t)
-        }
-
-        if(t==="<fr>" || input[input.length-1] === t){
-            S.dialog[title].push({ text, config })
-            config = {}
-            text = []
-        }
-    })
-
-    if(Config.debug)
-        console.log('dialog',title,S.dialog[title]);
-}
-
-
-F.initEvent = function(){
-    const e = V.event
-    let title = `${e.type}_${e.name}`;
-
-    if ( e.eid ){
-        title = `${e.type}_${e.eid}_${e.name}`;
-    }
-
-    if ( e.ch ){
-        title += `_${e.ch}`;
-    }
-
-    e.fullname = title;
-
-    if ( Story.has(title+'::Before') ){
-        T.beforecheck = title+'::Before';
-    }
-
-    if ( Config.debug ){
-       console.log('check', e, title, T.beforecheck);
-    }
-
-}
-
-F.initDialog = function(){
-    const e = V.event;
-    let title = e.fullname
-
-    if ( e.ep ){
-        title += `_ep${e.ep}`;
-        F.recEventPoint('ep')
-    }
-
-    if ( e.sp ){
-        title += `:sp${e.sp}`;
-        F.recEventPoint('sp')
-    }
-
-    F.initText(title);
-    T.eventTitle = title;
-    const p = S.dialog[title][0]
-
-    if ( !p ) return '';
-
-    const txt = txtp(p.text)
-    e.config = p.config;
-    e.next = 'Next';
-
-    setTimeout(() => {
-        F.dialogFlow(txt);
-        e.phase = 0;
-    }, 80);
-}
-
-F.dialogFlow = function(){
-    const e = V.event;
-    const p = S.dialog[T.eventTitle][e.phase];
-
-    if(!p) return '';
-
-    const txt = txtp(p.text);
-    S.history.push(txt);
-
-    F.txtFlow(txt);
-
-    e.config = {};
-    e.config = p.config;
-
-    const exit = p.config?.exitlink ? p.config.exitlink : 'End';
-    const select = new SelectCase()
-
-    select.else('Next')
-        .case('return', 'Back')
-        .case('endEvent', exit)
-        .case('end', 'Continue')
-    
-    if ( !p.config?.type ) p.config.type = '';
-
-    e.next = select.has(p.config.type)
-
-    if ( p.config.type == 'onselect' ){
-        e.selectwait = true
-    }
-
-}
-
-
-F.nextDialog = function(){
-const e = V.event;
-const c = V.event.config;
-const com = c?.com ? c.com : ''
-const ch = T.eventTitle;
-
-if ( !e.selectwait && e.phase < S.dialog[ch].length ){
-    e.phase ++;
-    F.dialogFlow(ch)
-}
-
-
-if(e.selectwait)
-    new Wikifier(null, '<<replace #next>> <</replace>>')
-else
-    new Wikifier(null, `<<replace #next>><<eventnext>><</replace>>`)
-
-
-if ( e.phase === S.dialog[ch].length ){
-
-    if ( e.config.type == 'return' ){
-        e.sp = 0;
-        e.lastId = V.selectId;
-        V.selectId = 0;
-
-        if(com) new Wikifier(null, com);
-        F.initDialog()
-
-    }
-
-    else if ( e.config.type == 'endPhase' ){
-        if(c?.name) e.name = c.name;
-        if(c?.eid) e.eid = c.eid;
-        if(c?.ch) e.ch = c.ch;
-        if(c?.ep) e.ep = c.ep;
-        if(c?.sp) e.sp = c.sp;
-
-        e.phase = 0;
-        e.lastId = V.selectId;
-        V.selectId = 0;
-        e.sp = 0;
-
-        if(com) new Wikifier(null, com);
-        F.initDialog()
-    }
-
-    else if ( e.config.type == 'jump' ){
-        new Wikifier(null, `${com}<<timed 80ms>><<goto 'EventStart'>><</timed>>`)
-
-    }
-
-    else if ( e.config.type == 'selectEnd' ){
-        e.sp = V.selectId;
-        S.dialog = {}
-
-        if(com) new Wikifier(null, com)
-        F.initDialog()
-    }
-
-    else {
-
-        if( !e.config?.exit ){
-            e.config.exit = D.defaultExit;
-            e.config.exitlink = 'Continue';
-        }
-        V.system.mode = 'normal'
-        new Wikifier(null, `${com}<<goto 'EventEnd'>>`)
-
-    }
-
-    if(e.afterselect) delete e.afterselect;
-
-}
-
-}
-/* twine-user-script #26: "Kojo.js" */
-
-class Kojo{
-	static data = {}
-	static set(id, color){
-		Kojo.data[id] = new Kojo(id, color)
-		return Kojo.data[id]
-		
-	}
-
-	static get(id, type){
-		if(!Kojo.data[id]) return;
-		
-		if(!type)
-			return Kojo.data[id];
-		else
-			return Kojo.data[id][type];
-	}
-
-	constructor(id, color){
-		this.id = id;
-		this.color = color ? color : '#22A0FC';
-		this.intro = [];
-		this.schedule = [];
-		this.preset = [];
-		this.comFilter = ()=>{ return 1};
-		this.customCommand = {};
-		this.event = [];
-		this.home = 'void';
-		this.relation = {};
-	}
-	Intro(str){
-		this.intro = str;
-		return this;
-	}
-	Schedule(id, list){
-		if(id)
-			this.schedule[id] = list;
-		else
-			this.schedule.push(list);
-		return this;
-	}
-	setComFilter(cond){
-		this.comFilter = cond;
-		return this
-	}
-	setCommand(id, name, func){
-		if(id)
-			this.customCommand[id] = {name:name, do:func};
-		else
-			this.customCommand.push({ name: name, do:func });
-		return this;
-	}
-	Event(id, name, config, cond){
-		if(id)
-			this.event[id] = { name, config, cond };
-		else
-			this.event.push({name, config, cond});
-		
-		return this;
-	}
-	Home(str){
-		this.home = str;
-		return this;
-	}
-	Relation(id, des, val){
-		this.relation[id] = [val, des]
-		return this;
-	}
-}
-
-window.Kojo = Kojo
-/**
- * 
- * @param {string} cid 
- * @param {string} type 
- * @param {string | number} id 
- * @param {string} branch 
- * @returns 
- */
-F.Kojo = function(cid, type, id, branch){
-
-	if(branch && branch.has('Before','After','Cancel','Failed'))
-		branch = ':'+branch;
-	else if(branch)
-		branch = '_'+branch;
-	else
-		branch = ''
-
-
-    let title = `Kojo_${cid}_${type}${id ? '_' + id : ''}${branch}`
-    let text = ''
-    
-    if(Story.has(title))
-        text = Story.get(title).text;
-	else{
-		title = `Message_${type}${id ? '_'+id : ''}${branch}`
-		if(Story.has(title))
-			text = Story.get(title).text;
-	}
-
-	return text 		
-
-}
-
-/**
- * 
- * @param {string} txt 
- * @returns 
- */
-F.convertKojo = function(txt){
-	if(!txt.includes('<<=F.Kojo')) return txt;
-
-	console.log('find kojo?')
-
-	const match = txt.match(/<<=F.Kojo(.+?)>>/g)
-	match.forEach( p =>{
-		const t = p.match(/<<=F.Kojo\((.+?)\)>>/)
-		const args = t[1].replace(/\s+/g,'').replace(/'|"/g,'').split(',')
-
-		//cid的转换。 暂时都是target。有组队功能后再整(￣▽￣")
-		const cid = args[0].has('target','tc') ? target.kojo : args[0]
-			//args[0].has('party','pt') ? party[V.cp] : args[0]
-		txt = txt.replace(p, F.Kojo(target.kojo, args[1], args[2], args[3]))
-	})
-
-	return txt
-
-}
-/* twine-user-script #27: "Lib.js" */
-;(function () {
-	'use strict';
-
-	console.log("lib");
-
-})();
-/* twine-user-script #28: "MainLoop.js" */
+/* twine-user-script #24: "CommandLoop.js" */
 //----->> 小功能 <<---------------------------//
 
 //每次移动后的target复位
@@ -6296,11 +5787,16 @@ F.ComEvent = function(id, next){
     else if(T.comAble){
 
         //确认对象愿意配合执行
-        if( ( T.orderGoal > 0 && T.comorder >= T.orderGoal ) || T.orderGoal === 0 || com?.forceAble || V.system.debug ){
+        if( 
+            T.orderGoal === 0
+            || V.system.debug 
+            || ( T.orderGoal > 0 && T.comorder >= T.orderGoal )
+            || (com?.forceAble && T.comorder + D.ignoreOrder >= T.orderGoal )
+        ){
             V.passtime = com.time;
             txt = txt + Story.get(title).text
 
-            if(com?.forceAble && T.comorder < T.orderGoal && !V.system.debug){
+            if( T.comorder < T.orderGoal && !V.system.debug ){
                 S.msg.push(`配合度不足：${T.order}＝${T.comorder}/${T.orderGoal}<br>${com?.forceAble ? '<<run F.ComNext()>>' : ''}<br>`)
 
                 if(Story.has(title+':Force'))
@@ -6490,6 +5986,520 @@ F.switchChara = function(){
 
     return change
 }
+/* twine-user-script #25: "Dialog.js" */
+/**
+ * 
+ * @param {string} text 
+ */
+F.tranSelect = function(text){
+    let replace = text.includes('@replace')
+    let txt, html
+
+    if(replace){
+        txt = text.match(/#:select@replace:(.+):#/)
+    }
+    else{
+        txt = text.match(/#:select:(.+):#/)
+    }
+    
+    let pick = txt[1].split('|')
+    let selection = ''
+    pick.forEach(v=>{
+        let t = `<<pick`
+        let content = ''
+        let check = v.split(',')
+
+        check.forEach(k=>{
+            if(k=='auto')
+                t+= ` auto`;
+            else if(k.match(/%(.+)%/))
+                content = k.match(/%(.+)%/)[1]
+            else if(parseInt(k))
+                t+= ` ${k}`;
+            else
+                t += ` '${k}'`;
+        })
+        t += '>>'+content
+        selection += t
+    })
+    
+    if(replace){
+        html = `<br><<selection replace>>${selection}<</selection>>`
+    }
+    else{
+        html = `<br><<selection>>${selection}<</selection>>`
+    }
+    return text.replace(txt[0],html)
+}
+
+F.transTips = function(text){
+    let txt = text.match(/:tips:(.+)\|(.+):/)
+    return text.replace(txt[0],`<<tips '${txt[1]}' '${txt[2]}'>>`)
+}
+
+/**
+ * 
+ * @param {string | string[]} text 
+ */
+window.txtp = function(text){
+
+    const trans = function(t){
+        if(t.includes(':tips:'))
+            t = F.transTips(t);
+        if(t.includes(':select:'))
+            t = F.tranSelect(t);
+        if(t.includes('/L'))
+            t = t.replace('/L','<br>');
+
+        if(t.includes('<fr>')){
+            t = t.replace('<fr>','<br>')
+        }
+        else if(t.includes('/* */')){
+            t = t.replace('/* */','')
+        }
+        else{
+            if(t.has('if','switch','case','<</','select','<br>','replace','div','<<pick','<<event','<<run','<<set') === false){
+                t += '<br>'
+            };
+        }
+
+        return t
+    }
+
+    if(typeof text === 'string') return trans(text);
+
+    const txt = []
+
+    for(let i=0; i<text.length; i++){
+        txt[i] = trans(text[i])
+    }
+
+  return txt.join('')
+}
+
+
+window.Dlog = function(text, config){
+    const ch = T.passage
+    S.dialog[ch].push({ txt:text, config:config })
+    return ''
+}
+
+F.resetEvent = function(){
+    V.event = {
+        type:'', eid:'', name:'', ch:'', ep:0, phase:0, sp:0, lastId:0, lastPhase:0,
+    }
+    return ''
+}
+
+F.setEvent = function(type, name, eid, ch, ep){
+    V.event.type = type ? type : 'Event';
+    V.event.name = name ? name : '';
+    V.event.eid = eid ? eid : '';    
+    V.event.ch = ch? ch : '';
+    V.event.ep = ep? ep : 0;
+    V.system.mode = 'event';
+    return ''
+}
+
+F.setMemory = function(id, title, chara){
+    const e = V.event
+
+    if(!V.memory[e.type]){
+        V.memory[e.type] = {}
+    }
+
+    if(e.type !== 'Kojo'){
+        V.memory[e.type][id] = {
+            name: e.type.name,
+            title: title,
+            ep:[],
+            sp:[],
+        }        
+    }
+    else{
+        if(!V.memory[chara]) V.memory[chara] = {};
+            V.memory[chara][id] = {
+                name: e.type.name,
+                title: title,
+                ep:[],
+                sp:[],
+        }
+    }
+}
+
+F.recEventPoint = function(t){
+    const c = V.event.type
+    const v = V.event[t]
+    const id = V.event.id
+    let k
+
+    if(t=='sp' && V.event.ep){
+        k = `ep${V.event.ep}:sp${v}`
+    }
+    else{
+        k = t+v
+    }
+
+    if(V.memory[c][id] && V.memory[c][id][t].includes(k) === false )
+       V.memory[c][id][t].push(k);
+}
+
+F.recKojoCom = function(){
+    
+}
+/* twine-user-script #26: "EventDialog.js" */
+
+F.txtFlow = function(txt, time ,dashline){
+    if(!time) time = 60;
+
+    new Wikifier(null, `<<append #content_message transition>><<timed ${time}ms>>${txt}${ dashline ? '<<dashline>>' : '' }<</timed>><</append>>`)
+
+    setTimeout(() => {
+        msg_end.scrollIntoView()
+    }, time);
+
+    msg_end.scrollIntoView()
+}
+
+F.nextLink = function(){
+    let next = V.event.next
+    console.log(V.event.next)
+    if(!next) next = 'Next'
+    return `<<link '${next}'>><<run F.nextDialog()>><</link>>`
+}
+DefineMacroS('eventnext',F.nextLink)
+
+F.initText = function(title){
+    const input = Story.get(title).text.split('\n')
+
+    S.dialog[title] = []
+    let text = []
+    let config = {}
+
+    input.forEach((t)=>{
+        if(t.includes('#:{')){
+            t = t.replace('#:','')
+            config = JSON.parse(t)
+        }
+        else if(t.match(/^\/\*(.+)\*\/$/)){
+            //注释要扣掉
+        }
+        else{
+            text.push(t)
+        }
+
+        if(t==="<fr>" || input[input.length-1] === t){
+            S.dialog[title].push({ text, config })
+            config = {}
+            text = []
+        }
+    })
+
+    if(Config.debug)
+        console.log('dialog',title,S.dialog[title]);
+}
+
+
+F.initEvent = function(){
+    const e = V.event
+    let title = `${e.type}_${e.name}`;
+
+    if ( e.eid ){
+        title = `${e.type}_${e.eid}_${e.name}`;
+    }
+
+    if ( e.ch ){
+        title += `_${e.ch}`;
+    }
+
+    e.fullname = title;
+
+    if ( Story.has(title+'::Before') ){
+        T.beforecheck = title+'::Before';
+    }
+
+    if ( Config.debug ){
+       console.log('check', e, title, T.beforecheck);
+    }
+
+}
+
+F.initDialog = function(){
+    const e = V.event;
+    let title = e.fullname
+
+    if ( e.ep ){
+        title += `_ep${e.ep}`;
+        F.recEventPoint('ep')
+    }
+
+    if ( e.sp ){
+        title += `:sp${e.sp}`;
+        F.recEventPoint('sp')
+    }
+
+    F.initText(title);
+    T.eventTitle = title;
+    const p = S.dialog[title][0]
+
+    if ( !p ) return '';
+
+    const txt = txtp(p.text)
+    e.config = p.config;
+    e.next = 'Next';
+
+    setTimeout(() => {
+        F.dialogFlow(txt);
+        e.phase = 0;
+    }, 80);
+}
+
+F.dialogFlow = function(){
+    const e = V.event;
+    const p = S.dialog[T.eventTitle][e.phase];
+
+    if(!p) return '';
+
+    const txt = txtp(p.text);
+    S.history.push(txt);
+
+    F.txtFlow(txt);
+
+    e.config = {};
+    e.config = p.config;
+
+    const exit = p.config?.exitlink ? p.config.exitlink : 'End';
+    const select = new SelectCase()
+
+    select.else('Next')
+        .case('return', 'Back')
+        .case('endEvent', exit)
+        .case('end', 'Continue')
+    
+    if ( !p.config?.type ) p.config.type = '';
+
+    e.next = select.has(p.config.type)
+
+    if ( p.config.type == 'onselect' ){
+        e.selectwait = true
+    }
+
+}
+
+
+F.nextDialog = function(){
+const e = V.event;
+const c = V.event.config;
+const com = c?.com ? c.com : ''
+const ch = T.eventTitle;
+
+if ( !e.selectwait && e.phase < S.dialog[ch].length ){
+    e.phase ++;
+    F.dialogFlow(ch)
+}
+
+
+if(e.selectwait)
+    new Wikifier(null, '<<replace #next>> <</replace>>')
+else
+    new Wikifier(null, `<<replace #next>><<eventnext>><</replace>>`)
+
+
+if ( e.phase === S.dialog[ch].length ){
+
+    if ( e.config.type == 'return' ){
+        e.sp = 0;
+        e.lastId = V.selectId;
+        V.selectId = 0;
+
+        if(com) new Wikifier(null, com);
+        F.initDialog()
+
+    }
+
+    else if ( e.config.type == 'endPhase' ){
+        if(c?.name) e.name = c.name;
+        if(c?.eid) e.eid = c.eid;
+        if(c?.ch) e.ch = c.ch;
+        if(c?.ep) e.ep = c.ep;
+        if(c?.sp) e.sp = c.sp;
+
+        e.phase = 0;
+        e.lastId = V.selectId;
+        V.selectId = 0;
+        e.sp = 0;
+
+        if(com) new Wikifier(null, com);
+        F.initDialog()
+    }
+
+    else if ( e.config.type == 'jump' ){
+        new Wikifier(null, `${com}<<timed 80ms>><<goto 'EventStart'>><</timed>>`)
+
+    }
+
+    else if ( e.config.type == 'selectEnd' ){
+        e.sp = V.selectId;
+        S.dialog = {}
+
+        if(com) new Wikifier(null, com)
+        F.initDialog()
+    }
+
+    else {
+
+        if( !e.config?.exit ){
+            e.config.exit = D.defaultExit;
+            e.config.exitlink = 'Continue';
+        }
+        V.system.mode = 'normal'
+        new Wikifier(null, `${com}<<goto 'EventEnd'>>`)
+
+    }
+
+    if(e.afterselect) delete e.afterselect;
+
+}
+
+}
+/* twine-user-script #27: "Kojo.js" */
+
+class Kojo{
+	static data = {}
+	static set(id, color){
+		Kojo.data[id] = new Kojo(id, color)
+		return Kojo.data[id]
+		
+	}
+
+	static get(id, type){
+		if(!Kojo.data[id]) return;
+		
+		if(!type)
+			return Kojo.data[id];
+		else
+			return Kojo.data[id][type];
+	}
+
+	constructor(id, color){
+		this.id = id;
+		this.color = color ? color : '#22A0FC';
+		this.intro = [];
+		this.schedule = [];
+		this.preset = [];
+		this.comFilter = ()=>{ return 1};
+		this.customCommand = {};
+		this.event = [];
+		this.home = 'void';
+		this.relation = {};
+	}
+	Intro(str){
+		this.intro = str;
+		return this;
+	}
+	Schedule(id, list){
+		if(id)
+			this.schedule[id] = list;
+		else
+			this.schedule.push(list);
+		return this;
+	}
+	setComFilter(cond){
+		this.comFilter = cond;
+		return this
+	}
+	setCommand(id, name, func){
+		if(id)
+			this.customCommand[id] = {name:name, do:func};
+		else
+			this.customCommand.push({ name: name, do:func });
+		return this;
+	}
+	Event(id, name, config, cond){
+		if(id)
+			this.event[id] = { name, config, cond };
+		else
+			this.event.push({name, config, cond});
+		
+		return this;
+	}
+	Home(str){
+		this.home = str;
+		return this;
+	}
+	Relation(id, des, val){
+		this.relation[id] = [val, des]
+		return this;
+	}
+}
+
+window.Kojo = Kojo
+/**
+ * 
+ * @param {string} cid 
+ * @param {string} type 
+ * @param {string | number} id 
+ * @param {string} branch 
+ * @returns 
+ */
+F.Kojo = function(cid, type, id, branch){
+
+	if(branch && branch.has('Before','After','Cancel','Failed'))
+		branch = ':'+branch;
+	else if(branch)
+		branch = '_'+branch;
+	else
+		branch = ''
+
+	if(C[cid].kojo) cid = C[cid].kojo // 如果使用口上与id不一致，则覆盖
+
+
+    let title = `Kojo_${cid}_${type}${id ? '_' + id : ''}${branch}`
+    let text = ''
+    
+    if(Story.has(title))
+        text = Story.get(title).text;
+	else{
+		title = `Message_${type}${id ? '_'+id : ''}${branch}`
+		if(Story.has(title))
+			text = Story.get(title).text;
+	}
+
+	return text 		
+
+}
+
+/**
+ * 
+ * @param {string} txt 
+ * @returns 
+ */
+F.convertKojo = function(txt){
+	if(!txt.includes('<<=F.Kojo')) return txt;
+
+	console.log('find kojo?')
+
+	const match = txt.match(/<<=F.Kojo(.+?)>>/g)
+	match.forEach( p =>{
+		const t = p.match(/<<=F.Kojo\((.+?)\)>>/)
+		const args = t[1].replace(/\s+/g,'').replace(/'|"/g,'').split(',')
+
+		//cid的转换。 暂时都是target。有组队功能后再整(￣▽￣")
+		const cid = args[0].has('target','tc') ? target.kojo : args[0]
+			//args[0].has('party','pt') ? party[V.cp] : args[0]
+		txt = txt.replace(p, F.Kojo(target.kojo, args[1], args[2], args[3]))
+	})
+
+	return txt
+
+}
+/* twine-user-script #28: "Lib.js" */
+;(function () {
+	'use strict';
+
+	console.log("lib");
+
+})();
 /* twine-user-script #29: "clothes.js" */
 
 
@@ -7537,6 +7547,20 @@ F.timeEffects = function(t, mode){
 
 	if(date.time + t >= 1380) flag.daychange = true; //先不加到现在时间，瞅瞅过23点没。
 
+	//根据在场角色进行source处理
+	let charas = V.location.chara
+	charas.forEach((cid)=>{
+		const chara = C[cid]
+
+		//衣服穿着和持续行动带来的source变动
+		//F.trackCheck(chara, cid)
+
+		F.sourceCheck(chara, cid)
+		F.sourceUp(chara, cid)
+	})
+
+	//对不在场的角色进行时间经过处理。
+	//charas = F.getNoActiveChara()
 }
 
 F.timePhase = function(){
@@ -7553,13 +7577,72 @@ F.timePhase = function(){
 	return select.has(h)
 }
 
-F.sourceCheck = function(){
+F.sourceCheck = function(chara, cid){
 	//source的处理。根据条件对source的获得值进行加减。
+
+	//根据特定条件进行数值处理
+
+
+	//根据素质进行数值处理. 数值buff最后处理
+	F.traitSource(chara, cid)
 
 }
 
-F.sourceUp = function(){
-	//根据处理结果进行反馈。并输出结果文字到 S.sourceResult下。当启用显示结果数值时，会显示在COM after之后。
+F.traitSource = function(chara, cid){
+
+chara.traits.forEach((t)=>{
+	const data =  Trait.get(t)
+	for(let i in data.get){
+		if(chara.source[i]){
+			chara.source[i] *= data.get[i]
+		}
+	}
+
+	if(typeof data.onSource == 'function'){ // 执行素质的例外处理。
+		data.onSource(cid)
+	}
+})
+	
+}
+
+
+F.sourceUp = function(chara){
+//根据处理结果进行反馈。并输出结果文字到 S.sourceResult下。当启用显示结果数值时，会显示在COM after之后。
+const base = Object.keys(D.base)
+const palam = Object.keys(D.palam)
+
+let palamlv = {}
+let retext = ''
+
+for(let i in chara.source){
+	chara.sup[i] = chara.source[i]; //处理结果暂存到sup中用作显示
+
+	if(chara.sup[i] !== 0){
+		//将变动记录作为文本记录到 S.msg ?
+	}
+
+	if(base.includes(i)  &&  chara.source[i]){
+		chara.base[i][0] = Math.clamp(chara.base[i][0
+		] + chara.source[i], -100, chara.base[i][1] * 1.5 )
+	}
+
+	if(palam.includes(i) && chara.source[i]){
+		const lv = chara.palam[i][0]
+
+		chara.palam[i][1] += chara.source[i]
+
+		//palam lv的处理， 顺便在这里记录变动文本？
+		if(chara.palam[i][1] >= D.palamLv[lv] ){
+			chara.palam[i][i] -= D.palamLv[lv];
+			chara.palam[i][0] = Math.clamp(chara.palam[i][0] + 1 , 0, D.palamLv.length)
+		}
+	}
+}
+
+}
+
+F.trackCheck = function(chara, cid){
+
 }
 /* twine-user-script #37: "RegistAllCom" */
 //批处理多个指令。
@@ -7726,7 +7809,29 @@ Com.set('X1')
         F.getExp(target, 'B', random(2));
     })
     .ForceAble()
-/* twine-user-script #43: "Kojo_Isil_Regist" */
+/* twine-user-script #43: "Com_X2::Script" */
+Com.set('X2')
+    .Check(()=>{
+        //能跑进来时已经过滤掉的情况：非合意且对象具备抵抗能力
+        //触手系都需要堕落flag，或者性依存高于2500，或者具有服从系陷落素质后，才能在清醒时执行。
+        //触手相关指令受触手等级限制
+        //Check这里进行具体的条件筛选
+
+        return true
+    })
+    .ComOrder(()=>{
+        //order这里看对方配合度。数值就是需求的配合值。
+        return 50 //return的是需求的配合度。
+
+    })
+    .Effect(()=>{
+        Source[tc].esB += 100
+        Source[tc].resist += Math.floor(1000 - F.Exp(tc, '触手奸')/5)
+
+        F.getExp(target, '触手奸', random(3));
+        F.getExp(target, 'B', random(2));
+    })
+/* twine-user-script #44: "Kojo_Isil_Regist" */
 /* 代码区，用于注册角色颜色、额外的设定、flag信息等 */
 Kojo.set('Isil','#F9F570')
     .Intro('光属性的高等精灵。') //角色简介。
@@ -7740,7 +7845,7 @@ Kojo.set('Isil','#F9F570')
             return V.system.debug
         }
     })
-/* twine-user-script #44: "Kojo_Nanaly_Regist" */
+/* twine-user-script #45: "Kojo_Nanaly_Regist" */
 /*注意：娜娜莉是姛，如果条件允许应当当玩家是女性/双性时才可攻略*/
 /* 代码区，用于注册角色颜色、额外的设定、flag信息等 */
 Kojo.set('Nanaly','#66CCFF')//颜色其实没仔细找，先塞一个在这
@@ -7748,7 +7853,7 @@ Kojo.set('Nanaly','#66CCFF')//颜色其实没仔细找，先塞一个在这
 .Home('学生宿舍A201')
 .Relation('Isil', '青梅竹马', 110)
 .Schedule() //日程表
-/* twine-user-script #45: "Action_General_Option" */
+/* twine-user-script #46: "Action_General_Option" */
 Action.set('Talk') // comunicate
      .Filter(()=>{
          return V.pc !== V.tc
@@ -7870,7 +7975,7 @@ Action.set('Shop')// shop
      .Order(()=>{
          return 0
       })
-/* twine-user-script #46: "Action_t0_Option" */
+/* twine-user-script #47: "Action_t0_Option" */
 /* 接吻 */
 Action.set('t0')
      .Filter(()=>{
@@ -8002,7 +8107,7 @@ Action.set('t10')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #47: "Action_UseItem_Option" */
+/* twine-user-script #48: "Action_UseItem_Option" */
 /* 使用跳弹 */
 Action.set('Rotor')
    .Filter(()=>{
@@ -8014,7 +8119,7 @@ Action.set('Vibrator')
    .Filter(()=>{
       return 1
    })
-/* twine-user-script #48: "Action_Tentacles_Option" */
+/* twine-user-script #49: "Action_Tentacles_Option" */
 /* 揉捏 */
 Action.set('x0')
      .Filter(()=>{
@@ -8183,7 +8288,7 @@ Action.set('x13')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #49: "Action_Other_Option" */
+/* twine-user-script #50: "Action_Other_Option" */
 /* 直播 */
 Action.set('Stream')
      .Filter(()=>{
@@ -8502,26 +8607,26 @@ SM   - 捆绑鞭打等SM行为
 /name最大六个字，主分类tag会根据id首字母自动分配。tag中可以补充小分类，用|分割。
 /G-常规指令，T-挑逗、前戏等身体轻度接触指令，S-性交类指令，A-肛门类指令，U-尿道类指令
 /X-觸手类指令，I-道具类指令，M-SM、鬼畜等虐待系行为指令，P-各种情景play系开关，O-其他</tw-passagedata><tw-passagedata pid="51" name="ComList" tags="list" position="100,725" size="100,100">/* 常规指令 */
-G0,移动,交流,1
-G1,放松,休息,15
-G2,聊天,交流,0
+G0, 移动, 交流,1
+G1, 放松, 休息,15
+G2, 聊天, 交流,0
 
 /* 挑逗、前戏  */
-T0,抚摸,常规
-T1,摸胸,
-T2,玩乳头,
-T3,吸乳头,
-T4,撸阴茎,
-T5,指交,
-T99,推倒,常规,
+T0, 抚摸, 常规
+T1, 摸胸,
+T2, 玩乳头,
+T3, 吸乳头,
+T4, 撸阴茎,
+T5, 指交,
+T99, 推倒, 常规,
 
 /* 触手专用，触手都可持续。同时进行数看部位是否被占用以及触手数量。
 /* 或许修改成 部位 对 部位 使用 什么 进行 动作的方式？ */
-X1,玩乳头(触)
-X2,吸乳头(触)
-X3,撸阴茎(触)
-X4,玩后穴(触)
-X5,玩私穴(触)</tw-passagedata><tw-passagedata pid="52" name="Command::Before" tags="" position="225,725" size="100,100">/* 指令执行前的通用文本。时间段提示、场景变换等。如果有运行代码不放这里。*/
+X1, 玩乳头(触)
+X2, 吸乳头(触)
+X3, 撸阴茎(触)
+X4, 玩后穴(触)
+X5, 玩私穴(触)</tw-passagedata><tw-passagedata pid="52" name="Command::Before" tags="" position="225,725" size="100,100">/* 指令执行前的通用文本。时间段提示、场景变换等。如果有运行代码不放这里。*/
 &lt;&lt;if $date.time &gt;= 1080 &amp;&amp; !_timeCheckNight&gt;&gt;
 &lt;&lt;set _timeCheckNight to true&gt;&gt;
 天开始暗下来了……&lt;br&gt;
@@ -8544,36 +8649,36 @@ Com.set(&#39;G0&#39;)
 &lt;&lt;else&gt;&gt;
 但$target.name并没有心情理会&lt;&lt;you&gt;&gt;。
 &lt;&lt;/if&gt;&gt;&lt;br&gt;</tw-passagedata><tw-passagedata pid="60" name="Com_G2" tags="" position="1225,725" size="100,100">&lt;&lt;you&gt;&gt;试着跟$target.name搭话。&lt;br&gt;
-&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, &#39;G2&#39;)&gt;&gt;
+&lt;&lt;=F.Kojo($tc, &#39;Com&#39;, &#39;G2&#39;)&gt;&gt;
 
 \</tw-passagedata><tw-passagedata pid="61" name="Com_G2::Before//" tags="" position="100,850" size="100,100">/*取消前的文本sample */
 $player.name走近$target.name准备搭话。&lt;br&gt;
 &lt;&lt;linkreplace &#39;取消&#39;&gt;&gt;&lt;&lt;resetLink&gt;&gt;&lt;&lt;resetScene&gt;&gt;&lt;&lt;/linkreplace&gt;&gt;&lt;br&gt;</tw-passagedata><tw-passagedata pid="62" name="Com_G2::After//" tags="" position="225,850" size="100,100">/*指令结束时的文本sample */
 好感增加了一点。&lt;br&gt;</tw-passagedata><tw-passagedata pid="63" name="Com_T0" tags="" position="350,850" size="100,100">&lt;&lt;you&gt;&gt;的手在$target.name的身上四处游走着。&lt;br&gt;
-&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, &#39;T0&#39;)&gt;&gt;
+&lt;&lt;=F.Kojo($tc, &#39;Com&#39;, &#39;T0&#39;)&gt;&gt;
 &lt;br&gt;</tw-passagedata><tw-passagedata pid="64" name="Com_T1" tags="" position="475,850" size="100,100">&lt;&lt;you&gt;&gt;把手覆盖在$target.name的胸上开始抚摸。&lt;br&gt;
-&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, &#39;T1&#39;)&gt;&gt;&lt;br&gt;</tw-passagedata><tw-passagedata pid="65" name="Com_T2" tags="" position="600,850" size="100,100">&lt;&lt;you&gt;&gt;用手轻轻捏住了$target.name的乳头&lt;br&gt;
-&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, &#39;T2&#39;)&gt;&gt;
+&lt;&lt;=F.Kojo($tc, &#39;Com&#39;, &#39;T1&#39;)&gt;&gt;&lt;br&gt;</tw-passagedata><tw-passagedata pid="65" name="Com_T2" tags="" position="600,850" size="100,100">&lt;&lt;you&gt;&gt;用手轻轻捏住了$target.name的乳头&lt;br&gt;
+&lt;&lt;=F.Kojo($tc, &#39;Com&#39;, &#39;T2&#39;)&gt;&gt;
 &lt;br&gt;</tw-passagedata><tw-passagedata pid="66" name="Com_T3" tags="" position="725,850" size="100,100">&lt;&lt;you&gt;&gt;用嘴含住了$target.name的乳头，吮吸着。&lt;br&gt;
-&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, &#39;T3&#39;)&gt;&gt;
+&lt;&lt;=F.Kojo($tc, &#39;Com&#39;, &#39;T3&#39;)&gt;&gt;
 &lt;br&gt;</tw-passagedata><tw-passagedata pid="67" name="Com_T4" tags="" position="850,850" size="100,100">&lt;&lt;you&gt;&gt;轻轻握住了$target.name的阴茎，缓缓地前后撸动。&lt;br&gt;
-&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, &#39;T4&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="68" name="Com_T5" tags="" position="975,850" size="100,100">&lt;&lt;you&gt;&gt;将手指探入$target.name的&lt;&lt;=F.splitSex($target,&#39;菊穴&#39;,&#39;秘穴&#39;)&gt;&gt;在入口附近摩擦着。&lt;br&gt;
-&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, &#39;T5&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="69" name="Com_T99" tags="" position="1100,850" size="100,100">&lt;&lt;if $system.mode !== &#39;train&#39; &gt;&gt;
+&lt;&lt;=F.Kojo($tc, &#39;Com&#39;, &#39;T4&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="68" name="Com_T5" tags="" position="975,850" size="100,100">&lt;&lt;you&gt;&gt;将手指探入$target.name的&lt;&lt;=F.splitSex($target,&#39;菊穴&#39;,&#39;秘穴&#39;)&gt;&gt;在入口附近摩擦着。&lt;br&gt;
+&lt;&lt;=F.Kojo($tc, &#39;Com&#39;, &#39;T5&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="69" name="Com_T99" tags="" position="1100,850" size="100,100">&lt;&lt;if $system.mode !== &#39;train&#39; &gt;&gt;
 &lt;&lt;you&gt;&gt;将$target.name带到没人注意到的角落。&lt;br&gt;
-&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, &#39;T99&#39;, &#39;start&#39;)&gt;&gt;
+&lt;&lt;=F.Kojo($tc, &#39;Com&#39;, &#39;T99&#39;, &#39;start&#39;)&gt;&gt;
 
 &lt;&lt;else&gt;&gt;
 &lt;&lt;you&gt;&gt;帮$target.name整理好衣服。&lt;br&gt;
-&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, &#39;T99&#39;, &#39;finish&#39;)&gt;&gt;
+&lt;&lt;=F.Kojo($tc, &#39;Com&#39;, &#39;T99&#39;, &#39;finish&#39;)&gt;&gt;
 &lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="70" name="Com_X1" tags="" position="1225,850" size="100,100">触手&lt;&lt;=(T.force? `强行爬上${$target.name}的身躯，` : &#39;&#39; )&gt;&gt;沿着$target.name的肌肤往胸部游走，缠绕在乳尖上开始蠕动。&lt;br&gt;
 &lt;&lt;=either([
     &#39;缠绕、蠕动。&#39;,&#39;揉捏、摩擦。&#39;,&#39;挑弄、点拨。&#39;,&#39;蠕动、揉捏。&#39;,&#39;挑逗、缠绕、扭捏。&#39;
 ])&gt;&gt;触手不停地反复着动作，时重时轻地对乳尖反复进行刺激。
 &lt;br&gt;
-&lt;&lt;=F.Kojo($target.kojo, &#39;Com&#39;, &#39;X1&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="71" name="//Com_X1:Fail" tags="" position="100,975" size="100,100">因为对方不配合而取消时的文本。
+&lt;&lt;=F.Kojo($tc, &#39;Com&#39;, &#39;X1&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="71" name="//Com_X1:Fail" tags="" position="100,975" size="100,100">因为对方不配合而取消时的文本。
 口上分支是 Kojo_Chara_Com_id:Failed</tw-passagedata><tw-passagedata pid="72" name="//Com_X1:Force" tags="" position="225,975" size="100,100">整个事件脉络都不一样时。
 直接用:Force做分支。
-口上分支是 Kojo_Chara_Com_id:Force;</tw-passagedata><tw-passagedata pid="73" name="Com_X2" tags="" position="350,975" size="100,100"></tw-passagedata><tw-passagedata pid="74" name="Com_X3" tags="" position="475,975" size="100,100"></tw-passagedata><tw-passagedata pid="75" name="Com_X4" tags="" position="600,975" size="100,100"></tw-passagedata><tw-passagedata pid="76" name="Com_X5" tags="" position="725,975" size="100,100"></tw-passagedata><tw-passagedata pid="77" name="CommandLoop:Before" tags="" position="850,975" size="100,100">/*纯代码区，最先处理 */</tw-passagedata><tw-passagedata pid="78" name="CommandLoop:After" tags="" position="975,975" size="100,100">/*纯代码区，最后处理 */</tw-passagedata><tw-passagedata pid="79" name="CommandLoop" tags="" position="1100,975" size="100,100">&lt;div id=&#39;hidden&#39; class=&#39;hidden&#39;&gt;you can&#39;t see me.&lt;/div&gt;
+口上分支是 Kojo_Chara_Com_id:Force;</tw-passagedata><tw-passagedata pid="73" name="Com_X2" tags="" position="350,975" size="100,100">触手&lt;&lt;=(T.force? `强行爬上${$target.name}的身躯，` : &#39;&#39; )&gt;&gt;沿着$target.name的肌肤往胸部游走，张开吸盘吸附在乳尖上，伸出触须吸舔乳尖。&lt;br&gt;</tw-passagedata><tw-passagedata pid="74" name="Com_X3" tags="" position="475,975" size="100,100"></tw-passagedata><tw-passagedata pid="75" name="Com_X4" tags="" position="600,975" size="100,100"></tw-passagedata><tw-passagedata pid="76" name="Com_X5" tags="" position="725,975" size="100,100"></tw-passagedata><tw-passagedata pid="77" name="CommandLoop:Before" tags="" position="850,975" size="100,100">/*纯代码区，最先处理 */</tw-passagedata><tw-passagedata pid="78" name="CommandLoop:After" tags="" position="975,975" size="100,100">/*纯代码区，最后处理 */</tw-passagedata><tw-passagedata pid="79" name="CommandLoop" tags="" position="1100,975" size="100,100">&lt;div id=&#39;hidden&#39; class=&#39;hidden&#39;&gt;you can&#39;t see me.&lt;/div&gt;
 &lt;div id=&#39;location&#39;&gt;&lt;/div&gt;
 &lt;br&gt;
 &lt;div id=&#39;content&#39; class=&#39;content&#39; onClick=&#39;if(S.msg)F.ComNext();&#39;&gt;
