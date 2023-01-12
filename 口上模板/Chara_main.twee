@@ -1,6 +1,6 @@
 /* Chara替换为角色ID */
 
-:: Kojo_Chara_Regist[script]
+:: Kojo_cid_Regist[script]
 /* 纯代码区,用于注册角色信息 */
 Kojo.set('Nanaly', '#66CCFF') //角色id与 名牌颜色
     .Intro('角色简介')
@@ -20,7 +20,7 @@ Kojo.set('Nanaly', '#66CCFF') //角色id与 名牌颜色
     })
 
 
-:: Kojo_Chara[widget]
+:: Kojo_cid[widget]
 /* 自定义小功能区 */
 <<widget "CharaToolname">>
     小功能的名字只能是英文字母.<br>
@@ -39,3 +39,5 @@ Kojo.set('Nanaly', '#66CCFF') //角色id与 名牌颜色
     ['词语B', 30],
     ['词语C', 50]
     ])>><</widget>>
+
+<<widget "CharaName">><<print $chara.cid.name>><</widget>>

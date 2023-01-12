@@ -1,6 +1,6 @@
 :: Action_General_Option[script]
 
-Action.set('Talk') // comunicate
+Action.set('Interaction') // comunicate
      .Filter(()=>{
          return V.pc !== V.tc
      })

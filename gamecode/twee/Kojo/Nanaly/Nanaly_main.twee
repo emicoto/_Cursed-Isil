@@ -23,7 +23,7 @@ Kojo.set('Nanaly', '#66CCFF') //角色id与 名牌颜色
 
 :: Kojo_Nanaly[widget]
 /* 自定义小功能区 */
-<<widget "CharaToolname">>
+<<widget "NanalyToolname">>
     小功能的名字只能是英文字母.<br>
     因为不能有重复,所以必须角色id开头来区分.<br>
     重复使用的文本,自动喘息一类的都可以用小工具写.<br>
@@ -32,11 +32,13 @@ Kojo.set('Nanaly', '#66CCFF') //角色id与 名牌颜色
 <</widget>>
 
 /*随机召唤单个词语时*/
-<<widget "CharaRandomName">><<=either(['词语A','词语B','词语C','词语D'])>><</widget>>
+<<widget "NanalyRandomName">><<=either(['词语A','词语B','词语C','词语D'])>><</widget>>
 
 /* 随机召唤某个词语,并带概率设置, 概率由小到大排列 */
-<<widget "CharaRandom">><<=maybe([
+<<widget "NanalyRandom">><<=maybe([
     ['词语A', 20],
     ['词语B', 30],
     ['词语C', 50]
     ])>><</widget>>
+
+<<widget "NanalyName">><<print $chara.Nanaly.name>><</widget>>

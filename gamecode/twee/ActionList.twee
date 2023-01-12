@@ -19,7 +19,7 @@ r：乳头， g：大腿， d：腹部
 
 :: ActionList[list]
 /* level:所在层数，time：花费时间，locationTags：需求的地点标签，option：额外设置 */
-#G| id, name, time, locationTags, option1
+#G| id, name, time, locationTags, option
 Relax, 放松, 15, 床|椅子|休息
 Walk, 散步, 15, 室外
 Plant, 种植, 30, 菜园
@@ -30,9 +30,17 @@ Class, 上课, 90, 教室
 HomeWork, 做作业, 120, 书桌
 Shop, 购物, 20, 商店
 
-Talk, 交流, 5, 角色 ,needActiveTarget
+Interaction, 交流, 5, 角色 ,needActiveTarget
 Gift, 送礼, 2, needActiveTarget
 TrySex, 推倒, 1, 隐匿|私室|阴影, needTarget
+
+:C| id, name, time
+Talk, 闲聊, 5,
+Look, 观察, 2,
+Talk2, 近况, 5,
+Interest, 兴趣, 5,
+PetHead, 摸头, 2,
+Firm, 调情, 3,
 
 /* 攻受通用 = 部分攻方 */
 /* mode: 1: normal, 1.5: between 1 and 2,  2: harassment/affection, 3: woohoo */
@@ -52,7 +60,7 @@ t10, 撸动, 3, h, p, {0}握住{1}的{2}，前后撸动着。
 t11, 拳交, 3, h, va, {0}的拳头粗暴地捅进了{1}的{2}里面，反复抽插着。
 
 /* 大概是受方专用动作？ */
-#R| id, name, mode, level, usePart, targetPart, defaultText
+#R| id, name, mode, usePart, targetPart, defaultText
 r0, 握住, 1, h, hpf, {0}的{3}握住了{1}的{2}。
 r1, 收紧, 3, va, ph, {0}控制自身{3}，紧紧夹住了{1}的{2}。
 

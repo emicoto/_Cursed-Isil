@@ -2,18 +2,16 @@
 class Kojo{
 	static data = {}
 	static set(id, color){
-		Kojo.data[id] = new Kojo(id, color)
-		return Kojo.data[id]
+		let data = Kojo.data
+		if(!data[id]) data[id] = new Kojo(id, color);
+		return data[id]
 		
 	}
 
 	static get(id, type){
-		if(!Kojo.data[id]) return;
-		
-		if(!type)
-			return Kojo.data[id];
-		else
-			return Kojo.data[id][type];
+		let data = Kojo.data[id]
+		if(!data) return;
+		return type ? data[type] : data;
 	}
 
 	constructor(id, color){
@@ -86,7 +84,7 @@ F.Kojo = function(cid, type, id, branch){
 	else
 		branch = ''
 
-	if(C[cid].kojo) cid = C[cid].kojo // 如果使用口上与id不一致，则覆盖
+	if(C[cid].kojo !== cid ) cid = C[cid].kojo // 如果使用口上与id不一致，则覆盖
 
 
     let title = `Kojo_${cid}_${type}${id ? '_' + id : ''}${branch}`
@@ -99,6 +97,9 @@ F.Kojo = function(cid, type, id, branch){
 		if(Story.has(title))
 			text = Story.get(title).text;
 	}
+
+	if(!text) T.kojo = 0
+	else T.kojo = 1
 
 	return text 		
 
@@ -119,10 +120,13 @@ F.convertKojo = function(txt){
 		const t = p.match(/<<=F.Kojo\((.+?)\)>>/)
 		const args = t[1].replace(/\s+/g,'').replace(/'|"/g,'').split(',')
 
-		//cid的转换。 暂时都是target。有组队功能后再整(￣▽￣")
-		const cid = args[0].has('target','tc') ? target.kojo : args[0]
-			//args[0].has('party','pt') ? party[V.cp] : args[0]
-		txt = txt.replace(p, F.Kojo(target.kojo, args[1], args[2], args[3]))
+		//cid的转换。还是直接eval吧。
+		let cid = eval(args[0])
+
+		if(Config.debug)
+			console.log('args', args, 'cid' ,cid);
+
+		txt = txt.replace(p, F.Kojo(cid, args[1], args[2], args[3]))
 	})
 
 	return txt

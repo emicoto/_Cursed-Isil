@@ -398,17 +398,19 @@ F.initCharaV = function(){
 
 F.initAction = function(cid){
     Act[cid] = {}
+	Using[cid] = {}
     if(cid == 'm0' ){
         Act[cid].tentacles = [
-            { tc:'', com:'', use:''},
-            { tc:'', com:'', use:''},
+            { tc:'', act:'', use:''},
+            { tc:'', act:'', use:''},
         ];
     }
     else{
         let list = ['handR', 'handL' ,'mouth', 'penis', 'vagina', 'anal', 'feet']
 
         list.forEach((k)=>{
-            Act[cid][k] = { tc:'', act:'', use:'' };
+            Act[cid][k] = { tc:'', act:'', use:'' }; // 作为actor执行命令时判定点
+			Using[cid][k] = { act: '', }; // 作为目标对象进行部位占用检测，同时也是持续动作的判定点？
         })
     }
 }

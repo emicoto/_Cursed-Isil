@@ -96,7 +96,7 @@ const actList = {}
 class Action{
     constructor(id, name, { time = 5, mode = 0, usePart, targetPart, option, defaultText, type } = {} ){
 
-        const typeMap = new Map([['G', '常规'], ['T', '接触'], ['X', '触手'],['O','其他'],['I','道具'],['R','被动']],)
+        const typeMap = new Map([['G', '常规'], ['T', '接触'], ['X', '触手'],['O','其他'],['I','道具'],['R','被动'],['C','交流']],)
         this.id = id;
         this.name = name;
         this.type = typeMap.get(type);
@@ -164,13 +164,13 @@ class Action{
             return txt
         }
         
-        if( ['调教', '触手'].includes(data.type) ){
+        if( ['接触', '被动', '触手'].includes(data.type) ){
+            
             txt +=  data.usePart.map(k => {
                 return `${title}\n/* ${name} */\n<<switch F.checkUse(tc, '${data.id}')>>\n${ctx(k)}<</switch>>\n\n`
             }).join('')
         }
-        
-        if(data.type == '道具'){
+        else if(data.type == '道具'){
             return `${title}\n/* ${name} */\n<<switch F.checkUse(tc, '${data.id}')>>\n${ctx('hand')}<</switch>>\n\n`
         }
         else{

@@ -251,8 +251,8 @@ F.ComEvent = function(id, next){
             F.ComMsg(`<<run comdata['${id}'].source(); F.passtime(V.passtime); F.ComResult()>>`, 1)
 
             //确认After事件。如果有就添加到 Msg中。
-            if(Story.has(title+'::After')){
-                txt = `<br><<set _comPhase to 'after'` + Story.get(title+'::After').text;
+            if(Story.has(title+':After')){
+                txt = `<br><<set _comPhase to 'after'` + Story.get(title+':After').text;
 
                 txt = F.convertKojo(txt)
                 F.ComMsg(txt);
@@ -269,8 +269,8 @@ F.ComEvent = function(id, next){
     }
     //取消执行
     else{
-        if(Story.has(title+'::Cancel')){
-            txt = txt + Story.get(title+'::Cancel').text;
+        if(Story.has(title+':Cancel')){
+            txt = txt + Story.get(title+':Cancel').text;
             F.ComMsg(txt)
         }
         else F.ComMsg(`》条件不足无法执行指令：${ typeof com.name === 'function' ? com.name() : com.name }<br>原因：${ T.reason }<br>`)

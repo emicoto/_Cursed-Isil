@@ -1,14 +1,8 @@
-/* 默认的文本就是自动生成的系统文本. 口上会在系统文的后面出来.记得把系统文删干净写 */
-/* cid请替换为角色ID, 也就是英文名 */
-/* 标题后加:After 或:Before可以让这部分在动作执行完毕or准备执行的阶段显示 */
-/* 例:Kojo_cid_Act_g2:After */
-/* 如果角色不允许玩家修改名称, 推荐将$target.name替换成角色名  */
-
 :: Kojo_cid_Action_Relax
 /* 与pc一起放松 */
-<<you>>和$target.name在$location.name找了个舒适的地方，坐下放松。<br>
+<<you>>和<<cidName>>在$location.name找了个舒适的地方，坐下放松。<br>
 
-:: Kojo_cid_Act_Talk
+:: Kojo_cid_Action_Talk
 /* 话题可以自由添加. */
 <<selection replace>>
 <<pick '观察'>>
@@ -41,6 +35,7 @@
    伊希露没堕落的话是不会主动调情的. 基本都是艾瑞斯这个海王在到处勾搭.<br>
 <</selection>>
 
+
 :: Kojo_cid_Act_Gift
 收到礼物时.<br>
 <<switch Tsv[tc].present>>
@@ -63,465 +58,592 @@
 <</if>>
 
 
-:: Kojo_cid_Action_t0_mouth
+
+:: Kojo_cid_Action_t0
 /* 接吻 */
-<<switch F.checkUse(tc, 't0')>>
+<<switch F.checkUse('cid', 't0')>>
 <<case 'mouth'>>
-   <<you>>吻上了$target.name的嘴唇。<br>
+   <<you>>吻上了<<cidName>>的嘴唇。<br>
 <</switch>>
 
-:: Kojo_cid_Action_t1_mouth
+:: Kojo_cid_Action_t1
 /* 亲吻 */
-<<switch F.checkUse(tc, 't1')>>
+<<switch F.checkUse('cid', 't1')>>
 <<case 'breast'>>
-   <<you>>亲吻在了$target.name的胸部上，轻吮吸舔，试图留下自己的印记。<br>
+   <<you>>亲吻在了<<cidName>>的胸部上，轻吮吸舔，试图留下自己的印记。<br>
 <<case 'penis'>>
-   <<you>>亲吻在了$target.name的阴茎上，轻吮吸舔，试图留下自己的印记。<br>
+   <<you>>亲吻在了<<cidName>>的阴茎上，轻吮吸舔，试图留下自己的印记。<br>
 <<case 'critoris'>>
-   <<you>>亲吻在了$target.name的阴蒂上，轻吮吸舔，试图留下自己的印记。<br>
+   <<you>>亲吻在了<<cidName>>的阴蒂上，轻吮吸舔，试图留下自己的印记。<br>
 <<case 'ears'>>
-   <<you>>亲吻在了$target.name的耳朵上，轻吮吸舔，试图留下自己的印记。<br>
-<<case 'hands'>>
-   <<you>>亲吻在了$target.name的双手上，轻吮吸舔，试图留下自己的印记。<br>
+   <<you>>亲吻在了<<cidName>>的耳朵上，轻吮吸舔，试图留下自己的印记。<br>
+<<case 'handL'>>
+   <<you>>亲吻在了<<cidName>>的左手上，轻吮吸舔，试图留下自己的印记。<br>
+<<case 'handR'>>
+   <<you>>亲吻在了<<cidName>>的右手上，轻吮吸舔，试图留下自己的印记。<br>
 <<case 'foot'>>
-   <<you>>亲吻在了$target.name的脚上，轻吮吸舔，试图留下自己的印记。<br>
+   <<you>>亲吻在了<<cidName>>的脚上，轻吮吸舔，试图留下自己的印记。<br>
 <<case 'neck'>>
-   <<you>>亲吻在了$target.name的脖子上，轻吮吸舔，试图留下自己的印记。<br>
+   <<you>>亲吻在了<<cidName>>的脖子上，轻吮吸舔，试图留下自己的印记。<br>
 <<case 'butts'>>
-   <<you>>亲吻在了$target.name的屁股上，轻吮吸舔，试图留下自己的印记。<br>
+   <<you>>亲吻在了<<cidName>>的屁股上，轻吮吸舔，试图留下自己的印记。<br>
 <<case 'thighs'>>
-   <<you>>亲吻在了$target.name的大腿上，轻吮吸舔，试图留下自己的印记。<br>
+   <<you>>亲吻在了<<cidName>>的大腿上，轻吮吸舔，试图留下自己的印记。<br>
 <<case 'abdomen'>>
-   <<you>>亲吻在了$target.name的腹部上，轻吮吸舔，试图留下自己的印记。<br>
+   <<you>>亲吻在了<<cidName>>的腹部上，轻吮吸舔，试图留下自己的印记。<br>
 <</switch>>
 
-:: Kojo_cid_Action_t2_hands
+:: Kojo_cid_Action_t2
 /* 抚摸 */
-<<switch F.checkUse(tc, 't2')>>
+<<switch F.checkUse('cid', 't2')>>
 <<case 'mouth'>>
-   <<you>>的手轻抚着$target.name的嘴巴。<br>
+   <<you>>的手轻抚着<<cidName>>的嘴巴。<br>
 <<case 'breast'>>
-   <<you>>的手轻抚着$target.name的胸部。<br>
+   <<you>>的手轻抚着<<cidName>>的胸部。<br>
 <<case 'penis'>>
-   <<you>>的手轻抚着$target.name的阴茎。<br>
+   <<you>>的手轻抚着<<cidName>>的阴茎。<br>
 <<case 'critoris'>>
-   <<you>>的手轻抚着$target.name的阴蒂。<br>
+   <<you>>的手轻抚着<<cidName>>的阴蒂。<br>
 <<case 'vagina'>>
-   <<you>>的手轻抚着$target.name的阴道。<br>
+   <<you>>的手轻抚着<<cidName>>的阴道。<br>
 <<case 'anal'>>
-   <<you>>的手轻抚着$target.name的肛门。<br>
+   <<you>>的手轻抚着<<cidName>>的肛门。<br>
 <<case 'ears'>>
-   <<you>>的手轻抚着$target.name的耳朵。<br>
-<<case 'hands'>>
-   <<you>>的手轻抚着$target.name的双手。<br>
+   <<you>>的手轻抚着<<cidName>>的耳朵。<br>
+<<case 'handL'>>
+   <<you>>的手轻抚着<<cidName>>的左手。<br>
+<<case 'handR'>>
+   <<you>>的手轻抚着<<cidName>>的右手。<br>
 <<case 'foot'>>
-   <<you>>的手轻抚着$target.name的脚。<br>
+   <<you>>的手轻抚着<<cidName>>的脚。<br>
 <<case 'neck'>>
-   <<you>>的手轻抚着$target.name的脖子。<br>
+   <<you>>的手轻抚着<<cidName>>的脖子。<br>
 <<case 'butts'>>
-   <<you>>的手轻抚着$target.name的屁股。<br>
+   <<you>>的手轻抚着<<cidName>>的屁股。<br>
 <<case 'thighs'>>
-   <<you>>的手轻抚着$target.name的大腿。<br>
+   <<you>>的手轻抚着<<cidName>>的大腿。<br>
 <<case 'abdomen'>>
-   <<you>>的手轻抚着$target.name的腹部。<br>
+   <<you>>的手轻抚着<<cidName>>的腹部。<br>
 <</switch>>
 
-:: Kojo_cid_Action_t3_hands
+:: Kojo_cid_Action_t2
+/* 抚摸 */
+<<switch F.checkUse('cid', 't2')>>
+<<case 'mouth'>>
+   <<you>>的手轻抚着<<cidName>>的嘴巴。<br>
+<<case 'breast'>>
+   <<you>>的手轻抚着<<cidName>>的胸部。<br>
+<<case 'penis'>>
+   <<you>>的手轻抚着<<cidName>>的阴茎。<br>
+<<case 'critoris'>>
+   <<you>>的手轻抚着<<cidName>>的阴蒂。<br>
+<<case 'vagina'>>
+   <<you>>的手轻抚着<<cidName>>的阴道。<br>
+<<case 'anal'>>
+   <<you>>的手轻抚着<<cidName>>的肛门。<br>
+<<case 'ears'>>
+   <<you>>的手轻抚着<<cidName>>的耳朵。<br>
+<<case 'handL'>>
+   <<you>>的手轻抚着<<cidName>>的左手。<br>
+<<case 'handR'>>
+   <<you>>的手轻抚着<<cidName>>的右手。<br>
+<<case 'foot'>>
+   <<you>>的手轻抚着<<cidName>>的脚。<br>
+<<case 'neck'>>
+   <<you>>的手轻抚着<<cidName>>的脖子。<br>
+<<case 'butts'>>
+   <<you>>的手轻抚着<<cidName>>的屁股。<br>
+<<case 'thighs'>>
+   <<you>>的手轻抚着<<cidName>>的大腿。<br>
+<<case 'abdomen'>>
+   <<you>>的手轻抚着<<cidName>>的腹部。<br>
+<</switch>>
+
+:: Kojo_cid_Action_t3
 /* 揉捏 */
-<<switch F.checkUse(tc, 't3')>>
+<<switch F.checkUse('cid', 't3')>>
 <<case 'breast'>>
-   <<you>>揉捏着$target.name的胸部。<br>
+   <<you>>揉捏着<<cidName>>的胸部。<br>
 <<case 'penis'>>
-   <<you>>揉捏着$target.name的阴茎。<br>
+   <<you>>揉捏着<<cidName>>的阴茎。<br>
 <<case 'critoris'>>
-   <<you>>揉捏着$target.name的阴蒂。<br>
+   <<you>>揉捏着<<cidName>>的阴蒂。<br>
 <<case 'ears'>>
-   <<you>>揉捏着$target.name的耳朵。<br>
+   <<you>>揉捏着<<cidName>>的耳朵。<br>
 <<case 'butts'>>
-   <<you>>揉捏着$target.name的屁股。<br>
+   <<you>>揉捏着<<cidName>>的屁股。<br>
 <</switch>>
 
-:: Kojo_cid_Action_t4_mouth
+:: Kojo_cid_Action_t3
+/* 揉捏 */
+<<switch F.checkUse('cid', 't3')>>
+<<case 'breast'>>
+   <<you>>揉捏着<<cidName>>的胸部。<br>
+<<case 'penis'>>
+   <<you>>揉捏着<<cidName>>的阴茎。<br>
+<<case 'critoris'>>
+   <<you>>揉捏着<<cidName>>的阴蒂。<br>
+<<case 'ears'>>
+   <<you>>揉捏着<<cidName>>的耳朵。<br>
+<<case 'butts'>>
+   <<you>>揉捏着<<cidName>>的屁股。<br>
+<</switch>>
+
+:: Kojo_cid_Action_t4
 /* 吸舔 */
-<<switch F.checkUse(tc, 't4')>>
+<<switch F.checkUse('cid', 't4')>>
 <<case 'penis'>>
-   <<you>>吸住了$target.name的阴茎，在上面用舌头反复舔舐着。<br>
+   <<you>>吸住了<<cidName>>的阴茎，在上面用舌头反复舔舐着。<br>
 <<case 'critoris'>>
-   <<you>>吸住了$target.name的阴蒂，在上面用舌头反复舔舐着。<br>
+   <<you>>吸住了<<cidName>>的阴蒂，在上面用舌头反复舔舐着。<br>
 <<case 'vagina'>>
-   <<you>>吸住了$target.name的阴道，在上面用舌头反复舔舐着。<br>
+   <<you>>吸住了<<cidName>>的阴道，在上面用舌头反复舔舐着。<br>
 <<case 'anal'>>
-   <<you>>吸住了$target.name的肛门，在上面用舌头反复舔舐着。<br>
+   <<you>>吸住了<<cidName>>的肛门，在上面用舌头反复舔舐着。<br>
 <<case 'ears'>>
-   <<you>>吸住了$target.name的耳朵，在上面用舌头反复舔舐着。<br>
-<<case 'hands'>>
-   <<you>>吸住了$target.name的双手，在上面用舌头反复舔舐着。<br>
+   <<you>>吸住了<<cidName>>的耳朵，在上面用舌头反复舔舐着。<br>
+<<case 'handL'>>
+   <<you>>吸住了<<cidName>>的左手，在上面用舌头反复舔舐着。<br>
+<<case 'handR'>>
+   <<you>>吸住了<<cidName>>的右手，在上面用舌头反复舔舐着。<br>
 <<case 'foot'>>
-   <<you>>吸住了$target.name的脚，在上面用舌头反复舔舐着。<br>
+   <<you>>吸住了<<cidName>>的脚，在上面用舌头反复舔舐着。<br>
 <<case 'neck'>>
-   <<you>>吸住了$target.name的脖子，在上面用舌头反复舔舐着。<br>
+   <<you>>吸住了<<cidName>>的脖子，在上面用舌头反复舔舐着。<br>
 <<case 'butts'>>
-   <<you>>吸住了$target.name的屁股，在上面用舌头反复舔舐着。<br>
+   <<you>>吸住了<<cidName>>的屁股，在上面用舌头反复舔舐着。<br>
 <<case 'nipple'>>
-   <<you>>吸住了$target.name的乳头，在上面用舌头反复舔舐着。<br>
+   <<you>>吸住了<<cidName>>的乳头，在上面用舌头反复舔舐着。<br>
 <<case 'thighs'>>
-   <<you>>吸住了$target.name的大腿，在上面用舌头反复舔舐着。<br>
+   <<you>>吸住了<<cidName>>的大腿，在上面用舌头反复舔舐着。<br>
 <<case 'abdomen'>>
-   <<you>>吸住了$target.name的腹部，在上面用舌头反复舔舐着。<br>
+   <<you>>吸住了<<cidName>>的腹部，在上面用舌头反复舔舐着。<br>
 <</switch>>
 
-:: Kojo_cid_Action_t5_mouth
+:: Kojo_cid_Action_t5
 /* 吸咬 */
-<<switch F.checkUse(tc, 't5')>>
+<<switch F.checkUse('cid', 't5')>>
 <<case 'penis'>>
-   <<you>>含住$target.name的阴茎，吸吮轻咬着。<br>
+   <<you>>含住<<cidName>>的阴茎，吸吮轻咬着。<br>
 <<case 'critoris'>>
-   <<you>>含住$target.name的阴蒂，吸吮轻咬着。<br>
+   <<you>>含住<<cidName>>的阴蒂，吸吮轻咬着。<br>
 <<case 'ears'>>
-   <<you>>含住$target.name的耳朵，吸吮轻咬着。<br>
-<<case 'hands'>>
-   <<you>>含住$target.name的双手，吸吮轻咬着。<br>
+   <<you>>含住<<cidName>>的耳朵，吸吮轻咬着。<br>
+<<case 'handL'>>
+   <<you>>含住<<cidName>>的左手，吸吮轻咬着。<br>
+<<case 'handR'>>
+   <<you>>含住<<cidName>>的右手，吸吮轻咬着。<br>
 <<case 'foot'>>
-   <<you>>含住$target.name的脚，吸吮轻咬着。<br>
+   <<you>>含住<<cidName>>的脚，吸吮轻咬着。<br>
 <<case 'neck'>>
-   <<you>>含住$target.name的脖子，吸吮轻咬着。<br>
+   <<you>>含住<<cidName>>的脖子，吸吮轻咬着。<br>
 <<case 'butts'>>
-   <<you>>含住$target.name的屁股，吸吮轻咬着。<br>
+   <<you>>含住<<cidName>>的屁股，吸吮轻咬着。<br>
 <<case 'nipple'>>
-   <<you>>含住$target.name的乳头，吸吮轻咬着。<br>
+   <<you>>含住<<cidName>>的乳头，吸吮轻咬着。<br>
 <<case 'thighs'>>
-   <<you>>含住$target.name的大腿，吸吮轻咬着。<br>
+   <<you>>含住<<cidName>>的大腿，吸吮轻咬着。<br>
 <</switch>>
 
-:: Kojo_cid_Action_t6_hands
+:: Kojo_cid_Action_t6
 /* 逗弄 */
-<<switch F.checkUse(tc, 't6')>>
+<<switch F.checkUse('cid', 't6')>>
 <<case 'penis'>>
-   <<you>>反复逗弄着$target.name的阴茎。<br>
+   <<you>>反复逗弄着<<cidName>>的阴茎。<br>
 <<case 'critoris'>>
-   <<you>>反复逗弄着$target.name的阴蒂。<br>
+   <<you>>反复逗弄着<<cidName>>的阴蒂。<br>
 <<case 'vagina'>>
-   <<you>>反复逗弄着$target.name的阴道。<br>
+   <<you>>反复逗弄着<<cidName>>的阴道。<br>
 <<case 'anal'>>
-   <<you>>反复逗弄着$target.name的肛门。<br>
+   <<you>>反复逗弄着<<cidName>>的肛门。<br>
 <<case 'ears'>>
-   <<you>>反复逗弄着$target.name的耳朵。<br>
+   <<you>>反复逗弄着<<cidName>>的耳朵。<br>
 <<case 'nipple'>>
-   <<you>>反复逗弄着$target.name的乳头。<br>
+   <<you>>反复逗弄着<<cidName>>的乳头。<br>
 <</switch>>
 
-:: Kojo_cid_Action_t7_hands
-/* 指交 */
-<<switch F.checkUse(tc, 't7')>>
-<<case 'mouth'>>
-   <<you>>的手指浅浅插入$target.name的嘴巴，在入口附近摩擦着。<br>
-<<case 'vagina'>>
-   <<you>>的手指浅浅插入$target.name的阴道，在入口附近摩擦着。<br>
-<<case 'anal'>>
-   <<you>>的手指浅浅插入$target.name的肛门，在入口附近摩擦着。<br>
-<<case 'urin'>>
-   <<you>>的手指浅浅插入$target.name的尿道，在入口附近摩擦着。<br>
-<</switch>>
-
-:: Kojo_cid_Action_t8_penis
-/* 插入 */
-<<switch F.checkUse(tc, 't8')>>
-<<case 'mouth'>>
-   <<you>>以{4}的姿势用阴茎插入了$target.name的嘴巴。<br>
-<<case 'vagina'>>
-   <<you>>以{4}的姿势用阴茎插入了$target.name的阴道。<br>
-<<case 'anal'>>
-   <<you>>以{4}的姿势用阴茎插入了$target.name的肛门。<br>
-<</switch>>
-
-:: Kojo_cid_Action_t8_hands
-/* 插入 */
-<<switch F.checkUse(tc, 't9')>>
-<<case 'mouth'>>
-   <<you>>以{4}的姿势用双手插入了$target.name的嘴巴。<br>
-<<case 'vagina'>>
-   <<you>>以{4}的姿势用双手插入了$target.name的阴道。<br>
-<<case 'anal'>>
-   <<you>>以{4}的姿势用双手插入了$target.name的肛门。<br>
-<</switch>>
-
-:: Kojo_cid_Action_t9_penis
-/* 抽插 */
-<<switch F.checkUse(tc, 't9')>>
-<<case 'mouth'>>
-   <<you>>活动腰身，在$target.name的嘴巴反复出入着。<br>
-<<case 'vagina'>>
-   <<you>>活动腰身，在$target.name的阴道反复出入着。<br>
-<<case 'anal'>>
-   <<you>>活动腰身，在$target.name的肛门反复出入着。<br>
-<</switch>>
-
-:: Kojo_cid_Action_t9_hands
-/* 抽插 */
-<<switch F.checkUse(tc, 't9')>>
-<<case 'mouth'>>
-   <<you>>活动腰身，在$target.name的嘴巴反复出入着。<br>
-<<case 'vagina'>>
-   <<you>>活动腰身，在$target.name的阴道反复出入着。<br>
-<<case 'anal'>>
-   <<you>>活动腰身，在$target.name的肛门反复出入着。<br>
-<</switch>>
-
-:: Kojo_cid_Action_t10_hands
-/* 撸动 */
-<<switch F.checkUse(tc, 't10')>>
+:: Kojo_cid_Action_t6
+/* 逗弄 */
+<<switch F.checkUse('cid', 't6')>>
 <<case 'penis'>>
-   <<you>>握住$target.name的阴茎，前后撸动着。<br>
+   <<you>>反复逗弄着<<cidName>>的阴茎。<br>
+<<case 'critoris'>>
+   <<you>>反复逗弄着<<cidName>>的阴蒂。<br>
+<<case 'vagina'>>
+   <<you>>反复逗弄着<<cidName>>的阴道。<br>
+<<case 'anal'>>
+   <<you>>反复逗弄着<<cidName>>的肛门。<br>
+<<case 'ears'>>
+   <<you>>反复逗弄着<<cidName>>的耳朵。<br>
+<<case 'nipple'>>
+   <<you>>反复逗弄着<<cidName>>的乳头。<br>
+<</switch>>
+
+:: Kojo_cid_Action_t7
+/* 指交 */
+<<switch F.checkUse('cid', 't7')>>
+<<case 'mouth'>>
+   <<you>>的手指浅浅插入<<cidName>>的嘴巴，在入口附近摩擦着。<br>
+<<case 'vagina'>>
+   <<you>>的手指浅浅插入<<cidName>>的阴道，在入口附近摩擦着。<br>
+<<case 'anal'>>
+   <<you>>的手指浅浅插入<<cidName>>的肛门，在入口附近摩擦着。<br>
+<<case 'urin'>>
+   <<you>>的手指浅浅插入<<cidName>>的尿道，在入口附近摩擦着。<br>
+<</switch>>
+
+:: Kojo_cid_Action_t7
+/* 指交 */
+<<switch F.checkUse('cid', 't7')>>
+<<case 'mouth'>>
+   <<you>>的手指浅浅插入<<cidName>>的嘴巴，在入口附近摩擦着。<br>
+<<case 'vagina'>>
+   <<you>>的手指浅浅插入<<cidName>>的阴道，在入口附近摩擦着。<br>
+<<case 'anal'>>
+   <<you>>的手指浅浅插入<<cidName>>的肛门，在入口附近摩擦着。<br>
+<<case 'urin'>>
+   <<you>>的手指浅浅插入<<cidName>>的尿道，在入口附近摩擦着。<br>
+<</switch>>
+
+:: Kojo_cid_Action_t8
+/* 性交 */
+<<switch F.checkUse('cid', 't8')>>
+<<case 'mouth'>>
+   <<you>>以{4}的姿势用阴茎插入了<<cidName>>的嘴巴。<br>
+<<case 'vagina'>>
+   <<you>>以{4}的姿势用阴茎插入了<<cidName>>的阴道。<br>
+<<case 'anal'>>
+   <<you>>以{4}的姿势用阴茎插入了<<cidName>>的肛门。<br>
+<</switch>>
+
+:: Kojo_cid_Action_t9
+/* 抽插 */
+<<switch F.checkUse('cid', 't9')>>
+<<case 'mouth'>>
+   <<you>>活动腰身，在<<cidName>>的嘴巴反复出入着。<br>
+<<case 'vagina'>>
+   <<you>>活动腰身，在<<cidName>>的阴道反复出入着。<br>
+<<case 'anal'>>
+   <<you>>活动腰身，在<<cidName>>的肛门反复出入着。<br>
+<</switch>>
+
+:: Kojo_cid_Action_t10
+/* 撸动 */
+<<switch F.checkUse('cid', 't10')>>
+<<case 'penis'>>
+   <<you>>握住<<cidName>>的阴茎，前后撸动着。<br>
+<</switch>>
+
+:: Kojo_cid_Action_t10
+/* 撸动 */
+<<switch F.checkUse('cid', 't10')>>
+<<case 'penis'>>
+   <<you>>握住<<cidName>>的阴茎，前后撸动着。<br>
+<</switch>>
+
+:: Kojo_cid_Action_t11
+/* 拳交 */
+<<switch F.checkUse('cid', 't11')>>
+<<case 'vagina'>>
+   <<you>>的拳头粗暴地捅进了<<cidName>>的阴道里面，反复抽插着。<br>
+<<case 'anal'>>
+   <<you>>的拳头粗暴地捅进了<<cidName>>的肛门里面，反复抽插着。<br>
+<</switch>>
+
+:: Kojo_cid_Action_t11
+/* 拳交 */
+<<switch F.checkUse('cid', 't11')>>
+<<case 'vagina'>>
+   <<you>>的拳头粗暴地捅进了<<cidName>>的阴道里面，反复抽插着。<br>
+<<case 'anal'>>
+   <<you>>的拳头粗暴地捅进了<<cidName>>的肛门里面，反复抽插着。<br>
+<</switch>>
+
+:: Kojo_cid_Action_r0
+/* 握住 */
+<<switch F.checkUse('cid', 'r0')>>
+<<case 'handL'>>
+   <<you>>的左手握住了<<cidName>>的左手。<br>
+<<case 'handR'>>
+   <<you>>的左手握住了<<cidName>>的右手。<br>
+<<case 'penis'>>
+   <<you>>的左手握住了<<cidName>>的阴茎。<br>
+<<case 'foot'>>
+   <<you>>的左手握住了<<cidName>>的脚。<br>
 <</switch>>
 
 :: Kojo_cid_Action_Rotor
 /* 跳蛋 */
-<<switch F.checkUse(tc, 'Rotor')>>
+<<switch F.checkUse('cid', 'Rotor')>>
 <<case 'vagina'>>
-   <<you>>将跳蛋贴在$target.name的阴道，刺激着。<br>
+   <<you>>将跳蛋贴在<<cidName>>的阴道，刺激着。<br>
 <<case 'anal'>>
-   <<you>>将跳蛋贴在$target.name的肛门，刺激着。<br>
+   <<you>>将跳蛋贴在<<cidName>>的肛门，刺激着。<br>
 <<case 'nipple'>>
-   <<you>>将跳蛋贴在$target.name的乳头，刺激着。<br>
+   <<you>>将跳蛋贴在<<cidName>>的乳头，刺激着。<br>
 <<case 'penis'>>
-   <<you>>将跳蛋贴在$target.name的阴茎，刺激着。<br>
+   <<you>>将跳蛋贴在<<cidName>>的阴茎，刺激着。<br>
 <<case 'critoris'>>
-   <<you>>将跳蛋贴在$target.name的阴蒂，刺激着。<br>
+   <<you>>将跳蛋贴在<<cidName>>的阴蒂，刺激着。<br>
 <</switch>>
 
 :: Kojo_cid_Action_Vibrator
 /* 震动棒 */
-<<switch F.checkUse(tc, 'Vibrator')>>
+<<switch F.checkUse('cid', 'Vibrator')>>
 <<case 'vagina'>>
-   <<you>>将震动棒放进了$target.name的阴道。<br>
+   <<you>>将震动棒放进了<<cidName>>的阴道。<br>
 <<case 'anal'>>
-   <<you>>将震动棒放进了$target.name的肛门。<br>
+   <<you>>将震动棒放进了<<cidName>>的肛门。<br>
 <</switch>>
 
-
-:: Kojo_cid_Action_x0_tentacles
+:: Kojo_cid_Action_x0
 /* 揉捏 */
-<<switch F.checUse(tc, 'x0')>>
+<<switch F.checkUse('cid', 'x0')>>
 <<case 'breast'>>
-   触手缠绕在$target.name的胸部上，巧妙地反复揉捏给予刺激。<br>
+   触手缠绕在<<cidName>>的胸部上，巧妙地反复揉捏给予刺激。<br>
 <<case 'penis'>>
-   触手缠绕在$target.name的阴茎上，巧妙地反复揉捏给予刺激。<br>
+   触手缠绕在<<cidName>>的阴茎上，巧妙地反复揉捏给予刺激。<br>
 <<case 'critoris'>>
-   触手缠绕在$target.name的阴蒂上，巧妙地反复揉捏给予刺激。<br>
+   触手缠绕在<<cidName>>的阴蒂上，巧妙地反复揉捏给予刺激。<br>
 <<case 'nipple'>>
-   触手缠绕在$target.name的乳头上，巧妙地反复揉捏给予刺激。<br>
+   触手缠绕在<<cidName>>的乳头上，巧妙地反复揉捏给予刺激。<br>
 <</switch>>
 
-:: Kojo_cid_Action_x1_tentacles
+:: Kojo_cid_Action_x1
 /* 逗弄 */
-<<switch F.checkUse(tc, 'x1')>>
+<<switch F.checkUse('cid', 'x1')>>
 <<case 'mouth'>>
-   蠕动、摩擦、按捏。触手反复逗弄着$target.name的嘴巴，给予极大的刺激。<br>
+   蠕动、摩擦、按捏。触手反复逗弄着<<cidName>>的嘴巴，给予极大的刺激。<br>
 <<case 'penis'>>
-   蠕动、摩擦、按捏。触手反复逗弄着$target.name的阴茎，给予极大的刺激。<br>
+   蠕动、摩擦、按捏。触手反复逗弄着<<cidName>>的阴茎，给予极大的刺激。<br>
 <<case 'critoris'>>
-   蠕动、摩擦、按捏。触手反复逗弄着$target.name的阴蒂，给予极大的刺激。<br>
+   蠕动、摩擦、按捏。触手反复逗弄着<<cidName>>的阴蒂，给予极大的刺激。<br>
 <<case 'vagina'>>
-   蠕动、摩擦、按捏。触手反复逗弄着$target.name的阴道，给予极大的刺激。<br>
+   蠕动、摩擦、按捏。触手反复逗弄着<<cidName>>的阴道，给予极大的刺激。<br>
 <<case 'anal'>>
-   蠕动、摩擦、按捏。触手反复逗弄着$target.name的肛门，给予极大的刺激。<br>
+   蠕动、摩擦、按捏。触手反复逗弄着<<cidName>>的肛门，给予极大的刺激。<br>
 <<case 'urin'>>
-   蠕动、摩擦、按捏。触手反复逗弄着$target.name的尿道，给予极大的刺激。<br>
+   蠕动、摩擦、按捏。触手反复逗弄着<<cidName>>的尿道，给予极大的刺激。<br>
 <<case 'ears'>>
-   蠕动、摩擦、按捏。触手反复逗弄着$target.name的耳朵，给予极大的刺激。<br>
+   蠕动、摩擦、按捏。触手反复逗弄着<<cidName>>的耳朵，给予极大的刺激。<br>
 <<case 'nipple'>>
-   蠕动、摩擦、按捏。触手反复逗弄着$target.name的乳头，给予极大的刺激。<br>
+   蠕动、摩擦、按捏。触手反复逗弄着<<cidName>>的乳头，给予极大的刺激。<br>
 <</switch>>
 
-:: Kojo_cid_Action_x2_tentacles
+:: Kojo_cid_Action_x2
 /* 吸舔 */
-<<switch F.checkUse(tc, 'x2')>>
+<<switch F.checkUse('cid', 'x2')>>
 <<case 'nipple'>>
-   吸盘触手吸附在$target.name的乳头上，反复吸舔着。<br>
+   吸盘触手吸附在<<cidName>>的乳头上，反复吸舔着。<br>
 <<case 'penis'>>
-   吸盘触手吸附在$target.name的阴茎上，反复吸舔着。<br>
+   吸盘触手吸附在<<cidName>>的阴茎上，反复吸舔着。<br>
 <<case 'critoris'>>
-   吸盘触手吸附在$target.name的阴蒂上，反复吸舔着。<br>
+   吸盘触手吸附在<<cidName>>的阴蒂上，反复吸舔着。<br>
 <</switch>>
 
-:: Kojo_cid_Action_x3_tentacles
+:: Kojo_cid_Action_x3
 /* 吸咬 */
-<<switch F.checkUse(tc, 'x3')>>
+<<switch F.checkUse('cid', 'x3')>>
 <<case 'nipple'>>
-   口器触手含住$target.name的乳头，吸吮轻咬着。<br>
+   口器触手含住<<cidName>>的乳头，吸吮轻咬着。<br>
 <<case 'penis'>>
-   口器触手含住$target.name的阴茎，吸吮轻咬着。<br>
+   口器触手含住<<cidName>>的阴茎，吸吮轻咬着。<br>
 <<case 'critoris'>>
-   口器触手含住$target.name的阴蒂，吸吮轻咬着。<br>
+   口器触手含住<<cidName>>的阴蒂，吸吮轻咬着。<br>
 <</switch>>
 
-:: Kojo_cid_Action_x4_tentacles
+:: Kojo_cid_Action_x4
 /* 撸动 */
-<<switch F.checkUse(tc, 'x4')>>
+<<switch F.checkUse('cid', 'x4')>>
 <<case 'penis'>>
-   触手缠绕住$target.name的阴茎，反复撸动着。<br>
+   触手缠绕住<<cidName>>的阴茎，反复撸动着。<br>
 <</switch>>
 
-:: Kojo_cid_Action_x5_tentacles
+:: Kojo_cid_Action_x5
 /* 插入 */
-<<switch F.checkUse(tc, 'x5')>>
+<<switch F.checkUse('cid', 'x5')>>
 <<case 'mouth'>>
-   触手钻进了$target.name敞开的嘴巴，缓缓往内深入。<br>
+   触手钻进了<<cidName>>敞开的嘴巴，缓缓往内深入。<br>
 <<case 'vagina'>>
-   触手钻进了$target.name敞开的阴道，缓缓往内深入。<br>
+   触手钻进了<<cidName>>敞开的阴道，缓缓往内深入。<br>
 <<case 'anal'>>
-   触手钻进了$target.name敞开的肛门，缓缓往内深入。<br>
+   触手钻进了<<cidName>>敞开的肛门，缓缓往内深入。<br>
 <<case 'urin'>>
-   触手钻进了$target.name敞开的尿道，缓缓往内深入。<br>
+   触手钻进了<<cidName>>敞开的尿道，缓缓往内深入。<br>
 <<case 'ears'>>
-   触手钻进了$target.name敞开的耳朵，缓缓往内深入。<br>
+   触手钻进了<<cidName>>敞开的耳朵，缓缓往内深入。<br>
 <</switch>>
 
-:: Kojo_cid_Action_x6_tentacles
+:: Kojo_cid_Action_x6
 /* 蠕动 */
-<<switch F.checkUse(tc, 'x6')>>
+<<switch F.checkUse('cid', 'x6')>>
 <<case 'mouth'>>
-   触手在$target.name的嘴巴慢慢蠕动着。<br>
+   触手在<<cidName>>的嘴巴慢慢蠕动着。<br>
 <<case 'breast'>>
-   触手在$target.name的胸部慢慢蠕动着。<br>
+   触手在<<cidName>>的胸部慢慢蠕动着。<br>
 <<case 'penis'>>
-   触手在$target.name的阴茎慢慢蠕动着。<br>
+   触手在<<cidName>>的阴茎慢慢蠕动着。<br>
 <<case 'critoris'>>
-   触手在$target.name的阴蒂慢慢蠕动着。<br>
+   触手在<<cidName>>的阴蒂慢慢蠕动着。<br>
 <<case 'vagina'>>
-   触手在$target.name的阴道慢慢蠕动着。<br>
+   触手在<<cidName>>的阴道慢慢蠕动着。<br>
 <<case 'anal'>>
-   触手在$target.name的肛门慢慢蠕动着。<br>
+   触手在<<cidName>>的肛门慢慢蠕动着。<br>
 <<case 'urin'>>
-   触手在$target.name的尿道慢慢蠕动着。<br>
+   触手在<<cidName>>的尿道慢慢蠕动着。<br>
 <<case 'ears'>>
-   触手在$target.name的耳朵慢慢蠕动着。<br>
+   触手在<<cidName>>的耳朵慢慢蠕动着。<br>
 <<case 'neck'>>
-   触手在$target.name的脖子慢慢蠕动着。<br>
+   触手在<<cidName>>的脖子慢慢蠕动着。<br>
 <<case 'butts'>>
-   触手在$target.name的屁股慢慢蠕动着。<br>
+   触手在<<cidName>>的屁股慢慢蠕动着。<br>
 <<case 'nipple'>>
-   触手在$target.name的乳头慢慢蠕动着。<br>
+   触手在<<cidName>>的乳头慢慢蠕动着。<br>
 <<case 'thighs'>>
-   触手在$target.name的大腿慢慢蠕动着。<br>
+   触手在<<cidName>>的大腿慢慢蠕动着。<br>
 <</switch>>
 
-:: Kojo_cid_Action_x7_tentacles
+:: Kojo_cid_Action_x7
 /* 抽插 */
-<<switch F.checkUse(tc, 'x7')>>
+<<switch F.checkUse('cid', 'x7')>>
 <<case 'mouth'>>
-   触手不停在$target.name的嘴巴进出，抽插蠕动着。<br>
+   触手不停在<<cidName>>的嘴巴进出，抽插蠕动着。<br>
 <<case 'vagina'>>
-   触手不停在$target.name的阴道进出，抽插蠕动着。<br>
+   触手不停在<<cidName>>的阴道进出，抽插蠕动着。<br>
 <<case 'anal'>>
-   触手不停在$target.name的肛门进出，抽插蠕动着。<br>
+   触手不停在<<cidName>>的肛门进出，抽插蠕动着。<br>
 <<case 'urin'>>
-   触手不停在$target.name的尿道进出，抽插蠕动着。<br>
+   触手不停在<<cidName>>的尿道进出，抽插蠕动着。<br>
 <<case 'ears'>>
-   触手不停在$target.name的耳朵进出，抽插蠕动着。<br>
+   触手不停在<<cidName>>的耳朵进出，抽插蠕动着。<br>
 <</switch>>
 
-:: Kojo_cid_Action_x8_tentacles
+:: Kojo_cid_Action_x8
 /* 深入 */
-<<switch F.checkUse(tc, 'x8')>>
+<<switch F.checkUse('cid', 'x8')>>
 <<case 'mouth'>>
-   触手往$target.name的嘴巴内部发出了进攻，往更深处蠕进。<br>
+   触手往<<cidName>>的嘴巴内部发出了进攻，往更深处蠕进。<br>
 <<case 'vagina'>>
-   触手往$target.name的阴道内部发出了进攻，往更深处蠕进。<br>
+   触手往<<cidName>>的阴道内部发出了进攻，往更深处蠕进。<br>
 <<case 'anal'>>
-   触手往$target.name的肛门内部发出了进攻，往更深处蠕进。<br>
+   触手往<<cidName>>的肛门内部发出了进攻，往更深处蠕进。<br>
 <<case 'urin'>>
-   触手往$target.name的尿道内部发出了进攻，往更深处蠕进。<br>
+   触手往<<cidName>>的尿道内部发出了进攻，往更深处蠕进。<br>
 <</switch>>
 
-:: Kojo_cid_Action_x9_tentacles
+:: Kojo_cid_Action_x9
 /* 抽送 */
-<<switch F.checkUse(tc, 'x9')>>
+<<switch F.checkUse('cid', 'x9')>>
 <<case 'mouth'>>
-   触手激烈地在$target.name的嘴巴进出着，反复抽送着触身给予莫大的刺激。<br>
+   触手激烈地在<<cidName>>的嘴巴进出着，反复抽送着触身给予莫大的刺激。<br>
 <<case 'vagina'>>
-   触手激烈地在$target.name的阴道进出着，反复抽送着触身给予莫大的刺激。<br>
+   触手激烈地在<<cidName>>的阴道进出着，反复抽送着触身给予莫大的刺激。<br>
 <<case 'anal'>>
-   触手激烈地在$target.name的肛门进出着，反复抽送着触身给予莫大的刺激。<br>
+   触手激烈地在<<cidName>>的肛门进出着，反复抽送着触身给予莫大的刺激。<br>
 <<case 'urin'>>
-   触手激烈地在$target.name的尿道进出着，反复抽送着触身给予莫大的刺激。<br>
+   触手激烈地在<<cidName>>的尿道进出着，反复抽送着触身给予莫大的刺激。<br>
 <</switch>>
 
-:: Kojo_cid_Action_x10_tentacles
+:: Kojo_cid_Action_x10
 /* 鞭打 */
-<<switch F.checkUse(tc, 'x10')>>
+<<switch F.checkUse('cid', 'x10')>>
 <<case 'breast'>>
-   触手甩动触鞭，用巧妙的力度鞭打在$target.name的胸部上。<br>
+   触手甩动触鞭，用巧妙的力度鞭打在<<cidName>>的胸部上。<br>
 <<case 'penis'>>
-   触手甩动触鞭，用巧妙的力度鞭打在$target.name的阴茎上。<br>
+   触手甩动触鞭，用巧妙的力度鞭打在<<cidName>>的阴茎上。<br>
 <<case 'critoris'>>
-   触手甩动触鞭，用巧妙的力度鞭打在$target.name的阴蒂上。<br>
+   触手甩动触鞭，用巧妙的力度鞭打在<<cidName>>的阴蒂上。<br>
 <<case 'anal'>>
-   触手甩动触鞭，用巧妙的力度鞭打在$target.name的肛门上。<br>
+   触手甩动触鞭，用巧妙的力度鞭打在<<cidName>>的肛门上。<br>
 <<case 'butts'>>
-   触手甩动触鞭，用巧妙的力度鞭打在$target.name的屁股上。<br>
+   触手甩动触鞭，用巧妙的力度鞭打在<<cidName>>的屁股上。<br>
 <<case 'nipple'>>
-   触手甩动触鞭，用巧妙的力度鞭打在$target.name的乳头上。<br>
+   触手甩动触鞭，用巧妙的力度鞭打在<<cidName>>的乳头上。<br>
 <<case 'thighs'>>
-   触手甩动触鞭，用巧妙的力度鞭打在$target.name的大腿上。<br>
+   触手甩动触鞭，用巧妙的力度鞭打在<<cidName>>的大腿上。<br>
 <</switch>>
 
-:: Kojo_cid_Action_x11_tentacles
+:: Kojo_cid_Action_x11
 /* 刺入 */
-<<switch F.checkUse(tc, 'x11')>>
+<<switch F.checkUse('cid', 'x11')>>
 <<case 'penis'>>
-   触手伸出尖锐的细针，狠狠地刺入了$target.name的阴茎。<br>
+   触手伸出尖锐的细针，狠狠地刺入了<<cidName>>的阴茎。<br>
 <<case 'critoris'>>
-   触手伸出尖锐的细针，狠狠地刺入了$target.name的阴蒂。<br>
+   触手伸出尖锐的细针，狠狠地刺入了<<cidName>>的阴蒂。<br>
 <<case 'vagina'>>
-   触手伸出尖锐的细针，狠狠地刺入了$target.name的阴道。<br>
+   触手伸出尖锐的细针，狠狠地刺入了<<cidName>>的阴道。<br>
 <<case 'anal'>>
-   触手伸出尖锐的细针，狠狠地刺入了$target.name的肛门。<br>
+   触手伸出尖锐的细针，狠狠地刺入了<<cidName>>的肛门。<br>
 <<case 'neck'>>
-   触手伸出尖锐的细针，狠狠地刺入了$target.name的脖子。<br>
+   触手伸出尖锐的细针，狠狠地刺入了<<cidName>>的脖子。<br>
 <<case 'nipple'>>
-   触手伸出尖锐的细针，狠狠地刺入了$target.name的乳头。<br>
+   触手伸出尖锐的细针，狠狠地刺入了<<cidName>>的乳头。<br>
 <<case 'butts'>>
-   触手伸出尖锐的细针，狠狠地刺入了$target.name的屁股。<br>
+   触手伸出尖锐的细针，狠狠地刺入了<<cidName>>的屁股。<br>
 <</switch>>
 
-:: Kojo_cid_Action_x12_tentacles
+:: Kojo_cid_Action_x12
 /* 灌入 */
-<<switch F.checkUse(tc, 'x12')>>
+<<switch F.checkUse('cid', 'x12')>>
 <<case 'mouth'>>
-   触手往$target.name的嘴巴灌入大量的药液。<br>
+   触手往<<cidName>>的嘴巴灌入大量的药液。<br>
 <<case 'vagina'>>
-   触手往$target.name的阴道灌入大量的药液。<br>
+   触手往<<cidName>>的阴道灌入大量的药液。<br>
 <<case 'anal'>>
-   触手往$target.name的肛门灌入大量的药液。<br>
+   触手往<<cidName>>的肛门灌入大量的药液。<br>
 <</switch>>
 
-:: Kojo_cid_Action_x13_tentacles
+:: Kojo_cid_Action_x13
 /* 注射 */
-<<switch F.checkUse(tc, 'x13')>>
+<<switch F.checkUse('cid', 'x13')>>
 <<case 'breast'>>
-   触手伸出尖锐的针头，刺入$target.name的胸部并注入药液。<br>
+   触手伸出尖锐的针头，刺入<<cidName>>的胸部并注入药液。<br>
 <<case 'penis'>>
-   触手伸出尖锐的针头，刺入$target.name的阴茎并注入药液。<br>
+   触手伸出尖锐的针头，刺入<<cidName>>的阴茎并注入药液。<br>
 <<case 'critoris'>>
-   触手伸出尖锐的针头，刺入$target.name的阴蒂并注入药液。<br>
+   触手伸出尖锐的针头，刺入<<cidName>>的阴蒂并注入药液。<br>
 <<case 'vagina'>>
-   触手伸出尖锐的针头，刺入$target.name的阴道并注入药液。<br>
+   触手伸出尖锐的针头，刺入<<cidName>>的阴道并注入药液。<br>
 <<case 'anal'>>
-   触手伸出尖锐的针头，刺入$target.name的肛门并注入药液。<br>
+   触手伸出尖锐的针头，刺入<<cidName>>的肛门并注入药液。<br>
 <<case 'urin'>>
-   触手伸出尖锐的针头，刺入$target.name的尿道并注入药液。<br>
+   触手伸出尖锐的针头，刺入<<cidName>>的尿道并注入药液。<br>
 <<case 'neck'>>
-   触手伸出尖锐的针头，刺入$target.name的脖子并注入药液。<br>
+   触手伸出尖锐的针头，刺入<<cidName>>的脖子并注入药液。<br>
 <<case 'butts'>>
-   触手伸出尖锐的针头，刺入$target.name的屁股并注入药液。<br>
+   触手伸出尖锐的针头，刺入<<cidName>>的屁股并注入药液。<br>
 <<case 'nipple'>>
-   触手伸出尖锐的针头，刺入$target.name的乳头并注入药液。<br>
+   触手伸出尖锐的针头，刺入<<cidName>>的乳头并注入药液。<br>
 <<case 'abdomen'>>
-   触手伸出尖锐的针头，刺入$target.name的腹部并注入药液。<br>
+   触手伸出尖锐的针头，刺入<<cidName>>的腹部并注入药液。<br>
 <</switch>>
 
 :: Kojo_cid_Action_Stream
 /* 直播 */
-<<you>>在$location.name开始直播。<br>
+直播时的反应
 
+
+/* 玩家作为受方时 */
+:: Kojo_cid_ActionR_r0
+/* 握住 */
+<<switch F.checkUse('cid', 'r0')>>
+<<case 'handL'>>
+   <<you>>的右手握住了<<cidName>>的左手。<br>
+<<case 'handR'>>
+   <<you>>的右手握住了<<cidName>>的右手。<br>
+<<case 'penis'>>
+   <<you>>的右手握住了<<cidName>>的阴茎。<br>
+<<case 'foot'>>
+   <<you>>的右手握住了<<cidName>>的脚。<br>
+<</switch>>
+
+:: Kojo_cid_ActionR_r1
+/* 收紧 */
+<<switch F.checkUse('cid', 'r1')>>
+<<case 'penis'>>
+   <<you>>控制自身阴道，紧紧夹住了<<cidName>>的阴茎。<br>
+<<case 'handL'>>
+   <<you>>控制自身阴道，紧紧夹住了<<cidName>>的左手。<br>
+<<case 'handR'>>
+   <<you>>控制自身阴道，紧紧夹住了<<cidName>>的右手。<br>
+<</switch>>

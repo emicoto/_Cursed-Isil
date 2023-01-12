@@ -205,7 +205,7 @@ Com.set('G2')
 <<you>>试着跟$target.name搭话。<br>
 <<=F.Kojo($tc, 'Com', 'G2')>>
 
-\
+
 :: Com_G2::Before//
 /*取消前的文本sample */
 $player.name走近$target.name准备搭话。<br>
