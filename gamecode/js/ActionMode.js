@@ -21,18 +21,21 @@ F.resetUI = function(){
     V.player = C[pc]
 
     F.initLocation()
+    F.showActions();
     F.initActMenu()
     //F.initActionselect()
     
     F.showNext(1);
-    F.showActions();
 
     return ''
 }
 
 F.initActionMode = function(){
-    T.currentType = ''
+    T.currentType = 'all'
+    T.actPartFilter = 'all'
     T.actor = V.pc
+    T.actTg = V.pc !== V.tc ? V.tc : V.pc;
+
     T.actPart = 'reset'
 
     F.initAction('m0')
@@ -96,7 +99,7 @@ F.actBtn = function(actid, data){
         return `<div class='actions selectAct'>[ ${name} ]</div>`
     }
 
-    if(groupmatch(data.type, '接触','触手','被动') && data.option !== 'doStraight' || (data.type == '道具' && data.targetPart) ){
+    if((groupmatch(data.type, '接触','触手','逆位') && !groupmatch(data.option, 'doStraight', 'reset')) || (data.type == '道具' && data.targetPart) ){
         let usePart
         if(data.usePart && data.usePart.length > 1){
             usePart = 1
@@ -118,11 +121,11 @@ F.actBtn = function(actid, data){
 F.partBtn = function(data, part, use){
     const { id } = data;
     let setpart = `<<set _selectPart to '${part}'>><<run F.checkAction('${id}', 'do')>>`
-    console.log(data)
+    //console.log(data)
 
     if(use){
-        setpart = `<<set _actPart to '${part}'>>`
-        if(data.option == 'noSelectPart'){
+        setpart = `<<set _selectActPart to '${part}'>>`
+        if(data?.option == 'noSelectPart'){
             setpart += `<<run F.checkAction('${id}', 'do')>>`
         }
         else{
@@ -137,22 +140,29 @@ F.partBtn = function(data, part, use){
 }
 
 F.partAble = function(actid, part, mode){
-    let p = mode == 'use' ? V.pc : V.tc
+    const data = Action.data[actid]
+    let p = mode == 'use' ? V.pc : V.tc;
+
+    if(data.type == '触手'){
+
+    }
+    else{
+        return Using[p][part] === '' || Using[p][part].act === actid
+    }
 
 }
 
 F.initActMenu = function(actid, usepart){
+    const ignore1 = ['常规','目录','交流','其他']
+    const ignore2 = ['体位','固有'].concat(ignore1)
+
     let adata = Action.data[actid]
 
-    const list = [
-        [(V.mode == 'normal'), '移动', 'Map', ''],
-        [(V.location.id == 'A0'), '下沉', 'Basement', ''],
-        [(V.location.id == 'A0' && (V.date.time >= 1200 || F.baseCheck(player, 'stamina', 50)) && pc !== 'm0' ), '睡觉', 'Sleep', ''],
-    ]
+    const list = Object.values(Action.data).filter(action => action.type == '固有')
 
-    const level1 = Object.values(Action.data).filter(action => ['常规','目录','交流','其他'].includes(action.type))
+    const level1 = Object.values(Action.data).filter(action => ignore1.includes(action.type))
 
-    const level2 = Object.values(Action.data).filter(action => ['常规','目录','交流','其他','姿势'].includes(action.type) === false)
+    const level2 = Object.values(Action.data).filter(action => ignore2.includes(action.type) === false)
     
     const level3 = adata?.targetPart ? adata.targetPart : []
     const level3ex = usepart && adata?.usePart ? adata.usePart : []
@@ -170,9 +180,11 @@ F.initActMenu = function(actid, usepart){
         }
     })
 
-    list.forEach((a)=>{
-        if(a[0]){
-            extra.push(`<div class='actions'><<link '[ ${a[1]} ]' '${a[2]}'>>${a[3]}<</link>></div>`)
+    list.forEach((data)=>{
+        if(data.filter()){
+            const { name, option, event, id } = data
+            extra.push(`<div class='actions'><<link '[ ${name} ]' ${option ? `'${option}'` : ''}>>${event ? `<<run Action.data['${id}'].event(); F.resetUI();>>` : '' }<</link>></div>`)
+            console.log()
         }
     })
 
@@ -182,24 +194,26 @@ F.initActMenu = function(actid, usepart){
         }
     })
 
-    pose.forEach( pos => {
-        if(pos.filter() && Action.globalFilter(pos.id)){
-            option.push(F.actBtn(actid, pos))
-        }
-    });
+    if(T.inside){
+        pose.forEach( pos => {
+            if(pos.filter() && Action.globalFilter(pos.id)){
+                option.push(F.actBtn(T.posId, pos))
+            }
+        });
+    }
 
     if(level3ex.length){
         level3ex.forEach((part)=>{
-            console.log('use part:', part)
-            if(Using[pc][part].act === '' || Using[pc][part].act === actid )
+            //console.log('use part:', part)
+            if(F.partAble(actid, part, 'use') )
                 selection.push(F.partBtn(adata, part, 1));
         })
     }
 
-    if(level3.length && adata.type !== '被动' ){
+    if(level3.length && adata?.option !== 'noSelectPart'){
         level3.forEach((part)=>{
-            console.log('target part:',part)
-            if(Using[tc][part].act === '' || Using[tc][part].act === actid)
+            //console.log('target part:',part)
+            if(F.partAble(actid, part, 'tar'))
                 selection.push(F.partBtn(adata, part));
         })
     }
@@ -211,21 +225,34 @@ F.initActMenu = function(actid, usepart){
     }
 
     if(extra.length){
-     html += `<div class='actionMenu'><div class='actions'>　|　</div>${extra.join('')}</div>`
+     html += `<div class='actionMenu'><div class='actions'> | </div>${extra.join('')}</div>`
     }
     
+
     new Wikifier(null, `<<replace #actionMenu_1>>${html}<</replace>>`)
 
     if(action.length){
+        $('actionMenu_2').removeClass('hidden')
         new Wikifier(null, `<<replace #actionMenu_2>>${action.join('')}<</replace>>`)
+    }
+    else{
+        $('#actionMenu_2').addClass('hidden')
     }
 
     if(option.length){
+        $('#actionOption').removeClass('hidden')
         new Wikifier(null, `<<replace #actionOption>>${option.join('')}<</replace>>`)
+    }
+    else{
+        $('#actionOption').addClass('hidden')
     }
 
     if(selection.length){
+        $('#actionMenu_3').removeClass('hidden')
         new Wikifier(null, `<<replace #actionMenu_3>>${selection.join('')}<</replace>>`)
+    }
+    else{
+        $('#actionMenu_3').addClass('hidden')
     }
 }
 
@@ -237,7 +264,7 @@ F.ActNext = function(){
         T.selectwait = 1
     };
 
-    if(T.comPhase == 'before' && T.msgid >= S.msg.length && !T.onselect && !T.selectwait ){
+    if(T.phase == 'before' && T.msgid >= S.msg.length && !T.onselect && !T.selectwait ){
        // F.ComEvent(V.selectCom, 1)
     }
     else{
@@ -250,7 +277,7 @@ F.ActNext = function(){
 
 
 F.Msg = function(msg, add){    
-    if(!S.msg) S.msg = [];
+    if(!S.msg) F.resetMsg();
     if(add){
         if(!S.msg.length)
             S.msg[0] = '';
@@ -271,6 +298,8 @@ F.initCheckFlag = function(){
     T.actAble = 0;
     T.orderGoal = 0;
     T.phase = ''
+    delete T.noNameTag
+    delete T.aftermovement
 }
 
 F.checkAction = function(id, phase){
@@ -283,12 +312,15 @@ F.checkAction = function(id, phase){
     T.orderGoal = Action.globalOrder(id) + data.order();
     T.actAble = Action.globalCheck(id) && data.check();
 
-    T.msgid = 0;
     T.phase = phase;
 
-    // 对昂处于无力状态，强行将配合值变零
-    if(F.uncons(target) || !F.canMove(target))
+    // 对昂处于无意识状态，强行将配合值变零
+    if(F.uncons(target))
         T.orderGoal = 0
+    
+    // 有意识但无法动弹, 追加强制flag
+    if(!F.canMove(target))
+        T.forceOrder = 100
 
     if( V.system.showOrder && T.orderMsg && T.orderGoal > 0 ){
         reText += `配合度检测：${T.orderMsg}=${T.order}/${T.orderGoal}<br><<dashline>>`
@@ -310,6 +342,13 @@ F.checkAction = function(id, phase){
     }
 
     T.actId = id;
+    T.selectAct = id;
+    T.actPart = T.selectActPart;
+
+    if(!T.actPart && data.usePart){
+        T.actPart = data.usePart[0]
+    }
+
     $('action').trigger('before')
 }
 
@@ -327,7 +366,7 @@ F.setPhase = function(mode){
 }
 
 F.beforeAction = function(){
-    T.phase = 'commonbefore'
+    T.phase = 'before'
     let id = T.actId
     let reText = ''
 
@@ -361,7 +400,7 @@ F.beforeAction = function(){
     }
 
     //在执行文本最后追加下一步
-    F.Msg(`<<if !T.cancel>><<run console.log('no cancel');F.setPhase('event'); F.ActNext()>><<else>><<run F.setPhase('cancel')>><</if>>`) 
+    F.Msg(`<<if !T.cancel>>F.setPhase('event'); F.ActNext()>><<else>><<run F.setPhase('cancel')>><</if>>`) 
 
     //检测是否存在特殊的before处理，存在就在这执行。
     //if(Action.data[id]?.before) Action.data[id].before();
@@ -378,4 +417,87 @@ F.beforeAction = function(){
         F.ActNext()
     }
  
+}
+
+F.doEvent = function(id){
+    const data = Action.data[id]
+    const resetHtml = `<<run F.resetAction()>><<dashline>>`
+
+    let title = `Action_${id}`
+    let txt = T.noNameTag ? '' : F.playerName();
+
+    T.phase = 'event'
+    F.resetMsg()
+
+    //确认主控有条件执行
+    if(T.actAble){
+
+        //确认对象愿意配合执行
+        if(
+            T.orderGoal == 0
+            || V.system.debug
+            ||( T.orderGoal > 0 && T.order >= T.orderGoal )
+            ||( data?.forceAble && T.order + player.stats.LUK[1] >= T.orderGoal && random(100) <= player.stats.LUK[1]*2 )
+            ||( T.order + T.forceOrder >= T.orderGoal )
+        ){
+           
+           T.passtime = data.time;
+           txt = txt + Story.get(title).text;
+
+           //配合度不足但勉强能配合
+           if( T.order < T.orderGoal && !V.syystem.debug ){
+                if(T.forceOrder){
+                    S.msg.push(`< 强制 ><br>`)
+                    T.force = 1
+                }
+                else{
+                    S.msg.push(`勉强配合: ${T.order}+LUK${player.stats.LUK[1]}/${T.orderGoal}<br>`)
+                }
+
+           }
+
+        }
+
+
+    }
+    else{
+
+
+    }
+
+}
+
+F.resetMsg = function(){
+    S.msg = [];
+    T.msgid = 0;
+}
+
+F.resetAction = function(){
+    T.phase = 'reset'
+
+    if(T.cancel){
+        F.initCheckFlag()
+        delete S.msg;
+        delete T.cancel;
+        delete T.force;
+        F.setPhase('init')
+        return 0
+    }
+
+    //缓存最后一个动作
+    T.lastAct = { act: T.selectAct, actPart: T.selectActPart, targetPart: T.selectPart }
+    
+    delete T.cancel;
+    delete T.onselect;
+    delete T.force;
+
+    delete S.msg;
+    F.initCheckFlag()
+
+    //更新角色位置、场景信息等处理。
+    //F.LoopFirst()
+
+    //刷新画面
+    F.resetUI()
+
 }

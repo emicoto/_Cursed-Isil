@@ -96,7 +96,7 @@ const actList = {}
 class Action{
     constructor(id, name, { time = 5, mode = 0, usePart, targetPart, option, defaultText, type, autokeep = 'n', locationTags } = {} ){
 
-        const typeMap = new Map([['G', '常规'], ['T', '接触'], ['X', '触手'],['A','其他'],['I','道具'],['R','被动'],['C','交流'],['E','目录'],['B','战斗'],['M','魔法'],['P','体位'],['O','命令']],)
+        const typeMap = new Map(D.ActionTypes)
         this.id = id;
         this.name = name;
         this.type = typeMap.get(type);
@@ -153,17 +153,21 @@ class Action{
     static create(data, mode){
         const { name, templet } = data
 
-        let txt = `:: Action_${data.id}_Option[script]\n/* ${name} */\nAction.set('${data.id}')\n     .Filter(()=>{\n         return 1\n      })\n     .Check(()=>{\n         return 1\n      })\n     .Order(()=>{\n         return 0\n      })\n\n`
+        let txt = `/* ${name} */\nAction.set('${data.id}')\n     .Filter(()=>{\n         return 1\n      })\n     .Check(()=>{\n         return 1\n      })\n     .Order(()=>{\n         return 0\n      })\n\n`
 
         if(mode == 'kojo' ) txt = ''
 
         const ctx = (use) => {
+            if(!data.templet){
+                console.log(use, data)
+                return ''
+            }
             return data.targetPart.map(tar => {
                 return `<<case '${tar}'>>\n   ${
-                    templet.replace(/\{0}/g,'<<you>>')
+                    data.templet.replace(/\{0}/g,'<<you>>')
                         .replace(/\{1}/g,'$target.name')
                         .replace(/\{2}/g, D.bodyparts[tar])
-                        .replace(/\{3}/g, D.bodyparts[use])
+                        .replace(/\{3}/g, use ? D.bodyparts[use] : '{usePart}')
                 }<br>\n`
             }).join('')
         }
@@ -174,14 +178,14 @@ class Action{
             return txt
         }
         
-        if( ['接触', '被动', '触手'].includes(data.type) ){
+        if( groupmatch(data.type, '接触', '逆位', '触手') ){
             
             txt +=  data.usePart.map(k => {
-                return `${title}\n/* ${name} */\n<<switch F.checkUse(tc, '${data.id}')>>\n${ctx(k)}<</switch>>\n\n`
+                return `${title}\n/* ${name} */\n<<switch T.selectPart)>>\n${ctx(k)}<</switch>>\n\n`
             }).join('')
         }
-        else if(data.type == '道具'){
-            return `${title}\n/* ${name} */\n<<switch F.checkUse(tc, '${data.id}')>>\n${ctx('hand')}<</switch>>\n\n`
+        else if(groupmatch(data.type, '道具', '体位')){
+            return `${title}\n/* ${name} */\n<<switch T.selectPart>>\n${ctx('')}<</switch>>\n\n`
         }
         else{
             txt += `${title}\n/* ${name} */\n<<you>>在$location.name开始${name}。<br>\n\n`
@@ -197,9 +201,13 @@ class Action{
             Action.add(obj.id, obj.name, obj)
         })
     }
-    static output(mode){
+    static output(mode, type){
         const txt = Object.values(Action.data)
-        .filter(action => (mode == 'kojo' && ['调教','触手','道具'].includes(action.type)) || action.type !== '' )
+        .filter(action => 
+            (mode == 'kojo' && groupmatch(action.type, '调教','触手','道具', '体位', '交流', '')) 
+            || (type && action.type == type) 
+            || (!type && action.type !== '固有')
+        )
         .map((data) => Action.create(data, mode))
         .join('')
 
@@ -252,25 +260,28 @@ Action.globalFilter = function(id){
 
    const hasTg = pc !== tc;
    const noTg = ['Magic', 'Items', 'Self', 'Other']
-   const noTgType = ['常规','魔法','道具','自慰','其他']
+   const noTgType = ['常规','魔法','道具','自慰','其他','固有']
 
    //总之先按照分类过滤
-   if(!groupmatch(data.type,'目录','常规') && T.currentType && T.currentType !== data.type ) return 0;
-   if(T.actPart !== 'reset' && data.usePart &&  !data.usePart.includes(T.actPart)) return 0;
+   if(!groupmatch(data.type,'目录','常规','固有') && T.currentType !== 'all' && T.currentType !== data.type ) return 0;
 
-   //console.log(data)
+   //触手模式只能控制触手
+   if(pc == 'm0' && data.type !== '触手') return 0;
+
+   //使用部位过滤器只会在接触以上模式出现
+   if( id.match(/^use\S+/) && !groupmatch(V.mode, 'touch', 'train', 'reserve') ) return 0;
 
    //占用中。解除倒是没问题。
    if(T.actPart !== 'reset' && Using[pc][T.actPart] == id) return 1;
    if(T.actPart !== 'reset' && Using[pc][T.actPart].act !== '') return 0;
 
-   //使用部位过滤器只会在接触以上模式出现
-   if( id.match(/^use\S+/) && !groupmatch(V.mode, 'touch', 'train', 'reserve') ) return 0;
+   //选择过滤器中、
+   if(T.actPartFilter && data.usePart && !data.usePart.includes(T.actPartFilter)) return 0;
 
    //特定分类批处理
    switch (data.type) {
       case '触手':
-         if(data.mode > 2 && V.date.time < 1200 )
+         if(!Flag.master || data.mode > 2 && V.date.time < 1200 )
             return 0
          break;
    
@@ -279,21 +290,34 @@ Action.globalFilter = function(id){
             return 0
          break;
       
+      case '逆位':
+         if(V.mode !== 'reverse')
+            return 0
+         break
+      
+      case '常规':
+         if (!V.location.tag.has(data.tags))
+             return 0;
+         if (V.mode !== 'normal' && !data?.option.has('canTrain'))
+             return 0;
+         break
+      
+      case '交流':
+         if(Tsv[tc].touchLv <= 0)
+            return 0;
+         if(V.mode !== 'normal' && !data?.option.has('canTrain'))
+            return 0;
+        break
+
       //要有对应道具才行
       case '道具':
          //if(!F.iventory('find', id))
          //   return 0
-         break;
-      
-      case '被动':
-         //if(V.mode !== 'reverse')
-         //   return 0
-         break
-      
-      case '常规':
-         if(!V.location.tag.has(data.tags))
-                return 0;
-         break
+      case '魔法':
+      case '命令':
+        if(data.type !== T.currentType)
+            return 0;
+        break
    }
 
    return 1

@@ -119,8 +119,9 @@
 	      this.sup[k] = 0;
 	      this.juel[k] = 0;
 	    });
-	    this.tsv.oksign = 0;
-	    this.tsv.check = 0;
+	    D.tsv.forEach((k) => {
+	      this.tsv[k] = 0;
+	    });
 	    Object.keys(D.mark).forEach((k) => {
 	      this.mark[k] = 0;
 	    });

@@ -158,6 +158,7 @@ else
 if ( e.phase === S.dialog[ch].length ){
 
     if ( e.config.type == 'return' ){
+        if(c?.phase) e.phase = c.phase
         e.sp = 0;
         e.lastId = V.selectId;
         V.selectId = 0;

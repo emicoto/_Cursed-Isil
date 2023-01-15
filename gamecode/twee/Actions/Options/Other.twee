@@ -1,0 +1,60 @@
+:: Action_Other_Option[script]
+/* 直播 */
+Action.set('Stream')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 举行派对 */
+Action.set('Party')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 衣服管理 */
+Action.set('Clothes')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 行为管理 */
+Action.set('Behavior')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 一键脱光 */
+Action.set('GetNude')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })

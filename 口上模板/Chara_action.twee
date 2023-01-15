@@ -61,14 +61,14 @@
 
 :: Kojo_cid_Action_t0
 /* 接吻 */
-<<switch F.checkUse('cid', 't0')>>
+<<switch T.selectPart>>
 <<case 'mouth'>>
    <<you>>吻上了<<cidName>>的嘴唇。<br>
 <</switch>>
 
 :: Kojo_cid_Action_t1
 /* 亲吻 */
-<<switch F.checkUse('cid', 't1')>>
+<<switch T.selectPart>>
 <<case 'breast'>>
    <<you>>亲吻在了<<cidName>>的胸部上，轻吮吸舔，试图留下自己的印记。<br>
 <<case 'penis'>>
@@ -95,7 +95,7 @@
 
 :: Kojo_cid_Action_t2
 /* 抚摸 */
-<<switch F.checkUse('cid', 't2')>>
+<<switch T.selectPart>>
 <<case 'mouth'>>
    <<you>>的手轻抚着<<cidName>>的嘴巴。<br>
 <<case 'breast'>>
@@ -128,7 +128,7 @@
 
 :: Kojo_cid_Action_t2
 /* 抚摸 */
-<<switch F.checkUse('cid', 't2')>>
+<<switch T.selectPart>>
 <<case 'mouth'>>
    <<you>>的手轻抚着<<cidName>>的嘴巴。<br>
 <<case 'breast'>>
@@ -161,7 +161,7 @@
 
 :: Kojo_cid_Action_t3
 /* 揉捏 */
-<<switch F.checkUse('cid', 't3')>>
+<<switch T.selectPart>>
 <<case 'breast'>>
    <<you>>揉捏着<<cidName>>的胸部。<br>
 <<case 'penis'>>
@@ -176,7 +176,7 @@
 
 :: Kojo_cid_Action_t3
 /* 揉捏 */
-<<switch F.checkUse('cid', 't3')>>
+<<switch T.selectPart>>
 <<case 'breast'>>
    <<you>>揉捏着<<cidName>>的胸部。<br>
 <<case 'penis'>>
@@ -191,7 +191,7 @@
 
 :: Kojo_cid_Action_t4
 /* 吸舔 */
-<<switch F.checkUse('cid', 't4')>>
+<<switch T.selectPart>>
 <<case 'penis'>>
    <<you>>吸住了<<cidName>>的阴茎，在上面用舌头反复舔舐着。<br>
 <<case 'critoris'>>
@@ -222,7 +222,7 @@
 
 :: Kojo_cid_Action_t5
 /* 吸咬 */
-<<switch F.checkUse('cid', 't5')>>
+<<switch T.selectPart>>
 <<case 'penis'>>
    <<you>>含住<<cidName>>的阴茎，吸吮轻咬着。<br>
 <<case 'critoris'>>
@@ -247,7 +247,7 @@
 
 :: Kojo_cid_Action_t6
 /* 逗弄 */
-<<switch F.checkUse('cid', 't6')>>
+<<switch T.selectPart>>
 <<case 'penis'>>
    <<you>>反复逗弄着<<cidName>>的阴茎。<br>
 <<case 'critoris'>>
@@ -264,7 +264,7 @@
 
 :: Kojo_cid_Action_t6
 /* 逗弄 */
-<<switch F.checkUse('cid', 't6')>>
+<<switch T.selectPart>>
 <<case 'penis'>>
    <<you>>反复逗弄着<<cidName>>的阴茎。<br>
 <<case 'critoris'>>
@@ -281,7 +281,7 @@
 
 :: Kojo_cid_Action_t7
 /* 指交 */
-<<switch F.checkUse('cid', 't7')>>
+<<switch T.selectPart>>
 <<case 'mouth'>>
    <<you>>的手指浅浅插入<<cidName>>的嘴巴，在入口附近摩擦着。<br>
 <<case 'vagina'>>
@@ -294,7 +294,7 @@
 
 :: Kojo_cid_Action_t7
 /* 指交 */
-<<switch F.checkUse('cid', 't7')>>
+<<switch T.selectPart>>
 <<case 'mouth'>>
    <<you>>的手指浅浅插入<<cidName>>的嘴巴，在入口附近摩擦着。<br>
 <<case 'vagina'>>
@@ -307,7 +307,7 @@
 
 :: Kojo_cid_Action_t8
 /* 性交 */
-<<switch F.checkUse('cid', 't8')>>
+<<switch T.selectPart>>
 <<case 'mouth'>>
    <<you>>以{4}的姿势用阴茎插入了<<cidName>>的嘴巴。<br>
 <<case 'vagina'>>
@@ -318,7 +318,7 @@
 
 :: Kojo_cid_Action_t9
 /* 抽插 */
-<<switch F.checkUse('cid', 't9')>>
+<<switch T.selectPart>>
 <<case 'mouth'>>
    <<you>>活动腰身，在<<cidName>>的嘴巴反复出入着。<br>
 <<case 'vagina'>>
@@ -329,21 +329,21 @@
 
 :: Kojo_cid_Action_t10
 /* 撸动 */
-<<switch F.checkUse('cid', 't10')>>
+<<switch T.selectPart>>
 <<case 'penis'>>
    <<you>>握住<<cidName>>的阴茎，前后撸动着。<br>
 <</switch>>
 
 :: Kojo_cid_Action_t10
 /* 撸动 */
-<<switch F.checkUse('cid', 't10')>>
+<<switch T.selectPart>>
 <<case 'penis'>>
    <<you>>握住<<cidName>>的阴茎，前后撸动着。<br>
 <</switch>>
 
 :: Kojo_cid_Action_t11
 /* 拳交 */
-<<switch F.checkUse('cid', 't11')>>
+<<switch T.selectPart>>
 <<case 'vagina'>>
    <<you>>的拳头粗暴地捅进了<<cidName>>的阴道里面，反复抽插着。<br>
 <<case 'anal'>>
@@ -352,7 +352,7 @@
 
 :: Kojo_cid_Action_t11
 /* 拳交 */
-<<switch F.checkUse('cid', 't11')>>
+<<switch T.selectPart>>
 <<case 'vagina'>>
    <<you>>的拳头粗暴地捅进了<<cidName>>的阴道里面，反复抽插着。<br>
 <<case 'anal'>>
@@ -361,7 +361,7 @@
 
 :: Kojo_cid_Action_r0
 /* 握住 */
-<<switch F.checkUse('cid', 'r0')>>
+<<switch T.selectPart>>
 <<case 'handL'>>
    <<you>>的左手握住了<<cidName>>的左手。<br>
 <<case 'handR'>>
@@ -374,7 +374,7 @@
 
 :: Kojo_cid_Action_Rotor
 /* 跳蛋 */
-<<switch F.checkUse('cid', 'Rotor')>>
+<<switch T.selectPart>>
 <<case 'vagina'>>
    <<you>>将跳蛋贴在<<cidName>>的阴道，刺激着。<br>
 <<case 'anal'>>
@@ -389,7 +389,7 @@
 
 :: Kojo_cid_Action_Vibrator
 /* 震动棒 */
-<<switch F.checkUse('cid', 'Vibrator')>>
+<<switch T.selectPart>>
 <<case 'vagina'>>
    <<you>>将震动棒放进了<<cidName>>的阴道。<br>
 <<case 'anal'>>
@@ -398,7 +398,7 @@
 
 :: Kojo_cid_Action_x0
 /* 揉捏 */
-<<switch F.checkUse('cid', 'x0')>>
+<<switch T.selectPart>>
 <<case 'breast'>>
    触手缠绕在<<cidName>>的胸部上，巧妙地反复揉捏给予刺激。<br>
 <<case 'penis'>>
@@ -411,7 +411,7 @@
 
 :: Kojo_cid_Action_x1
 /* 逗弄 */
-<<switch F.checkUse('cid', 'x1')>>
+<<switch T.selectPart>>
 <<case 'mouth'>>
    蠕动、摩擦、按捏。触手反复逗弄着<<cidName>>的嘴巴，给予极大的刺激。<br>
 <<case 'penis'>>
@@ -432,7 +432,7 @@
 
 :: Kojo_cid_Action_x2
 /* 吸舔 */
-<<switch F.checkUse('cid', 'x2')>>
+<<switch T.selectPart>>
 <<case 'nipple'>>
    吸盘触手吸附在<<cidName>>的乳头上，反复吸舔着。<br>
 <<case 'penis'>>
@@ -443,7 +443,7 @@
 
 :: Kojo_cid_Action_x3
 /* 吸咬 */
-<<switch F.checkUse('cid', 'x3')>>
+<<switch T.selectPart>>
 <<case 'nipple'>>
    口器触手含住<<cidName>>的乳头，吸吮轻咬着。<br>
 <<case 'penis'>>
@@ -454,14 +454,14 @@
 
 :: Kojo_cid_Action_x4
 /* 撸动 */
-<<switch F.checkUse('cid', 'x4')>>
+<<switch T.selectPart>>
 <<case 'penis'>>
    触手缠绕住<<cidName>>的阴茎，反复撸动着。<br>
 <</switch>>
 
 :: Kojo_cid_Action_x5
 /* 插入 */
-<<switch F.checkUse('cid', 'x5')>>
+<<switch T.selectPart>>
 <<case 'mouth'>>
    触手钻进了<<cidName>>敞开的嘴巴，缓缓往内深入。<br>
 <<case 'vagina'>>
@@ -476,7 +476,7 @@
 
 :: Kojo_cid_Action_x6
 /* 蠕动 */
-<<switch F.checkUse('cid', 'x6')>>
+<<switch T.selectPart>>
 <<case 'mouth'>>
    触手在<<cidName>>的嘴巴慢慢蠕动着。<br>
 <<case 'breast'>>
@@ -505,7 +505,7 @@
 
 :: Kojo_cid_Action_x7
 /* 抽插 */
-<<switch F.checkUse('cid', 'x7')>>
+<<switch T.selectPart>>
 <<case 'mouth'>>
    触手不停在<<cidName>>的嘴巴进出，抽插蠕动着。<br>
 <<case 'vagina'>>
@@ -520,7 +520,7 @@
 
 :: Kojo_cid_Action_x8
 /* 深入 */
-<<switch F.checkUse('cid', 'x8')>>
+<<switch T.selectPart>>
 <<case 'mouth'>>
    触手往<<cidName>>的嘴巴内部发出了进攻，往更深处蠕进。<br>
 <<case 'vagina'>>
@@ -533,7 +533,7 @@
 
 :: Kojo_cid_Action_x9
 /* 抽送 */
-<<switch F.checkUse('cid', 'x9')>>
+<<switch T.selectPart>>
 <<case 'mouth'>>
    触手激烈地在<<cidName>>的嘴巴进出着，反复抽送着触身给予莫大的刺激。<br>
 <<case 'vagina'>>
@@ -546,7 +546,7 @@
 
 :: Kojo_cid_Action_x10
 /* 鞭打 */
-<<switch F.checkUse('cid', 'x10')>>
+<<switch T.selectPart>>
 <<case 'breast'>>
    触手甩动触鞭，用巧妙的力度鞭打在<<cidName>>的胸部上。<br>
 <<case 'penis'>>
@@ -565,7 +565,7 @@
 
 :: Kojo_cid_Action_x11
 /* 刺入 */
-<<switch F.checkUse('cid', 'x11')>>
+<<switch T.selectPart>>
 <<case 'penis'>>
    触手伸出尖锐的细针，狠狠地刺入了<<cidName>>的阴茎。<br>
 <<case 'critoris'>>
@@ -584,7 +584,7 @@
 
 :: Kojo_cid_Action_x12
 /* 灌入 */
-<<switch F.checkUse('cid', 'x12')>>
+<<switch T.selectPart>>
 <<case 'mouth'>>
    触手往<<cidName>>的嘴巴灌入大量的药液。<br>
 <<case 'vagina'>>
@@ -595,7 +595,7 @@
 
 :: Kojo_cid_Action_x13
 /* 注射 */
-<<switch F.checkUse('cid', 'x13')>>
+<<switch T.selectPart>>
 <<case 'breast'>>
    触手伸出尖锐的针头，刺入<<cidName>>的胸部并注入药液。<br>
 <<case 'penis'>>
@@ -626,7 +626,7 @@
 /* 玩家作为受方时 */
 :: Kojo_cid_ActionR_r0
 /* 握住 */
-<<switch F.checkUse('cid', 'r0')>>
+<<switch T.selectPart>>
 <<case 'handL'>>
    <<you>>的右手握住了<<cidName>>的左手。<br>
 <<case 'handR'>>
@@ -639,7 +639,7 @@
 
 :: Kojo_cid_ActionR_r1
 /* 收紧 */
-<<switch F.checkUse('cid', 'r1')>>
+<<switch T.selectPart>>
 <<case 'penis'>>
    <<you>>控制自身阴道，紧紧夹住了<<cidName>>的阴茎。<br>
 <<case 'handL'>>

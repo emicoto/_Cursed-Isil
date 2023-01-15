@@ -56,6 +56,7 @@ V.mode = 'event'
 
 V.flag = {
     activePC: 'Isil/m0/',
+    master: 0, // 触手开关
 };
 
 V.weather = {

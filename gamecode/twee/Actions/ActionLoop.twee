@@ -1,0 +1,105 @@
+:: MainLoop:Before
+/*纯代码区，最先处理 */
+
+:: MainLoop:After
+/*纯代码区，最后处理 */
+
+:: MainLoop
+<action></action>
+<div id='hidden' class='hidden'>you can't see me.</div>
+<div id='location'></div>
+<br>
+<div id='content' class='content' onClick='if(S.msg)F.ActNext();'>
+    <div id='contentMsg'>
+    </div>
+<div id="msg_end" style="height:0px; overflow:hidden"></div>
+</div>
+
+/* 主目录 */
+<div id='actionMenu_1'>
+
+</div>
+
+/* 额外的动作选项。如体位，情景play */
+<div id='actionOption'>
+</div>
+
+<div id= 'actionMenu_2'>
+/* 角色互动模式下，行动有下分类时的可用动作 */
+</div>
+
+<div id='actionMenu_3'>
+/* 可用的动作目标 */
+</div>
+
+<div id='next'>
+
+</div>
+
+<script>
+F.initActionMode()
+F.initMainFlow()
+F.resetUI()
+
+$('action').on('init', ()=>{
+    F.initMainFlow()
+    F.resetUI()
+    $('action').trigger('loop')
+})
+
+$('action').on('before', ()=>{
+    F.hideActions()
+    F.showNext()
+    F.beforeAction()
+})
+
+$('action').on('cancel', ()=>{
+    console.log('cancel event')
+    F.resetLink()
+    F.resetAction()
+    F.resetUI()
+})
+
+$('action').on('keep', ()=>{
+    console.log('keep event')
+    F.resetLink()
+
+})
+
+$('action').on('stop', ()=>{
+    console.log('stop event')
+    F.resetLink()
+
+})
+
+$('action').on('event', ()=>{
+    console.log('do event')
+    F.resetLink()
+    F.doEvent()
+})
+
+$('action').on('counter', ()=>{
+    console.log('counter event')
+    F.resetLink()
+
+})
+
+$('action').on('result', ()=>{
+    console.log('result event')
+    F.resetLink()
+
+})
+
+$('action').on('after', ()=>{
+    console.log('after event')
+    F.resetLink()
+
+})
+
+$('action').on('finish', ()=>{
+    console.log('finish event')
+    F.resetLink()
+
+})
+
+</script>

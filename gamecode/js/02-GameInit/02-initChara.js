@@ -1,14 +1,5 @@
 F.initChara = {}
 
-F.initChara.m0 = function(){
-	const chara = new Chara('m0', '诅咒之触', 'male', 'tentacles')
-		.initChara('tachi')
-		.setStats({ STR:16, CON:15, DEX:17, INT:15, WIL:17, PSY:17 })
-		.setOrgan('p', { type:'触手', trait:['光滑'], size:1, d:6, l:160 })
-
-	return chara
-}
-
 F.initChara.Ayres = function(){
     const chara =  new Chara("Ayres", "艾瑞斯", "male", "deamon")
 	.initChara("tachi")
@@ -213,4 +204,14 @@ F.initChara.Nanaly = function(){
 		chara.resetVirginity()
 
 		return chara
+}
+
+
+F.initChara.m0 = function(){
+	const chara = new Chara('m0', '诅咒之触', 'male', 'tentacles')
+		.initChara('tachi')
+		.setStats({ STR:16, CON:15, DEX:17, INT:15, WIL:17, PSY:17 })
+		.setOrgan('p', { type:'触手', trait:['光滑'], size:1, d:6, l:160 })
+
+	return chara
 }

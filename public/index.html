@@ -429,6 +429,26 @@ Array.prototype.has = function(...arg){
     return false
 }
 
+/**
+ * 
+ * @param {number} index 
+ * @param {string} string 
+ */
+String.prototype.insert = function(index, string){
+    this.splice(index, 0, string)
+    return this
+}
+
+/**
+ * 
+ * @param {number} index 
+ * @param {any} element 
+ */
+Array.prototype.insert = function(index, element){
+    this.splice(index, 0, element)
+    return this
+}
+
 Object.defineProperty(Array.prototype, 'concatUnique', {
     configurable : true,
     writable     : true,
@@ -1557,8 +1577,9 @@ Object.defineProperty(Math, 'clamp', {
 	      this.sup[k] = 0;
 	      this.juel[k] = 0;
 	    });
-	    this.tsv.oksign = 0;
-	    this.tsv.check = 0;
+	    D.tsv.forEach((k) => {
+	      this.tsv[k] = 0;
+	    });
 	    Object.keys(D.mark).forEach((k) => {
 	      this.mark[k] = 0;
 	    });
@@ -2237,6 +2258,7 @@ D.tsv = [
     'sleepDepth', //睡眠深度。低于500时随时可能醒来。
     'sleepCurse', //昏睡剂or昏睡咒效果
     'touchLv', //交流深度
+    'check', // ?
 ]
 
 D.mutant = [
@@ -2334,7 +2356,21 @@ D.ComFilterTrain = [
     '前戏','道具','性交', '尿道', 'SM', '鬼畜', '触手', '情景'
 ]
 
-D.ActionTypes = []
+D.ActionTypes = [
+    ['G', '常规'], 
+    ['E', '目录'],
+    ['C', '交流'],
+    ['T', '接触'], 
+    ['R', '逆位'],
+    ['P', '体位'],
+    ['I', '道具'],
+    ['B', '战斗'],
+    ['M', '魔法'],
+    ['X', '触手'],
+    ['O', '命令'],
+    ['A', '其他'],
+    ['S', '固有']
+]
 
 D.defaultExit = 'MainLoop'
 
@@ -2344,7 +2380,62 @@ D.ignoreOrder = 20
 D.palamLv = [ 0, 200, 600, 1800, 3200, 10000, 30000, 60000, 100000, 150000, 250000, 500000, 1000000, 2500000, 5000000, 10000000 ]
 
 //exp lv的初期値
-D.expLv = [ 0, 3, 10, 30, 100, 200, 400, 600, 800, 1200, 1600, 2000, 2400, 3200, 5000]</script>
+D.expLv = [ 0, 3, 10, 30, 100, 200, 400, 600, 800, 1200, 1600, 2000, 2400, 3200, 5000]
+
+D.tflag = [
+    'scarTimeMultip',
+
+    'currentType', //actType
+
+    'ac',
+    'tc',
+    'acp',
+
+    'actor', 'actTg',
+    'actPart',
+    'selectpart',
+    'actPartFilter',
+
+    'inside', // is Sex inside,
+    'posId', // pose Id
+    'actId',
+    'lastAct',
+
+    'msgid',
+    'order',
+    'reason',
+    'orderMsg',
+    'actAble',
+    'orderGoal',
+    'phase',
+    'noNameTag',
+    'aftermovement',
+    'stopAct',
+    'cancel',
+
+    'force',
+
+    'comPhase',
+    'onselect',
+    'selectwait',
+    'noMsg',
+
+    'comcount',
+    'comCancel',
+
+    'earnMP',
+    'selectcount',
+    'passage',
+    'title',
+
+    'timeCheckNight',
+    'timeCheckDay',
+
+    //event mode
+    'effect',
+    'aftercheck',
+    'exit',
+]</script>
 <link type="image/png" rel="icon" sizes="24x24" href="icon.svg" />
 <link rel="stylesheet" href="css/jquery-ui.css">
 <link rel="stylesheet" href="css/shake-macro-set.css">
@@ -4610,6 +4701,7 @@ V.mode = 'event'
 
 V.flag = {
     activePC: 'Isil/m0/',
+    master: 0, // 触手开关
 };
 
 V.weather = {
@@ -4631,15 +4723,6 @@ V.time = {
 }
 /* twine-user-script #20: "02-initChara.js" */
 F.initChara = {}
-
-F.initChara.m0 = function(){
-	const chara = new Chara('m0', '诅咒之触', 'male', 'tentacles')
-		.initChara('tachi')
-		.setStats({ STR:16, CON:15, DEX:17, INT:15, WIL:17, PSY:17 })
-		.setOrgan('p', { type:'触手', trait:['光滑'], size:1, d:6, l:160 })
-
-	return chara
-}
 
 F.initChara.Ayres = function(){
     const chara =  new Chara("Ayres", "艾瑞斯", "male", "deamon")
@@ -4845,6 +4928,16 @@ F.initChara.Nanaly = function(){
 		chara.resetVirginity()
 
 		return chara
+}
+
+
+F.initChara.m0 = function(){
+	const chara = new Chara('m0', '诅咒之触', 'male', 'tentacles')
+		.initChara('tachi')
+		.setStats({ STR:16, CON:15, DEX:17, INT:15, WIL:17, PSY:17 })
+		.setOrgan('p', { type:'触手', trait:['光滑'], size:1, d:6, l:160 })
+
+	return chara
 }
 /* twine-user-script #21: "03-initplayer.js" */
 //beauty=ALR*100+wearbuff+traitbuff
@@ -5109,8 +5202,6 @@ for(let i in F.initChara){
 F.initCharaV()
 
 for(let i in V.chara){
-	if(i == 'm0') continue;
-
 	F.fixBase(V.chara[i], 1)
 	F.resetBase(V.chara[i])
 }
@@ -5123,6 +5214,10 @@ V.tc = 'Isil';
 
 F.fixBase = function(chara,mode){
     const { base, stats, race, traits} = chara
+
+	if(chara.id == 'm0'){
+		chara.base = clone(C.Ayres.base)
+	}
 
     base.health[1] = Math.floor(stats.CON[1] * 50 * F.raceBonus(race, 'health') + 0.5)
     base.stamina[1] = Math.floor(stats.STR[1] * 50 * F.raceBonus(race, 'stamina') + 0.5)
@@ -5147,6 +5242,11 @@ F.fixBase = function(chara,mode){
 
 F.fixStats = function(chara){
 	const { stats, equip, race } = chara;
+
+	if(chara.id === 'm0'){
+		chara.stats = clone(C.Ayres.stats)
+		return
+	}
 
 	stats.ATK[0] = Math.floor(stats.STR[1] * 2 * F.raceBonus(race, 'ATK') +0.5)
 	stats.DEF[0] = Math.floor(stats.CON[1] * 2 * F.raceBonus(race, 'DEF')+0.5)
@@ -5262,7 +5362,7 @@ F.initAction = function(cid){
             Act[cid][k] = { tc:'', act:'', use:'' }; // 作为actor执行命令时判定点
         })
 		listb.forEach((k)=>{
-			Using[cid][k] = { act:'', ac:'' }; // 作为目标对象进行部位占用检测，同时也是持续动作的判定点？
+			Using[cid][k] = { act:'', actor:'', use:'' }; // 作为目标对象进行部位占用检测，同时也是持续动作的判定点？
 		})
     }
 }
@@ -5365,7 +5465,7 @@ const actList = {}
 class Action{
     constructor(id, name, { time = 5, mode = 0, usePart, targetPart, option, defaultText, type, autokeep = 'n', locationTags } = {} ){
 
-        const typeMap = new Map([['G', '常规'], ['T', '接触'], ['X', '触手'],['A','其他'],['I','道具'],['R','被动'],['C','交流'],['E','目录'],['B','战斗'],['M','魔法'],['P','体位'],['O','命令']],)
+        const typeMap = new Map(D.ActionTypes)
         this.id = id;
         this.name = name;
         this.type = typeMap.get(type);
@@ -5422,17 +5522,21 @@ class Action{
     static create(data, mode){
         const { name, templet } = data
 
-        let txt = `:: Action_${data.id}_Option[script]\n/* ${name} */\nAction.set('${data.id}')\n     .Filter(()=>{\n         return 1\n      })\n     .Check(()=>{\n         return 1\n      })\n     .Order(()=>{\n         return 0\n      })\n\n`
+        let txt = `/* ${name} */\nAction.set('${data.id}')\n     .Filter(()=>{\n         return 1\n      })\n     .Check(()=>{\n         return 1\n      })\n     .Order(()=>{\n         return 0\n      })\n\n`
 
         if(mode == 'kojo' ) txt = ''
 
         const ctx = (use) => {
+            if(!data.templet){
+                console.log(use, data)
+                return ''
+            }
             return data.targetPart.map(tar => {
                 return `<<case '${tar}'>>\n   ${
-                    templet.replace(/\{0}/g,'<<you>>')
+                    data.templet.replace(/\{0}/g,'<<you>>')
                         .replace(/\{1}/g,'$target.name')
                         .replace(/\{2}/g, D.bodyparts[tar])
-                        .replace(/\{3}/g, D.bodyparts[use])
+                        .replace(/\{3}/g, use ? D.bodyparts[use] : '{usePart}')
                 }<br>\n`
             }).join('')
         }
@@ -5443,14 +5547,14 @@ class Action{
             return txt
         }
         
-        if( ['接触', '被动', '触手'].includes(data.type) ){
+        if( groupmatch(data.type, '接触', '逆位', '触手') ){
             
             txt +=  data.usePart.map(k => {
-                return `${title}\n/* ${name} */\n<<switch F.checkUse(tc, '${data.id}')>>\n${ctx(k)}<</switch>>\n\n`
+                return `${title}\n/* ${name} */\n<<switch T.selectPart)>>\n${ctx(k)}<</switch>>\n\n`
             }).join('')
         }
-        else if(data.type == '道具'){
-            return `${title}\n/* ${name} */\n<<switch F.checkUse(tc, '${data.id}')>>\n${ctx('hand')}<</switch>>\n\n`
+        else if(groupmatch(data.type, '道具', '体位')){
+            return `${title}\n/* ${name} */\n<<switch T.selectPart>>\n${ctx('')}<</switch>>\n\n`
         }
         else{
             txt += `${title}\n/* ${name} */\n<<you>>在$location.name开始${name}。<br>\n\n`
@@ -5466,9 +5570,13 @@ class Action{
             Action.add(obj.id, obj.name, obj)
         })
     }
-    static output(mode){
+    static output(mode, type){
         const txt = Object.values(Action.data)
-        .filter(action => (mode == 'kojo' && ['调教','触手','道具'].includes(action.type)) || action.type !== '' )
+        .filter(action => 
+            (mode == 'kojo' && groupmatch(action.type, '调教','触手','道具', '体位', '交流', '')) 
+            || (type && action.type == type) 
+            || (!type && action.type !== '固有')
+        )
         .map((data) => Action.create(data, mode))
         .join('')
 
@@ -5521,25 +5629,28 @@ Action.globalFilter = function(id){
 
    const hasTg = pc !== tc;
    const noTg = ['Magic', 'Items', 'Self', 'Other']
-   const noTgType = ['常规','魔法','道具','自慰','其他']
+   const noTgType = ['常规','魔法','道具','自慰','其他','固有']
 
    //总之先按照分类过滤
-   if(!groupmatch(data.type,'目录','常规') && T.currentType && T.currentType !== data.type ) return 0;
-   if(T.actPart !== 'reset' && data.usePart &&  !data.usePart.includes(T.actPart)) return 0;
+   if(!groupmatch(data.type,'目录','常规','固有') && T.currentType !== 'all' && T.currentType !== data.type ) return 0;
 
-   //console.log(data)
+   //触手模式只能控制触手
+   if(pc == 'm0' && data.type !== '触手') return 0;
+
+   //使用部位过滤器只会在接触以上模式出现
+   if( id.match(/^use\S+/) && !groupmatch(V.mode, 'touch', 'train', 'reserve') ) return 0;
 
    //占用中。解除倒是没问题。
    if(T.actPart !== 'reset' && Using[pc][T.actPart] == id) return 1;
    if(T.actPart !== 'reset' && Using[pc][T.actPart].act !== '') return 0;
 
-   //使用部位过滤器只会在接触以上模式出现
-   if( id.match(/^use\S+/) && !groupmatch(V.mode, 'touch', 'train', 'reserve') ) return 0;
+   //选择过滤器中、
+   if(T.actPartFilter && data.usePart && !data.usePart.includes(T.actPartFilter)) return 0;
 
    //特定分类批处理
    switch (data.type) {
       case '触手':
-         if(data.mode > 2 && V.date.time < 1200 )
+         if(!Flag.master || data.mode > 2 && V.date.time < 1200 )
             return 0
          break;
    
@@ -5548,21 +5659,34 @@ Action.globalFilter = function(id){
             return 0
          break;
       
+      case '逆位':
+         if(V.mode !== 'reverse')
+            return 0
+         break
+      
+      case '常规':
+         if (!V.location.tag.has(data.tags))
+             return 0;
+         if (V.mode !== 'normal' && !data?.option.has('canTrain'))
+             return 0;
+         break
+      
+      case '交流':
+         if(Tsv[tc].touchLv <= 0)
+            return 0;
+         if(V.mode !== 'normal' && !data?.option.has('canTrain'))
+            return 0;
+        break
+
       //要有对应道具才行
       case '道具':
          //if(!F.iventory('find', id))
          //   return 0
-         break;
-      
-      case '被动':
-         //if(V.mode !== 'reverse')
-         //   return 0
-         break
-      
-      case '常规':
-         if(!V.location.tag.has(data.tags))
-                return 0;
-         break
+      case '魔法':
+      case '命令':
+        if(data.type !== T.currentType)
+            return 0;
+        break
    }
 
    return 1
@@ -5604,18 +5728,21 @@ F.resetUI = function(){
     V.player = C[pc]
 
     F.initLocation()
+    F.showActions();
     F.initActMenu()
     //F.initActionselect()
     
     F.showNext(1);
-    F.showActions();
 
     return ''
 }
 
 F.initActionMode = function(){
-    T.currentType = ''
+    T.currentType = 'all'
+    T.actPartFilter = 'all'
     T.actor = V.pc
+    T.actTg = V.pc !== V.tc ? V.tc : V.pc;
+
     T.actPart = 'reset'
 
     F.initAction('m0')
@@ -5679,7 +5806,7 @@ F.actBtn = function(actid, data){
         return `<div class='actions selectAct'>[ ${name} ]</div>`
     }
 
-    if(groupmatch(data.type, '接触','触手','被动') && data.option !== 'doStraight' || (data.type == '道具' && data.targetPart) ){
+    if((groupmatch(data.type, '接触','触手','逆位') && !groupmatch(data.option, 'doStraight', 'reset')) || (data.type == '道具' && data.targetPart) ){
         let usePart
         if(data.usePart && data.usePart.length > 1){
             usePart = 1
@@ -5701,11 +5828,11 @@ F.actBtn = function(actid, data){
 F.partBtn = function(data, part, use){
     const { id } = data;
     let setpart = `<<set _selectPart to '${part}'>><<run F.checkAction('${id}', 'do')>>`
-    console.log(data)
+    //console.log(data)
 
     if(use){
-        setpart = `<<set _actPart to '${part}'>>`
-        if(data.option == 'noSelectPart'){
+        setpart = `<<set _selectActPart to '${part}'>>`
+        if(data?.option == 'noSelectPart'){
             setpart += `<<run F.checkAction('${id}', 'do')>>`
         }
         else{
@@ -5720,22 +5847,29 @@ F.partBtn = function(data, part, use){
 }
 
 F.partAble = function(actid, part, mode){
-    let p = mode == 'use' ? V.pc : V.tc
+    const data = Action.data[actid]
+    let p = mode == 'use' ? V.pc : V.tc;
+
+    if(data.type == '触手'){
+
+    }
+    else{
+        return Using[p][part] === '' || Using[pc][part].act === actid
+    }
 
 }
 
 F.initActMenu = function(actid, usepart){
+    const ignore1 = ['常规','目录','交流','其他']
+    const ignore2 = ['体位','固有'].concat(ignore1)
+
     let adata = Action.data[actid]
 
-    const list = [
-        [(V.mode == 'normal'), '移动', 'Map', ''],
-        [(V.location.id == 'A0'), '下沉', 'Basement', ''],
-        [(V.location.id == 'A0' && (V.date.time >= 1200 || F.baseCheck(player, 'stamina', 50)) && pc !== 'm0' ), '睡觉', 'Sleep', ''],
-    ]
+    const list = Object.values(Action.data).filter(action => action.type == '固有')
 
-    const level1 = Object.values(Action.data).filter(action => ['常规','目录','交流','其他'].includes(action.type))
+    const level1 = Object.values(Action.data).filter(action => ignore1.includes(action.type))
 
-    const level2 = Object.values(Action.data).filter(action => ['常规','目录','交流','其他','姿势'].includes(action.type) === false)
+    const level2 = Object.values(Action.data).filter(action => ignore2.includes(action.type) === false)
     
     const level3 = adata?.targetPart ? adata.targetPart : []
     const level3ex = usepart && adata?.usePart ? adata.usePart : []
@@ -5753,9 +5887,11 @@ F.initActMenu = function(actid, usepart){
         }
     })
 
-    list.forEach((a)=>{
-        if(a[0]){
-            extra.push(`<div class='actions'><<link '[ ${a[1]} ]' '${a[2]}'>>${a[3]}<</link>></div>`)
+    list.forEach((data)=>{
+        if(data.filter()){
+            const { name, option, event, id } = data
+            extra.push(`<div class='actions'><<link '[ ${name} ]' ${option ? `'${option}'` : ''}>>${event ? `<<run Action.data['${id}'].event(); F.resetUI();>>` : '' }<</link>></div>`)
+            console.log()
         }
     })
 
@@ -5765,24 +5901,26 @@ F.initActMenu = function(actid, usepart){
         }
     })
 
-    pose.forEach( pos => {
-        if(pos.filter() && Action.globalFilter(pos.id)){
-            option.push(F.actBtn(actid, pos))
-        }
-    });
+    if(T.inside){
+        pose.forEach( pos => {
+            if(pos.filter() && Action.globalFilter(pos.id)){
+                option.push(F.actBtn(T.posId, pos))
+            }
+        });
+    }
 
     if(level3ex.length){
         level3ex.forEach((part)=>{
-            console.log('use part:', part)
-            if(Using[pc][part].act === '' || Using[pc][part].act === actid )
+            //console.log('use part:', part)
+            if(F.partAble(actid, part, 'use') )
                 selection.push(F.partBtn(adata, part, 1));
         })
     }
 
-    if(level3.length && adata.type !== '被动' ){
+    if(level3.length && adata?.option !== 'noSelectPart'){
         level3.forEach((part)=>{
-            console.log('target part:',part)
-            if(Using[tc][part].act === '' || Using[tc][part].act === actid)
+            //console.log('target part:',part)
+            if(F.partAble(actid, part, 'tar'))
                 selection.push(F.partBtn(adata, part));
         })
     }
@@ -5794,21 +5932,34 @@ F.initActMenu = function(actid, usepart){
     }
 
     if(extra.length){
-     html += `<div class='actionMenu'><div class='actions'>　|　</div>${extra.join('')}</div>`
+     html += `<div class='actionMenu'><div class='actions'> | </div>${extra.join('')}</div>`
     }
     
+
     new Wikifier(null, `<<replace #actionMenu_1>>${html}<</replace>>`)
 
     if(action.length){
+        $('actionMenu_2').removeClass('hidden')
         new Wikifier(null, `<<replace #actionMenu_2>>${action.join('')}<</replace>>`)
+    }
+    else{
+        $('#actionMenu_2').addClass('hidden')
     }
 
     if(option.length){
+        $('#actionOption').removeClass('hidden')
         new Wikifier(null, `<<replace #actionOption>>${option.join('')}<</replace>>`)
+    }
+    else{
+        $('#actionOption').addClass('hidden')
     }
 
     if(selection.length){
+        $('#actionMenu_3').removeClass('hidden')
         new Wikifier(null, `<<replace #actionMenu_3>>${selection.join('')}<</replace>>`)
+    }
+    else{
+        $('#actionMenu_3').addClass('hidden')
     }
 }
 
@@ -5820,7 +5971,7 @@ F.ActNext = function(){
         T.selectwait = 1
     };
 
-    if(T.comPhase == 'before' && T.msgid >= S.msg.length && !T.onselect && !T.selectwait ){
+    if(T.phase == 'before' && T.msgid >= S.msg.length && !T.onselect && !T.selectwait ){
        // F.ComEvent(V.selectCom, 1)
     }
     else{
@@ -5833,7 +5984,7 @@ F.ActNext = function(){
 
 
 F.Msg = function(msg, add){    
-    if(!S.msg) S.msg = [];
+    if(!S.msg) F.resetMsg();
     if(add){
         if(!S.msg.length)
             S.msg[0] = '';
@@ -5854,6 +6005,8 @@ F.initCheckFlag = function(){
     T.actAble = 0;
     T.orderGoal = 0;
     T.phase = ''
+    delete T.noNameTag
+    delete T.aftermovement
 }
 
 F.checkAction = function(id, phase){
@@ -5866,12 +6019,15 @@ F.checkAction = function(id, phase){
     T.orderGoal = Action.globalOrder(id) + data.order();
     T.actAble = Action.globalCheck(id) && data.check();
 
-    T.msgid = 0;
     T.phase = phase;
 
-    // 对昂处于无力状态，强行将配合值变零
-    if(F.uncons(target) || !F.canMove(target))
+    // 对昂处于无意识状态，强行将配合值变零
+    if(F.uncons(target))
         T.orderGoal = 0
+    
+    // 有意识但无法动弹, 追加强制flag
+    if(!F.canMove(target))
+        T.forceOrder = 100
 
     if( V.system.showOrder && T.orderMsg && T.orderGoal > 0 ){
         reText += `配合度检测：${T.orderMsg}=${T.order}/${T.orderGoal}<br><<dashline>>`
@@ -5893,6 +6049,13 @@ F.checkAction = function(id, phase){
     }
 
     T.actId = id;
+    T.selectAct = id;
+    T.actPart = T.selectActPart;
+
+    if(!T.actPart && data.usePart){
+        T.actPart = data.usePart[0]
+    }
+
     $('action').trigger('before')
 }
 
@@ -5910,7 +6073,7 @@ F.setPhase = function(mode){
 }
 
 F.beforeAction = function(){
-    T.phase = 'commonbefore'
+    T.phase = 'before'
     let id = T.actId
     let reText = ''
 
@@ -5944,7 +6107,7 @@ F.beforeAction = function(){
     }
 
     //在执行文本最后追加下一步
-    F.Msg(`<<if !T.cancel>><<run console.log('no cancel');F.setPhase('event'); F.ActNext()>><<else>><<run F.setPhase('cancel')>><</if>>`) 
+    F.Msg(`<<if !T.cancel>>F.setPhase('event'); F.ActNext()>><<else>><<run F.setPhase('cancel')>><</if>>`) 
 
     //检测是否存在特殊的before处理，存在就在这执行。
     //if(Action.data[id]?.before) Action.data[id].before();
@@ -5961,6 +6124,89 @@ F.beforeAction = function(){
         F.ActNext()
     }
  
+}
+
+F.doEvent = function(id){
+    const data = Action.data[id]
+    const resetHtml = `<<run F.resetAction()>><<dashline>>`
+
+    let title = `Action_${id}`
+    let txt = T.noNameTag ? '' : F.playerName();
+
+    T.phase = 'event'
+    F.resetMsg()
+
+    //确认主控有条件执行
+    if(T.actAble){
+
+        //确认对象愿意配合执行
+        if(
+            T.orderGoal == 0
+            || V.system.debug
+            ||( T.orderGoal > 0 && T.order >= T.orderGoal )
+            ||( data?.forceAble && T.order + player.stats.LUK[1] >= T.orderGoal && random(100) <= player.stats.LUK[1]*2 )
+            ||( T.order + T.forceOrder >= T.orderGoal )
+        ){
+           
+           T.passtime = data.time;
+           txt = txt + Story.get(title).text;
+
+           //配合度不足但勉强能配合
+           if( T.order < T.orderGoal && !V.syystem.debug ){
+                if(T.forceOrder){
+                    S.msg.push(`< 强制 ><br>`)
+                    T.force = 1
+                }
+                else{
+                    S.msg.push(`勉强配合: ${T.order}+LUK${player.stats.LUK[1]}/${T.orderGoal}<br>`)
+                }
+
+           }
+
+        }
+
+
+    }
+    else{
+
+
+    }
+
+}
+
+F.resetMsg = function(){
+    S.msg = [];
+    T.msgid = 0;
+}
+
+F.resetAction = function(){
+    T.phase = 'reset'
+
+    if(T.cancel){
+        F.initCheckFlag()
+        delete S.msg;
+        delete T.cancel;
+        delete T.force;
+        F.setPhase('init')
+        return 0
+    }
+
+    //缓存最后一个动作
+    T.lastAct = { act: T.selectAct, actPart: T.selectActPart, targetPart: T.selectPart }
+    
+    delete T.cancel;
+    delete T.onselect;
+    delete T.force;
+
+    delete S.msg;
+    F.initCheckFlag()
+
+    //更新角色位置、场景信息等处理。
+    //F.LoopFirst()
+
+    //刷新画面
+    F.resetUI()
+
 }
 /* twine-user-script #24: "CommandLoop.js" */
 //----->> 小功能 <<---------------------------//
@@ -6282,7 +6528,6 @@ V.lastCom = V.selectCom;
 //清除临时flag和缓存信息
     delete T.comCancel;
     delete T.onselect;
-    delete T.beforeNext;
     delete T.comAble;
     delete T.orderGoal;
     delete T.force;
@@ -6714,6 +6959,7 @@ else
 if ( e.phase === S.dialog[ch].length ){
 
     if ( e.config.type == 'return' ){
+        if(c?.phase) e.phase = c.phase
         e.sp = 0;
         e.lastId = V.selectId;
         V.selectId = 0;
@@ -8095,56 +8341,244 @@ for(let i in chara.source){
 F.trackCheck = function(chara, cid){
 
 }
-/* twine-user-script #37: "Action_Main_Option" */
-Action.set('Interaction')
-/* twine-user-script #38: "Action_General_Option" */
-Action.set('Relax') // relax
-     .Filter(()=>{ 
+/* twine-user-script #37: "Action_Common_Option" */
+/* 放松 */
+Action.set('Relax')
+     .Filter(()=>{
          return 1
       })
      .Check(()=>{
          return 1
       })
+     .Order(()=>{
+         return 0
+      })
 
-Action.set('Walk') // walking
+/* 散步 */
+Action.set('Walk')
      .Filter(()=>{
          return 1
       })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
 
-Action.set('Plant') // plant
+/* 种植 */
+Action.set('Plant')
      .Filter(()=>{
          return 1
       })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
 
-Action.set('Bath') // shower
+/* 洗澡 */
+Action.set('Bath')
      .Filter(()=>{
          return 1
       })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
 
-Action.set('Read') // reading
+/* 读书 */
+Action.set('Read')
      .Filter(()=>{
          return 1
       })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
 
-Action.set('Learn') // learning
+/* 学习 */
+Action.set('Learn')
      .Filter(()=>{
          return 1
       })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
 
-Action.set('Class')// attend class
+/* 听课 */
+Action.set('Class')
      .Filter(()=>{
          return 1
       })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
 
-Action.set('HomeWork') // do homework
+/* 做作业 */
+Action.set('HomeWork')
      .Filter(()=>{
          return 1
       })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
 
-Action.set('Shop')// shop
+/* 购物 */
+Action.set('Shop')
      .Filter(()=>{
          return 1
       })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 煮饭 */
+Action.set('Cook')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 唱歌 */
+Action.set('Sing')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 跳舞 */
+Action.set('Dance')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 演奏 */
+Action.set('PlayMusic')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 钓鱼 */
+Action.set('Fish')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 采集 */
+Action.set('Gather')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 挖矿 */
+Action.set('Mine')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+/* twine-user-script #38: "Action_Event" */
+Action.set('reset')
+  .Filter(()=>{
+    return T.actPart !== 'reset'
+  })
+  .Event(()=>{
+    T.actPart = 'reset'
+  })
+
+Action.set('resetAct')
+
+
+Action.set('resetAll')
+  .Filter(()=>{
+    return T.currentType !== 'all' || T.actPartFilter !== 'all'
+  })
+  .Event(()=>{
+    T.currentType = 'all'
+    T.actPartFilter = 'all'
+  })
+
+Action.set('move')
+  .Filter(()=>{
+    return V.mode == 'normal'
+  })
+
+Action.set('fall')
+  .Filter(()=>{
+    return Flag.master
+  })
+  .Event(()=>{
+    Flag.master = 0;
+  })
+
+Action.set('sleep')
+  .Filter(()=>{
+    return V.location.id == 'A0' && (V.date.time >= 1200 || F.baseCheck(player, 'stamina', 50)) && pc !== 'm0'
+  })
+
+Action.set('rise')
+  .Filter(()=>{
+    return !Flag.master
+  })
+  .Event(()=>{
+    Flag.master = 1;
+  })
 /* twine-user-script #39: "Action_Interaction_Option" */
 /* 闲聊 */
 Action.set('Talk')
@@ -8170,7 +8604,7 @@ Action.set('Look')
          return 0
       })
 
-/* 询问近况 */
+/* 近况 */
 Action.set('Talk2')
      .Filter(()=>{
          return 1
@@ -8182,7 +8616,7 @@ Action.set('Talk2')
          return 0
       })
 
-/* 爱好兴趣 */
+/* 兴趣 */
 Action.set('Interest')
      .Filter(()=>{
          return 1
@@ -8219,13 +8653,7 @@ Action.set('Firm')
       })
 
 /* 送礼 */
-Action.set('Gift') 
-     .Filter(()=>{
-         return V.pc !== V.tc
-      })
-/* twine-user-script #40: "Action_Touch_Option" */
-/* 接吻 */
-Action.set('t0')
+Action.set('Gift')
      .Filter(()=>{
          return 1
       })
@@ -8235,139 +8663,523 @@ Action.set('t0')
      .Order(()=>{
          return 0
       })
-
-/* 亲吻部位 */
-Action.set('t1')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
-
-/* 抚摸部位  */
-Action.set('t2')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
-
-/* 揉捏部位 */
-Action.set('t3')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
-
-/* 吸舔部位 */
-Action.set('t4')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
-      
-/* 吸咬部位 */
-Action.set('t5')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
-
-/* 逗弄部位 */
-Action.set('t6')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
-
-/* 指交 */
-Action.set('t7')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
-
-/* 插入 */
-Action.set('t8')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
-
-/* 抽插 */
-Action.set('t9')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
-
-/* 撸动 */
-Action.set('t10')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
-/* twine-user-script #41: "Action_UseItem_Option" */
-/* 使用跳弹 */
+/* twine-user-script #40: "Action_Items_Option" */
+/* 跳蛋 */
 Action.set('Rotor')
-   .Filter(()=>{
-      return 1
-   })
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
 
-/* 使用震动棒 */
+/* 震动棒 */
 Action.set('Vibrator')
-   .Filter(()=>{
-      return 1
-   })
-/* twine-user-script #42: "Action_Tentacles_Option" */
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+/* twine-user-script #41: "Action_Magic_Option" */
+/* 静心咒 */
+Action.set('m0')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 净化术 */
+Action.set('m1')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+/* twine-user-script #42: "Action_Main_Option" */
+/* 交流 */
+Action.set('Interaction')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 接触 */
+Action.set('Touch')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 推倒 */
+Action.set('TrySex')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 用手 */
+Action.set('useHands')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 用口 */
+Action.set('useMouth')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 用阴茎 */
+Action.set('usePenis')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 用阴道 */
+Action.set('useVagina')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 用肛门 */
+Action.set('useAnal')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 用脚 */
+Action.set('useFoot')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 保持动作 */
+Action.set('Keep')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 自动配合 */
+Action.set('Coop')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 自动抵抗 */
+Action.set('Resit')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 战斗 */
+Action.set('Combat')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 魔法 */
+Action.set('Magic')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 道具 */
+Action.set('Items')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 触手 */
+Action.set('Tentacles')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 命令 */
+Action.set('Order')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 自慰 */
+Action.set('Self')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 其他 */
+Action.set('Other')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+/* twine-user-script #43: "Action_Other_Option" */
+/* 直播 */
+Action.set('Stream')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 举行派对 */
+Action.set('Party')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 衣服管理 */
+Action.set('Clothes')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 行为管理 */
+Action.set('Behavior')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 一键脱光 */
+Action.set('GetNude')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+/* twine-user-script #44: "Action_Pose_Option" */
+/* 正常位 */
+Action.set('pose0')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 背后位 */
+Action.set('pose1')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 正座位 */
+Action.set('pose2')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 背座位 */
+Action.set('pose3')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 骑乘位 */
+Action.set('pose4')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 侧卧位 */
+Action.set('pose5')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 趴卧位 */
+Action.set('pose6')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 站立位 */
+Action.set('pose7')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 背后立位 */
+Action.set('pose8')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 抱立位 */
+Action.set('pose9')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 反抱立位 */
+Action.set('pose10')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 屈曲位 */
+Action.set('pose11')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+/* twine-user-script #45: "Action_Reverse_Option" */
+/* 口交 */
+Action.set('r0')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 逆性交 */
+Action.set('r1')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 收紧 */
+Action.set('r2')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+/* twine-user-script #46: "Action_Tentacles_Option" */
 /* 揉捏 */
 Action.set('x0')
      .Filter(()=>{
@@ -8439,7 +9251,6 @@ Action.set('x5')
      .Order(()=>{
          return 0
       })
-
 
 /* 蠕动 */
 Action.set('x6')
@@ -8536,9 +9347,9 @@ Action.set('x13')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #43: "Action_Other_Option" */
-/* 直播 */
-Action.set('Stream')
+/* twine-user-script #47: "Action_Touch_Option" */
+/* 接吻 */
+Action.set('t0')
      .Filter(()=>{
          return 1
       })
@@ -8548,7 +9359,151 @@ Action.set('Stream')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #44: "RegistAllCom" */
+
+/* 亲吻 */
+Action.set('t1')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 抚摸 */
+Action.set('t2')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 揉捏 */
+Action.set('t3')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 吸舔 */
+Action.set('t4')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 吸咬 */
+Action.set('t5')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 逗弄 */
+Action.set('t6')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 指交 */
+Action.set('t7')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 性交 */
+Action.set('t8')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 抽插 */
+Action.set('t9')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 撸动 */
+Action.set('t10')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 拳交 */
+Action.set('t11')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 深入 */
+Action.set('t12')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+/* twine-user-script #48: "RegistAllCom" */
 //批处理多个指令。
 Com.init()
 
@@ -8622,7 +9577,7 @@ Com.globalCond = function(id){
 
     return true
 }
-/* twine-user-script #45: "Com_G1::Script" */
+/* twine-user-script #49: "Com_G1::Script" */
 /* 注册指令事件*/
 Com.set('G1')
     .Check(()=>{ 
@@ -8633,7 +9588,7 @@ Com.set('G1')
     })
 
 /* 事件文本，before执行前文本，after执行后文本，cancel执行取消时文本 */
-/* twine-user-script #46: "Com_G2::Script" */
+/* twine-user-script #50: "Com_G2::Script" */
 Com.set('G2')
     .Check(()=>{
         return random(1,100) <= target.mood + 10 && !target.state.contains('失声','失聪')
@@ -8641,12 +9596,12 @@ Com.set('G2')
     .Effect(()=>{
         Source[tc].favo += 10
     })
-/* twine-user-script #47: "Com_T4::Script" */
+/* twine-user-script #51: "Com_T4::Script" */
 Com.set('T4')
    .Filter(()=>{
         return target.gender !== 'female'
    })
-/* twine-user-script #48: "Com_T99::Script" */
+/* twine-user-script #52: "Com_T99::Script" */
 Com.set('T99')
    .Name(()=>{
         if(V.mode !== 'train'){
@@ -8690,7 +9645,7 @@ Com.set('T99')
             }
         }
    })
-/* twine-user-script #49: "Com_X1::Script" */
+/* twine-user-script #53: "Com_X1::Script" */
 Com.set('X1')
     .Check(()=>{
         //能跑进来时已经过滤掉的情况：非合意且对象具备抵抗能力
@@ -8713,7 +9668,7 @@ Com.set('X1')
         F.getExp(target, 'B', random(2));
     })
     .ForceAble()
-/* twine-user-script #50: "Com_X2::Script" */
+/* twine-user-script #54: "Com_X2::Script" */
 Com.set('X2')
     .Check(()=>{
         //能跑进来时已经过滤掉的情况：非合意且对象具备抵抗能力
@@ -8735,7 +9690,7 @@ Com.set('X2')
         F.getExp(target, '触手奸', random(3));
         F.getExp(target, 'B', random(2));
     })
-/* twine-user-script #51: "Kojo_Isil_Regist" */
+/* twine-user-script #55: "Kojo_Isil_Regist" */
 /* 代码区，用于注册角色颜色、额外的设定、flag信息等 */
 Kojo.set('Isil','#F9F570')
     .Intro('光属性的高等精灵。') //角色简介。
@@ -8749,7 +9704,7 @@ Kojo.set('Isil','#F9F570')
             return V.system.debug
         }
     })
-/* twine-user-script #52: "Kojo_Nanaly_Regist" */
+/* twine-user-script #56: "Kojo_Nanaly_Regist" */
 /* 纯代码区,用于注册角色信息 */
 /*注意：娜娜莉是姛，如果条件允许应当当玩家是女性/双性时才可攻略*/
 Kojo.set('Nanaly', '#66CCFF') //角色id与 名牌颜色
@@ -8806,16 +9761,22 @@ Kojo.set('Nanaly', '#66CCFF') //角色id与 名牌颜色
 /* time：花费时间，locationTags：需求的地点标签，option：额外设置 */
 /* 上课属于互动事件类型？上课期间可以对别人涩涩或作为伊希露被涩涩什么的！ */
 #G| id, name, time, locationTags, option
-Relax, 放松, 15, 床|椅子|休息点
+Relax, 放松, 15, 床|椅子|休息点, canTrain
 Walk, 散步, 15, 室外
 Plant, 种植, 30, 菜园
 Bath, 洗澡, 30, 浴室
 Read, 读书, 60, 书|书柜
 Learn, 学习, 60, 书桌
-Class, 听课, 15, 教室
+Class, 听课, 15, 教室, canTrain
 HomeWork, 做作业, 120, 书桌
 Shop, 购物, 20, 商店
-
+Cook, 煮饭, 15, 厨房
+Sing, 唱歌, 5, ,canTrain
+Dance, 跳舞, 10, 活动|舞台
+PlayMusic, 演奏, 5, 乐器
+Fish, 钓鱼, 30, 钓鱼点
+Gather, 采集, 20, 采集点
+Mine, 挖矿, 30, 挖矿点
 
 /* 主分类和模式切换 */
 #E| id, name, option
@@ -8828,7 +9789,6 @@ usePenis, 用阴茎
 useVagina, 用阴道
 useAnal, 用肛门
 useFoot, 用脚
-useReset, 全部动作
 Keep, 保持动作
 Coop, 自动配合
 Resit, 自动抵抗
@@ -8841,9 +9801,9 @@ Self, 自慰
 Other, 其他
 
 /* 交流模式， 常规交流 */
-#C| id, name, time
-Talk, 闲聊, 5
-Look, 观察, 2
+#C| id, name, time, option
+Talk, 闲聊, 5, canTrain
+Look, 观察, 2, canTrain
 Talk2, 近况, 5
 Interest, 兴趣, 5
 PetHead, 摸头, 2
@@ -8852,7 +9812,8 @@ Gift, 送礼, 2
 
 /* 攻受通用 = 部分攻方 */
 /* mode: 1: normal, 1.5: between 1 and 2,  2: harassment/affection, 3: woohoo */
-#T| id, name, mode,  usePart, targetPart, autokeep, defaultText
+#T| id, name, mode,  usePart, targetPart, autokeep, defaultText, option
+reset, 复位, 0, , , , ,doStraight
 t0, 接吻, 1, m, m, y,{0}吻上了{1}的嘴唇。
 t1, 亲吻, 2, m, --mvaur, n, {0}亲吻在了{1}的{2}上，轻吮吸舔，试图留下自己的印记。
 t2, 抚摸, 1.5, h, --ur, n, {0}的手轻抚着{1}的{2}。
@@ -8924,10 +9885,18 @@ Party       ,举行派对
 
 /* 其他 */
 #A| id      ,name       ,option
-ClearAction ,清除动作
 Clothes     ,衣服管理
 Behavior    ,行为管理
-GetNude     ,一键脱光</tw-passagedata><tw-passagedata pid="24" name="MainLoop:Before" tags="" position="475,350" size="100,100">/*纯代码区，最先处理 */</tw-passagedata><tw-passagedata pid="25" name="MainLoop:After" tags="" position="600,350" size="100,100">/*纯代码区，最后处理 */</tw-passagedata><tw-passagedata pid="26" name="MainLoop" tags="" position="725,350" size="100,100">&lt;action&gt;&lt;/action&gt;
+GetNude     ,一键脱光
+
+/* 固有选项, option是出口 */
+#S| id      ,name       ,option
+move        ,移动       ,Map
+fall        ,下沉       ,Basement
+rise        ,上浮
+sleep       ,睡觉       ,Sleep
+resetAct    ,清除动作
+resetAll    ,全部</tw-passagedata><tw-passagedata pid="24" name="MainLoop:Before" tags="" position="475,350" size="100,100">/*纯代码区，最先处理 */</tw-passagedata><tw-passagedata pid="25" name="MainLoop:After" tags="" position="600,350" size="100,100">/*纯代码区，最后处理 */</tw-passagedata><tw-passagedata pid="26" name="MainLoop" tags="" position="725,350" size="100,100">&lt;action&gt;&lt;/action&gt;
 &lt;div id=&#39;hidden&#39; class=&#39;hidden&#39;&gt;you can&#39;t see me.&lt;/div&gt;
 &lt;div id=&#39;location&#39;&gt;&lt;/div&gt;
 &lt;br&gt;
@@ -8944,17 +9913,14 @@ GetNude     ,一键脱光</tw-passagedata><tw-passagedata pid="24" name="MainLoo
 
 /* 额外的动作选项。如体位，情景play */
 &lt;div id=&#39;actionOption&#39;&gt;
-选项：
 &lt;/div&gt;
 
 &lt;div id= &#39;actionMenu_2&#39;&gt;
 /* 角色互动模式下，行动有下分类时的可用动作 */
-动作：
 &lt;/div&gt;
 
 &lt;div id=&#39;actionMenu_3&#39;&gt;
 /* 可用的动作目标 */
-目标：
 &lt;/div&gt;
 
 &lt;div id=&#39;next&#39;&gt;
@@ -8973,7 +9939,6 @@ $(&#39;action&#39;).on(&#39;init&#39;, ()=&gt;{
 })
 
 $(&#39;action&#39;).on(&#39;before&#39;, ()=&gt;{
-    console.log(&#39;before phase&#39;)
     F.hideActions()
     F.showNext()
     F.beforeAction()
@@ -8982,37 +9947,49 @@ $(&#39;action&#39;).on(&#39;before&#39;, ()=&gt;{
 $(&#39;action&#39;).on(&#39;cancel&#39;, ()=&gt;{
     console.log(&#39;cancel event&#39;)
     F.resetLink()
+    F.resetAction()
     F.resetUI()
 })
 
 $(&#39;action&#39;).on(&#39;keep&#39;, ()=&gt;{
     console.log(&#39;keep event&#39;)
+    F.resetLink()
 
 })
 
 $(&#39;action&#39;).on(&#39;stop&#39;, ()=&gt;{
     console.log(&#39;stop event&#39;)
+    F.resetLink()
 
 })
 
 $(&#39;action&#39;).on(&#39;event&#39;, ()=&gt;{
     console.log(&#39;do event&#39;)
     F.resetLink()
+    F.doEvent()
+})
+
+$(&#39;action&#39;).on(&#39;counter&#39;, ()=&gt;{
+    console.log(&#39;counter event&#39;)
+    F.resetLink()
 
 })
 
 $(&#39;action&#39;).on(&#39;result&#39;, ()=&gt;{
     console.log(&#39;result event&#39;)
+    F.resetLink()
 
 })
 
 $(&#39;action&#39;).on(&#39;after&#39;, ()=&gt;{
     console.log(&#39;after event&#39;)
+    F.resetLink()
 
 })
 
 $(&#39;action&#39;).on(&#39;finish&#39;, ()=&gt;{
     console.log(&#39;finish event&#39;)
+    F.resetLink()
 
 })
 

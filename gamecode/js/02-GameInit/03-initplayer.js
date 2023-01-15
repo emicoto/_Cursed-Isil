@@ -260,8 +260,6 @@ for(let i in F.initChara){
 F.initCharaV()
 
 for(let i in V.chara){
-	if(i == 'm0') continue;
-
 	F.fixBase(V.chara[i], 1)
 	F.resetBase(V.chara[i])
 }
@@ -274,6 +272,10 @@ V.tc = 'Isil';
 
 F.fixBase = function(chara,mode){
     const { base, stats, race, traits} = chara
+
+	if(chara.id == 'm0'){
+		chara.base = clone(C.Ayres.base)
+	}
 
     base.health[1] = Math.floor(stats.CON[1] * 50 * F.raceBonus(race, 'health') + 0.5)
     base.stamina[1] = Math.floor(stats.STR[1] * 50 * F.raceBonus(race, 'stamina') + 0.5)
@@ -298,6 +300,11 @@ F.fixBase = function(chara,mode){
 
 F.fixStats = function(chara){
 	const { stats, equip, race } = chara;
+
+	if(chara.id === 'm0'){
+		chara.stats = clone(C.Ayres.stats)
+		return
+	}
 
 	stats.ATK[0] = Math.floor(stats.STR[1] * 2 * F.raceBonus(race, 'ATK') +0.5)
 	stats.DEF[0] = Math.floor(stats.CON[1] * 2 * F.raceBonus(race, 'DEF')+0.5)
@@ -413,7 +420,7 @@ F.initAction = function(cid){
             Act[cid][k] = { tc:'', act:'', use:'' }; // 作为actor执行命令时判定点
         })
 		listb.forEach((k)=>{
-			Using[cid][k] = { act:'', ac:'' }; // 作为目标对象进行部位占用检测，同时也是持续动作的判定点？
+			Using[cid][k] = { act:'', actor:'', use:'' }; // 作为目标对象进行部位占用检测，同时也是持续动作的判定点？
 		})
     }
 }

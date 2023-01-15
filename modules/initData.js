@@ -289,6 +289,7 @@ D.tsv = [
     'sleepDepth', //睡眠深度。低于500时随时可能醒来。
     'sleepCurse', //昏睡剂or昏睡咒效果
     'touchLv', //交流深度
+    'check', // ?
 ]
 
 D.mutant = [
@@ -386,7 +387,21 @@ D.ComFilterTrain = [
     '前戏','道具','性交', '尿道', 'SM', '鬼畜', '触手', '情景'
 ]
 
-D.ActionTypes = []
+D.ActionTypes = [
+    ['G', '常规'], 
+    ['E', '目录'],
+    ['C', '交流'],
+    ['T', '接触'], 
+    ['R', '逆位'],
+    ['P', '体位'],
+    ['I', '道具'],
+    ['B', '战斗'],
+    ['M', '魔法'],
+    ['X', '触手'],
+    ['O', '命令'],
+    ['A', '其他'],
+    ['S', '固有']
+]
 
 D.defaultExit = 'MainLoop'
 
@@ -397,3 +412,58 @@ D.palamLv = [ 0, 200, 600, 1800, 3200, 10000, 30000, 60000, 100000, 150000, 2500
 
 //exp lv的初期値
 D.expLv = [ 0, 3, 10, 30, 100, 200, 400, 600, 800, 1200, 1600, 2000, 2400, 3200, 5000]
+
+D.tflag = [
+    'scarTimeMultip',
+
+    'currentType', //actType
+
+    'ac',
+    'tc',
+    'acp',
+
+    'actor', 'actTg',
+    'actPart',
+    'selectpart',
+    'actPartFilter',
+
+    'inside', // is Sex inside,
+    'posId', // pose Id
+    'actId',
+    'lastAct',
+
+    'msgid',
+    'order',
+    'reason',
+    'orderMsg',
+    'actAble',
+    'orderGoal',
+    'phase',
+    'noNameTag',
+    'aftermovement',
+    'stopAct',
+    'cancel',
+
+    'force',
+
+    'comPhase',
+    'onselect',
+    'selectwait',
+    'noMsg',
+
+    'comcount',
+    'comCancel',
+
+    'earnMP',
+    'selectcount',
+    'passage',
+    'title',
+
+    'timeCheckNight',
+    'timeCheckDay',
+
+    //event mode
+    'effect',
+    'aftercheck',
+    'exit',
+]

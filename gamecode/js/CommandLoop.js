@@ -317,7 +317,6 @@ V.lastCom = V.selectCom;
 //清除临时flag和缓存信息
     delete T.comCancel;
     delete T.onselect;
-    delete T.beforeNext;
     delete T.comAble;
     delete T.orderGoal;
     delete T.force;

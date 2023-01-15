@@ -23,6 +23,26 @@ Array.prototype.has = function(...arg){
     return false
 }
 
+/**
+ * 
+ * @param {number} index 
+ * @param {string} string 
+ */
+String.prototype.insert = function(index, string){
+    this.splice(index, 0, string)
+    return this
+}
+
+/**
+ * 
+ * @param {number} index 
+ * @param {any} element 
+ */
+Array.prototype.insert = function(index, element){
+    this.splice(index, 0, element)
+    return this
+}
+
 Object.defineProperty(Array.prototype, 'concatUnique', {
     configurable : true,
     writable     : true,

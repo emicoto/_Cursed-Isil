@@ -1,0 +1,228 @@
+:: Action_Main_Option[script]
+/* 交流 */
+Action.set('Interaction')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 接触 */
+Action.set('Touch')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 推倒 */
+Action.set('TrySex')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 用手 */
+Action.set('useHands')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 用口 */
+Action.set('useMouth')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 用阴茎 */
+Action.set('usePenis')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 用阴道 */
+Action.set('useVagina')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 用肛门 */
+Action.set('useAnal')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 用脚 */
+Action.set('useFoot')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 保持动作 */
+Action.set('Keep')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 自动配合 */
+Action.set('Coop')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 自动抵抗 */
+Action.set('Resit')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 战斗 */
+Action.set('Combat')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 魔法 */
+Action.set('Magic')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 道具 */
+Action.set('Items')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 触手 */
+Action.set('Tentacles')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 命令 */
+Action.set('Order')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 自慰 */
+Action.set('Self')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 其他 */
+Action.set('Other')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
