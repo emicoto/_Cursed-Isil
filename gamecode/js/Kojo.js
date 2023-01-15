@@ -14,6 +14,47 @@ class Kojo{
 		return type ? data[type] : data;
 	}
 
+	static title(cid, type, id, dif){
+		if(dif && ['Before','After','Cancel','Keep','Failed'].includes(dif)){
+			dif = ':'+ dif;
+		}
+		else if(dif){
+			dif = '_' + dif;
+		}
+		else{
+			dif = ''
+		}
+		
+		//如果使用口上与id不一致，则覆盖
+		if(C[cid].kojo !== cid){
+			cid = C[cid].kojo;
+		}
+
+		return `Kojo_${cid}_${type}${id?'_'+id : ''}${dif}`
+	}
+
+	static has(cid, type, id, dif){
+		let title = Kojo.title(cid, type, id, dif)
+		return Story.has(title)
+	}
+
+	static put(cid, type, id, dif){
+		let title = Kojo.title(cid, type, id, dif)
+
+		if(Story.has(title)){
+			return Story.get(title).text + '<br>';
+		}
+
+		title = `Messsage_${type}${id ? '_' + id : ''}${dif}`
+		if(Story.has(title)){
+			return Story.get(title).text + '<br>';
+		}
+
+		T.noMsg = 1
+
+		return ''
+	}
+
 	constructor(id, color){
 		this.id = id;
 		this.color = color ? color : '#22A0FC';

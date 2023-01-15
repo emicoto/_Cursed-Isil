@@ -1,27 +1,9 @@
+:: Action_Main_Option[script]
+
+Action.set('Interaction')
+
+
 :: Action_General_Option[script]
-
-Action.set('Interaction') // comunicate
-     .Filter(()=>{
-         return V.pc !== V.tc
-     })
-     .setEvent()
-
-Action.set('Gift') // present
-     .Filter(()=>{
-         return V.pc !== V.tc
-      })
-      .setEvent()
-
-Action.set('TrySex') // try sex
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
 
 Action.set('Relax') // relax
      .Filter(()=>{ 
@@ -30,91 +12,55 @@ Action.set('Relax') // relax
      .Check(()=>{
          return 1
       })
-     .Order(()=>{
-         return 0
-      })
 
 Action.set('Walk') // walking
      .Filter(()=>{
          return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
       })
 
 Action.set('Plant') // plant
      .Filter(()=>{
          return 1
       })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
 
 Action.set('Bath') // shower
      .Filter(()=>{
          return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
       })
 
 Action.set('Read') // reading
      .Filter(()=>{
          return 1
       })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
 
 Action.set('Learn') // learning
      .Filter(()=>{
          return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
       })
 
 Action.set('Class')// attend class
      .Filter(()=>{
          return 1
       })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
 
 Action.set('HomeWork') // do homework
      .Filter(()=>{
          return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
       })
 
 Action.set('Shop')// shop
      .Filter(()=>{
          return 1
       })
+
+
+:: Action_Interaction_Option[script]
+
+/* 闲聊 */
+Action.set('Talk')
+     .Filter(()=>{
+         return 1
+      })
      .Check(()=>{
          return 1
       })
@@ -122,8 +68,74 @@ Action.set('Shop')// shop
          return 0
       })
 
+/* 观察 */
+Action.set('Look')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
 
-:: Action_t0_Option[script]
+/* 询问近况 */
+Action.set('Talk2')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 爱好兴趣 */
+Action.set('Interest')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 摸头 */
+Action.set('PetHead')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 调情 */
+Action.set('Firm')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
+
+/* 送礼 */
+Action.set('Gift') 
+     .Filter(()=>{
+         return V.pc !== V.tc
+      })
+
+
+:: Action_Touch_Option[script]
 
 /* 接吻 */
 Action.set('t0')

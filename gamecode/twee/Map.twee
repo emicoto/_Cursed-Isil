@@ -2,9 +2,9 @@
 
 <div id="Movement">
 
-<<link '学校  0:05' 'MainLoop'>><<set $location = { id:'A1', name:'魔法学院', chara:[], tag:['school'] }>><<set $aftermovement to true>><</link>><br>
+<<link '学校  0:05' 'MainLoop'>><<set $location = { id:'A1', name:'魔法学院', chara:[], tag:['校园','活动','椅子','休息点','室外'] }>><<set $aftermovement to true>><</link>><br>
 
-<<link '宿舍  0:05' 'MainLoop'>><<set $location = { id:'A0', name:'学生宿舍S302', tag:['bedroom','rest','bed','chair','desk'], chara:[]}>><<set $aftermovement to true>><</link>><br>
+<<link '宿舍  0:05' 'MainLoop'>><<set $location = { id:'A0', name:'学生宿舍S302', tag:['室内','私室','休息点','床','椅子','书桌','浴室','书柜'], chara:[]}>><<set $aftermovement to true>><</link>><br>
 
 <<link '返回' 'MainLoop'>><</link>><br>
 

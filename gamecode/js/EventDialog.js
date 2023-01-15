@@ -2,7 +2,7 @@
 F.txtFlow = function(txt, time ,dashline){
     if(!time) time = 60;
 
-    new Wikifier(null, `<<append #content_message transition>><<timed ${time}ms>>${txt}${ dashline ? '<<dashline>>' : '' }<</timed>><</append>>`)
+    new Wikifier(null, `<<append #contentMsg transition>><<timed ${time}ms>>${txt}${ dashline ? '<<dashline>>' : '' }<</timed>><</append>>`)
 
     setTimeout(() => {
         msg_end.scrollIntoView()
@@ -202,7 +202,7 @@ if ( e.phase === S.dialog[ch].length ){
             e.config.exit = D.defaultExit;
             e.config.exitlink = 'Continue';
         }
-        V.system.mode = 'normal'
+        V.mode = 'normal'
         new Wikifier(null, `${com}<<goto 'EventEnd'>>`)
 
     }

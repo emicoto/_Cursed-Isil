@@ -9,6 +9,7 @@ const exp = {}
 const juel = {}
 const action = {}
 const using = {}
+const flag = {}
 
 Object.defineProperties(window, {
 	V: {
@@ -25,13 +26,19 @@ Object.defineProperties(window, {
 
 	S: {
 		get: function(){
-			return setup
+			return setup;
 		}
 	},
 
 	C: {
 		get:function(){
-			return State.variables.chara
+			return State.variables.chara;
+		}
+	},
+
+	Flag:{
+		get:function(){
+			return State.variables.flag;
 		}
 	},
 

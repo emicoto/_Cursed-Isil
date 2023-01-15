@@ -6,6 +6,8 @@
 */
 
 String.prototype.has = function(...arg){
+    if(Array.isArray(arg[0])) arg = arg[0];
+
     for(let i=0; i<arg.length; i++){
         if(this.includes(arg[i])) return true;
     }
@@ -13,6 +15,8 @@ String.prototype.has = function(...arg){
 }
 
 Array.prototype.has = function(...arg){
+    if(Array.isArray(arg[0])) arg = arg[0];
+    
     for(let i=0; i<arg.length; i++){
         if(this.includes(arg[i])) return true;
     }

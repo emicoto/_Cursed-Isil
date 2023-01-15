@@ -258,14 +258,12 @@ for(let i in F.initChara){
 }
 
 F.initCharaV()
-F.initAction('m0')
 
 for(let i in V.chara){
 	if(i == 'm0') continue;
 
 	F.fixBase(V.chara[i], 1)
 	F.resetBase(V.chara[i])
-	F.initAction(i)
 }
 
 V.master = 'm0';
@@ -400,17 +398,22 @@ F.initAction = function(cid){
     Act[cid] = {}
 	Using[cid] = {}
     if(cid == 'm0' ){
-        Act[cid].tentacles = [
-            { tc:'', act:'', use:''},
-            { tc:'', act:'', use:''},
-        ];
+        Act[cid].tentacles = [];
+		Using[cid].tentacles = [];
+		for(let i=0; i < V.cursedLord.abl.num + 2; i++){
+			Act[cid].tentacles.push({act:'', tc:'', use:''})
+			Using[cid].tentacles.push({act:'', tc:'', use:'' })
+		}
     }
     else{
-        let list = ['handR', 'handL' ,'mouth', 'penis', 'vagina', 'anal', 'feet']
+        let list = ['handR', 'handL' ,'mouth', 'penis', 'vagina', 'anal', 'foot']
+		let listb = ['breast', 'critoris', 'urin', 'ears', 'neck', 'butts', 'nipple', 'thighs', 'abdomen'].concat(list)
 
         list.forEach((k)=>{
             Act[cid][k] = { tc:'', act:'', use:'' }; // 作为actor执行命令时判定点
-			Using[cid][k] = { act: '', }; // 作为目标对象进行部位占用检测，同时也是持续动作的判定点？
         })
+		listb.forEach((k)=>{
+			Using[cid][k] = { act:'', ac:'' }; // 作为目标对象进行部位占用检测，同时也是持续动作的判定点？
+		})
     }
 }

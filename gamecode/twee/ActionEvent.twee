@@ -1,3 +1,20 @@
+:: Action_Common:Before
+<<if $date.time >= 1080 && !_timeCheckNight>>
+  <<set _timeCheckNight to true>>
+  天开始暗下来了……<br>
+
+<<else>>
+  <<set _noMsg to 1>>
+
+<</if>>
+
+:: Action_Interaction:Before
+<<you>>看到了$target.name<br>
+<<selection replace>>
+<<pick '上前打招呼'>>
+<<pick '返回'>>
+  <<set _cancel to 1>>
+<</selection>>
 
 :: Action_Interaction
 /* 交流 */
@@ -14,7 +31,7 @@
 
 :: Action_Talk
 <<you>>试着跟$target.name搭话。<br>
-<<=F.Kojo(tc, 'Action', 'Talk')>>
+<<=Kojo.put(tc, 'Action', 'Talk')>>
 
 :: Action_Look
 <<you>>观察着$target.name的模样。<br>
@@ -23,8 +40,8 @@
 <<you>>问$target.name最近过得如何。<br>
 
 :: Action_Interest
-<<=F.Kojo($target, 'Action', 'Interest')>>
-<<if !T.kojo>>
+<<=Kojo.put($target, 'Action', 'Interest')>>
+<<if T.noMsg>>
 <<you>>对$target.name感兴趣的话题发表了些见解。<br>
 <</if>>
 

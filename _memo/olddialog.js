@@ -18,7 +18,7 @@ window.EventDialog = function(chapter){
     let command = c?.com ? c.com : null
     let exit = '$passage'
 
-    if(V.system.mode == 'history')
+    if(V.mode == 'history')
         command = '';
 
     if(c?.name) e.name = c.name;
@@ -43,7 +43,7 @@ window.EventDialog = function(chapter){
         V.event.lastPhase = V.event.phase
     }
     else if(c?.type === 'endEvent'){ //一个事件彻底结束时。
-        if(V.system.mode == 'history') exit = 'StoryMemory';
+        if(V.mode == 'history') exit = 'StoryMemory';
         else exit = c.exit;
 
         V.event.exit = exit
@@ -70,7 +70,7 @@ window.DialogFlow = function(chapter){
     const txt = txtp(p.text)
     S.history.push(txt)
 
-    new Wikifier(null, `<<append #content_message transition>>${txt}<br><</append>>`)
+    new Wikifier(null, `<<append #contentMsg transition>>${txt}<br><</append>>`)
     msg_end.scrollIntoView()
 
     V.event.config = {}

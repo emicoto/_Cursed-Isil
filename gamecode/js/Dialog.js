@@ -108,7 +108,7 @@ F.setEvent = function(type, name, eid, ch, ep){
     V.event.eid = eid ? eid : '';    
     V.event.ch = ch? ch : '';
     V.event.ep = ep? ep : 0;
-    V.system.mode = 'event';
+    V.mode = 'event';
     return ''
 }
 

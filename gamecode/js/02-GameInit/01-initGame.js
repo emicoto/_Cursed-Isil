@@ -16,14 +16,15 @@ V.IsilRecord = {}; //伊希露的各种行为记录
 V.AyresRecord = {}; //艾瑞斯的各种行为记录
 
 //-------->> 事件类变量 <<-----------//
-F.resetEvent();
+V.event = {
+    type:'', eid:'', name:'', ch:'', ep:0, phase:0, sp:0, lastId:0, lastPhase:0,
+}
 V.selectId = null;
 V.exit = 'MainLoop';
 
 
 //-------->> 系统变量 <<-----------//
 V.system = {
-    mode:'event',
     alwaysShowPCName: false,
     showOrder: true,
     defaultPC: 'Isil',
@@ -51,9 +52,10 @@ V.turn = 0;
 
 V.pricefactor = 2;
 
+V.mode = 'event'
+
 V.flag = {
     activePC: 'Isil/m0/',
-    
 };
 
 V.weather = {

@@ -5,17 +5,24 @@
 /*纯代码区，最后处理 */
 
 :: MainLoop
+<action></action>
 <div id='hidden' class='hidden'>you can't see me.</div>
 <div id='location'></div>
 <br>
-<div id='content' class='content' onClick='if(S.msg)F.ComNext();'>
-    <div id='content_message'>
+<div id='content' class='content' onClick='if(S.msg)F.ActNext();'>
+    <div id='contentMsg'>
     </div>
 <div id="msg_end" style="height:0px; overflow:hidden"></div>
 </div>
 
+/* 主目录 */
 <div id='actionMenu_1'>
-行动：<<link '下沉' 'Basement'>><</link>>
+
+</div>
+
+/* 额外的动作选项。如体位，情景play */
+<div id='actionOption'>
+选项：
 </div>
 
 <div id= 'actionMenu_2'>
@@ -33,7 +40,58 @@
 </div>
 
 <script>
+F.initActionMode()
 F.initMainFlow()
-F.initLocation()
+F.resetUI()
+
+$('action').on('init', ()=>{
+    F.initMainFlow()
+    F.resetUI()
+    $('action').trigger('loop')
+})
+
+$('action').on('before', ()=>{
+    console.log('before phase')
+    F.hideActions()
+    F.showNext()
+    F.beforeAction()
+})
+
+$('action').on('cancel', ()=>{
+    console.log('cancel event')
+    F.resetLink()
+    F.resetUI()
+})
+
+$('action').on('keep', ()=>{
+    console.log('keep event')
+
+})
+
+$('action').on('stop', ()=>{
+    console.log('stop event')
+
+})
+
+$('action').on('event', ()=>{
+    console.log('do event')
+    F.resetLink()
+
+})
+
+$('action').on('result', ()=>{
+    console.log('result event')
+
+})
+
+$('action').on('after', ()=>{
+    console.log('after event')
+
+})
+
+$('action').on('finish', ()=>{
+    console.log('finish event')
+
+})
 
 </script>

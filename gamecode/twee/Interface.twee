@@ -120,7 +120,7 @@ MP: $target.base.mana[0] / $target.base.mana[1]<br>
 	let n=0
 	D.exp.forEach((k)=>{
 		txt+= `${k}: ${$target.exp[k].total}　`
-		if(groupmatch(k,['A','A高潮','多重高潮','饮精','肛射','子宫开发','被拍摄','触手奸','性转','自慰'])) txt+='<br>'
+		if(groupmatch(k,'A','A高潮','多重高潮','饮精','肛射','子宫开发','被拍摄','触手奸','性转','自慰')) txt+='<br>'
 	})
 	txt
 >>
@@ -136,7 +136,7 @@ MP: $target.base.mana[0] / $target.base.mana[1]<br>
 		if(k==='眠奸') break
 
 		txt+= `${k}: ${$target.exp[k].total-$target.exp[k].aware}　`
-		if(groupmatch(k,['A','A高潮','多重高潮','饮精','肛射','子宫开发','被拍摄'])) txt+='<br>'
+		if(groupmatch(k,'A','A高潮','多重高潮','饮精','肛射','子宫开发','被拍摄')) txt+='<br>'
 	}
 	txt
 >>

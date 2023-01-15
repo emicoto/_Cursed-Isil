@@ -203,7 +203,7 @@ CommandLoop.twee
   <div id='location'> 这里会显示地点信息. </div>
   <div id='content class='content' onClick='if(S.
   msg) F.ComNext()'> 
-     <div id='content_message'> 这里会显示主要文本. 点击文本面板会自动刷新下一段文本.方便连打跳过. </div>
+     <div id='contentMsg'> 这里会显示主要文本. 点击文本面板会自动刷新下一段文本.方便连打跳过. </div>
      <div id='msg_end' style='height:0px ;overflow:hidden'> 这里是文本底部, 用于自动滚动.不要动.</div>
   </div>
 

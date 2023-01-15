@@ -87,7 +87,7 @@
 	function CtoF(c) {
 	  return c * 1.8 + 32;
 	}
-	function groupmatch(value, table) {
+	function groupmatch(value, ...table) {
 	  return table.includes(value);
 	}
 	function draw(array) {

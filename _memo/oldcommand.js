@@ -13,7 +13,7 @@ F.CommandCheck = function(i){
                 <</linkreplace>>
             <</timed>>`
 
-        new Wikifier(null, `<<append #content_message transtition>>${text}<</append>>`)
+        new Wikifier(null, `<<append #contentMsg transtition>>${text}<</append>>`)
         msg_end.scrollIntoView()
 
     }
@@ -36,7 +36,7 @@ F.doCommand = function(i, next){
 
     if(!Story.has(title)) return;
 
-    $('#content_message a').remove()
+    $('#contentMsg a').remove()
 
     T.comorder = 0
     T.reason = ''
@@ -74,7 +74,7 @@ F.doCommand = function(i, next){
         text += '<<run F.passtime(V.passtime)>>'
     }
 
-    new Wikifier(null, `<<append #content_message transition>>${text}<<dashline>><</append>>`)
+    new Wikifier(null, `<<append #contentMsg transition>>${text}<<dashline>><</append>>`)
 
 	new Wikifier(null, `<<replace .headbar-container>><<showtime>><<showmoney>><</replace>>`)
     msg_end.scrollIntoView()

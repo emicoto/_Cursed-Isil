@@ -29,7 +29,7 @@ Era the Cursed
 }>>
 
 <<set $location = {
-    id:'A0', name:'学生宿舍S302', tag:['bedroom','rest','bed','chair','desk'], chara:['Ayres', 'Isil']
+    id:'A0', name:'学生宿舍S302', tag:['私室','休息点','床','椅子','书桌','浴室','书柜'], chara:['Ayres', 'Isil']
 }>>
 
 

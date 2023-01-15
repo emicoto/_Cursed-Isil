@@ -288,6 +288,7 @@ D.tsv = [
     'oksign', //合意。没有就是强奸。
     'sleepDepth', //睡眠深度。低于500时随时可能醒来。
     'sleepCurse', //昏睡剂or昏睡咒效果
+    'touchLv', //交流深度
 ]
 
 D.mutant = [

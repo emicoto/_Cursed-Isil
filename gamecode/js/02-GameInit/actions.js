@@ -94,13 +94,13 @@ F.extendParts = function(raw){
 const actList = {}
 
 class Action{
-    constructor(id, name, { time = 5, mode = 0, usePart, targetPart, option, defaultText, type } = {} ){
+    constructor(id, name, { time = 5, mode = 0, usePart, targetPart, option, defaultText, type, autokeep = 'n', locationTags } = {} ){
 
-        const typeMap = new Map([['G', '常规'], ['T', '接触'], ['X', '触手'],['O','其他'],['I','道具'],['R','被动'],['C','交流']],)
+        const typeMap = new Map([['G', '常规'], ['T', '接触'], ['X', '触手'],['A','其他'],['I','道具'],['R','被动'],['C','交流'],['E','目录'],['B','战斗'],['M','魔法'],['P','体位'],['O','命令']],)
         this.id = id;
         this.name = name;
         this.type = typeMap.get(type);
-        this.time = parseInt(time);
+        this.time = type == 'E' ? 0 :parseInt(time);
         this.mode = parseInt(mode);
 
         if(usePart)
@@ -116,7 +116,17 @@ class Action{
         this.filter = ()=>{ return 1 };
         this.check = ()=>{ return 1 };
         this.order = ()=>{ return 0 };
-        this.templet = defaultText;
+
+        this.effect = (arg, ...args)=>{ return 0 };
+
+        if(locationTags)
+            this.tags = locationTags;
+
+        if(defaultText)
+            this.templet = defaultText;
+
+        if(autokeep == 'y' || this.type == '体位');
+            this.autokeep = 1;
     }
 
     static add(id, name, obj){
@@ -211,8 +221,20 @@ class Action{
         this.forceAble = true;
         return this
     }
-    setEvent(){
-        this.event = true;
+    Event(callback){
+        this.event = callback;
+        return this
+    }
+    Script(str){
+        this.script = str
+        return this
+    }
+    Effect(callback){
+        this.effect = callback;
+        return this
+    }
+    Name(callback){
+        this.alterName = callback;
         return this
     }
 }
@@ -220,17 +242,72 @@ class Action{
 window.Action = Action;
 Action.data = actList;
 
-Action.globalCheck = function(){
-
-}
-
-Action.globalFilter = function(){
-
-}
-
-Action.globalOrder = function(){
-
-}
-
 
 Action.init()
+
+
+Action.globalFilter = function(id){
+   const data = Action.data[id]
+
+
+   const hasTg = pc !== tc;
+   const noTg = ['Magic', 'Items', 'Self', 'Other']
+   const noTgType = ['常规','魔法','道具','自慰','其他']
+
+   //总之先按照分类过滤
+   if(!groupmatch(data.type,'目录','常规') && T.currentType && T.currentType !== data.type ) return 0;
+   if(T.actPart !== 'reset' && data.usePart &&  !data.usePart.includes(T.actPart)) return 0;
+
+   //console.log(data)
+
+   //占用中。解除倒是没问题。
+   if(T.actPart !== 'reset' && Using[pc][T.actPart] == id) return 1;
+   if(T.actPart !== 'reset' && Using[pc][T.actPart].act !== '') return 0;
+
+   //使用部位过滤器只会在接触以上模式出现
+   if( id.match(/^use\S+/) && !groupmatch(V.mode, 'touch', 'train', 'reserve') ) return 0;
+
+   //特定分类批处理
+   switch (data.type) {
+      case '触手':
+         if(data.mode > 2 && V.date.time < 1200 )
+            return 0
+         break;
+   
+      case '接触':
+         if(data.mode > Tsv[tc].touchLv + 0.5 )
+            return 0
+         break;
+      
+      //要有对应道具才行
+      case '道具':
+         //if(!F.iventory('find', id))
+         //   return 0
+         break;
+      
+      case '被动':
+         //if(V.mode !== 'reverse')
+         //   return 0
+         break
+      
+      case '常规':
+         if(!V.location.tag.has(data.tags))
+                return 0;
+         break
+   }
+
+   return 1
+   
+}
+
+Action.globalCheck = function(id){
+
+    return 1
+
+}
+
+Action.globalOrder = function(id){
+
+    return 0
+
+}

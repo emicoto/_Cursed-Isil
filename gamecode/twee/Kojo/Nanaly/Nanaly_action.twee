@@ -297,19 +297,6 @@ flagname替换成对应的变量名<br>
 <</switch>>
 
 
-:: Kojo_Nanaly_Action_r0
-/* 握住 */
-<<switch F.checkUse('Nanaly', 'r0')>>
-<<case 'handL'>>
-   <<you>>的左手握住了<<NanalyName>>的左手。<br>
-<<case 'handR'>>
-   <<you>>的左手握住了<<NanalyName>>的右手。<br>
-<<case 'penis'>>
-   <<you>>的左手握住了<<NanalyName>>的阴茎。<br>
-<<case 'foot'>>
-   <<you>>的左手握住了<<NanalyName>>的脚。<br>
-<</switch>>
-
 :: Kojo_Nanaly_Action_Rotor
 /* 跳蛋 */
 <<switch F.checkUse('Nanaly', 'Rotor')>>

@@ -74,7 +74,7 @@ F.favoUp = function(chara, key, val) {
 
 
 F.isRape = function(chara){
-    return (V.system.mode == 'train' || chara.tsv?.woohoo ) && !chara.tsv.oksign
+    return (V.mode == 'train' || chara.tsv?.woohoo ) && !chara.tsv.oksign
 }
 
 F.canResist = function(chara){

@@ -99,7 +99,7 @@ export function CtoF(c: number) {
 	return c * 1.8 + 32;
 }
 
-export function groupmatch(value, table: Array<number | string>) {
+export function groupmatch(value, ...table: Array<number | string>) {
 	return table.includes(value);
 }
 

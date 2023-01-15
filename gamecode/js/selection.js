@@ -54,7 +54,7 @@ Macro.add('selection',{
                 if(Story.has(`${T.passage}:s${sid}`)){
                     txt = Story.get(`${T.passage+':s'+sid}`).text
                 }
-                contents = `<<set $event.sp to ${sid}>><<set $event.phase to 0>><<if $system.mode !== 'history'>>${txt ? txt.replace('\n','') : ''}${contents}<</if>>`
+                contents = `<<set $event.sp to ${sid}>><<set $event.phase to 0>><<if $mode !== 'history'>>${txt ? txt.replace('\n','') : ''}${contents}<</if>>`
                 V.event.lastPhase = V.event.phase-1
             }
 
@@ -115,7 +115,7 @@ Macro.add('selects',{
             if(Story.has(`${T.passage}:s${sid}`)){
                 txt = Story.get(`${T.passage+':s'+sid}`).text
             }
-            contents = `<<set $event.sp to ${sid}>><<set $event.phase to 0>><<if $system.mode !== 'history'>>${txt ? txt.replace('\n','') : ''}${contents}<</if>>`
+            contents = `<<set $event.sp to ${sid}>><<set $event.phase to 0>><<if $mode !== 'history'>>${txt ? txt.replace('\n','') : ''}${contents}<</if>>`
             V.event.lastPhase = V.event.phase-1
         }
 

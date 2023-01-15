@@ -9,7 +9,7 @@
 <div id='location'></div>
 <br>
 <div id='content' class='content' onClick='if(S.msg)F.ComNext();'>
-    <div id='content_message'>
+    <div id='contentMsg'>
     </div>
 <div id="msg_end" style="height:0px; overflow:hidden"></div>
 </div>

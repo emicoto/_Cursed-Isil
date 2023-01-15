@@ -32,7 +32,7 @@ F.resetScene = function(){
 DefineMacroS('resetScene',F.resetScene)
 
 F.resetLink = function(){
-    $('#content_message a').remove();
+    $('#contentMsg a').remove();
     V.selectCom = 0;
     return ""
 }
@@ -215,7 +215,7 @@ F.ComEvent = function(id, next){
     T.comPhase = 'event';
 
     //总之先清除多余链接
-    $('#content_message a').remove()
+    $('#contentMsg a').remove()
 
     if(T.comCancel){
         F.ComMsg(resetHtml)

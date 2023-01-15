@@ -33,22 +33,22 @@ T.ableCheck = globalCond(id) && com.cond(id)
 new Wikifier(null, '<<replace #comlist>> <</replace>>)
 
 //这些必须都是纯文本。只能有选项相关的操作。
-new Wikifier(null, `<<append #content_message>>${Story.get('Command::Before')}<</appen>>`)
+new Wikifier(null, `<<append #contentMsg>>${Story.get('Command::Before')}<</appen>>`)
 
-if(system.showOrder && T.reason ) new Wikifier(null,`<<append #content_message>>指令执行：${T.reason}<br><</append>>`)
+if(system.showOrder && T.reason ) new Wikifier(null,`<<append #contentMsg>>指令执行：${T.reason}<br><</append>>`)
 
 
 if(Story.has('Com_{id}::Before'))
-    new Wikifier(null, `<<timed 1s>><<append #content_message>>${Story.get(`Com_{id}::Before`)}<</append>><</timed>>`)
+    new Wikifier(null, `<<timed 1s>><<append #contentMsg>>${Story.get(`Com_{id}::Before`)}<</append>><</timed>>`)
 
 //如果存在Com.before(), 或口上侧存在Com:Script则在这里执行。
 if(com?.before) com.before()
 if(Kojo('Com', id, 'script')) new Wikifier(null, Kojo('Com', id, 'script') )
 
 if(Kojo('Com',id,'before'))
-    new Wikifier(null, `<<timed 1s>><<append #content_message>>${Kojo('Com', id, 'before')}<</append>><</timed>>`)
+    new Wikifier(null, `<<timed 1s>><<append #contentMsg>>${Kojo('Com', id, 'before')}<</append>><</timed>>`)
 
-new Wikifier('#content_message', '<<timed 1s>> <<linkreplace 'Next'>> <<run F.doCommand(id, 1)>> <</linkreplace>> <</timed>>)
+new Wikifier('#contentMsg', '<<timed 1s>> <<linkreplace 'Next'>> <<run F.doCommand(id, 1)>> <</linkreplace>> <</timed>>)
 
 }
 before事件执行时可以用时间延迟分割一下？让文本顺序自然点。

@@ -74,9 +74,9 @@ Com.globalFilter = function (id) {
     if(S.comFilter[id]) return false 
 
     //日常模式和调教模式过滤器
-    if(V.system.mode == 'train' && com.tag.has('日常') && !com.tag.has('交流','调教')) return false;
+    if(V.mode == 'train' && com.tag.has('日常') && !com.tag.has('交流','调教')) return false;
 
-    if(V.system.mode == 'normal' && com.tag.has('调教') && !com.tag.has('日常')) return false;
+    if(V.mode == 'normal' && com.tag.has('调教') && !com.tag.has('日常')) return false;
 
     //角色扮演上的限制
     if( pc === 'Isil' && com.tag.has('挑逗', '调教', '鬼畜', '触手') && !Cflag[pc]?.Fallen) return false 
@@ -252,7 +252,7 @@ Com.set('T4')
 :: Com_T99::Script[script]
 Com.set('T99')
    .Name(()=>{
-        if(V.system.mode !== 'train'){
+        if(V.mode !== 'train'){
             if(F.uncons(target)){
                 return '眠奸';                
             }           
@@ -270,7 +270,7 @@ Com.set('T99')
             return true;
         }
         
-        if(Cflag[tc].favo < 1000 && V.system.mode !== 'train'){
+        if(Cflag[tc].favo < 1000 && V.mode !== 'train'){
             T.reason += '【好感不足】'
             return false
         }
@@ -281,13 +281,13 @@ Com.set('T99')
         return 100
    })
    .Effect(()=>{
-        if(V.system.mode !== 'train'){
-            V.system.mode = 'train';
+        if(V.mode !== 'train'){
+            V.mode = 'train';
             Tsv[tc].woohoo = 1;
             Tsv[pc].woohoo = 1;
         }
         else{
-            V.system.mode = 'normal';
+            V.mode = 'normal';
             for(let i in Tsv){
                 Tsv[i].woohoo = 0;
             }
@@ -295,7 +295,7 @@ Com.set('T99')
    })
 
 :: Com_T99
-<<if $system.mode !== 'train' >>
+<<if $mode !== 'train' >>
 <<you>>将$target.name带到没人注意到的角落。<br>
 <<=F.Kojo($tc, 'Com', 'T99', 'start')>>
 
