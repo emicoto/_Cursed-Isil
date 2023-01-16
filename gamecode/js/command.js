@@ -27,8 +27,8 @@ Macro.add("com", {
 
 window.comdata = {};
 class Com {
-	static new(id, name, tags, time) {
-		comdata[id] = new Com(id, name, tags, time);
+	static new(id, obj) {
+		comdata[id] = new Com(obj);
 		return comdata[id];
 	}
 	static set(id, time) {
@@ -40,33 +40,17 @@ class Com {
 	}
 
 	static init() {
-		const raw = Story.get("ComList").text.split("\n");
-		const list = [];
-		raw.forEach((k) => {
-			if (!k.includes("/*") && k !== "") {
-				let r = k.replace(/\s/g, "").split(",");
-				let info = {
-					no: r[0],
-					name: r[1] ? r[1] : "Com" + r[0],
-					tags: r[2] ? r[2].split("|") : [],
-					time: r[3] ? parseInt(r[3]) : 5,
-				};
-				//console.log(info)
-				list.push(info);
-			}
+		const list = F.initList("ComList");
+		list.forEach((obj) => {
+			Com.new(obj.id, obj);
 		});
-
-		list.forEach((k) => {
-			Com.new(k.no, k.name, k.tags, k.time);
-		});
+		console.log(comdata);
 	}
 
-	constructor(id, name, tags, time) {
-		const typeMap = new Map(D.ComTypes);
-
+	constructor({ id, name, tags = [], type, time = 5 }) {
 		this.id = id;
 		this.name = name;
-		this.tag = [typeMap.get(id[0])];
+		this.tag = [type];
 
 		if (tags.length) this.tag = this.tag.concat(tags);
 

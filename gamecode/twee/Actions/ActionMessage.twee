@@ -121,7 +121,7 @@
 :: Action_Rotor
 /* 跳蛋 */
 <<actChara>>
-<<switch T.selectPartr')>>
+<<switch T.selectPart>>
 <<case 'vagina', 'anal'>>
 将跳蛋放入了<<targetChara>>的<<targetPart>>。<br>
 <<default>>

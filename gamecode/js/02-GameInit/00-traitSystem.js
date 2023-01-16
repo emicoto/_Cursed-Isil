@@ -1,5 +1,17 @@
 const traitdata = {};
 
+window.findConflic = function (source, conflicGroup) {
+	let conflicArr = source.filter((val) => conflicGroup.includes(val));
+	if (conflicArr.length < 2) {
+		return source;
+	} else {
+		let index = random(conflicArr.length - 1);
+		source.delete(conflicGroup);
+		source.push(conflicArr[index]);
+		return source;
+	}
+};
+
 class Trait {
 	static get(name, key = null, event) {
 		if (!key) return Trait.data[name];
@@ -7,28 +19,40 @@ class Trait {
 		else if (key && Trait.data[name][key]) return Trait.data[name][key];
 		else return;
 	}
+	static list(type) {
+		const grouplist = [];
 
+		if (type == "group") {
+			Object.values(Trait.data).forEach((data) => {
+				if (grouplist.includes(data.group) == false) grouplist.push(data.group);
+			});
+			return grouplist;
+		}
+
+		return Object.values(Trait.data).filter((data) => data.group == type);
+	}
 	static set(name) {
 		return Trait.data[name];
 	}
 
 	static init() {
-		D.traits.forEach(({ name, des, order, sourceEffect }) => {
-			Trait.data[name] = new Trait(name, des, order, sourceEffect);
+		D.traits.forEach((obj) => {
+			Trait.data[obj.name] = new Trait(obj);
 		});
 		console.log(Trait.data);
 	}
 
-	constructor(name, des = "", order = 0, source = []) {
+	constructor({ name, des = "", order = 0, sourceEffect = [], group = "全部" } = {}) {
 		this.name = name;
 		this.des = des;
 		this.order = order;
+		this.group = group;
 
 		this.get = {};
 		this.lose = {};
 
-		if (source) {
-			source.forEach((set) => {
+		if (sourceEffect.length) {
+			sourceEffect.forEach((set) => {
 				if (set[2]) {
 					this.lose[set[0]] = set[1];
 				} else {

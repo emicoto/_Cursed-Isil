@@ -1,0 +1,144 @@
+
+:: Kojo_cid_GetMark_Hypnosis
+/* 获得催眠刻印时 */
+<<switch Tsv['cid'].getHypnosis>>
+   <<case 1>>
+      到达1级时。
+   <<case 2>>
+      到达2级时。
+   <<case 3>>
+      到达3级时。
+   <<case 4>>
+      到达4级时。
+   <<case 5>>
+      到达5级时。
+<</switch>>
+
+:: Kojo_cid_GetMark_Ecstacy
+/* 获得快乐刻印时 */
+<<switch Tsv['cid'].getEcstacy>>
+   <<case 1>>
+      到达1级时。
+   <<case 2>>
+      到达2级时。
+   <<case 3>>
+      到达3级时。
+   <<case 4>>
+      到达4级时。
+   <<case 5>>
+      到达5级时。
+<</switch>>
+
+:: Kojo_cid_GetMark_Surrender
+/* 获得屈服刻印时 */
+<<switch Tsv['cid'].getSurrender>>
+   <<case 1>>
+      到达1级时。
+   <<case 2>>
+      到达2级时。
+   <<case 3>>
+      到达3级时。
+   <<case 4>>
+      到达4级时。
+   <<case 5>>
+      到达5级时。
+<</switch>>
+
+:: Kojo_cid_GetMark_Pain
+/* 获得痛苦刻印时 */
+<<switch Tsv['cid'].getPain>>
+   <<case 1>>
+      到达1级时。
+   <<case 2>>
+      到达2级时。
+   <<case 3>>
+      到达3级时。
+   <<case 4>>
+      到达4级时。
+   <<case 5>>
+      到达5级时。
+<</switch>>
+
+:: Kojo_cid_GetMark_Fear
+/* 获得恐惧刻印时 */
+<<switch Tsv['cid'].getFear>>
+   <<case 1>>
+      到达1级时。
+   <<case 2>>
+      到达2级时。
+   <<case 3>>
+      到达3级时。
+   <<case 4>>
+      到达4级时。
+   <<case 5>>
+      到达5级时。
+<</switch>>
+
+:: Kojo_cid_GetMark_Humiliated
+/* 获得耻辱刻印时 */
+<<switch Tsv['cid'].getHumiliated>>
+   <<case 1>>
+      到达1级时。
+   <<case 2>>
+      到达2级时。
+   <<case 3>>
+      到达3级时。
+   <<case 4>>
+      到达4级时。
+   <<case 5>>
+      到达5级时。
+<</switch>>
+
+:: Kojo_cid_GetMark_Mortify
+/* 获得羞耻刻印时 */
+
+<<switch Tsv['cid'].getMortify>>
+   <<case 1>>
+      到达1级时。
+   <<case 2>>
+      到达2级时。
+   <<case 3>>
+      到达3级时。
+   <<case 4>>
+      到达4级时。
+   <<case 5>>
+      到达5级时。
+<</switch>>
+
+:: Kojo_cid_GetMark_Resistance
+/* 获得反抗刻印时 */
+
+<<switch Tsv['cid'].getResistance>>
+   <<case 1>>
+      到达1级时。
+   <<case 2>>
+      到达2级时。
+   <<case 3>>
+      到达3级时。
+   <<case 4>>
+      到达4级时。
+   <<case 5>>
+      到达5级时。
+<</switch>>
+
+:: Kojo_cid_LoseMark_Resistance
+/* 失去反抗刻印时 */
+<<switch Tsv['cid'].loseResistance>>
+   <<case 1>>
+      从5级掉落至3级前后
+   <<case 2>>
+      从任意等级掉落至1级
+   <<case 3>>
+      彻底失去反抗心时
+<</switch>>
+
+:: Kojo_cid_LoseMark_Hypnosis
+/* 失去催眠刻印时 */
+<<switch Tsv['cid'].loseHypnosis>>
+   <<case 1>>
+      从深度催眠稍微恢复一点自我时
+   <<case 2>>
+      半清醒状态
+   <<case 3>>
+      彻底清醒时
+<</switch>>

@@ -1,4 +1,4 @@
-F.initList = function (path, menu, option) {
+F.initList = function (path, option) {
 	const rawtxt = Story.get(path).text.split("\n");
 
 	const convert = (raw, arr) => {
@@ -17,8 +17,10 @@ F.initList = function (path, menu, option) {
 	};
 
 	const makeObj = (line) => {
-		const keys = line.slice(3).split(",");
+		const keys = line.split(",");
+		id = keys[0].replace("#", "");
 		obj = {};
+		keys.deleteAt(0);
 		keys.forEach((k) => {
 			obj[k] = null;
 		});
@@ -26,22 +28,16 @@ F.initList = function (path, menu, option) {
 
 	var obj, id;
 	const arr = {};
-	if (!menu) arr.a = [];
 
 	rawtxt.forEach((raw) => {
 		raw = raw.replace(/\s/g, "");
 		if (raw[0] == "#") {
 			makeObj(raw);
-			id = raw[1];
 		} else if (raw.match(/^\/\*(.+)\*\/|^\/(.+)/) || raw === "") {
 			//注释和空行要过滤掉
 		} else {
-			if (menu) {
-				if (!arr[id]) arr[id] = [];
-				convert(raw, arr[id]);
-			} else {
-				convert(raw, arr["a"]);
-			}
+			if (!arr[id]) arr[id] = [];
+			convert(raw, arr[id]);
 		}
 	});
 
@@ -107,16 +103,24 @@ F.extendParts = function (raw) {
 const actList = {};
 
 class Action {
-	constructor(
+	constructor({
 		id,
 		name,
-		{ time = 5, mode = 0, usePart, targetPart, option, defaultText, type, autokeep = "n", locationTags } = {}
-	) {
+		time = 5,
+		mode = 0,
+		usePart,
+		targetPart,
+		option,
+		defaultText,
+		type,
+		autokeep = "n",
+		locationTags,
+	} = {}) {
 		const typeMap = new Map(D.ActionTypes);
 		this.id = id;
 		this.name = name;
 		this.type = typeMap.get(type);
-		this.time = type == "E" ? 0 : parseInt(time);
+		this.time = this.type == "固有" ? 0 : parseInt(time);
 		this.mode = parseInt(mode);
 
 		if (usePart) this.usePart = usePart;
@@ -136,7 +140,7 @@ class Action {
 		};
 
 		this.effect = (arg, ...args) => {
-			return 0;
+			return "";
 		};
 
 		if (locationTags) this.tags = locationTags;
@@ -146,9 +150,9 @@ class Action {
 		if (autokeep == "y" || this.type == "体位");
 		this.autokeep = 1;
 	}
-
-	static add(id, name, obj) {
-		Action.data[id] = new Action(id, name, obj);
+	static makeGroup = "";
+	static add(id, obj) {
+		Action.data[id] = new Action(obj);
 	}
 	static get(arg, args) {
 		switch (arg) {
@@ -164,29 +168,36 @@ class Action {
 	}
 
 	static set(id) {
-		//console.log(id, Action.data[id])
 		return Action.data[id];
 	}
 
 	static create(data, mode) {
-		const { name, templet } = data;
+		const { name, templet, targetPart, usePart, type } = data;
+
+		let groupTitle = `:: Action_${type}_Options[script]\n`;
 
 		let txt = `/* ${name} */\nAction.set('${data.id}')\n     .Filter(()=>{\n         return 1\n      })\n     .Check(()=>{\n         return 1\n      })\n     .Order(()=>{\n         return 0\n      })\n\n`;
 
-		if (mode == "kojo") txt = "";
+		if (groupmatch(mode, "kojo", "msg")) txt = "";
 
-		const ctx = (use) => {
-			if (!data.templet) {
-				console.log(use, data);
+		const convertTemplet = (templet, ...args) => {
+			return templet
+				.replace(/\{0}/g, "<<you>>")
+				.replace(/\{1}/g, "$target.name")
+				.replace(/\{2}/g, args[0] ? args[0] : "{0}")
+				.replace(/\{3}/g, args[1] ? args[1] : "{1}");
+		};
+
+		const ctx = (use, parts, reverse) => {
+			if (!templet) {
 				return "";
 			}
-			return data.targetPart
+			return parts
 				.map((tar) => {
-					return `<<case '${tar}'>>\n   ${data.templet
-						.replace(/\{0}/g, "<<you>>")
-						.replace(/\{1}/g, "$target.name")
-						.replace(/\{2}/g, D.bodyparts[tar])
-						.replace(/\{3}/g, use ? D.bodyparts[use] : "{usePart}")}<br>\n`;
+					const m2 = reverse ? D.bodyparts[use] : D.bodyparts[tar];
+					const m3 = reverse ? D.bodyparts[tar] : use ? D.bodyparts[use] : "{usePart}";
+
+					return `<<case '${tar}'>>\n${convertTemplet(templet, m2, m3)}<br>\n`;
 				})
 				.join("");
 		};
@@ -194,42 +205,66 @@ class Action {
 		let title = `:: ${mode == "kojo" ? "Kojo_cid_" : ""}Action_${data.id}`;
 
 		if (mode == "script") {
-			return txt;
+			if (Action.makeGroup !== type) {
+				Action.makeGroup = type;
+				return groupTitle + txt;
+			} else {
+				return txt;
+			}
+		} else if (!groupmatch(mode, "kojo", "msg")) {
+			txt = `:: Action_${data.id}_Options[script]\n` + txt;
 		}
 
-		if (groupmatch(data.type, "接触", "逆位", "触手")) {
-			txt += data.usePart
-				.map((k) => {
-					return `${title}\n/* ${name} */\n<<switch T.selectPart)>>\n${ctx(k)}<</switch>>\n\n`;
-				})
-				.join("");
-		} else if (groupmatch(data.type, "道具", "体位")) {
-			return `${title}\n/* ${name} */\n<<switch T.selectPart>>\n${ctx("")}<</switch>>\n\n`;
-		} else {
-			txt += `${title}\n/* ${name} */\n<<you>>在$location.name开始${name}。<br>\n\n`;
+		const head = `${title}\n/* ${name} */\n`;
+		const makeTxt = function (part, use, parts, reverse) {
+			const main = `<<switch T.${part ? "actPart" : "selectPart"}>>\n${ctx(use, parts, reverse)}<</switch>>\n\n\n`;
+
+			return head + main;
+		};
+
+		switch (type) {
+			case "接触":
+			case "触手":
+				txt += makeTxt(0, usePart[0], targetPart);
+				break;
+			case "道具":
+				txt += makeTxt(0, "hands", targetPart);
+				break;
+			case "体位":
+				txt += makeTxt(0, "penis", targetPart);
+				break;
+			case "逆位":
+				txt += makeTxt(1, "penis", usePart, 1);
+				break;
+			default:
+				if (templet) {
+					txt += convertTemplet(templet);
+				} else {
+					txt += `${head}<<you>>在$location.name开始${name}。<br>\n\n\n`;
+				}
 		}
 
 		return txt;
 	}
 	static init() {
-		let arr = F.initList("ActionList", 1, F.extendsRaw);
-		console.log(arr);
+		let arr = F.initList("ActionList", F.extendsRaw);
 		arr.forEach((obj) => {
-			Action.add(obj.id, obj.name, obj);
+			Action.add(obj.id, obj);
 		});
+		console.log(Action.data);
 	}
 	static output(mode, type) {
 		const txt = Object.values(Action.data)
 			.filter(
 				(action) =>
-					(mode == "kojo" && groupmatch(action.type, "调教", "触手", "道具", "体位", "交流", "")) ||
+					(mode == "kojo" && !groupmatch(action.type, "常规", "目录", "其他", "固有")) ||
 					(type && action.type == type) ||
 					(!type && action.type !== "固有")
 			)
 			.map((data) => Action.create(data, mode))
 			.join("");
 
-		download(txt, "action", "txt");
+		download(txt, "ActionTemplet" + (type ? `_${type}` : ""), "twee");
 	}
 	Check(callback) {
 		this.check = callback;
@@ -277,16 +312,20 @@ Action.init();
 Action.globalFilter = function (id) {
 	const data = Action.data[id];
 
-	const hasTg = pc !== tc;
-	const noTg = ["Magic", "Items", "Self", "Other"];
-	const noTgType = ["常规", "魔法", "道具", "自慰", "其他", "固有"];
+	//只有你！
+	const onlyU = pc === tc;
+
+	//不需要对象的单独指令id
+	const noTarget = [];
+	//不需要对象的分类，如果有例外处理就在指令内部设置。
+	const noTargetType = ["常规", "魔法", "道具", "自慰", "其他", "固有"];
 
 	//总之先按照分类过滤
 	if (!groupmatch(data.type, "目录", "常规", "固有") && T.currentType !== "all" && T.currentType !== data.type)
 		return 0;
 
-	//触手模式只能控制触手
-	if (pc == "m0" && data.type !== "触手") return 0;
+	//pc切换为触手时只能选择触手以及系统指令
+	if (pc == "m0" && !groupmatch(data.type, "触手", "固有", "目录", "其他")) return 0;
 
 	//使用部位过滤器只会在接触以上模式出现
 	if (id.match(/^use\S+/) && Flag.mode < 2) return 0;

@@ -1,3 +1,71 @@
+D.bodyparts = {
+	head: "头部",
+	mouth: "嘴巴",
+	torso: "胴体",
+	body: "身体",
+	top: "上身",
+	bottom: "下身",
+	genital: "生殖器",
+	organ: "器官",
+	private: "私处",
+	groin: "腹股沟",
+	slimebody: "史莱姆身",
+	snakebody: "蛇身",
+	tailbody: "尾身",
+	nipple: "乳头",
+	wings: "翅膀",
+	wingL: "左翼",
+	wingR: "右翼",
+	horns: "角",
+	tails: "尾巴",
+	tentacles: "触手",
+	face: "面部",
+	eyes: "双眼",
+	eyeL: "左眼",
+	eyeR: "右眼",
+	nose: "鼻子",
+	ears: "耳朵",
+	earL: "左耳",
+	earR: "右耳",
+	shoulder: "肩部",
+	breast: "胸部",
+	abdomen: "腹部",
+	arms: "手臂",
+	armL: "左臂",
+	armR: "右臂",
+	legs: "腿部",
+	legL: "左腿",
+	legR: "右腿",
+	thighs: "大腿",
+	hips: "臀部",
+	buttL: "左臀",
+	buttR: "右臀",
+	butts: "屁股",
+	thighL: "左大腿",
+	thighR: "右大腿",
+	ankles: "脚踝",
+	wrists: "手腕",
+	ankleL: "左脚踝",
+	ankleR: "右脚踝",
+	feet: "双脚",
+	hands: "双手",
+	footL: "左脚",
+	footR: "右脚",
+	handL: "左手",
+	handR: "右手",
+	critoris: "阴蒂",
+	anal: "肛门",
+	penis: "阴茎",
+	vagina: "阴道",
+	womb: "子宫",
+	anus: "肛门",
+	urin: "尿道",
+	foot: "脚",
+	hairs: "头发",
+	neck: "脖子",
+	hand: "手",
+};
+
 D.base = {
 	health: "健康",
 	stamina: "体力",
@@ -14,7 +82,7 @@ D.base = {
 };
 
 D.palam = {
-	ecstacy: "快感", //判定射精or普通高潮， 高潮时获得性依存度，快乐刻印
+	ecstacy: "快感", //判定射精（有丁）or潮吹（无丁）。
 
 	//受方palam
 	arousal: "欲情", //转换为欲情珠，升级欲望lv, 角色进入休息状态时就会进行转换。
@@ -34,7 +102,7 @@ D.palam = {
 	satisfy: "满意", //评价up 好感up
 	superior: "优越", // 支配度up
 
-	//部位palam
+	//部位palam。各种高潮判定主要看这边。高潮时获得性依存度，快乐刻印
 	esM: "快M",
 	esB: "快B", //同时也是喷乳判定条
 	esC: "快C",
@@ -42,6 +110,7 @@ D.palam = {
 	esV: "快V",
 	esA: "快A",
 
+	//各部位疼痛值。抖M会转化为部位快感。否则抵消部分快感。总值算入pain中。
 	paM: "痛M",
 	paB: "痛B",
 	paC: "痛C",
@@ -165,6 +234,7 @@ D.exp = [
 	"后穴开发",
 	"尿道开发",
 	"子宫开发",
+	"触手",
 
 	"插入",
 	"道具",
@@ -175,7 +245,6 @@ D.exp = [
 	"产卵",
 	"轮奸",
 	"兽奸",
-	"触手奸",
 
 	"眠奸",
 	"强奸",
@@ -347,116 +416,27 @@ D.state = [
 	"中毒", //中毒计时器作用期间,健康持续减少
 ];
 
-D.tsv = [
-	"oksign", //合意。没有就是强奸。
-	"sleepDepth", //睡眠深度。低于500时随时可能醒来。
-	"sleepCurse", //昏睡剂or昏睡咒效果
-	"touchLv", //交流深度
-	"check", // ?
-];
-
 D.mutant = ["光滑", "吸盘", "口器", "隆起", "针", "软刺", "阴茎"];
 
-D.bodyparts = {
-	head: "头部",
-	mouth: "嘴巴",
-	torso: "胴体",
-	body: "身体",
-	top: "上身",
-	bottom: "下身",
-	genital: "生殖器",
-	organ: "器官",
-	private: "私处",
-	groin: "腹股沟",
-	slimebody: "史莱姆身",
-	snakebody: "蛇身",
-	tailbody: "尾身",
-	nipple: "乳头",
-	wings: "翅膀",
-	wingL: "左翼",
-	wingR: "右翼",
-	horns: "角",
-	tails: "尾巴",
-	tentacles: "触手",
-	face: "面部",
-	eyes: "双眼",
-	eyeL: "左眼",
-	eyeR: "右眼",
-	nose: "鼻子",
-	ears: "耳朵",
-	earL: "左耳",
-	earR: "右耳",
-	shoulder: "肩部",
-	breast: "胸部",
-	abdomen: "腹部",
-	arms: "手臂",
-	armL: "左臂",
-	armR: "右臂",
-	legs: "腿部",
-	legL: "左腿",
-	legR: "右腿",
-	thighs: "大腿",
-	hips: "臀部",
-	buttL: "左臀",
-	buttR: "右臀",
-	butts: "屁股",
-	thighL: "左大腿",
-	thighR: "右大腿",
-	ankles: "脚踝",
-	wrists: "手腕",
-	ankleL: "左脚踝",
-	ankleR: "右脚踝",
-	feet: "双脚",
-	hands: "双手",
-	footL: "左脚",
-	footR: "右脚",
-	handL: "左手",
-	handR: "右手",
-	critoris: "阴蒂",
-	anal: "肛门",
-	penis: "阴茎",
-	vagina: "阴道",
-	womb: "子宫",
-	anus: "肛门",
-	urin: "尿道",
-	foot: "脚",
-	hairs: "头发",
-	neck: "脖子",
-	hand: "手",
-};
-
-D.ComTypes = [
-	["G", "常规"],
-	["T", "挑逗"],
-	["S", "性交"],
-	["A", "肛门"],
-	["U", "尿道"],
-	["X", "触手"],
-	["I", "道具"],
-	["M", "SM"],
-	["K", "魔法"],
-	["P", "情景"],
-	["O", "其他"],
-];
+D.ComTypes = ["常规", "挑逗", "性交", "肛门", "尿道", "触手", "道具", "SM", "魔法", "情景", "其他"];
 
 D.ComFilterGeneral = ["常规", "挑逗", "魔法", "其他"];
-
 D.ComFilterTrain = ["前戏", "道具", "性交", "尿道", "SM", "鬼畜", "触手", "情景"];
 
 D.ActionTypes = [
 	["G", "常规"],
-	["E", "目录"],
+	["M", "目录"],
 	["C", "交流"],
 	["T", "接触"],
 	["R", "逆位"],
 	["P", "体位"],
 	["I", "道具"],
 	["B", "战斗"],
-	["M", "魔法"],
-	["X", "触手"],
-	["O", "命令"],
-	["A", "其他"],
-	["S", "固有"],
+	["Ma", "魔法"],
+	["Tx", "触手"],
+	["Co", "命令"],
+	["O", "其他"],
+	["Ex", "固有"],
 ];
 
 D.defaultExit = "MainLoop";
@@ -471,29 +451,78 @@ D.palamLv = [
 //exp lv的初期値
 D.expLv = [0, 3, 10, 30, 100, 200, 400, 600, 800, 1200, 1600, 2000, 2400, 3200, 5000];
 
+//角色别暂存变量。退出调教模式or每日结算时会初始化
+D.tsv = [
+	//事件
+	"sleepDepth", //睡眠深度。低于500时随时可能醒来。
+	"sleepCurse", //昏睡剂or昏睡咒效果
+	"metTodayIsil",
+	"metTodayAyres",
+
+	//调教相关
+	"woohoo", //调教参与flag
+	"oksign", //合意。没有就是强奸。
+
+	//高潮判定系列
+	"MEx",
+	"BEx",
+	"CEx",
+	"UEx",
+	"VEx",
+	"AEx",
+
+	//刻印变化系列。
+	"getHypnosis",
+	"getecstacy",
+	"getSurrender",
+	"getPain",
+	"getFear",
+	"getHumiliated",
+	"getMortify",
+	"getResistance",
+	"loseResistance",
+	"loseHypnosis",
+
+	//
+];
+
 D.cflag = [
+	//诅咒相关
 	"cursedLv",
 	"cursedMP",
 	"cursed",
+
+	//关系性
 	"favo",
 	"trust",
 	"sub",
 	"depend",
 	"desire",
-	"fallen",
+
+	//心理值
+	"fallen", //堕落度
+	"erosion", //侵蚀率
+
+	//名气
 	"schoolfame",
 	"jobfame",
 	"publicfame",
 	"lewdfame",
 	"crimefame",
 
+	//时间管理
 	"wakeuptime",
 	"sleeptime",
 	"wokeup",
 	"lastslept",
+
+	//交流深度
 	"touchLv",
+	//反抗刻印最大等级记录
+	"getResistance",
 ];
 
+//不会被保存的临死变量。刷新页面就自动无了。
 D.tflag = [
 	"scarTimeMultip",
 

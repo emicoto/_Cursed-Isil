@@ -1,0 +1,875 @@
+:: Action_Relax
+/* 放松 */
+<<you>>在$location.name开始放松。<br>
+
+
+:: Action_Walk
+/* 散步 */
+<<you>>在$location.name开始散步。<br>
+
+
+:: Action_Plant
+/* 种植 */
+<<you>>在$location.name开始种植。<br>
+
+
+:: Action_Bath
+/* 洗澡 */
+<<you>>在$location.name开始洗澡。<br>
+
+
+:: Action_Read
+/* 读书 */
+<<you>>在$location.name开始读书。<br>
+
+
+:: Action_Learn
+/* 学习 */
+<<you>>在$location.name开始学习。<br>
+
+
+:: Action_Class
+/* 听课 */
+<<you>>在$location.name开始听课。<br>
+
+
+:: Action_HomeWork
+/* 做作业 */
+<<you>>在$location.name开始做作业。<br>
+
+
+:: Action_Shop
+/* 购物 */
+<<you>>在$location.name开始购物。<br>
+
+
+:: Action_Cook
+/* 煮饭 */
+<<you>>在$location.name开始煮饭。<br>
+
+
+:: Action_Sing
+/* 唱歌 */
+<<you>>在$location.name开始唱歌。<br>
+
+
+:: Action_Dance
+/* 跳舞 */
+<<you>>在$location.name开始跳舞。<br>
+
+
+:: Action_PlayMusic
+/* 演奏 */
+<<you>>在$location.name开始演奏。<br>
+
+
+:: Action_Fish
+/* 钓鱼 */
+<<you>>在$location.name开始钓鱼。<br>
+
+
+:: Action_Gather
+/* 采集 */
+<<you>>在$location.name开始采集。<br>
+
+
+:: Action_Mine
+/* 挖矿 */
+<<you>>在$location.name开始挖矿。<br>
+
+
+:: Action_Interaction
+/* 交流 */
+<<you>>在$location.name开始交流。<br>
+
+
+:: Action_Touch
+/* 接触 */
+<<you>>在$location.name开始接触。<br>
+
+
+:: Action_TrySex
+/* 推倒 */
+<<you>>在$location.name开始推倒。<br>
+
+
+:: Action_useHands
+/* 用手 */
+<<you>>在$location.name开始用手。<br>
+
+
+:: Action_useMouth
+/* 用口 */
+<<you>>在$location.name开始用口。<br>
+
+
+:: Action_usePenis
+/* 用阴茎 */
+<<you>>在$location.name开始用阴茎。<br>
+
+
+:: Action_useVagina
+/* 用阴道 */
+<<you>>在$location.name开始用阴道。<br>
+
+
+:: Action_useAnal
+/* 用肛门 */
+<<you>>在$location.name开始用肛门。<br>
+
+
+:: Action_useFoot
+/* 用脚 */
+<<you>>在$location.name开始用脚。<br>
+
+
+:: Action_Keep
+/* 保持动作 */
+<<you>>在$location.name开始保持动作。<br>
+
+
+:: Action_Coop
+/* 自动配合 */
+<<you>>在$location.name开始自动配合。<br>
+
+
+:: Action_Resit
+/* 自动抵抗 */
+<<you>>在$location.name开始自动抵抗。<br>
+
+
+:: Action_Combat
+/* 战斗 */
+<<you>>在$location.name开始战斗。<br>
+
+
+:: Action_Magic
+/* 魔法 */
+<<you>>在$location.name开始魔法。<br>
+
+
+:: Action_Items
+/* 道具 */
+<<you>>在$location.name开始道具。<br>
+
+
+:: Action_Tentacles
+/* 触手 */
+<<you>>在$location.name开始触手。<br>
+
+
+:: Action_Order
+/* 命令 */
+<<you>>在$location.name开始命令。<br>
+
+
+:: Action_Self
+/* 自慰 */
+<<you>>在$location.name开始自慰。<br>
+
+
+:: Action_Other
+/* 其他 */
+<<you>>在$location.name开始其他。<br>
+
+
+:: Action_Talk
+/* 闲聊 */
+<<you>>在$location.name开始闲聊。<br>
+
+
+:: Action_Look
+/* 观察 */
+<<you>>在$location.name开始观察。<br>
+
+
+:: Action_Talk2
+/* 近况 */
+<<you>>在$location.name开始近况。<br>
+
+
+:: Action_Interest
+/* 兴趣 */
+<<you>>在$location.name开始兴趣。<br>
+
+
+:: Action_PetHead
+/* 摸头 */
+<<you>>在$location.name开始摸头。<br>
+
+
+:: Action_Firm
+/* 调情 */
+<<you>>在$location.name开始调情。<br>
+
+
+:: Action_Gift
+/* 送礼 */
+<<you>>在$location.name开始送礼。<br>
+
+
+:: Action_reset
+/* 复位 */
+<<switch T.selectPart>>
+<</switch>>
+
+
+:: Action_t0
+/* 接吻 */
+<<switch T.selectPart>>
+<<case 'mouth'>>
+<<you>>吻上了$target.name的嘴唇。<br>
+<</switch>>
+
+
+:: Action_t1
+/* 亲吻 */
+<<switch T.selectPart>>
+<<case 'breast'>>
+<<you>>亲吻在了$target.name的胸部上，轻吮吸舔，试图留下自己的印记。<br>
+<<case 'penis'>>
+<<you>>亲吻在了$target.name的阴茎上，轻吮吸舔，试图留下自己的印记。<br>
+<<case 'critoris'>>
+<<you>>亲吻在了$target.name的阴蒂上，轻吮吸舔，试图留下自己的印记。<br>
+<<case 'ears'>>
+<<you>>亲吻在了$target.name的耳朵上，轻吮吸舔，试图留下自己的印记。<br>
+<<case 'handL'>>
+<<you>>亲吻在了$target.name的左手上，轻吮吸舔，试图留下自己的印记。<br>
+<<case 'handR'>>
+<<you>>亲吻在了$target.name的右手上，轻吮吸舔，试图留下自己的印记。<br>
+<<case 'foot'>>
+<<you>>亲吻在了$target.name的脚上，轻吮吸舔，试图留下自己的印记。<br>
+<<case 'neck'>>
+<<you>>亲吻在了$target.name的脖子上，轻吮吸舔，试图留下自己的印记。<br>
+<<case 'butts'>>
+<<you>>亲吻在了$target.name的屁股上，轻吮吸舔，试图留下自己的印记。<br>
+<<case 'thighs'>>
+<<you>>亲吻在了$target.name的大腿上，轻吮吸舔，试图留下自己的印记。<br>
+<<case 'abdomen'>>
+<<you>>亲吻在了$target.name的腹部上，轻吮吸舔，试图留下自己的印记。<br>
+<</switch>>
+
+
+:: Action_t2
+/* 抚摸 */
+<<switch T.selectPart>>
+<<case 'mouth'>>
+<<you>>的手轻抚着$target.name的嘴巴。<br>
+<<case 'breast'>>
+<<you>>的手轻抚着$target.name的胸部。<br>
+<<case 'penis'>>
+<<you>>的手轻抚着$target.name的阴茎。<br>
+<<case 'critoris'>>
+<<you>>的手轻抚着$target.name的阴蒂。<br>
+<<case 'vagina'>>
+<<you>>的手轻抚着$target.name的阴道。<br>
+<<case 'anal'>>
+<<you>>的手轻抚着$target.name的肛门。<br>
+<<case 'ears'>>
+<<you>>的手轻抚着$target.name的耳朵。<br>
+<<case 'handL'>>
+<<you>>的手轻抚着$target.name的左手。<br>
+<<case 'handR'>>
+<<you>>的手轻抚着$target.name的右手。<br>
+<<case 'foot'>>
+<<you>>的手轻抚着$target.name的脚。<br>
+<<case 'neck'>>
+<<you>>的手轻抚着$target.name的脖子。<br>
+<<case 'butts'>>
+<<you>>的手轻抚着$target.name的屁股。<br>
+<<case 'thighs'>>
+<<you>>的手轻抚着$target.name的大腿。<br>
+<<case 'abdomen'>>
+<<you>>的手轻抚着$target.name的腹部。<br>
+<</switch>>
+
+
+:: Action_t3
+/* 揉捏 */
+<<switch T.selectPart>>
+<<case 'breast'>>
+<<you>>揉捏着$target.name的胸部。<br>
+<<case 'penis'>>
+<<you>>揉捏着$target.name的阴茎。<br>
+<<case 'critoris'>>
+<<you>>揉捏着$target.name的阴蒂。<br>
+<<case 'ears'>>
+<<you>>揉捏着$target.name的耳朵。<br>
+<<case 'butts'>>
+<<you>>揉捏着$target.name的屁股。<br>
+<</switch>>
+
+
+:: Action_t4
+/* 吸舔 */
+<<switch T.selectPart>>
+<<case 'penis'>>
+<<you>>吸住了$target.name的阴茎，在上面用舌头反复舔舐着。<br>
+<<case 'critoris'>>
+<<you>>吸住了$target.name的阴蒂，在上面用舌头反复舔舐着。<br>
+<<case 'vagina'>>
+<<you>>吸住了$target.name的阴道，在上面用舌头反复舔舐着。<br>
+<<case 'anal'>>
+<<you>>吸住了$target.name的肛门，在上面用舌头反复舔舐着。<br>
+<<case 'ears'>>
+<<you>>吸住了$target.name的耳朵，在上面用舌头反复舔舐着。<br>
+<<case 'handL'>>
+<<you>>吸住了$target.name的左手，在上面用舌头反复舔舐着。<br>
+<<case 'handR'>>
+<<you>>吸住了$target.name的右手，在上面用舌头反复舔舐着。<br>
+<<case 'foot'>>
+<<you>>吸住了$target.name的脚，在上面用舌头反复舔舐着。<br>
+<<case 'neck'>>
+<<you>>吸住了$target.name的脖子，在上面用舌头反复舔舐着。<br>
+<<case 'butts'>>
+<<you>>吸住了$target.name的屁股，在上面用舌头反复舔舐着。<br>
+<<case 'nipple'>>
+<<you>>吸住了$target.name的乳头，在上面用舌头反复舔舐着。<br>
+<<case 'thighs'>>
+<<you>>吸住了$target.name的大腿，在上面用舌头反复舔舐着。<br>
+<<case 'abdomen'>>
+<<you>>吸住了$target.name的腹部，在上面用舌头反复舔舐着。<br>
+<</switch>>
+
+
+:: Action_t5
+/* 吸咬 */
+<<switch T.selectPart>>
+<<case 'penis'>>
+<<you>>含住$target.name的阴茎，吸吮轻咬着。<br>
+<<case 'critoris'>>
+<<you>>含住$target.name的阴蒂，吸吮轻咬着。<br>
+<<case 'ears'>>
+<<you>>含住$target.name的耳朵，吸吮轻咬着。<br>
+<<case 'handL'>>
+<<you>>含住$target.name的左手，吸吮轻咬着。<br>
+<<case 'handR'>>
+<<you>>含住$target.name的右手，吸吮轻咬着。<br>
+<<case 'foot'>>
+<<you>>含住$target.name的脚，吸吮轻咬着。<br>
+<<case 'neck'>>
+<<you>>含住$target.name的脖子，吸吮轻咬着。<br>
+<<case 'butts'>>
+<<you>>含住$target.name的屁股，吸吮轻咬着。<br>
+<<case 'nipple'>>
+<<you>>含住$target.name的乳头，吸吮轻咬着。<br>
+<<case 'thighs'>>
+<<you>>含住$target.name的大腿，吸吮轻咬着。<br>
+<</switch>>
+
+
+:: Action_t6
+/* 逗弄 */
+<<switch T.selectPart>>
+<<case 'penis'>>
+<<you>>反复逗弄着$target.name的阴茎。<br>
+<<case 'critoris'>>
+<<you>>反复逗弄着$target.name的阴蒂。<br>
+<<case 'vagina'>>
+<<you>>反复逗弄着$target.name的阴道。<br>
+<<case 'anal'>>
+<<you>>反复逗弄着$target.name的肛门。<br>
+<<case 'ears'>>
+<<you>>反复逗弄着$target.name的耳朵。<br>
+<<case 'nipple'>>
+<<you>>反复逗弄着$target.name的乳头。<br>
+<</switch>>
+
+
+:: Action_t7
+/* 指交 */
+<<switch T.selectPart>>
+<<case 'mouth'>>
+<<you>>的手指浅浅插入$target.name的嘴巴，在入口附近摩擦着。<br>
+<<case 'vagina'>>
+<<you>>的手指浅浅插入$target.name的阴道，在入口附近摩擦着。<br>
+<<case 'anal'>>
+<<you>>的手指浅浅插入$target.name的肛门，在入口附近摩擦着。<br>
+<<case 'urin'>>
+<<you>>的手指浅浅插入$target.name的尿道，在入口附近摩擦着。<br>
+<</switch>>
+
+
+:: Action_t8
+/* 性交 */
+<<switch T.selectPart>>
+<<case 'vagina'>>
+<<you>>以{4}的姿势用阴茎插入了$target.name的阴道。<br>
+<<case 'anal'>>
+<<you>>以{4}的姿势用阴茎插入了$target.name的肛门。<br>
+<</switch>>
+
+
+:: Action_t9
+/* 抽插 */
+<<switch T.selectPart>>
+<<case 'mouth'>>
+<<you>>活动腰身，在$target.name的嘴巴反复出入着。<br>
+<<case 'vagina'>>
+<<you>>活动腰身，在$target.name的阴道反复出入着。<br>
+<<case 'anal'>>
+<<you>>活动腰身，在$target.name的肛门反复出入着。<br>
+<</switch>>
+
+
+:: Action_t10
+/* 撸动 */
+<<switch T.selectPart>>
+<<case 'penis'>>
+<<you>>握住$target.name的阴茎，前后撸动着。<br>
+<</switch>>
+
+
+:: Action_t11
+/* 拳交 */
+<<switch T.selectPart>>
+<<case 'vagina'>>
+<<you>>的拳头粗暴地捅进了$target.name的阴道里面，反复抽插着。<br>
+<<case 'anal'>>
+<<you>>的拳头粗暴地捅进了$target.name的肛门里面，反复抽插着。<br>
+<</switch>>
+
+
+:: Action_t12
+/* 深入 */
+<<switch T.selectPart>>
+<<case 'vagina'>>
+<<you>>深深插入了$target.name的阴道。<br>
+<<case 'anal'>>
+<<you>>深深插入了$target.name的肛门。<br>
+<</switch>>
+
+
+:: Action_t13
+/* 口交 */
+<<switch T.selectPart>>
+<<case 'mouth'>>
+<<you>>让$target.name含住了自己的阴茎。<br>
+<</switch>>
+
+
+:: Action_r0
+/* 逆口交 */
+<<switch T.actPart>>
+<<case 'mouth'>>
+<<you>>用嘴巴含住了$target.name的阴茎，用舌头反复舔动。<br>
+<</switch>>
+
+
+:: Action_r1
+/* 逆性交 */
+<<switch T.actPart>>
+<<case 'vagina'>>
+<<you>>让$target.name插入了自己的的阴道。<br>
+<<case 'anal'>>
+<<you>>让$target.name插入了自己的的肛门。<br>
+<</switch>>
+
+
+:: Action_r2
+/* 收紧 */
+<<switch T.actPart>>
+<<case 'vagina'>>
+<<you>>控制自身阴道，紧紧夹住了$target.name的阴茎。<br>
+<<case 'anal'>>
+<<you>>控制自身肛门，紧紧夹住了$target.name的阴茎。<br>
+<</switch>>
+
+
+:: Action_pose0
+/* 正常位 */
+<<switch T.selectPart>>
+<<case 'vagina'>>
+<<you>>把身体覆盖在$target.name身上，掰开$target.name的双腿从正面把阴茎插进了阴道。<br>
+<<case 'anal'>>
+<<you>>把身体覆盖在$target.name身上，掰开$target.name的双腿从正面把阴茎插进了肛门。<br>
+<</switch>>
+
+
+:: Action_pose1
+/* 背后位 */
+<<switch T.selectPart>>
+<<case 'vagina'>>
+<<you>>如同野兽般把$target.name按倒在身下，掰开肉瓣从后面进入了$target.name的身体。<br>
+<<case 'anal'>>
+<<you>>如同野兽般把$target.name按倒在身下，掰开肉瓣从后面进入了$target.name的身体。<br>
+<</switch>>
+
+
+:: Action_pose2
+/* 正座位 */
+<<switch T.selectPart>>
+<<case 'vagina'>>
+<<you>>让$target.name面对面坐在自己身上，一边亲吻着对方一边让$target.name缓缓坐下将自己的阴茎收纳到阴道里。<br>
+<<case 'anal'>>
+<<you>>让$target.name面对面坐在自己身上，一边亲吻着对方一边让$target.name缓缓坐下将自己的阴茎收纳到肛门里。<br>
+<</switch>>
+
+
+:: Action_pose3
+/* 背座位 */
+<<switch T.selectPart>>
+<<case 'vagina'>>
+<<you>>让$target.name背对自己跨坐到身上，从背后搂住对方，让其慢慢坐下把<<you>>的阴茎吞入阴道里。<br>
+<<case 'anal'>>
+<<you>>让$target.name背对自己跨坐到身上，从背后搂住对方，让其慢慢坐下把<<you>>的阴茎吞入肛门里。<br>
+<</switch>>
+
+
+:: Action_pose4
+/* 骑乘位 */
+<<switch T.selectPart>>
+<<case 'vagina'>>
+<<you>>让$target.name骑在自己身上，一手扶着对方腰身让其以舒适的角度把<<you>>的阴茎收入阴道中。<br>
+<<case 'anal'>>
+<<you>>让$target.name骑在自己身上，一手扶着对方腰身让其以舒适的角度把<<you>>的阴茎收入肛门中。<br>
+<</switch>>
+
+
+:: Action_pose5
+/* 侧卧位 */
+<<switch T.selectPart>>
+<<case 'vagina'>>
+<<you>>让$target.name侧卧躺在自己身边，一手穿过对方腰身，从后面缓缓插入$target.name的阴道。<br>
+<<case 'anal'>>
+<<you>>让$target.name侧卧躺在自己身边，一手穿过对方腰身，从后面缓缓插入$target.name的肛门。<br>
+<</switch>>
+
+
+:: Action_pose6
+/* 趴卧位 */
+<<switch T.selectPart>>
+<<case 'vagina'>>
+<<you>>让$target.name趴卧在床上，拿枕头垫高对方小腹后，以俯卧撑的姿势从后方贯穿了$target.name的阴道。<br>
+<<case 'anal'>>
+<<you>>让$target.name趴卧在床上，拿枕头垫高对方小腹后，以俯卧撑的姿势从后方贯穿了$target.name的肛门。<br>
+<</switch>>
+
+
+:: Action_pose7
+/* 站立位 */
+<<switch T.selectPart>>
+<</switch>>
+
+
+:: Action_pose8
+/* 背后立位 */
+<<switch T.selectPart>>
+<</switch>>
+
+
+:: Action_pose9
+/* 抱立位 */
+<<switch T.selectPart>>
+<</switch>>
+
+
+:: Action_pose10
+/* 反抱立位 */
+<<switch T.selectPart>>
+<</switch>>
+
+
+:: Action_pose11
+/* 屈曲位 */
+<<switch T.selectPart>>
+<</switch>>
+
+
+:: Action_Rotor
+/* 跳蛋 */
+<<switch T.selectPart>>
+<<case 'vagina'>>
+<<you>>将跳蛋贴在$target.name的阴道，刺激着。<br>
+<<case 'anal'>>
+<<you>>将跳蛋贴在$target.name的肛门，刺激着。<br>
+<<case 'nipple'>>
+<<you>>将跳蛋贴在$target.name的乳头，刺激着。<br>
+<<case 'penis'>>
+<<you>>将跳蛋贴在$target.name的阴茎，刺激着。<br>
+<<case 'critoris'>>
+<<you>>将跳蛋贴在$target.name的阴蒂，刺激着。<br>
+<</switch>>
+
+
+:: Action_Vibrator
+/* 震动棒 */
+<<switch T.selectPart>>
+<<case 'vagina'>>
+<<you>>将震动棒放进了$target.name的阴道。<br>
+<<case 'anal'>>
+<<you>>将震动棒放进了$target.name的肛门。<br>
+<</switch>>
+
+
+:: Action_x0
+/* 揉捏(触) */
+<<switch T.selectPart>>
+<<case 'breast'>>
+触手缠绕在$target.name的胸部上，巧妙地反复揉捏给予刺激。<br>
+<<case 'penis'>>
+触手缠绕在$target.name的阴茎上，巧妙地反复揉捏给予刺激。<br>
+<<case 'critoris'>>
+触手缠绕在$target.name的阴蒂上，巧妙地反复揉捏给予刺激。<br>
+<<case 'nipple'>>
+触手缠绕在$target.name的乳头上，巧妙地反复揉捏给予刺激。<br>
+<</switch>>
+
+
+:: Action_x1
+/* 逗弄(触) */
+<<switch T.selectPart>>
+<<case 'mouth'>>
+蠕动、摩擦、按捏。触手反复逗弄着$target.name的嘴巴，给予极大的刺激。<br>
+<<case 'penis'>>
+蠕动、摩擦、按捏。触手反复逗弄着$target.name的阴茎，给予极大的刺激。<br>
+<<case 'critoris'>>
+蠕动、摩擦、按捏。触手反复逗弄着$target.name的阴蒂，给予极大的刺激。<br>
+<<case 'vagina'>>
+蠕动、摩擦、按捏。触手反复逗弄着$target.name的阴道，给予极大的刺激。<br>
+<<case 'anal'>>
+蠕动、摩擦、按捏。触手反复逗弄着$target.name的肛门，给予极大的刺激。<br>
+<<case 'urin'>>
+蠕动、摩擦、按捏。触手反复逗弄着$target.name的尿道，给予极大的刺激。<br>
+<<case 'ears'>>
+蠕动、摩擦、按捏。触手反复逗弄着$target.name的耳朵，给予极大的刺激。<br>
+<<case 'nipple'>>
+蠕动、摩擦、按捏。触手反复逗弄着$target.name的乳头，给予极大的刺激。<br>
+<</switch>>
+
+
+:: Action_x2
+/* 吸舔(触) */
+<<switch T.selectPart>>
+<<case 'nipple'>>
+吸盘触手吸附在$target.name的乳头上，反复吸舔着。<br>
+<<case 'penis'>>
+吸盘触手吸附在$target.name的阴茎上，反复吸舔着。<br>
+<<case 'critoris'>>
+吸盘触手吸附在$target.name的阴蒂上，反复吸舔着。<br>
+<</switch>>
+
+
+:: Action_x3
+/* 吸咬(触) */
+<<switch T.selectPart>>
+<<case 'nipple'>>
+口器触手含住$target.name的乳头，吸吮轻咬着。<br>
+<<case 'penis'>>
+口器触手含住$target.name的阴茎，吸吮轻咬着。<br>
+<<case 'critoris'>>
+口器触手含住$target.name的阴蒂，吸吮轻咬着。<br>
+<</switch>>
+
+
+:: Action_x4
+/* 撸动(触) */
+<<switch T.selectPart>>
+<<case 'penis'>>
+触手缠绕住$target.name的阴茎，反复撸动着。<br>
+<</switch>>
+
+
+:: Action_x5
+/* 插入(触) */
+<<switch T.selectPart>>
+<<case 'mouth'>>
+触手钻进了$target.name敞开的嘴巴，缓缓往内深入。<br>
+<<case 'vagina'>>
+触手钻进了$target.name敞开的阴道，缓缓往内深入。<br>
+<<case 'anal'>>
+触手钻进了$target.name敞开的肛门，缓缓往内深入。<br>
+<<case 'urin'>>
+触手钻进了$target.name敞开的尿道，缓缓往内深入。<br>
+<<case 'ears'>>
+触手钻进了$target.name敞开的耳朵，缓缓往内深入。<br>
+<</switch>>
+
+
+:: Action_x6
+/* 蠕动(触) */
+<<switch T.selectPart>>
+<<case 'mouth'>>
+触手在$target.name的嘴巴慢慢蠕动着。<br>
+<<case 'breast'>>
+触手在$target.name的胸部慢慢蠕动着。<br>
+<<case 'penis'>>
+触手在$target.name的阴茎慢慢蠕动着。<br>
+<<case 'critoris'>>
+触手在$target.name的阴蒂慢慢蠕动着。<br>
+<<case 'vagina'>>
+触手在$target.name的阴道慢慢蠕动着。<br>
+<<case 'anal'>>
+触手在$target.name的肛门慢慢蠕动着。<br>
+<<case 'urin'>>
+触手在$target.name的尿道慢慢蠕动着。<br>
+<<case 'ears'>>
+触手在$target.name的耳朵慢慢蠕动着。<br>
+<<case 'neck'>>
+触手在$target.name的脖子慢慢蠕动着。<br>
+<<case 'butts'>>
+触手在$target.name的屁股慢慢蠕动着。<br>
+<<case 'nipple'>>
+触手在$target.name的乳头慢慢蠕动着。<br>
+<<case 'thighs'>>
+触手在$target.name的大腿慢慢蠕动着。<br>
+<</switch>>
+
+
+:: Action_x7
+/* 抽插(触) */
+<<switch T.selectPart>>
+<<case 'mouth'>>
+触手不停在$target.name的嘴巴进出，抽插蠕动着。<br>
+<<case 'vagina'>>
+触手不停在$target.name的阴道进出，抽插蠕动着。<br>
+<<case 'anal'>>
+触手不停在$target.name的肛门进出，抽插蠕动着。<br>
+<<case 'urin'>>
+触手不停在$target.name的尿道进出，抽插蠕动着。<br>
+<<case 'ears'>>
+触手不停在$target.name的耳朵进出，抽插蠕动着。<br>
+<</switch>>
+
+
+:: Action_x8
+/* 深入(触) */
+<<switch T.selectPart>>
+<<case 'mouth'>>
+触手往$target.name的嘴巴内部发出了进攻，往更深处蠕进。<br>
+<<case 'vagina'>>
+触手往$target.name的阴道内部发出了进攻，往更深处蠕进。<br>
+<<case 'anal'>>
+触手往$target.name的肛门内部发出了进攻，往更深处蠕进。<br>
+<<case 'urin'>>
+触手往$target.name的尿道内部发出了进攻，往更深处蠕进。<br>
+<</switch>>
+
+
+:: Action_x9
+/* 抽送(触) */
+<<switch T.selectPart>>
+<<case 'mouth'>>
+触手激烈地在$target.name的嘴巴进出着，反复抽送着触身给予莫大的刺激。<br>
+<<case 'vagina'>>
+触手激烈地在$target.name的阴道进出着，反复抽送着触身给予莫大的刺激。<br>
+<<case 'anal'>>
+触手激烈地在$target.name的肛门进出着，反复抽送着触身给予莫大的刺激。<br>
+<<case 'urin'>>
+触手激烈地在$target.name的尿道进出着，反复抽送着触身给予莫大的刺激。<br>
+<</switch>>
+
+
+:: Action_x10
+/* 鞭打(触) */
+<<switch T.selectPart>>
+<<case 'breast'>>
+触手甩动触鞭，用巧妙的力度鞭打在$target.name的胸部上。<br>
+<<case 'penis'>>
+触手甩动触鞭，用巧妙的力度鞭打在$target.name的阴茎上。<br>
+<<case 'critoris'>>
+触手甩动触鞭，用巧妙的力度鞭打在$target.name的阴蒂上。<br>
+<<case 'anal'>>
+触手甩动触鞭，用巧妙的力度鞭打在$target.name的肛门上。<br>
+<<case 'butts'>>
+触手甩动触鞭，用巧妙的力度鞭打在$target.name的屁股上。<br>
+<<case 'nipple'>>
+触手甩动触鞭，用巧妙的力度鞭打在$target.name的乳头上。<br>
+<<case 'thighs'>>
+触手甩动触鞭，用巧妙的力度鞭打在$target.name的大腿上。<br>
+<</switch>>
+
+
+:: Action_x11
+/* 刺入(触) */
+<<switch T.selectPart>>
+<<case 'penis'>>
+触手伸出尖锐的细针，狠狠地刺入了$target.name的阴茎。<br>
+<<case 'critoris'>>
+触手伸出尖锐的细针，狠狠地刺入了$target.name的阴蒂。<br>
+<<case 'vagina'>>
+触手伸出尖锐的细针，狠狠地刺入了$target.name的阴道。<br>
+<<case 'anal'>>
+触手伸出尖锐的细针，狠狠地刺入了$target.name的肛门。<br>
+<<case 'neck'>>
+触手伸出尖锐的细针，狠狠地刺入了$target.name的脖子。<br>
+<<case 'nipple'>>
+触手伸出尖锐的细针，狠狠地刺入了$target.name的乳头。<br>
+<<case 'butts'>>
+触手伸出尖锐的细针，狠狠地刺入了$target.name的屁股。<br>
+<</switch>>
+
+
+:: Action_x12
+/* 灌入(触) */
+<<switch T.selectPart>>
+<<case 'mouth'>>
+触手往$target.name的嘴巴灌入大量的药液。<br>
+<<case 'vagina'>>
+触手往$target.name的阴道灌入大量的药液。<br>
+<<case 'anal'>>
+触手往$target.name的肛门灌入大量的药液。<br>
+<</switch>>
+
+
+:: Action_x13
+/* 注射(触) */
+<<switch T.selectPart>>
+<<case 'breast'>>
+触手伸出尖锐的针头，刺入$target.name的胸部并注入药液。<br>
+<<case 'penis'>>
+触手伸出尖锐的针头，刺入$target.name的阴茎并注入药液。<br>
+<<case 'critoris'>>
+触手伸出尖锐的针头，刺入$target.name的阴蒂并注入药液。<br>
+<<case 'vagina'>>
+触手伸出尖锐的针头，刺入$target.name的阴道并注入药液。<br>
+<<case 'anal'>>
+触手伸出尖锐的针头，刺入$target.name的肛门并注入药液。<br>
+<<case 'urin'>>
+触手伸出尖锐的针头，刺入$target.name的尿道并注入药液。<br>
+<<case 'neck'>>
+触手伸出尖锐的针头，刺入$target.name的脖子并注入药液。<br>
+<<case 'butts'>>
+触手伸出尖锐的针头，刺入$target.name的屁股并注入药液。<br>
+<<case 'nipple'>>
+触手伸出尖锐的针头，刺入$target.name的乳头并注入药液。<br>
+<<case 'abdomen'>>
+触手伸出尖锐的针头，刺入$target.name的腹部并注入药液。<br>
+<</switch>>
+
+
+:: Action_m0
+/* 静心咒 */
+<<you>>在$location.name开始静心咒。<br>
+
+
+:: Action_m1
+/* 净化术 */
+<<you>>在$location.name开始净化术。<br>
+
+
+:: Action_Stream
+/* 直播 */
+<<you>>在$location.name开始直播。<br>
+
+
+:: Action_Party
+/* 举行派对 */
+<<you>>在$location.name开始举行派对。<br>
+
+
+:: Action_Clothes
+/* 衣服管理 */
+<<you>>在$location.name开始衣服管理。<br>
+
+
+:: Action_Behavior
+/* 行为管理 */
+<<you>>在$location.name开始行为管理。<br>
+
+
+:: Action_GetNude
+/* 一键脱光 */
+<<you>>在$location.name开始一键脱光。<br>
+
+

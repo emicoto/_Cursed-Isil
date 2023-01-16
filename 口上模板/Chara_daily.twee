@@ -80,3 +80,9 @@
 
 :: Kojo_Chara_Daily_Reading 
 /* 在图书馆一起看书 */
+
+:: Kojo_Chara_Daily_Intro
+/* 场景中与玩家打招呼时 */
+
+:: Kojo_Chara_Daily_GoodBye
+/* 场景中玩家走开时 */

@@ -42,3 +42,4 @@ Kojo.set('Nanaly', '#66CCFF') //角色id与 名牌颜色
     ])>><</widget>>
 
 <<widget "NanalyName">><<print $chara.Nanaly.name>><</widget>>
+

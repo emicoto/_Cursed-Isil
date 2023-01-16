@@ -58,7 +58,6 @@
 <</if>>
 
 
-
 :: Kojo_cid_Action_t0
 /* 接吻 */
 <<switch T.selectPart>>
@@ -262,22 +261,6 @@
    <<you>>反复逗弄着<<cidName>>的乳头。<br>
 <</switch>>
 
-:: Kojo_cid_Action_t6
-/* 逗弄 */
-<<switch T.selectPart>>
-<<case 'penis'>>
-   <<you>>反复逗弄着<<cidName>>的阴茎。<br>
-<<case 'critoris'>>
-   <<you>>反复逗弄着<<cidName>>的阴蒂。<br>
-<<case 'vagina'>>
-   <<you>>反复逗弄着<<cidName>>的阴道。<br>
-<<case 'anal'>>
-   <<you>>反复逗弄着<<cidName>>的肛门。<br>
-<<case 'ears'>>
-   <<you>>反复逗弄着<<cidName>>的耳朵。<br>
-<<case 'nipple'>>
-   <<you>>反复逗弄着<<cidName>>的乳头。<br>
-<</switch>>
 
 :: Kojo_cid_Action_t7
 /* 指交 */
@@ -292,29 +275,7 @@
    <<you>>的手指浅浅插入<<cidName>>的尿道，在入口附近摩擦着。<br>
 <</switch>>
 
-:: Kojo_cid_Action_t7
-/* 指交 */
-<<switch T.selectPart>>
-<<case 'mouth'>>
-   <<you>>的手指浅浅插入<<cidName>>的嘴巴，在入口附近摩擦着。<br>
-<<case 'vagina'>>
-   <<you>>的手指浅浅插入<<cidName>>的阴道，在入口附近摩擦着。<br>
-<<case 'anal'>>
-   <<you>>的手指浅浅插入<<cidName>>的肛门，在入口附近摩擦着。<br>
-<<case 'urin'>>
-   <<you>>的手指浅浅插入<<cidName>>的尿道，在入口附近摩擦着。<br>
-<</switch>>
 
-:: Kojo_cid_Action_t8
-/* 性交 */
-<<switch T.selectPart>>
-<<case 'mouth'>>
-   <<you>>以{4}的姿势用阴茎插入了<<cidName>>的嘴巴。<br>
-<<case 'vagina'>>
-   <<you>>以{4}的姿势用阴茎插入了<<cidName>>的阴道。<br>
-<<case 'anal'>>
-   <<you>>以{4}的姿势用阴茎插入了<<cidName>>的肛门。<br>
-<</switch>>
 
 :: Kojo_cid_Action_t9
 /* 抽插 */
@@ -334,21 +295,6 @@
    <<you>>握住<<cidName>>的阴茎，前后撸动着。<br>
 <</switch>>
 
-:: Kojo_cid_Action_t10
-/* 撸动 */
-<<switch T.selectPart>>
-<<case 'penis'>>
-   <<you>>握住<<cidName>>的阴茎，前后撸动着。<br>
-<</switch>>
-
-:: Kojo_cid_Action_t11
-/* 拳交 */
-<<switch T.selectPart>>
-<<case 'vagina'>>
-   <<you>>的拳头粗暴地捅进了<<cidName>>的阴道里面，反复抽插着。<br>
-<<case 'anal'>>
-   <<you>>的拳头粗暴地捅进了<<cidName>>的肛门里面，反复抽插着。<br>
-<</switch>>
 
 :: Kojo_cid_Action_t11
 /* 拳交 */

@@ -29,9 +29,8 @@
 
 
 :: Kojo_Chara_Event_FirstDungeon
-/* 事件开始前的设置  */
-<<set $event.id = 'CE_3'>> /* 设置事件id */
-<<run F.setMemory('CE_3', `${C['Chara'].name} - 森林遗迹`, 'Chara')>> /* 记录到存档
+/* 首次攻略遗迹 */
+
 
 
 :: Kojo_Chara_Event_Test::Before
