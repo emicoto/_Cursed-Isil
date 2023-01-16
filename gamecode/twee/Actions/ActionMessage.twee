@@ -30,10 +30,10 @@
    把头埋在<<targetChara>>的跨间，把舌头探入<<targetPart>>，贪婪地吸舔着<<targetChara>>的汁液与气息。<br>
 <<case 'ears'>>
    含住了<<targetChara>>的耳坠，又吸又舔地感受着耳朵的柔软。<br>
-<<case 'hands', 'foot'>>
-   含住了<<targetChara>>的<<= T.selectPart == 'hands' ? '手指' : '脚趾' >>，像舔舐糖果般吸舔着。<br>
 <<case 'neck', 'butts', 'thighs', 'abdomen'>>
    在<<targetChara>>的<<targetPart>>上面用舌头又吸又舔地感受着对方的气味。<br>
+<<default>>
+   含住了<<targetChara>>的<<= groupmatch(T.selectPart,'handL','handR') ? '手指' : '脚趾' >>，像舔舐糖果般吸舔着。<br>
 <</switch>>
 <<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't4')>>
 
@@ -111,7 +111,12 @@
 :: Action_t12
 /* 深入 */
 <<actChara>>深深插入了<<targetChara>>的<<targetPart>><br>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't11')>>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't12')>>
+
+:: Action_t13
+/* 深入 */
+<<actChara>>让<<targetChara>>含住了自己的阴茎<br>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't113')>>
 
 :: Action_Rotor
 /* 跳蛋 */
@@ -239,3 +244,66 @@
 /* 注射 */
 触手伸出尖锐的针头，刺入<<targetChara>>的<<targetPart>>并注入药液。<br>
 <<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x13')>>
+
+:: Action_pose0
+/* 正常位 */
+<<switch T.selectPart>>
+<<case 'vagina'>>
+   <<you>>把身体覆盖在$target.name身上，掰开$target.name的双腿从正面把阴茎插进了阴道。<br>
+<<case 'anal'>>
+   <<you>>把身体覆盖在$target.name身上，掰开$target.name的双腿从正面把阴茎插进了肛门。<br>
+<</switch>>
+
+:: Action_pose1
+/* 背后位 */
+<<switch T.selectPart>>
+<<case 'vagina'>>
+   <<you>>如同野兽般把$target.name按倒在身下，掰开肉瓣从后面进入了$target.name的身体。<br>
+<<case 'anal'>>
+   <<you>>如同野兽般把$target.name按倒在身下，掰开肉瓣从后面进入了$target.name的身体。<br>
+<</switch>>
+
+:: Action_pose2
+/* 正座位 */
+<<switch T.selectPart>>
+<<case 'vagina'>>
+   <<you>>让$target.name面对面坐在自己身上，一边亲吻着对方一边让$target.name缓缓坐下将自己的阴茎收纳到阴道里。<br>
+<<case 'anal'>>
+   <<you>>让$target.name面对面坐在自己身上，一边亲吻着对方一边让$target.name缓缓坐下将自己的阴茎收纳到肛门里。<br>
+<</switch>>
+
+:: Action_pose3
+/* 背座位 */
+<<switch T.selectPart>>
+<<case 'vagina'>>
+   <<you>>让$target.name背对自己跨坐到身上，从背后搂住对方，让其慢慢坐下把<<you>>的阴茎吞入阴道里。<br>
+<<case 'anal'>>
+   <<you>>让$target.name背对自己跨坐到身上，从背后搂住对方，让其慢慢坐下把<<you>>的阴茎吞入肛门里。<br>
+<</switch>>
+
+:: Action_pose4
+/* 骑乘位 */
+<<switch T.selectPart>>
+<<case 'vagina'>>
+   <<you>>让$target.name骑在自己身上，一手扶着对方腰身让其以舒适的角度把<<you>>的阴茎收入阴道中。<br>
+<<case 'anal'>>
+   <<you>>让$target.name骑在自己身上，一手扶着对方腰身让其以舒适的角度把<<you>>的阴茎收入肛门中。<br>
+<</switch>>
+
+:: Action_pose5
+/* 侧卧位 */
+<<switch T.selectPart>>
+<<case 'vagina'>>
+   <<you>>让$target.name侧卧躺在自己身边，一手穿过对方腰身，从后面缓缓插入$target.name的阴道。<br>
+<<case 'anal'>>
+   <<you>>让$target.name侧卧躺在自己身边，一手穿过对方腰身，从后面缓缓插入$target.name的肛门。<br>
+<</switch>>
+
+:: Action_pose6
+/* 趴卧位 */
+<<switch T.selectPart>>
+<<case 'vagina'>>
+   <<you>>让$target.name趴卧在床上，拿枕头垫高对方小腹后，以俯卧撑的姿势从后方贯穿了$target.name的阴道。<br>
+<<case 'anal'>>
+   <<you>>让$target.name趴卧在床上，拿枕头垫高对方小腹后，以俯卧撑的姿势从后方贯穿了$target.name的肛门。<br>
+<</switch>>

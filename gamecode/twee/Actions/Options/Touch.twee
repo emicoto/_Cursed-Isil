@@ -107,6 +107,9 @@ Action.set('t8')
      .Order(()=>{
          return 0
       })
+      .Script('<<set _inside to 1>>')
+
+
 
 /* 抽插 */
 Action.set('t9')

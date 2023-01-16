@@ -151,8 +151,9 @@ F.actBtn = function (actid, data) {
 };
 
 F.partBtn = function (data, part, use) {
-	const { id } = data;
-	let setpart = `<<set _selectPart to '${part}'>><<run F.checkAction('${id}', 'do')>>`;
+	const { id, script } = data;
+	const state = data.name == "性交" ? "ready" : "do";
+	let setpart = `${script ? script : ""}<<set _selectPart to '${part}'>><<run F.checkAction('${id}', '${state}')>>`;
 
 	if (use) {
 		setpart = `<<set _selectActPart to '${part}'>>`;
@@ -166,17 +167,17 @@ F.partBtn = function (data, part, use) {
 	if (use && T.selectActPart == part) {
 		return `<div class='actions selectAct'>[ 用${D.bodyparts[part]} ]</div>`;
 	}
+
+	console.log(setpart);
 	return `<div class='actions parts'><<button '${use ? "用" : ""}${D.bodyparts[part]}'>>${setpart}<</button>></div>`;
 };
 
-F.partAble = function (actid, part, mode) {
+F.partAble = function (actid, part, chara) {
 	const data = Action.data[actid];
-	let p = mode == "use" ? V.pc : V.tc;
-
 	if (data.type == "触手") {
 		return 1;
 	} else {
-		return Using[p][part].act == "" || Using[p][part].act === actid;
+		return Action.globalPartAble(actid, part, chara);
 	}
 };
 
@@ -246,13 +247,13 @@ F.initActMenu = function (actid, usepart) {
 	//有可选部位才生成
 	if (useParts.length) {
 		useParts.forEach((part) => {
-			if (F.partAble(actid, part, "use")) partsMenu.push(F.partBtn(_data, part, 1));
+			if (F.partAble(actid, part, pc)) partsMenu.push(F.partBtn(_data, part, 1));
 		});
 	}
 
 	if (targetParts.length && _data?.option !== "noSelectPart") {
 		targetParts.forEach((part) => {
-			if (F.partAble(actid, part, "target")) partsMenu.push(F.partBtn(_data, part));
+			if (F.partAble(actid, part, tc)) partsMenu.push(F.partBtn(_data, part));
 		});
 	}
 
@@ -266,20 +267,20 @@ F.initActMenu = function (actid, usepart) {
 		html += `<div class='actions'> | </div>${systemMenu.join("")}`;
 	}
 
-	new Wikifier(null, `<<replace #actionMenu_1>><label class='actions'>主要：</label>${html}<</replace>>`);
+	new Wikifier(null, `<<replace #actionMenu_1>>${html}<</replace>>`);
 
 	const showhtml = function (tag, menu, label = "") {
 		if (menu.length) {
 			$(`#${tag}`).removeClass("hidden");
-			new Wikifier(null, `<<replace #${tag}>><label class='actions'>${label}</label>${menu.join("")}<</replace>>`);
+			new Wikifier(null, `<<replace #${tag}>>${menu.join("")}<</replace>>`);
 		} else {
 			$(`#${tag}`).addClass("hidden");
 		}
 	};
 
-	showhtml("actionMenu_2", subActionMenu, "次要：");
-	showhtml("actionOption", optionMenu, "选项：");
-	showhtml("actionMenu_3", partsMenu, `目标：<br>${target.name}`);
+	showhtml("actionMenu_2", subActionMenu);
+	showhtml("actionOption", optionMenu);
+	showhtml("actionMenu_3", partsMenu);
 };
 
 //----->> 主要进程处理 <<---------------------------//v
@@ -356,15 +357,16 @@ F.checkAction = function (id, phase) {
 		F.txtFlow(reText);
 	}
 
+	T.selectAct = id;
+
 	//如果动作还在准备阶段，则在这里中断。
 	if (phase == "ready") {
 		F.initCheckFlag();
+		F.resetUI();
 		return 0;
 	}
 
 	T.actId = id;
-	T.selectAct = id;
-
 	//记录动作部位。
 	T.actPart = T.selectActPart ? T.selectActPart : data.usePart ? data.usePart[0] : "reset";
 

@@ -263,6 +263,10 @@ class Action {
 		this.alterName = callback;
 		return this;
 	}
+	Ready(callback) {
+		this.onReady = callback;
+		return this;
+	}
 }
 
 window.Action = Action;
@@ -320,7 +324,8 @@ Action.globalFilter = function (id) {
 			break;
 
 		case "体位":
-			if (!T.inside) return 0;
+			if (T.selectAct == "t8" && !groupmatch(T.selectPart, "vagina", "anal")) return 0;
+			if (T.selectAct !== "t8") return 0;
 			break;
 
 		//要有对应道具才行
@@ -367,4 +372,15 @@ Action.globalOrder = function (id) {
 	}
 
 	return 0;
+};
+
+Action.globalPartAble = function (id, part, cid) {
+	const data = Action.data[id];
+	const chara = C[cid];
+
+	if (chara.gender == "female" && part == "penis") return 0;
+
+	if (chara.gender == "male" && part == "vagina") return 0;
+
+	return Using[cid][part].act == "" || Using[cid][part].act == id;
 };

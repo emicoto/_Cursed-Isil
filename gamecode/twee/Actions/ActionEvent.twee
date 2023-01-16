@@ -56,7 +56,7 @@
 <<you>>问$target.name最近过得如何。<br>
 
 :: Action_Interest
-<<=Kojo.put($target, 'Action', 'Interest')>>
+<<=Kojo.put(tc, 'Action', 'Interest')>>
 <<if T.noMsg>>
 <<you>>对$target.name感兴趣的话题发表了些见解。<br>
 <</if>>
@@ -74,7 +74,14 @@
 
 :: Action_TrySex
 /* 推倒 */
-<<you>>在$location.name开始推倒。<br>
+<<if $mode !== 'train' >>
+<<you>>将$target.name带到没人注意到的角落。<br>
+<<=Kojo.put($tc, 'Action', 'TrySex', 'start')>>
+
+<<else>>
+<<you>>帮$target.name整理好衣服。<br>
+<<=Kojo.put($tc, 'Action', 'TrySex', 'finish')>>
+<</if>>
 
 
 :: Action_Relax
