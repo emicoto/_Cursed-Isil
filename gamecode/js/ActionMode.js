@@ -1,503 +1,548 @@
-F.hideActions = function(){
-    $('#actionMenu_1').addClass('hidden')
-    $('#actionMenu_2').addClass('hidden')
-    $('#actionMenu_3').addClass('hidden')
-    $('#actionOption').addClass('hidden')
-    new Wikifier(null, '<<replace #actionMenu_1>> <</replace>>')
-    new Wikifier(null, '<<replace #actionMenu_2>> <</replace>>')
-    new Wikifier(null, '<<replace #actionMenu_3>> <</replace>>')
-    new Wikifier(null, '<<replace #actionOption>> <</replace>>')
-}
+F.hideActions = function () {
+	$("#actionMenu_1").addClass("hidden");
+	$("#actionMenu_2").addClass("hidden");
+	$("#actionMenu_3").addClass("hidden");
+	$("#actionOption").addClass("hidden");
+	new Wikifier(null, "<<replace #actionMenu_1>> <</replace>>");
+	new Wikifier(null, "<<replace #actionMenu_2>> <</replace>>");
+	new Wikifier(null, "<<replace #actionMenu_3>> <</replace>>");
+	new Wikifier(null, "<<replace #actionOption>> <</replace>>");
+};
 
-F.showActions = function(){
-    $('#actionMenu_1').removeClass('hidden')
-    $('#actionMenu_2').removeClass('hidden')
-    $('#actionMenu_3').removeClass('hidden')
-    $('#actionOption').removeClass('hidden')    
-}
+F.showActions = function () {
+	$("#actionMenu_1").removeClass("hidden");
+	$("#actionMenu_2").removeClass("hidden");
+	$("#actionMenu_3").removeClass("hidden");
+	$("#actionOption").removeClass("hidden");
+};
 
-F.resetUI = function(){
-    V.target = C[tc]
-    V.player = C[pc]
+F.resetUI = function () {
+	V.target = C[tc];
+	V.player = C[pc];
 
-    F.initLocation()
-    F.showActions();
-    F.initActMenu()
-    //F.initActionselect()
-    
-    F.showNext(1);
+	F.resetLink();
+	F.updateMap();
+	F.showActions();
+	F.initActMenu();
+	//F.initActionselect()
 
-    return ''
-}
+	F.showNext(1);
 
-F.initActionMode = function(){
-    T.currentType = 'all'
-    T.actPartFilter = 'all'
-    T.actor = V.pc
-    T.actTg = V.pc !== V.tc ? V.tc : V.pc;
+	return "";
+};
 
-    T.actPart = 'reset'
+F.initActionMode = function () {
+	T.currentType = "all";
+	T.actPartFilter = "all";
+	T.actor = V.pc;
+	T.actTg = V.pc !== V.tc ? V.tc : V.pc;
 
-    F.initAction('m0')
+	T.actPart = "reset";
 
-    V.location.chara.forEach((cid)=>{
-        F.initAction(cid)
-    })
+	F.initAction("m0");
 
-}
+	V.location.chara.forEach((cid) => {
+		F.initAction(cid);
+	});
+};
 
-F.showNext = function(hide){
-    let html = hide ? '' :`<<link 'Next'>><<run F.ActNext()>><</link>>`
-    new Wikifier('#next', `<<replace #next>>${html}<</replace>>`)
-}
+F.showNext = function (hide) {
+	let html = hide ? "" : `<<link 'Next'>><<run F.ActNext()>><</link>>`;
+	new Wikifier("#next", `<<replace #next>>${html}<</replace>>`);
+};
 
 //----->> 初始化 <<---------------------------//
 
-F.initMainFlow = function(){
-    //在这里初始化信息板。 插入移动后的文本。不是经由移动初始化时会有对应的flag判定。
-    //V.aftermovement
-    const local = V.location
-    let text = F.playerName()
+F.updateMap = function () {
+	const chara = [];
+	let html = "";
+	let change = F.switchChara();
 
-    if(local.id == 'A0'){
+	if (V.location.chara.length) {
+		V.location.chara.forEach((k) => {
+			let com = `<<set $tc to '${k}'>><<run F.charaEvent('${k}'); F.resetUI()>>`;
 
-        text +=  `你回到了宿舍房间。<br>`
-        if(pc == 'Ayres'){
-            text += `${C['Isil'].name}在房间里。`
-        }
-        else{
-            text += `${C['Ayres'].name}在房间里。`
-        }
-    }
-    else{
-        text += `你来到了学院广场公园。<br>你注意到了${C['Besta'].name}在这里散步。`
+			let t = `<u><<link '${C[k].name}'>>${com}<</link>></u>　`;
 
-    }
+			if (pc !== k) {
+				if (tc == k) t = `<span style='color:#76FAF4'><${C[k].name}></span>　`;
+				//console.log(k, C[k].name, t)
+			} else {
+				let name = C[k].name;
+				if (tc == k) name = `< ${C[k].name} >　`;
+				t = `<span style='color:#AAA'>${name}</span>　`;
+			}
 
-    F.summonChara();
-    //F.resetAction(); 初始化act、using缓存，并设置默认动作
+			chara.push(t);
+		});
+	}
 
-    if(V.aftermovement)
-        delete V.aftermovement
+	html = `主控　<span style='color:#fff000'>${player.name}</span> ${change}　|　所在位置　${V.location.name}　|　`;
+	if (chara.length) html += "" + chara.join("") + "<br>";
 
-    setTimeout(()=>{
-        F.txtFlow(text,30,1)
-        setTimeout(()=>{
-            F.charaEvent(tc)
-        },500)
-    },100)
+	//后面加场景描述。从Db读取场景数据。角色选项也会移到场景描述后。
+	//这里是……。 有 谁 、谁 、谁 在这里。
+	//选择角色后会有文字补充在信息流后。 “你将目光移向谁。“
 
-    return ''
+	new Wikifier(null, `<<replace #location>>${html}<</replace>>`);
+};
+
+F.initMainFlow = function () {
+	//在这里初始化信息板。 插入移动后的文本。不是经由移动初始化时会有对应的flag判定。
+	//V.aftermovement
+	const local = V.location;
+	let text = F.playerName();
+
+	if (local.id == "A0") {
+		text += `你回到了宿舍房间。<br>`;
+		if (pc == "Ayres") {
+			text += `${C["Isil"].name}在房间里。`;
+		} else {
+			text += `${C["Ayres"].name}在房间里。`;
+		}
+	} else {
+		text += `你来到了学院广场公园。<br>你注意到了${C["Besta"].name}在这里散步。`;
+	}
+
+	F.summonChara();
+	//F.resetAction(); 初始化act、using缓存，并设置默认动作
+
+	if (V.aftermovement) delete V.aftermovement;
+
+	setTimeout(() => {
+		F.txtFlow(text, 30, 1);
+		setTimeout(() => {
+			F.charaEvent(tc);
+		}, 500);
+	}, 100);
+
+	return "";
+};
+
+F.actBtn = function (actid, data) {
+	const { id, script, event, alterName } = data;
+	let name = data.name;
+	if (alterName) name = alterName();
+
+	if (actid == id || (data.type == "目录" && T.actType == id)) {
+		return `<div class='actions selectAct'>[ ${name} ]</div>`;
+	}
+
+	if (
+		(groupmatch(data.type, "接触", "触手", "逆位") && !groupmatch(data.option, "doStraight", "reset")) ||
+		(data.type == "道具" && data.targetPart)
+	) {
+		let usePart;
+		if (data.usePart && data.usePart.length > 1) {
+			if (!(F.justHands(data.usePart) && V.mode !== "reverse")) {
+				usePart = 1;
+			}
+		}
+
+		return `<div class='actions'><<link '${data.name}'>>
+        <<run F.checkAction('${id}', 'ready'); F.initActMenu('${id}'${usePart ? ", 1" : ""});>>
+        <</link>></div>`;
+	}
+
+	return `<div class='actions'><<link '${data.name}'>>
+            ${script ? script : ""}
+            ${event ? `<<run Action.data['${id}'].event(); F.resetUI()>>` : `<<run F.checkAction('${id}', 'do');>>`}
+            <</link>></div>`;
+};
+
+F.partBtn = function (data, part, use) {
+	const { id } = data;
+	let setpart = `<<set _selectPart to '${part}'>><<run F.checkAction('${id}', 'do')>>`;
+
+	if (use) {
+		setpart = `<<set _selectActPart to '${part}'>>`;
+		if (data?.option == "noSelectPart") {
+			setpart += `<<run F.checkAction('${id}', 'do')>>`;
+		} else {
+			setpart += `<<run F.checkAction('${id}', 'ready'); F.initActMenu('${id}', 1)>>`;
+		}
+	}
+
+	if (use && T.selectActPart == part) {
+		return `<div class='actions selectAct'>[ 用${D.bodyparts[part]} ]</div>`;
+	}
+	return `<div class='actions parts'><<button '${use ? "用" : ""}${D.bodyparts[part]}'>>${setpart}<</button>></div>`;
+};
+
+F.partAble = function (actid, part, mode) {
+	const data = Action.data[actid];
+	let p = mode == "use" ? V.pc : V.tc;
+
+	if (data.type == "触手") {
+		return 1;
+	} else {
+		return Using[p][part].act == "" || Using[p][part].act === actid;
+	}
+};
+
+function filterActions(...types) {
+	return Object.values(Action.data).filter((action) => types.includes(action.type));
 }
 
-F.actBtn = function(actid, data){
-    const { id, script, event, alterName } = data;
-    let name = data.name;
-    if( alterName ) name = alterName();
+F.initActMenu = function (actid, usepart) {
+	//获取当前动作数据
+	const _data = Action.data[actid];
 
-    if(actid == id || (data.type == '目录' && T.actType == id )){
-        return `<div class='actions selectAct'>[ ${name} ]</div>`
-    }
+	//创建系统链接
+	function createSystemLinks(data) {
+		const { option, event, id, alterName } = data;
+		let name = data.name;
+		if (alterName) name = alterName();
+		return `<div class='actions'><<link '[ ${name} ]' ${option ? `'${option}'` : ""}>>${
+			event ? `<<run Action.data['${id}'].event(); F.resetUI();>>` : ""
+		}<</link>></div>`;
+	}
 
-    if((groupmatch(data.type, '接触','触手','逆位') && !groupmatch(data.option, 'doStraight', 'reset')) || (data.type == '道具' && data.targetPart) ){
-        let usePart
-        if(data.usePart && data.usePart.length > 1){
-            usePart = 1
-        }
-        
-        return `<div class='actions'><<link '${data.name}'>>
-        <<run F.checkAction('${id}', 'ready'); F.initActMenu('${id}'${usePart ? ', 1':''});>>
-        <</link>></div>`
+	//创建目录
+	const createMenu = function (list, array, option) {
+		list.forEach((type) => {
+			const _list = filterActions(type);
+			_list.forEach((data) => {
+				if (data.filter() && Action.globalFilter(data.id)) {
+					if (option && data.name == "交流") {
+						array[0] = F.actBtn(actid, data);
+					} else if (option && data.name == "接触") {
+						array[1] = F.actBtn(actid, data);
+					} else {
+						array.push(F.actBtn(actid, data));
+					}
+				}
+			});
+		});
+	};
 
-    }
+	//指令排序
+	const layer1 = ["交流", "常规", "目录"];
+	const layer2 = ["逆位", "接触", "道具", "触手", "魔法", "战斗", "命令"];
+	const options = ["体位", "其他"];
+	const systems = filterActions("固有");
 
-    return `<div class='actions'><<link '${data.name}'>>
-            ${script? script : ''}
-            ${ event ? `<<run Action.data['${id}'].event(); F.resetUI()>>` 
-            : `<<run F.checkAction('${id}', 'do');>>` }
-            <</link>></div>`
-}
+	//动作可选部位
+	const useParts = usepart && _data?.usePart ? _data.usePart : [];
+	const targetParts = _data?.targetPart ? _data.targetPart : [];
 
-F.partBtn = function(data, part, use){
-    const { id } = data;
-    let setpart = `<<set _selectPart to '${part}'>><<run F.checkAction('${id}', 'do')>>`
-    //console.log(data)
+	//初始化
+	const mainActionMenu = ["", ""];
+	const subActionMenu = [];
+	const optionMenu = [];
+	const partsMenu = [];
+	const systemMenu = [];
 
-    if(use){
-        setpart = `<<set _selectActPart to '${part}'>>`
-        if(data?.option == 'noSelectPart'){
-            setpart += `<<run F.checkAction('${id}', 'do')>>`
-        }
-        else{
-            setpart += `<<run F.checkAction('${id}', 'ready'); F.initActMenu('${id}', 1)>>`
-        }
-    }
+	createMenu(layer1, mainActionMenu, 1);
+	createMenu(layer2, subActionMenu);
+	createMenu(options, optionMenu);
 
-    if (use && T.actPart == part){
-        return `<div class='actions selectAct'>[ 用${D.bodyparts[part]} ]</div>`
-    }
-    return `<div class='actions parts'><<button '${use ? '用' : ''}${D.bodyparts[part]}'>>${setpart}<</button>></div>`
-}
+	systems.forEach((data) => {
+		if (data.filter()) {
+			systemMenu.push(createSystemLinks(data));
+		}
+	});
 
-F.partAble = function(actid, part, mode){
-    const data = Action.data[actid]
-    let p = mode == 'use' ? V.pc : V.tc;
+	//有可选部位才生成
+	if (useParts.length) {
+		useParts.forEach((part) => {
+			if (F.partAble(actid, part, "use")) partsMenu.push(F.partBtn(_data, part, 1));
+		});
+	}
 
-    if(data.type == '触手'){
+	if (targetParts.length && _data?.option !== "noSelectPart") {
+		targetParts.forEach((part) => {
+			if (F.partAble(actid, part, "target")) partsMenu.push(F.partBtn(_data, part));
+		});
+	}
 
-    }
-    else{
-        return Using[p][part] === '' || Using[p][part].act === actid
-    }
+	let html = "";
 
-}
+	if (mainActionMenu.length) {
+		html += mainActionMenu.join("");
+	}
 
-F.initActMenu = function(actid, usepart){
-    const ignore1 = ['常规','目录','交流','其他']
-    const ignore2 = ['体位','固有'].concat(ignore1)
+	if (systemMenu.length) {
+		html += `<div class='actions'> | </div>${systemMenu.join("")}`;
+	}
 
-    let adata = Action.data[actid]
+	new Wikifier(null, `<<replace #actionMenu_1>><label class='actions'>主要：</label>${html}<</replace>>`);
 
-    const list = Object.values(Action.data).filter(action => action.type == '固有')
+	const showhtml = function (tag, menu, label = "") {
+		if (menu.length) {
+			$(`#${tag}`).removeClass("hidden");
+			new Wikifier(null, `<<replace #${tag}>><label class='actions'>${label}</label>${menu.join("")}<</replace>>`);
+		} else {
+			$(`#${tag}`).addClass("hidden");
+		}
+	};
 
-    const level1 = Object.values(Action.data).filter(action => ignore1.includes(action.type))
-
-    const level2 = Object.values(Action.data).filter(action => ignore2.includes(action.type) === false)
-    
-    const level3 = adata?.targetPart ? adata.targetPart : []
-    const level3ex = usepart && adata?.usePart ? adata.usePart : []
-
-    const pose = Object.values(Action.data).filter(action => action.type == '体位')
-
-
-    const main = ['',''], action = [], selection = [], option = [], extra = []
-
-    level1.forEach( (data)=>{
-        if(data.filter() && Action.globalFilter(data.id) ){
-            if(data.name === '交流') main[0] = F.actBtn(actid, data);
-            else if(data.name === '接触') main[1] = F.actBtn(actid, data);
-            else main.push(F.actBtn(actid, data));
-        }
-    })
-
-    list.forEach((data)=>{
-        if(data.filter()){
-            const { name, option, event, id } = data
-            extra.push(`<div class='actions'><<link '[ ${name} ]' ${option ? `'${option}'` : ''}>>${event ? `<<run Action.data['${id}'].event(); F.resetUI();>>` : '' }<</link>></div>`)
-            console.log()
-        }
-    })
-
-    level2.forEach( (data)=>{
-        if(data.filter() && Action.globalFilter(data.id)){
-            action.push(F.actBtn(actid, data))
-        }
-    })
-
-    if(T.inside){
-        pose.forEach( pos => {
-            if(pos.filter() && Action.globalFilter(pos.id)){
-                option.push(F.actBtn(T.posId, pos))
-            }
-        });
-    }
-
-    if(level3ex.length){
-        level3ex.forEach((part)=>{
-            //console.log('use part:', part)
-            if(F.partAble(actid, part, 'use') )
-                selection.push(F.partBtn(adata, part, 1));
-        })
-    }
-
-    if(level3.length && adata?.option !== 'noSelectPart'){
-        level3.forEach((part)=>{
-            //console.log('target part:',part)
-            if(F.partAble(actid, part, 'tar'))
-                selection.push(F.partBtn(adata, part));
-        })
-    }
-
-    let html  = ''
-
-    if(main.length){
-        html += main.join('')
-    }
-
-    if(extra.length){
-     html += `<div class='actionMenu'><div class='actions'> | </div>${extra.join('')}</div>`
-    }
-    
-
-    new Wikifier(null, `<<replace #actionMenu_1>>${html}<</replace>>`)
-
-    if(action.length){
-        $('actionMenu_2').removeClass('hidden')
-        new Wikifier(null, `<<replace #actionMenu_2>>${action.join('')}<</replace>>`)
-    }
-    else{
-        $('#actionMenu_2').addClass('hidden')
-    }
-
-    if(option.length){
-        $('#actionOption').removeClass('hidden')
-        new Wikifier(null, `<<replace #actionOption>>${option.join('')}<</replace>>`)
-    }
-    else{
-        $('#actionOption').addClass('hidden')
-    }
-
-    if(selection.length){
-        $('#actionMenu_3').removeClass('hidden')
-        new Wikifier(null, `<<replace #actionMenu_3>>${selection.join('')}<</replace>>`)
-    }
-    else{
-        $('#actionMenu_3').addClass('hidden')
-    }
-}
+	showhtml("actionMenu_2", subActionMenu, "次要：");
+	showhtml("actionOption", optionMenu, "选项：");
+	showhtml("actionMenu_3", partsMenu, `目标：<br>${target.name}`);
+};
 
 //----->> 主要进程处理 <<---------------------------//v
-F.ActNext = function(){
-    //用于刷新content_message区域的文本。
-    if(T.msgid < S.msg.length && S.msg[T.msgid].has('<<selection','<<linkreplace') && !T.selectwait ){
-        S.msg[T.msgid] += '<<unset _selectwait>><<set _onselect to 1>>'
-        T.selectwait = 1
-    };
+F.ActNext = function () {
+	//用于刷新content_message区域的文本。
+	if (T.msgId < S.msg.length && S.msg[T.msgId].has("<<selection", "<<linkreplace") && !T.selectwait) {
+		S.msg[T.msgId] += "<<unset _selectwait>><<set _onselect to 1>>";
+		T.selectwait = 1;
+	}
 
-    if(T.phase == 'before' && T.msgid >= S.msg.length && !T.onselect && !T.selectwait ){
-       // F.ComEvent(V.selectCom, 1)
-    }
-    else{
-        if(T.msgid < S.msg.length && !T.onselect){
-            F.txtFlow(S.msg[T.msgid])
-            T.msgid ++
-        }
-    }
-}
+	if (T.msgId < S.msg.length && !T.onselect) {
+		F.txtFlow(S.msg[T.msgId]);
+		T.msgId++;
+	}
+};
 
+F.Msg = function (msg, add) {
+	if (add) {
+		if (!S.msg.length) S.msg[0] = "";
+		S.msg[S.msg.length - 1] += msg;
+	} else if (msg.includes("<fr>")) {
+		S.msg = S.msg.concat(msg.split("<fr>"));
+	} else {
+		S.msg.push(msg);
+	}
+};
 
-F.Msg = function(msg, add){    
-    if(!S.msg) F.resetMsg();
-    if(add){
-        if(!S.msg.length)
-            S.msg[0] = '';
-        S.msg[S.msg.length-1] += msg;
-    }
-    else if(msg.includes('<fr>')){
-        S.msg = S.msg.concat(msg.split('<fr>'))
-    }
-    else{
-        S.msg.push(msg)
-    }
-}
+F.initCheckFlag = function () {
+	T.order = 0;
+	T.reason = "";
+	T.orderMsg = "";
+	T.actAble = 0;
+	T.orderGoal = 0;
+	T.phase = "";
+	T.forceOrder = 0;
 
-F.initCheckFlag = function(){
-    T.order = 0;
-    T.reason = '';
-    T.orderMsg = '';
-    T.actAble = 0;
-    T.orderGoal = 0;
-    T.phase = ''
-    delete T.noNameTag
-    delete T.aftermovement
-}
+	delete T.noNameTag;
+	delete T.aftermovement;
+	delete T.onselect;
 
-F.checkAction = function(id, phase){
-    const data = Action.data[id]
+	F.resetMsg();
+};
 
-    let reText = ''
+F.checkAction = function (id, phase) {
+	const data = Action.data[id];
 
-    F.initCheckFlag()
+	let reText = "";
 
-    T.orderGoal = Action.globalOrder(id) + data.order();
-    T.actAble = Action.globalCheck(id) && data.check();
+	F.initCheckFlag();
 
-    T.phase = phase;
+	//触手系能无视伊希露本人意志对本人强制执行，但对本人有很多负面影响。
+	//这部分处理放global统一处理。
+	T.orderGoal = Action.globalOrder(id) + data.order();
+	T.actAble = Action.globalCheck(id) && data.check();
 
-    // 对昂处于无意识状态，强行将配合值变零
-    if(F.uncons(target))
-        T.orderGoal = 0
-    
-    // 有意识但无法动弹, 追加强制flag
-    if(!F.canMove(target))
-        T.forceOrder = 100
+	T.phase = phase;
 
-    if( V.system.showOrder && T.orderMsg && T.orderGoal > 0 ){
-        reText += `配合度检测：${T.orderMsg}=${T.order}/${T.orderGoal}<br><<dashline>>`
-    }
+	// 对方处于无意识状态，强行将配合值变零
+	if (F.uncons(target)) T.orderGoal = 0;
 
-    if(!T.actAble && T.reason ){
-        reText += `执行条件不足，原因：${T.reason}<br><<dashline>>`
-    }
+	// 有意识但无法动弹, 追加强制flag
+	if (!F.canMove(target)) T.forceOrder += 100;
 
-    //如果无法进入执行环节，则在这个阶段返回提示信息。
-    if(reText){
-        F.txtFlow(reText)
-    }
+	if (V.system.showOrder && T.orderMsg && T.orderGoal > 0) {
+		reText += `配合度检测：${T.orderMsg}=${T.order}/${T.orderGoal}<br><<dashline>>`;
+	}
 
-    //如果动作还在准备阶段，则在这里中断。
-    if(phase == 'ready'){
-        F.initCheckFlag();
-        return 0
-    }
+	if (!T.actAble && T.reason) {
+		reText += `执行条件不足，原因：${T.reason}<br><<dashline>>`;
+	}
 
-    T.actId = id;
-    T.selectAct = id;
-    T.actPart = T.selectActPart;
+	//如果无法进入执行环节，则在这个阶段返回提示信息。
+	if (reText) {
+		F.txtFlow(reText);
+	}
 
-    if(!T.actPart && data.usePart){
-        T.actPart = data.usePart[0]
-    }
+	//如果动作还在准备阶段，则在这里中断。
+	if (phase == "ready") {
+		F.initCheckFlag();
+		return 0;
+	}
 
-    $('action').trigger('before')
-}
+	T.actId = id;
+	T.selectAct = id;
+
+	//记录动作部位。
+	T.actPart = T.selectActPart ? T.selectActPart : data.usePart ? data.usePart[0] : "reset";
+
+	$("action").trigger("before");
+};
 
 /**
- * 
- * @param {'cancel' | 'stop'} mode 
+ *
+ * @param {'cancel' | 'stop'} mode
  */
-F.stopAction = function(id, mode){
-    T.stopAct = id
-    $('action').trigger(mode)
-}
+F.stopAction = function (id, mode) {
+	T.stopAct = id;
+	$("action").trigger(mode);
+};
 
-F.setPhase = function(mode){
-    $('action').trigger(mode)
-}
+F.setPhase = function (mode) {
+	$("action").trigger(mode);
+};
 
-F.beforeAction = function(){
-    T.phase = 'before'
-    let id = T.actId
-    let reText = ''
+F.beforeAction = function () {
+	T.phase = "before";
+	let id = T.actId;
+	let reText = "";
 
-    //角色每次执行COM时的个人检测。
-    //如果口上侧要进行阻止某个指令进行，也会在这里打断。
-    if(Story.has(`Kojo_${target.kojo}_BeforeAction`)){
-        new Wikifier('#hidden', Story.get(`Kojo_${target.kojo}_BeforeAction`).text )
-    }
+	//角色每次执行COM时的个人检测。
+	//如果口上侧要进行阻止某个指令进行，也会在这里打断。
+	if (Story.has(`Kojo_${target.kojo}_BeforeAction`)) {
+		new Wikifier("#hidden", Story.get(`Kojo_${target.kojo}_BeforeAction`).text);
+	}
 
-    //执行before系列事件。这些都是纯文本，只能有选项相关操作。
-    //先执行通用的before事件。主要显示场景变化或持续状态。
-    reText = Story.get('Action_Common:Before').text + ` <<if !T.noMsg>><<dashline>><</if>> <<run F.ActNext()>>`
+	//执行before系列事件。这些都是纯文本，只能有选项相关操作。
+	//先执行通用的before事件。主要显示场景变化或持续状态。
+	reText = Story.get("Action_Common:Before").text + ` <<run F.ActNext()>><<if !T.noMsg>><<dashline>><</if>>`;
 
-    F.Msg(reText);
+	F.Msg(reText);
 
-    let txt = F.playerName(), t, c
+	let txt = F.playerName(),
+		t,
+		c;
 
-    //指令专属的before事件
-    if(Story.has(`Action_${id}:Before`)){
-        txt = txt + Story.get(`Action_${id}:Before`).text + '<br>'
-        F.Msg(txt)
-        t = 1
-        c = 1
-    }
+	//指令专属的before事件
+	if (Story.has(`Action_${id}:Before`)) {
+		txt = txt + Story.get(`Action_${id}:Before`).text + "<br>";
+		F.Msg(txt);
+		t = 1;
+		c = 1;
+	}
 
-    //执行口上侧before事件。
-    if(Kojo.has(tc, 'Action', id, 'Before')){
-        txt = (t? '' : txt ) + Kojo.put(tc, 'Action', id, 'Before')
-        F.Msg(txt);
-        c = 1
-    }
+	//执行口上侧before事件。
+	if (Kojo.has(tc, "Action", id, "Before")) {
+		txt = (t ? "" : txt) + Kojo.put(tc, "Action", id, "Before");
+		F.Msg(txt);
+		c = 1;
+	}
 
-    //在执行文本最后追加下一步
-    F.Msg(`<<if !T.cancel>>F.setPhase('event'); F.ActNext()>><<else>><<run F.setPhase('cancel')>><</if>>`) 
+	//在执行文本最后追加下一步，取消的话就直接取消剩余执行事件。
+	F.Msg(
+		`<<if !T.cancel>><<run F.setPhase('event'); F.ActNext()>><<else>><<run F.resetAction(); F.setPhase('init')>><</if>>`
+	);
 
-    //检测是否存在特殊的before处理，存在就在这执行。
-    //if(Action.data[id]?.before) Action.data[id].before();
+	//检测是否存在特殊的before处理，存在就在这执行。
+	//if(Action.data[id]?.before) Action.data[id].before();
 
-    if(!Story.has(`Action_${id}`)){
-        F.txtFlow('缺乏事件文本', 30, 1)
-        F.setPhase('init')
-        F.resetUI()
-    }
-    //存在待执行文本就出现Next按钮并出现
-    else if(c){
-        T.noNameTag = 1
-        F.showNext()
-        F.ActNext()
-    }
- 
-}
+	if (!Story.has(`Action_${id}`)) {
+		F.txtFlow("缺乏事件文本", 30, 1);
+		F.setPhase("init");
+	}
+	//已经出现过名牌的话下一步骤会略过
+	else if (c) {
+		T.noNameTag = 1;
+	}
+};
 
-F.doEvent = function(id){
-    const data = Action.data[id]
-    const resetHtml = `<<run F.resetAction()>><<dashline>>`
+F.doEvent = function () {
+	let id = T.actId;
 
-    let title = `Action_${id}`
-    let txt = T.noNameTag ? '' : F.playerName();
+	const data = Action.data[id];
 
-    T.phase = 'event'
-    F.resetMsg()
+	let title = `Action_${id}`;
+	let txt = T.noNameTag ? "" : F.playerName();
 
-    //确认主控有条件执行
-    if(T.actAble){
+	T.phase = "event";
+	F.resetMsg();
 
-        //确认对象愿意配合执行
-        if(
-            T.orderGoal == 0
-            || V.system.debug
-            ||( T.orderGoal > 0 && T.order >= T.orderGoal )
-            ||( data?.forceAble && T.order + player.stats.LUK[1] >= T.orderGoal && random(100) <= player.stats.LUK[1]*2 )
-            ||( T.order + T.forceOrder >= T.orderGoal )
-        ){
-           
-           T.passtime = data.time;
-           txt = txt + Story.get(title).text;
+	//确认主控有条件执行
+	if (T.actAble) {
+		//确认对象愿意配合执行
+		if (
+			T.orderGoal == 0 ||
+			V.system.debug ||
+			(T.orderGoal > 0 && T.order >= T.orderGoal) ||
+			(T.order + player.stats.LUK[1] >= T.orderGoal && random(100) <= player.stats.LUK[1] * 1.5) ||
+			T.order + T.forceOrder >= T.orderGoal
+		) {
+			//经过时间
+			T.passtime = data.time;
 
-           //配合度不足但勉强能配合
-           if( T.order < T.orderGoal && !V.syystem.debug ){
-                if(T.forceOrder){
-                    S.msg.push(`< 强制 ><br>`)
-                    T.force = 1
-                }
-                else{
-                    S.msg.push(`勉强配合: ${T.order}+LUK${player.stats.LUK[1]}/${T.orderGoal}<br>`)
-                }
+			//配合度不足但强制or勉强配合
+			if (T.order < T.orderGoal && !V.system.debug) {
+				if (T.forceOrder) {
+					S.msg.push(`< 强制 ><br>`);
+					T.force = 1;
+				} else {
+					S.msg.push(`勉强配合: ${T.order}+LUK${player.stats.LUK[1]}/${T.orderGoal}<br>`);
+				}
+			}
 
-           }
+			//强制时的分支。如果存在的话。
+			if (T.force && Story.has(title + ":Force")) {
+				txt = txt + Story.get(title + ":Force").text;
+			} else {
+				txt = txt + Story.get(title).text;
+			}
 
-        }
+			//转换口上内容
+			txt = F.convertKojo(txt);
 
+			F.Msg(txt + "<br>");
 
-    }
-    else{
+			//设置下一个环节的flag。进入counter环节。对象概率执行counter动作。之后才是result和after事件
+			F.Msg(`<<run Action.data['${id}'].effect(); F.setPhase('counter');>>`, 1);
+		} else {
+			//对方不配合执行失败的情况
+			F.setPhase("failed");
+		}
+	} else {
+		//条件不足执行取消的情况。
+		F.setPhase("cancel");
+	}
+};
 
+F.actionCancel = function () {
+	let id = T.actId;
+	let name = T.noNameTag ? "" : F.playerName();
 
-    }
+	if (Story.has(`Action_${id}:Cancel`)) {
+		F.Msg(name + Story.get(`Action_${id}:Cancel`).text);
+		F.Msg(`<<run F.resetAction(); F.setPhase('init')>><<dashline>>`, 1);
+	} else {
+		F.resetAction();
+		F.setPhase("init");
+	}
+};
 
-}
+F.actionFailed = function () {
+	let id = T.actId;
+	let name = T.noNameTag ? "" : F.playerName();
 
-F.resetMsg = function(){
-    S.msg = [];
-    T.msgid = 0;
-}
+	if (Story.has(`Action_${id}:Failed`)) {
+		F.Msg(name + Story.get(`Action_${id}:Failed`).text);
+	} else {
+		F.Msg("对方不愿意配合，执行失败。");
+	}
+	F.Msg(`<<run F.resetAction(); F.setPhase('init')>><<dashline>>`, 1);
+};
 
-F.resetAction = function(){
-    T.phase = 'reset'
+F.resetMsg = function () {
+	S.msg = [];
+	T.msgId = 0;
+};
 
-    if(T.cancel){
-        F.initCheckFlag()
-        delete S.msg;
-        delete T.cancel;
-        delete T.force;
-        F.setPhase('init')
-        return 0
-    }
+F.resetAction = function () {
+	T.phase = "reset";
 
-    //缓存最后一个动作
-    T.lastAct = { act: T.selectAct, actPart: T.selectActPart, targetPart: T.selectPart }
-    
-    delete T.cancel;
-    delete T.onselect;
-    delete T.force;
+	delete T.force;
 
-    delete S.msg;
-    F.initCheckFlag()
+	if (T.cancel) {
+		F.initCheckFlag();
+		F.setPhase("init");
+		delete T.cancel;
+		return 0;
+	}
 
-    //更新角色位置、场景信息等处理。
-    //F.LoopFirst()
+	//缓存最后一个动作
+	V.lastAct = { act: T.selectAct, actPart: T.selectActPart, targetPart: T.selectPart };
 
-    //刷新画面
-    F.resetUI()
+	T.actId = "";
+	T.actPart = "reset";
 
-}
+	F.initCheckFlag();
+};

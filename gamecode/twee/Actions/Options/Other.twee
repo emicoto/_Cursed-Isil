@@ -2,7 +2,7 @@
 /* 直播 */
 Action.set('Stream')
      .Filter(()=>{
-         return 1
+         return 0
       })
      .Check(()=>{
          return 1
@@ -14,7 +14,7 @@ Action.set('Stream')
 /* 举行派对 */
 Action.set('Party')
      .Filter(()=>{
-         return 1
+         return 0
       })
      .Check(()=>{
          return 1
@@ -26,7 +26,7 @@ Action.set('Party')
 /* 衣服管理 */
 Action.set('Clothes')
      .Filter(()=>{
-         return 1
+         return ( V.location.tag.has('衣柜','私室') && pc == tc ) || V.mode == 'train'
       })
      .Check(()=>{
          return 1
@@ -38,7 +38,7 @@ Action.set('Clothes')
 /* 行为管理 */
 Action.set('Behavior')
      .Filter(()=>{
-         return 1
+         return V.mode == 'train'
       })
      .Check(()=>{
          return 1
@@ -50,7 +50,7 @@ Action.set('Behavior')
 /* 一键脱光 */
 Action.set('GetNude')
      .Filter(()=>{
-         return 1
+         return V.mode == 'train'
       })
      .Check(()=>{
          return 1

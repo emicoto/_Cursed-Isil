@@ -6,8 +6,17 @@
 
 <<else>>
   <<set _noMsg to 1>>
-
 <</if>>
+
+:: FallToDeep
+<<you>>的意识下沉到了深渊……<br>
+<br>
+<div><<linkreplace "放任诅咒">><<set $flag.master to 1 >><<run F.resetUI()>><</linkreplace>></div>
+<div><<link '查看深渊' 'Basement'>><</link>></div>
+<div><<linkreplace "什么也不做">><<resetLink>><</linkreplace>></div>
+
+:: RiseToSurface
+<<you>>的意识从深渊回来了……<br>
 
 :: Action_Interaction:Before
 <<you>>看到了$target.name<br>
@@ -16,6 +25,12 @@
 <<pick '返回'>>
   <<set _cancel to 1>>
 <</selection>>
+
+:: Action_Interaction:Cancel 
+执行失败了。
+
+:: Action_Interaction:Failed
+对方不配合失败了。
 
 :: Action_Interaction
 /* 交流 */

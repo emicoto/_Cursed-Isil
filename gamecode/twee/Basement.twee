@@ -8,7 +8,7 @@
 
 <<link '道具'>><</link>><br>
 
-<<link '调教' 'MainLoop'>><<set $mode to 'train'>><<set $date.time to 1350>><<run F.getState(C['Isil'], '睡眠')>><</link>><br>
+<<link '调教' 'MainLoop'>><<set $mode to 'train'>><<set $flag.mode to 5>><<set $date.time to 1350>><<run F.getState(C['Isil'], '睡眠')>><</link>><br>
 
 <<link '经典模式' 'CommandLoop'>><</link>><br>
 

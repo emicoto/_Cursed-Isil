@@ -553,28 +553,7 @@ export class Chara {
 	}
 
 	initFlag() {
-		const list = [
-			"cursedLv",
-			"cursedMP",
-			"cursed",
-			"favo",
-			"trust",
-			"sub",
-			"depend",
-			"desire",
-			"fallen",
-			"schoolfame",
-			"jobfame",
-			"publicfame",
-			"lewdfame",
-			"crimefame",
-
-			"wakeuptime",
-			"sleeptime",
-			"wokeup",
-			"lastslept",
-		];
-		list.forEach((k) => {
+		D.cflag.forEach((k) => {
 			this.flag[k] = 0;
 		});
 		return this;

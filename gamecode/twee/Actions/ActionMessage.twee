@@ -2,28 +2,28 @@
 :: Action_t0
 /* 接吻 */
 <<actChara>>吻上了<<targetChara>>的嘴唇。<br>
-<<=Kojo.put(T.tc, 'Action', 't0')>>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't0')>>
 
 :: Action_t1
 /* 亲吻 */
 <<actChara>>亲吻在了<<targetChara>>的<<targetPart>>上，轻吮吸舔，试图留下自己的印记。<br>
-<<=Kojo.put(T.tc, 'Action', 't1')>>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't1')>>
 
 :: Action_t2
 /* 抚摸 */
 <<actChara>>的手轻抚着<<targetChara>>的<<targetPart>>。<br>
-<<=Kojo.put(T.tc, 'Action', 't2')>>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't2')>>
 
 :: Action_t3
 /* 揉捏 */
 <<actChara>>揉捏着<<targetChara>>的<<targetPart>>。<br>
-<<=Kojo.put(T.tc, 'Action', 't3')>>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't3')>>
 
 
 :: Action_t4
 /* 吸舔 */
 <<actChara>>
-<<switch F.checkUse(T.tc, 't4')>>
+<<switch T.selectPart>>
 <<case 'penis', 'critoris', 'nipple'>>
    吸住了<<targetChara>>的<<targetPart>>，在上面用舌头反复舔舐着。<br>
 <<case 'vagina', 'anal'>>
@@ -31,28 +31,28 @@
 <<case 'ears'>>
    含住了<<targetChara>>的耳坠，又吸又舔地感受着耳朵的柔软。<br>
 <<case 'hands', 'foot'>>
-   含住了<<targetChara>>的<<= F.checkUse(T.tc, 't0') == 'hands' ? '手指' : '脚趾' >>，像舔舐糖果般吸舔着。<br>
+   含住了<<targetChara>>的<<= T.selectPart == 'hands' ? '手指' : '脚趾' >>，像舔舐糖果般吸舔着。<br>
 <<case 'neck', 'butts', 'thighs', 'abdomen'>>
    在<<targetChara>>的<<targetPart>>上面用舌头又吸又舔地感受着对方的气味。<br>
 <</switch>>
-<<=Kojo.put(T.tc, 'Action', 't4')>>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't4')>>
 
 
 :: Action_t5
 /* 吸咬 */
 <<actChara>>
-<<switch F.checkUse(T.tc, 't5')>>
+<<switch T.selectPart>>
 <<case 'penis', 'critoris', 'nipple', 'ears'>>
    含住<<targetChara>>的<<targetPart>>，吸吮轻咬着。<br>
 <<default>>
    轻咬在<<targetChara>>的<<targetPart>>上，品味着对方的气息，不时轻啃慢咬试图留下自己的痕迹。<br>
 <</switch>>
-<<=Kojo.put(T.tc, 'Action', 't5')>>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't5')>>
 
 :: Action_t6
 /* 逗弄 */
 <<actChara>>
-<<switch F.checkUse(T.tc, 't6')>>
+<<switch T.selectPart>>
 <<case 'penis'>>
    用手套住<<targetChara>>的龟头，不时用手指拨弄刺激在敏感带上。<br>
 <<case 'critoris', 'nipple'>>
@@ -62,12 +62,12 @@
 <<case 'ears'>>
    反复逗弄着<<targetChara>>的耳朵。<br>
 <</switch>>
-<<=Kojo.put(T.tc, 'Action', 't6')>>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't6')>>
 
 :: Action_t7
 /* 指交 */
 <<actChara>>
-<<switch F.checkUse(T.tc, 't7')>>
+<<switch T.selectPart>>
 <<case 'mouth'>>
  把手指伸入<<targetChara>>的嘴巴，不时玩弄着对方的舌头，模拟性交的动作抽插着。<br>
 <<case 'vagina', 'anal'>>
@@ -75,12 +75,12 @@
 <<case 'urin'>>
  的手指浅浅插入<<targetChara>>的尿道，在入口附近摩擦着。<br>
 <</switch>>
-<<=Kojo.put(T.tc, 'Action', 't7')>>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't7')>>
 
 :: Action_t8
 /* 插入 */
 <<actChara>>
-<<switch F.checkUse(T.tc, 't8')>>
+<<switch T.selectPart>>
 <<case 'mouth'>>
    用阴茎插入了<<targetChara>>的嘴巴。<br>
 <<case 'vagina'>>
@@ -88,45 +88,52 @@
 <<case 'anal'>>
    以{0}的姿势，用阴茎撑开<<targetChara>>的菊穴，缓缓地进入。<br>
 <</switch>>
-<<=Kojo.put(T.tc, 'Action', 't8')>>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't8')>>
 
 
 :: Action_t9
 /* 抽插 */
 <<actChara>>活动腰身，在<<targetChara>>的<<targetPart>>反复出入着。<br>
-<<=Kojo.put(T.tc, 'Action', 't9')>>
-
-:: Action_t11
-/* 抽插 */
-<<actChara>>模拟性交的动作，活动右手在<<targetChara>>的<<targetPart>>反复进出着。<br>
-<<=Kojo.put(T.tc, 'Action', 't11')>>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't9')>>
 
 :: Action_t10
 /* 撸动 */
 <<actChara>>握住<<targetChara>>的阴茎，前后撸动着。<br>
-<<=Kojo.put(T.tc, 'Action', 't10')>>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't10')>>
+
+
+:: Action_t11
+/* 抽插 */
+<<actChara>>模拟性交的动作，活动右手在<<targetChara>>的<<targetPart>>反复进出着。<br>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't11')>>
+
+
+:: Action_t12
+/* 深入 */
+<<actChara>>深深插入了<<targetChara>>的<<targetPart>><br>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't11')>>
 
 :: Action_Rotor
 /* 跳蛋 */
 <<actChara>>
-<<switch F.checkUse(T.tc, 'Rotor')>>
+<<switch T.selectPartr')>>
 <<case 'vagina', 'anal'>>
 将跳蛋放入了<<targetChara>>的<<targetPart>>。<br>
 <<default>>
 将跳蛋贴在<<targetChara>>的<<targetPart>>，刺激着。<br>
 <</switch>>
-<<=Kojo.put(T.tc, 'Action', 'Rotor')>>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'Rotor')>>
 
 :: Action_Vibrator
 /* 震动棒 */
 <<actChara>>将震动棒塞进了<<targetChara>>的<<targetPart>>。<br>
-<<=Kojo.put(T.tc, 'Action', 'Vibrator')>>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'Vibrator')>>
 
 /* 触手系 */
 :: Action_x0
 /* 揉捏 */
 触手
-<<switch F.checkUse(T.tc, 'x0')>>
+<<switch T.selectPart>>
 <<case 'breast'>>
    缠绕在<<targetChara>>的胸部上，巧妙地反复揉捏给予刺激。<br>
 <<case 'penis'>>
@@ -136,12 +143,12 @@
 <<case 'nipple'>>
    缠绕在<<targetChara>>的乳头上，巧妙地反复揉捏给予刺激。<br>
 <</switch>>
-<<=Kojo.put(T.tc, 'Action', 'x0')>>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x0')>>
 
 
 :: Action_x1
 /* 逗弄 */
-<<switch F.checkUse(T.tc, 'x1')>>
+<<switch T.selectPart>>
 <<case 'mouth'>>
    深入、缠绕、蠕动。触手反复逗弄着<<targetChara>>的口腔，给予极大的刺激。<br>
 <<case 'penis', 'critoris', 'ears', 'nipple'>>
@@ -151,38 +158,38 @@
 <<case 'urin'>>
    刺探、深入、蠕动。触手反复逗弄着<<targetChara>>的尿道，给予极大的刺激。<br>
 <</switch>>
-<<=Kojo.put(T.tc, 'Action', 'x1')>>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x1')>>
 
 
 
 :: Action_x2
 /* 吸舔 */
 吸盘触手吸附在<<targetChara>>的<<targetPart>>上，反复吸舔着。<br>
-<<=Kojo.put(T.tc, 'Action', 'x2')>>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x2')>>
 
 
 :: Action_x3
 /* 吸咬 */
 口器触手含住<<targetChara>>的<<targetPart>>，吸吮轻咬着。<br>
-<<=Kojo.put(T.tc, 'Action', 'x3')>>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x3')>>
 
 
 :: Action_x4
 /* 撸动 */
 触手缠绕住<<targetChara>>的阴茎，反复撸动着。<br>
-<<=Kojo.put(T.tc, 'Action', 'x4')>>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x4')>>
 
 
 :: Action_x5
 /* 插入 */
 触手钻进了<<targetChara>>的<<targetPart>>，缓缓往内深入。<br>
-<<=Kojo.put(T.tc, 'Action', 'x5')>>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x5')>>
 
 
 :: Action_x6
 /* 蠕动 */
 触手
-<<switch F.checkUse(T.tc, 'x6')>>
+<<switch T.selectPart>>
 <<case 'mouth', 'vagina', 'anal', 'urin'>>
  在<<targetChara>>的<<targetPart>>内部扭动着触身，慢慢蠕动着。<br>
 <<case 'penis'>>
@@ -190,45 +197,45 @@
 <<default>>
 缠绕着<<targetChara>>的身躯，在<<targetPart>>表面攀爬蠕动着。<br>
 <</switch>>
-<<=Kojo.put(T.tc, 'Action', 'x6')>>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x6')>>
 
 
 :: Action_x7
 /* 抽插 */
 触手不停在<<targetChara>>的<<targetPart>>进出，抽插蠕动着。<br>
-<<=Kojo.put(T.tc, 'Action', 'x7')>>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x7')>>
 
 
 :: Action_x8
 /* 深入 */
 触手往<<targetChara>>的<<targetPart>>内部发出了进攻，往更深处蠕进。<br>
-<<=Kojo.put(T.tc, 'Action', 'x8')>>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x8')>>
 
 
 :: Action_x9
 /* 抽送 */
 触手激烈地在<<targetChara>>的<<targetPart>>进出着，反复抽送着触身给予莫大的刺激。<br>
-<<=Kojo.put(T.tc, 'Action', 'x9')>>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x9')>>
 
 
 :: Action_x10
 /* 鞭打 */
 触手甩动触鞭，用巧妙的力度鞭打在<<targetChara>>的<<targetPart>>上。<br>
-<<=Kojo.put(T.tc, 'Action', 'x10')>>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x10')>>
 
 
 :: Action_x11
 /* 刺入 */
 触手伸出尖锐的细针，狠狠地刺入了<<targetChara>>的<<targetPart>>。<br>
-<<=Kojo.put(T.tc, 'Action', 'x11')>>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x11')>>
 
 :: Action_x12
 /* 灌入 */
 触手往<<targetChara>>的<<targetPart>>深处灌入大量的药液。<br>
-<<=Kojo.put(T.tc, 'Action', 'x12')>>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x12')>>
 
 
 :: Action_x13
 /* 注射 */
 触手伸出尖锐的针头，刺入<<targetChara>>的<<targetPart>>并注入药液。<br>
-<<=Kojo.put(T.tc, 'Action', 'x13')>>
+<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x13')>>

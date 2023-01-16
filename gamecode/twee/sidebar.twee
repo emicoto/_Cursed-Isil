@@ -5,8 +5,8 @@
 :: StoryCaption
 
 <<if $passage == 'Start'>>
-完全只有功能的实验性框架。<br>
- version 0.0.1<br>
+一个用于制作游戏的范本，稍微能玩的版本。<br>
+ version 0.1.0<br>
  author: 狐千月<br>
 <<else>>
 
@@ -35,6 +35,9 @@
     };
     $player = C[pc];
     $target = C[tc];
+    
+    if($mode !== 'train')
+      $flag.mode = 0;
 
 >>
 

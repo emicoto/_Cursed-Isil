@@ -20,12 +20,12 @@
 
 </div>
 
-/* 额外的动作选项。如体位，情景play */
-<div id='actionOption'>
-</div>
-
 <div id= 'actionMenu_2'>
 /* 角色互动模式下，行动有下分类时的可用动作 */
+</div>
+
+/* 额外的动作选项。如体位，情景play */
+<div id='actionOption'>
 </div>
 
 <div id='actionMenu_3'>
@@ -42,22 +42,30 @@ F.initMainFlow()
 F.resetUI()
 
 $('action').on('init', ()=>{
-    F.initMainFlow()
+   console.log('init action')
     F.resetUI()
     $('action').trigger('loop')
 })
 
 $('action').on('before', ()=>{
+    console.log('before event', T.actId)
     F.hideActions()
+    F.beforeAction()    
     F.showNext()
-    F.beforeAction()
+	 F.ActNext();
 })
 
 $('action').on('cancel', ()=>{
-    console.log('cancel event')
+   console.log('cancel action', T.actId)
+    //在这里执行cancel事件
     F.resetLink()
-    F.resetAction()
-    F.resetUI()
+    F.actionCancel()
+})
+
+$('action').on('failed', ()=>{
+   console.log('failed action', T.actId)
+   F.resetLink()
+   F.actionFailed()
 })
 
 $('action').on('keep', ()=>{
@@ -81,25 +89,27 @@ $('action').on('event', ()=>{
 $('action').on('counter', ()=>{
     console.log('counter event')
     F.resetLink()
-
+    F.setPhase('result')
 })
 
 $('action').on('result', ()=>{
     console.log('result event')
     F.resetLink()
-
+    F.passtime(T.passtime)
+    F.setPhase('after')
 })
 
 $('action').on('after', ()=>{
     console.log('after event')
     F.resetLink()
-
+    F.setPhase('finish')
 })
 
 $('action').on('finish', ()=>{
     console.log('finish event')
     F.resetLink()
-
+    F.resetAction()
+    F.setPhase('init')
 })
 
 </script>

@@ -1,14 +1,9 @@
 :: Action_Interaction_Option[script]
 /* 闲聊 */
 Action.set('Talk')
-     .Filter(()=>{
-         return 1
-      })
      .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
+         let rate = random(1,100)
+         return rate <= target.mood + 10 && F.canSpeak(target)
       })
 
 /* 观察 */
