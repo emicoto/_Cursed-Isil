@@ -102,6 +102,7 @@ class Com {
 		this.name = callback;
 		return this;
 	}
+   //即使配合度不足也可能强行执行。
 	ForceAble() {
 		this.forceAble = true;
 		return this;

@@ -13,60 +13,60 @@ const env = process.env.NODE_ENV;
 const isProduction = env === "production";
 
 const sharedOptions: Options = {
-  minify: isProduction,
-  target: "es6",
-  define: {
-    // Avoids issues with the Node-specific variable `process`.
-    "process.env.NODE_ENV": JSON.stringify(env),
-  },
+	minify: isProduction,
+	target: "es6",
+	define: {
+		// Avoids issues with the Node-specific variable `process`.
+		"process.env.NODE_ENV": JSON.stringify(env),
+	},
 };
 const plugins: Plugin[] = [
-  esbuild([
-    { loader: "json", ...sharedOptions },
-    { loader: "ts", ...sharedOptions },
-  ]),
-  nodeResolve({ browser: true }),
-  commonjs({ extensions: [".js", ".json"] }),
-  IIFE.createPlugin(),
+	esbuild([
+		{ loader: "json", ...sharedOptions },
+		{ loader: "ts", ...sharedOptions },
+	]),
+	nodeResolve({ browser: true }),
+	commonjs({ extensions: [".js", ".json"] }),
+	IIFE.createPlugin(),
 ];
 
 export const configs: RollupOptions[] = [
-  {
-    input: "Code/game/main.ts",
-    plugins,
-    external: ["phaser"],
-    output: {
-      format: "iife",
-      file: "modules/game.js",
-      //sourcemap: "inline",
-      globals: { phaser: "Phaser" },
-    },
-  },
-  {
-    input: "Code/lib/index.ts",
-    plugins,
-    output: {
-      format: "iife",
-      file: "gamecode/js/Lib.js",
-      //sourcemap: "inline",
-    },
-  },
-  {
-    input: "Code/utils/index.ts",
-    plugins,
-    output: {
-      format: "iife",
-      file: "modules/0-utils.js",
-    },
-  },
+	{
+		input: "Code/game/main.ts",
+		plugins,
+		external: ["phaser"],
+		output: {
+			format: "iife",
+			file: "modules/1-game.js",
+			//sourcemap: "inline",
+			globals: { phaser: "Phaser" },
+		},
+	},
+	{
+		input: "Code/lib/index.ts",
+		plugins,
+		output: {
+			format: "iife",
+			file: "gamecode/js/Lib.js",
+			//sourcemap: "inline",
+		},
+	},
+	{
+		input: "Code/utils/index.ts",
+		plugins,
+		output: {
+			format: "iife",
+			file: "modules/0-utils.js",
+		},
+	},
 
-  //	{
-  //		input: ["Lib/Module/**/*.ts"],
-  //		plugins: [multiInput({ relative: "Lib/Module/" }), ...plugins],
-  //		output: {
-  //			format: "commonjs",
-  //			dir: "modules/Lib",
-  //			//sourcemap: "inline",
-  //		},
-  //	},
+	//	{
+	//		input: ["Lib/Module/**/*.ts"],
+	//		plugins: [multiInput({ relative: "Lib/Module/" }), ...plugins],
+	//		output: {
+	//			format: "commonjs",
+	//			dir: "modules/Lib",
+	//			//sourcemap: "inline",
+	//		},
+	//	},
 ];

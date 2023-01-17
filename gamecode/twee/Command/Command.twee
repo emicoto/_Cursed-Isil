@@ -1,133 +1,3 @@
-
-/* Memo
-指令类型：
-常规 - 日常模式下所有常规指令。包括 移动、休息、地点互动、友好的交流互动
-调教 - 调教模式下所有常规指令。包括前戏、道具调戏、性交、肛交、尿道开发、SM。
-
-挑逗 - 日常模式下的挑逗类指令，如抛媚眼、诱惑、接吻、抚摸敏感部位等。也包括性骚扰类、日常用调教类指令。
-魔法 - 魔法类指令
-
-道具 - 性玩具一类的道具的使用。常规道具在收纳戒指（INVENTORY）中，随时可使用。
-前戏 - 爱抚接吻一类的轻度接触。
-性交 - 插入性行为
-尿道 - 尿道开发
-SM   - 捆绑鞭打等SM行为
-
-鬼畜 - 反人性的指令。包含NTR。
-触手 - 触手相关指令。
-
-
-#开头是分类设置行。
-#主分类名, id, name
-id和name是必填项目
-tags能给指令追加分类标签。
-time是默认花费时间。从缺是默认5分钟。
-Comlist可以用excel做成csv格式后再以文本方法打开，复制黏贴过来。
-*/
-
-:: ComList[list]
-
-/* 常规指令 */
-#常规,id ,name    ,tags    ,time
-G0       ,移动    ,交流    ,1
-G1       ,放松    ,休息    ,15
-G2       ,聊天    ,交流    ,0
-
-/* 挑逗、前戏  */
-#调教,id ,name    ,tags
-T0       ,抚摸    ,常规
-T1       ,摸胸
-T2       ,玩乳头
-T3       ,吸乳头
-T4       ,撸阴茎
-T5       ,指交
-T99      ,推倒    ,常规
-
-/* 触手专用，触手都可持续。同时进行数看部位是否被占用以及触手数量。
-/* 或许修改成 部位 对 部位 使用 什么 进行 动作的方式？ */
-#触手,id ,name
-X1       ,玩乳头(触)
-X2       ,吸乳头(触)
-X3       ,撸阴茎(触)
-X4       ,玩后穴(触)
-X5       ,玩私穴(触)
-
-:: RegistAllCom[script]
-
-//批处理多个指令。
-Com.init()
-
-Com.globalFilter = function (id) {
-    const com = comdata[id]
-    const target = C[tc]
-    const player = C[pc]
-    const onlyU = (tc === pc)
-
-    const notarget = [0, 1] //不需要对象
-    const active = [2] //对象需要处于可互动状态
-
-    //过滤器启用中
-    if(V.currentFilter !== 'all' && !com.tag.includes(V.currentFilter))return false 
-    //特定指令过滤设定中。
-    if(S.comFilter[id]) return false 
-
-    //日常模式和调教模式过滤器
-    if(V.mode == 'train' && com.tag.has('日常') && !com.tag.has('交流','调教')) return false;
-
-    if(V.mode == 'normal' && com.tag.has('调教') && !com.tag.has('日常')) return false;
-
-    //角色扮演上的限制
-    if( pc === 'Isil' && com.tag.has('挑逗', '调教', '鬼畜', '触手') && !Cflag[pc]?.Fallen) return false 
-
-    //需要对象
-    if(!notarget.includes(id) && onlyU ) return false; 
-    //需要对象处于可活动状态
-    if( F.uncons(target) && active.includes(id) ) return false; 
-
-    return true
-
-}
-
-Com.globalOrder = function(id){
-    const com = comdata[id]
-    const target = C[tc]
-    const player = C[pc]
-
-    for(const [k, obj] of Object.entries(Trait.data) ){
-        if( target.traits.includes(k) && com.tag.has('调教') ){
-            let order = obj.effect('onOrder', id)
-            if(!order) order = obj.order;
-
-            if(order) {
-                T.comorder += obj.order;
-                T.order += `【${k}(${obj.order > 0 ? '+' : ''}${obj.order})】`
-            }
-        }
-    }
-
-    return 0
-}
-
-Com.globalCond = function(id){
-    const com = comdata[id]
-    const target = C[tc]
-
-    if( !com.tag.has('常规','魔法','调情','爱抚') && F.isRape(target) && F.canResist(target) && !com.tag.includes('触手')) {
-
-        if(!F.weaker(target, C[pc])) T.reason += '【强奸对象具备抵抗能力】';
-        else return true;
-
-        return false
-    }
-
-    if( com.tag.includes('触手') && !F.isFallen(target) && !F.uncons(target) ){
-        T.reason += '【对象未堕落并且清醒着】'
-        return false
-    }
-
-    return true
-}
-
 :: Command::Before
 /* 指令执行前的通用文本。时间段提示、场景变换等。如果有运行代码不放这里。*/
 <<if $date.time >= 1080 && !_timeCheckNight>>
@@ -201,7 +71,7 @@ Com.set('G2')
 
 :: Com_G2
 <<you>>试着跟$target.name搭话。<br>
-<<=F.Kojo($tc, 'Com', 'G2')>>
+<<=Kojo.put($tc, 'Com', 'G2')>>
 
 
 :: Com_G2::Before//
@@ -215,21 +85,21 @@ $player.name走近$target.name准备搭话。<br>
 
 :: Com_T0
 <<you>>的手在$target.name的身上四处游走着。<br>
-<<=F.Kojo($tc, 'Com', 'T0')>>
+<<=Kojo.put($tc, 'Com', 'T0')>>
 <br>
 
 :: Com_T1
 <<you>>把手覆盖在$target.name的胸上开始抚摸。<br>
-<<=F.Kojo($tc, 'Com', 'T1')>><br>
+<<=Kojo.put($tc, 'Com', 'T1')>><br>
 
 :: Com_T2
 <<you>>用手轻轻捏住了$target.name的乳头<br>
-<<=F.Kojo($tc, 'Com', 'T2')>>
+<<=Kojo.put($tc, 'Com', 'T2')>>
 <br>
 
 :: Com_T3
 <<you>>用嘴含住了$target.name的乳头，吮吸着。<br>
-<<=F.Kojo($tc, 'Com', 'T3')>>
+<<=Kojo.put($tc, 'Com', 'T3')>>
 <br>
 
 :: Com_T4::Script[script]
@@ -240,11 +110,11 @@ Com.set('T4')
 
 :: Com_T4
 <<you>>轻轻握住了$target.name的阴茎，缓缓地前后撸动。<br>
-<<=F.Kojo($tc, 'Com', 'T4')>>
+<<=Kojo.put($tc, 'Com', 'T4')>>
 
 :: Com_T5
 <<you>>将手指探入$target.name的<<=F.splitSex($target,'菊穴','秘穴')>>在入口附近摩擦着。<br>
-<<=F.Kojo($tc, 'Com', 'T5')>>
+<<=Kojo.put($tc, 'Com', 'T5')>>
 
 
 :: Com_T99::Script[script]
@@ -295,11 +165,11 @@ Com.set('T99')
 :: Com_T99
 <<if $mode !== 'train' >>
 <<you>>将$target.name带到没人注意到的角落。<br>
-<<=F.Kojo($tc, 'Com', 'T99', 'start')>>
+<<=Kojo.put($tc, 'Com', 'T99', 'start')>>
 
 <<else>>
 <<you>>帮$target.name整理好衣服。<br>
-<<=F.Kojo($tc, 'Com', 'T99', 'finish')>>
+<<=Kojo.put($tc, 'Com', 'T99', 'finish')>>
 <</if>>
 
 
@@ -333,7 +203,7 @@ Com.set('X1')
     '缠绕、蠕动。','揉捏、摩擦。','挑弄、点拨。','蠕动、揉捏。','挑逗、缠绕、扭捏。'
 ])>>触手不停地反复着动作，时重时轻地对乳尖反复进行刺激。
 <br>
-<<=F.Kojo($tc, 'Com', 'X1')>>
+<<=Kojo.put($tc, 'Com', 'X1')>>
 
 :: //Com_X1:Fail
 因为对方不配合而取消时的文本。

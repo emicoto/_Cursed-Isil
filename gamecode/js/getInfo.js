@@ -88,7 +88,7 @@ F.Exp = function (chara, exp) {
 
 F.charaName = function (cid) {
 	const chara = C[cid];
-	let color = Kojo.get(chara.kojo, "color");
+	let color = Kojo.get(cid, "color");
 	if (!color) color = "#22A0FC";
 
 	const html = `<span style="color:${color}">[ ${chara.name} ]</span><br>`;
@@ -96,7 +96,7 @@ F.charaName = function (cid) {
 };
 
 F.playerName = function () {
-	let color = Kojo.get(player.kojo, "color");
+	let color = Kojo.get(pc, "color");
 	if (!color) color = "#22A0FC";
 
 	const html = `<span style='color:${color}'>[ ${player.name} ]</span><br>`;

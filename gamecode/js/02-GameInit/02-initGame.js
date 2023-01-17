@@ -30,11 +30,7 @@ F.initGame = function () {
 	V.exit = "MainLoop";
 
 	//-------->> 系统变量 <<-----------//
-	V.system = {
-		alwaysShowPCName: false,
-		showOrder: true,
-		defaultPC: "Isil",
-	};
+	V.system = clone(S.config);
 
 	V.ui = {
 		sidebarpalam: false,
@@ -52,37 +48,37 @@ F.initGame = function () {
 	V.lastAct = {};
 
 	//-------->> 游戏控制 <<------------//
-	V.passtime = 0;
-	V.gamePhase = 1;
+	V.gamePhase = 0;
 	V.turn = 0;
 
-	V.pricefactor = 2;
+	V.pricefactor = D.defaultPriceFactor;
 
-	V.mode = "event"; // 用于整体模式的控制
+	V.mode = D.defaultMode; // 用于整体模式的控制
 
 	V.flag = {
 		activePC: "Isil/m0/",
-		master: 0, // 触手开关
-		mode: 0, // 交流深度。0=无对象，1=交流 2=允许肢体接触 3=允许轻度调教 4=允许性交 5=完全解禁。
 	};
+
+	D.systemFlag.forEach((key) => {
+		V.flag[key] = 0;
+	});
 
 	V.weather = {
 		current: "clear",
 		next: [],
 	};
 
-	D.date = [4062, 3, 14];
 	V.date = {
-		year: 4062,
-		month: 3,
-		day: 14,
-		time: 1120,
+		year: S.date[0],
+		month: S.date[1],
+		day: S.date[3],
+		time: S.time,
 	};
 
 	/* total=以4062-3-14 0:00为基准的绝对时间, 与Date()同理, 每月固定30天。*/
 	/* wakeup time 转移到 cflag.wokeup, cflag.lastslept */
 	V.time = {
 		passed: 0,
-		total: 1120,
+		total: D.time,
 	};
 };

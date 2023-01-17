@@ -1,46 +1,3 @@
-//----->> 小功能 <<---------------------------//
-
-//每次移动后的target复位
-F.resetTarget = function () {
-	const local = clone(V.location.chara);
-
-	if (local.length > 1) {
-		local.delete(V.pc, 1);
-		V.tc = local[0];
-	} else {
-		V.tc = V.pc;
-	}
-};
-
-F.hideCommands = function () {
-	new Wikifier(null, `<<replace #commandmenu>> <</replace>>`);
-	new Wikifier(null, "<<replace #commandzone>> <</replace>>");
-};
-
-//刷新界面
-F.resetScene = function () {
-	V.target = C[tc];
-	V.player = C[pc];
-	F.initLocation();
-	F.initComList();
-	F.initComMenu();
-
-	return "";
-};
-DefineMacroS("resetScene", F.resetScene);
-
-F.resetLink = function () {
-	$("#contentMsg a").remove();
-	V.selectCom = 0;
-	return "";
-};
-DefineMacroS("resetLink", F.resetLink);
-
-F.shownext = function () {
-	let html = `<<link 'Next'>><<run F.ComNext()>><</link>>`;
-	new Wikifier("#commandzone", `<<replace #commandzone transition>>${html}<</replace>>`);
-};
-
 //----->> 初始化 <<---------------------------//
 F.initComMenu = function () {
 	const list = [[V.location.id == "A0", "下沉", "Basement", ""]];
@@ -106,18 +63,6 @@ F.ComNext = function () {
 	}
 };
 
-F.ComMsg = function (msg, add) {
-	if (!S.msg) S.msg = [];
-	if (add) {
-		if (!S.msg.length) S.msg[0] = "";
-		S.msg[S.msg.length - 1] += msg;
-	} else if (msg.includes("<fr>")) {
-		S.msg = S.msg.concat(msg.split("<fr>"));
-	} else {
-		S.msg.push(msg);
-	}
-};
-
 F.ComCheck = function (id) {
 	const com = comdata[id];
 
@@ -138,8 +83,8 @@ F.ComCheck = function (id) {
 
 	//角色每次执行COM时的个人检测。
 	//如果口上侧要进行阻止某个指令进行，也会在这里打断。
-	if (Story.has(`Kojo_${target.kojo}_Com`)) {
-		new Wikifier("#hidden", Story.get(`Kojo_${target.kojo}_COM`));
+	if (Story.has(`Kojo_${tc}_Com`)) {
+		new Wikifier("#hidden", Story.get(`Kojo_${tc}_COM`));
 	}
 
 	//指令执行时暂时去掉指令栏
@@ -164,8 +109,8 @@ F.ComCheck = function (id) {
 	}
 
 	//执行口上侧Before事件。
-	if (F.Kojo(target.kojo, "Com", id, "Before")) {
-		txt = (t ? "" : txt) + F.Kojo(target.kojo, "Com", id, "Before") + "<br>";
+	if (Kojo.put(tc, "Com", id, "Before")) {
+		txt = (t ? "" : txt) + Kojo.put(tc, "Com", id, "Before") + "<br>";
 		F.ComMsg(txt);
 		console.log("kojobefore?");
 		c = 1;
@@ -213,7 +158,7 @@ F.ComEvent = function (id, next) {
 			T.orderGoal === 0 ||
 			V.system.debug ||
 			(T.orderGoal > 0 && T.comorder >= T.orderGoal) ||
-			(com?.forceAble && T.comorder + D.ignoreOrder >= T.orderGoal)
+			(com?.forceAble && T.comorder + S.ignoreOrder >= T.orderGoal)
 		) {
 			V.passtime = com.time;
 			txt = txt + Story.get(title).text;
@@ -267,13 +212,15 @@ F.ComEvent = function (id, next) {
 	F.ComNext();
 };
 
-//显示数据处理结果。包括高潮、射精、刻印获得、素质变动的处理
+//数据处理结果的显示。包括高潮、射精、刻印获得、素质变动的处理
+//已经打包扔 timeprocess中了。
 F.ComResult = function () {
 	let text = "";
 	return text;
 };
 
-//指令结束后的处理。主要看有无后续事件。 例如高潮后、射精后、刻印获得后、素质变动后等相关事件。
+//指令结束后的事件处理。主要看有无后续事件。 例如高潮后、射精后、刻印获得后、素质变动后等相关事件。
+//未完。跟Action用同一套处理。弄好了再替换好了。
 F.ComEnd = function () {
 	T.comPhase = "end";
 	const resetHtml = `<<run F.resetCom()>><<dashline>>`;
@@ -282,123 +229,4 @@ F.ComEnd = function () {
 
 	F.ComMsg(resetHtml);
 	F.ComNext();
-};
-
-//无论指令成功与否，都会在最后执行的处理
-F.resetCom = function () {
-	//更新事件状态
-	T.comPhase = "reset";
-
-	// 检测在场角色的事件
-	V.location.chara.forEach((cid) => {
-		F.charaEvent(cid);
-	});
-
-	//缓存指令
-	V.lastCom = V.selectCom;
-
-	//清除临时flag和缓存信息
-	delete T.comCancel;
-	delete T.onselect;
-	delete T.comAble;
-	delete T.orderGoal;
-	delete T.force;
-
-	delete S.msg;
-
-	T.msgId = 0;
-	T.comorder = 0;
-	T.reason = "";
-	T.order = "";
-	V.selectCom = 0;
-
-	//更新角色位置、场景信息等处理。
-	// F.LoopFirst()
-
-	//刷新画面
-	F.resetScene();
-};
-
-//----->> 角色处理 <<---------------------------//
-
-//角色事件处理。
-F.charaEvent = function (cid) {
-	if (cid === pc) return;
-
-	const chara = C[cid];
-
-	if (cid == tc && !Cflag[cid][`firstMet${pc}`]) {
-		Cflag[cid][`firstMet${pc}`] = 1;
-
-		if (F.Kojo(chara.kojo, "Event", "First")) {
-			F.setEvent("Kojo", "Event_First", chara.kojo);
-			return new Wikifier(null, "<<goto EventStart>>");
-		}
-	}
-
-	console.log(cid, pc, !Tsv[tc][`metToday${pc}`]);
-
-	//检测是否今天首次见面
-	if (cid === tc && !Tsv[tc][`metToday${pc}`]) {
-		let p1 = pc,
-			p2 = pc == "Isil" ? "Ayres" : "Isil";
-		let setter = `<<set Tsv.${cid}.metToday${pc} to 1>>`;
-
-		if (V.location.chara.containsAll(p1, p2) && !Tsv[tc][`metToday${p2}`]) {
-			setter += `<<set Tsv.${cid}.metToday${p2} to 1>>`;
-		}
-
-		if (F.Kojo(chara.kojo, "Daily", "First")) {
-			return F.txtFlow(`${F.charaName(cid)}${F.Kojo(chara.kojo, "Daily", "First")}${setter}`, 0, 1);
-		}
-	}
-
-	const cevent = Kojo.get(chara.kojo, "event");
-	if (!cevent) return;
-
-	cevent.forEach((obj) => {
-		const title = `Kojo_${chara.kojo}_Event_${obj.name}`;
-
-		if (Story.has(title) && obj.cond() && V.location.chara.includes(cid)) {
-			F.setEvent("Kojo", `Event_${obj.name}`, chara.kojo);
-			return new Wikifier(null, "<<goto EventStart>>");
-		}
-	});
-};
-
-F.summonChara = function () {
-	const local = V.location;
-
-	//根据时间和地点召唤可能存在的角色。
-	//暂时只有两场景，迟些再整。
-	if (local.id == "A0") {
-		local.chara = ["Ayres", "Isil"];
-	} else {
-		local.chara = ["Besta", pc, "Nanaly"];
-	}
-};
-
-//切换主控角色
-F.switchChara = function () {
-	let change = "";
-
-	if (V.location.chara.containsAll("Ayres", "Isil")) {
-		let p, t;
-		if (V.pc === "Isil" || V.pc === "m0") {
-			p = "Ayres";
-			t = "Isil";
-		} else if (V.pc == "Ayres" && F.uncons(C["Isil"])) {
-			p = "m0";
-			t = "Isil";
-		} else {
-			p = "Isil";
-			t = "Ayres";
-		}
-
-		change = `<<link '[ 切换角色 ]'>><<set $pc to '${p}'>><<set $tc to '${t}'>><<run F.resetScene();>><</link>>`;
-	}
-
-	if (Config.debug) console.log(change);
-
-	return change;
 };

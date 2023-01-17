@@ -1,0 +1,75 @@
+
+:: RegistAllCom[script]
+//批处理多个指令。
+Com.init()
+
+Com.globalFilter = function (id) {
+    const com = comdata[id]
+    const target = C[tc]
+    const player = C[pc]
+    const onlyU = (tc === pc)
+
+    const notarget = [0, 1] //不需要对象
+    const active = [2] //对象需要处于可互动状态
+
+    //过滤器启用中
+    if(V.currentFilter !== 'all' && !com.tag.includes(V.currentFilter))return false 
+    //特定指令过滤设定中。
+    if(S.comFilter[id]) return false 
+
+    //日常模式和调教模式过滤器
+    if(V.mode == 'train' && com.tag.has('日常') && !com.tag.has('交流','调教')) return false;
+
+    if(V.mode == 'normal' && com.tag.has('调教') && !com.tag.has('日常')) return false;
+
+    //角色扮演上的限制
+    if( pc === 'Isil' && com.tag.has('挑逗', '调教', '鬼畜', '触手') && !Cflag[pc]?.Fallen) return false 
+
+    //需要对象
+    if(!notarget.includes(id) && onlyU ) return false; 
+    //需要对象处于可活动状态
+    if( F.uncons(target) && active.includes(id) ) return false; 
+
+    return true
+
+}
+
+Com.globalOrder = function(id){
+    const com = comdata[id]
+    const target = C[tc]
+    const player = C[pc]
+
+    for(const [k, obj] of Object.entries(Trait.data) ){
+        if( target.traits.includes(k) && com.tag.has('调教') ){
+            let order = obj.effect('onOrder', id)
+            if(!order) order = obj.order;
+
+            if(order) {
+                T.comorder += obj.order;
+                T.order += `【${k}(${obj.order > 0 ? '+' : ''}${obj.order})】`
+            }
+        }
+    }
+
+    return 0
+}
+
+Com.globalCond = function(id){
+    const com = comdata[id]
+    const target = C[tc]
+
+    if( !com.tag.has('常规','魔法','调情','爱抚') && F.isRape(target) && F.canResist(target) && !com.tag.includes('触手')) {
+
+        if(!F.weaker(target, C[pc])) T.reason += '【强奸对象具备抵抗能力】';
+        else return true;
+
+        return false
+    }
+
+    if( com.tag.includes('触手') && !F.isFallen(target) && !F.uncons(target) ){
+        T.reason += '【对象未堕落并且清醒着】'
+        return false
+    }
+
+    return true
+}

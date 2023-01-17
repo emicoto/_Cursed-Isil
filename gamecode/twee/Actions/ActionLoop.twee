@@ -76,7 +76,7 @@ $('action').on('stop', ()=>{
 
 $('action').on('event', ()=>{
    //玩家的动作事件。
-    console.log('do event')
+    console.log('do event', T.actId)
     F.resetLink()
     F.doAction(T.actId)
 })

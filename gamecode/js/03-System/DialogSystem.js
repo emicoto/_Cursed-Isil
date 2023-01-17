@@ -1,3 +1,4 @@
+// 信息流控制
 F.txtFlow = function (txt, time, dashline) {
 	if (!time) time = 60;
 
@@ -13,6 +14,7 @@ F.txtFlow = function (txt, time, dashline) {
 	msg_end.scrollIntoView();
 };
 
+//下一步按钮
 F.nextLink = function () {
 	let next = V.event.next;
 	console.log(V.event.next);
@@ -21,6 +23,7 @@ F.nextLink = function () {
 };
 DefineMacroS("eventnext", F.nextLink);
 
+//获取事件完整文本，并进行解析转化
 F.initText = function (title) {
 	const input = Story.get(title).text.split("\n");
 
@@ -48,6 +51,7 @@ F.initText = function (title) {
 	if (Config.debug) console.log("dialog", title, S.dialog[title]);
 };
 
+//事件进程初始化
 F.initEvent = function () {
 	const e = V.event;
 	let title = `${e.type}_${e.name}`;
@@ -71,6 +75,7 @@ F.initEvent = function () {
 	}
 };
 
+//当前dialog内容的初始化，同时记录回想节点。
 F.initDialog = function () {
 	const e = V.event;
 	let title = e.fullname;
@@ -101,6 +106,7 @@ F.initDialog = function () {
 	}, 80);
 };
 
+//显示文本，并进行控制处理。
 F.dialogFlow = function () {
 	const e = V.event;
 	const p = S.dialog[T.eventTitle][e.phase];
@@ -129,6 +135,7 @@ F.dialogFlow = function () {
 	}
 };
 
+//按下一步按钮或点击文本框时所进行的处理。
 F.nextDialog = function () {
 	const e = V.event;
 	const c = V.event.config;
@@ -176,7 +183,7 @@ F.nextDialog = function () {
 			F.initDialog();
 		} else {
 			if (!e.config?.exit) {
-				e.config.exit = D.defaultExit;
+				e.config.exit = S.defaultExit;
 				e.config.exitlink = "Continue";
 			}
 			V.mode = "normal";
