@@ -18155,7 +18155,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 							return "";
 						};
 
-						this.checkPart = (atg, ...args) => {
+						this.checkPart = (arg, ...args) => {
 							return 1;
 						};
 
@@ -19079,7 +19079,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					const noTargetType = ["常规", "魔法", "道具", "自慰", "其他", "固有"];
 
 					//总之先按照分类过滤
-					if (!groupmatch(data.type, "目录", "常规", "固有") && T.currentType !== "all" && T.currentType !== data.type)
+					if (!groupmatch(data.type, "目录", "常规", "固有") && T.actionTypeFilter !== "all" && T.actionTypeFilter !== data.type)
 						return 0;
 
 					//pc切换为触手时只能选择触手以及系统指令
@@ -19131,7 +19131,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 						//   return 0
 						case "魔法":
 						case "命令":
-							if (data.type !== T.currentType) return 0;
+							if (data.type !== T.actionTypeFilter) return 0;
 							break;
 					}
 
@@ -19444,7 +19444,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				};
 				/* twine-user-script #31: "0-InitAction.js" */
 				F.initActionMode = function () {
-					T.currentType = "all";
+					T.actionTypeFilter = "all";
 					T.actPartFilter = "all";
 					T.actor = V.pc;
 					T.actTg = V.pc !== V.tc ? V.tc : V.pc;
@@ -22330,7 +22330,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				         return Flag.master
 				      })
 				     .Event(()=>{
-				         T.currentType = '触手'
+				         T.actionTypeFilter = '触手'
 				     })
 
 
@@ -22361,7 +22361,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				         return 1
 				      })
 				      .Event(()=>{
-				         T.currentType = '其他'
+				         T.actionTypeFilter = '其他'
 				      })
 				/* twine-user-script #55: "Action_Other_Option" */
 				/* 直播 */
@@ -22631,10 +22631,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 				Action.set('resetAll')
 				  .Filter(()=>{
-				    return T.currentType !== 'all' || T.actPartFilter !== 'all'
+				    return T.actionTypeFilter !== 'all' || T.actPartFilter !== 'all'
 				  })
 				  .Event(()=>{
-				    T.currentType = 'all'
+				    T.actionTypeFilter = 'all'
 				    T.actPartFilter = 'all'
 				  })
 

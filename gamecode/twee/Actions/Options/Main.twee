@@ -84,12 +84,18 @@ Action.set('useHands')
      .Filter(()=>{
          return 0
       })
+      .Event(()=>{
+         T.actPartFilter = ['handL','handR']
+      })
 
 
 /* 用口 */
 Action.set('useMouth')
      .Filter(()=>{
          return 0
+      })
+      .Event(()=>{
+         T.actPartFilter = 'mouth'
       })
 
 
@@ -98,6 +104,9 @@ Action.set('usePenis')
      .Filter(()=>{
          return 0//player.gender !== 'female'
       })
+      .Event(()=>{
+         T.actPartFilter = 'penis'
+      })
 
 
 /* 用阴道 */
@@ -105,11 +114,17 @@ Action.set('useVagina')
      .Filter(()=>{
          return 0//player.gender !== 'male'
       })
+      .Event(()=>{
+         T.actPartFilter = 'vagina'
+      })
 
 /* 用肛门 */
 Action.set('useAnal')
      .Filter(()=>{
          return 0
+      })
+      .Event(()=>{
+         T.actPartFilter = 'anal'
       })
 
 
@@ -118,12 +133,28 @@ Action.set('useFoot')
      .Filter(()=>{
          return 0
       })
+      .Event(()=>{
+         T.actPartFilter = 'foot'
+      })
+
 
 
 /* 保持动作 */
 Action.set('Keep')
      .Filter(()=>{
-         return 0//Flag.mode >= 2
+         return Flag.mode >= 2
+      })
+      .Name(()=>{
+         if(T.keepAction)
+            return '单发'
+         else
+            return '持续'
+      })
+      .Event(()=>{
+         if(!T.keepAction)
+            T.keepAction = 1;
+         else
+            T.keepAction = 0;
       })
 
 
@@ -173,7 +204,7 @@ Action.set('Tentacles')
          return Flag.master
       })
      .Event(()=>{
-         T.currentType = '触手'
+         T.actionTypeFilter = '触手'
      })
 
 
@@ -204,5 +235,5 @@ Action.set('Other')
          return 1
       })
       .Event(()=>{
-         T.currentType = '其他'
+         T.actionTypeFilter = '其他'
       })

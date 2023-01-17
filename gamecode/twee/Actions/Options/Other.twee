@@ -26,7 +26,7 @@ Action.set('Party')
 /* 衣服管理 */
 Action.set('Clothes')
      .Filter(()=>{
-         return ( V.location.tag.has('衣柜','私室') && pc == tc ) || V.mode == 'train'
+         return ( V.location.tags.has('衣柜','私室') && pc == tc ) || V.mode == 'train'
       })
      .Check(()=>{
          return 1

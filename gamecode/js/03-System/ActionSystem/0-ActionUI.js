@@ -3,7 +3,7 @@ F.actBtn = function (actid, data) {
 	let name = data.name;
 	if (alterName) name = alterName();
 
-	if (actid == id || (data.type == "目录" && T.actType == id)) {
+	if (actid == id || (data.type == "目录" && T.actPartFilter == id)) {
 		return `<div class='actions selectAct'>[ ${name} ]</div>`;
 	}
 

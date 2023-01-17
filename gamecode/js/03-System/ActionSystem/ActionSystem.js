@@ -151,19 +151,6 @@ F.beforeAction = function (id) {
 	}
 };
 
-F.actionCheckOrder = function () {
-	if (V.system.debug) return "debug";
-	if (T.orderGoal == 0) return "succeed";
-
-	if (T.orderGoal > 0 && T.order >= T.orderGoal) return "succeed";
-
-	if (T.order + player.stats.LUK[1] >= T.orderGoal && random(100) <= player.stats.LUK[1] * 1.5) return "luck succeed";
-
-	if (T.order + T.forceOrder >= T.orderGoal) return "force succeed";
-
-	return "failed";
-};
-
 F.doAction = function (id) {
 	const state = T.actAble ? F.actionCheckOrder() : "cancel";
 
@@ -173,7 +160,7 @@ F.doAction = function (id) {
 	}
 
 	//确认执行，记录动作详细。
-	T.actionDetail = {
+	T.action = {
 		act: id,
 		target: tc,
 		actPart: T.actPart,

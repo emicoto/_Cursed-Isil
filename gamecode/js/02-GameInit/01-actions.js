@@ -92,7 +92,7 @@ class Action {
 			return "";
 		};
 
-		this.checkPart = (atg, ...args) => {
+		this.checkPart = (arg, ...args) => {
 			return 1;
 		};
 

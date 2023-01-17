@@ -118,12 +118,12 @@ pose9, 抱立位, va,
 pose10, 反抱立位, va,
 pose11, 屈曲位, va,
 
-/* 道具使用类,  option是道具id */
+/* 道具使用类,  option是道具id 。尿道play都在道具里 */
 #I, id, name, mode, targetPart, option, defaultText
 Rotor, 跳蛋, 2, varpc, toy1 ,{0}将跳蛋贴在{1}的{2}，刺激着。
 Vibrator, 震动棒, 2, va, toy2 , {0}将震动棒放进了{1}的{2}。
 
-/* 触手类 */
+/* 触手类。包括尿道play*/
 /* mode: 1:daytime 2:both 3:nightime */
 #Tx, id, name, mode, targetPart, defaultText, option
 x0, 揉捏(触), 2, bpcr, 触手缠绕在{1}的{2}上，巧妙地反复揉捏给予刺激。

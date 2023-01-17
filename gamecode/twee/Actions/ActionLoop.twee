@@ -24,12 +24,12 @@
 /* 角色互动模式下，行动有下分类时的可用动作 */
 </div>
 
-/* 额外的动作选项。如体位，情景play */
-<div id='actionOption'>
-</div>
-
 <div id='actionMenu_3'>
 /* 可用的动作目标 */
+</div>
+
+/* 额外的动作选项。如体位，情景play */
+<div id='actionOption'>
 </div>
 
 <div id='next'>

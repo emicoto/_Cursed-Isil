@@ -41,9 +41,9 @@ Com.set('G1')
 暂时不用休息。<br>
 
 :: Com_G1
-<<if $location.tag.includes('chair')>>
+<<if $location.tags.includes('chair')>>
 坐在椅子上休息了下，
-<<elseif $location.tag.includes('bed')>>
+<<elseif $location.tags.includes('bed')>>
 在床上躺下放松，
 <<else>>
 找了个合适的地方坐下休息了一会，

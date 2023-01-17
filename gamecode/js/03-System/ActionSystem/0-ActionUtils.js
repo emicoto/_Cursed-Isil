@@ -16,21 +16,6 @@ F.showActions = function () {
 	$("#actionOption").removeClass("hidden");
 };
 
-F.resetUI = function () {
-	V.target = C[tc];
-	V.player = C[pc];
-
-	F.resetLink();
-	F.updateMap();
-	F.showActions();
-	F.initActMenu();
-	//F.initActionselect()
-
-	F.showNext(1);
-
-	return "";
-};
-
 F.showNext = function (hide) {
 	let html = hide ? "" : `<<link 'Next'>><<run F.ActNext()>><</link>>`;
 	new Wikifier("#next", `<<replace #next>>${html}<</replace>>`);
@@ -76,4 +61,31 @@ F.setPhase = function (mode) {
 F.resetMsg = function () {
 	S.msg = [];
 	T.msgId = 0;
+};
+
+F.actionCheckOrder = function (btn) {
+	if (V.system.debug) return "succeed";
+	if (T.orderGoal == 0) return "succeed";
+
+	if (T.orderGoal > 0 && T.order >= T.orderGoal) return "succeed";
+
+	if (T.order + player.stats.LUK[1] >= T.orderGoal && (random(100) <= player.stats.LUK[1] * 1.5 || btn))
+		return "luck succeed";
+
+	if (T.order + T.forceOrder >= T.orderGoal) return "force succeed";
+
+	return "failed";
+};
+
+F.checkAble = function (id, btn) {
+	if (btn) F.initCheckFlag();
+	const data = Action.data[id];
+	return Action.globalCheck(id) && data.check();
+};
+
+F.checkOrder = function (id, btn) {
+	if (btn) F.initCheckFlag();
+	const data = Action.data[id];
+	T.orderGoal = Action.globalOrder(id) + data.order();
+	return F.actionCheckOrder(btn);
 };

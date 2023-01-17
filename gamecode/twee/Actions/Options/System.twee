@@ -26,10 +26,10 @@ Action.set('resetAct')
 
 Action.set('resetAll')
   .Filter(()=>{
-    return T.currentType !== 'all' || T.actPartFilter !== 'all'
+    return T.actionTypeFilter !== 'all' || T.actPartFilter !== 'all'
   })
   .Event(()=>{
-    T.currentType = 'all'
+    T.actionTypeFilter = 'all'
     T.actPartFilter = 'all'
   })
 

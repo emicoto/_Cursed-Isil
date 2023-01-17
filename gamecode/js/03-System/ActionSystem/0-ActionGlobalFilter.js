@@ -10,7 +10,11 @@ Action.globalFilter = function (id) {
 	const noTargetType = ["常规", "魔法", "道具", "自慰", "其他", "固有"];
 
 	//总之先按照分类过滤
-	if (!groupmatch(data.type, "目录", "常规", "固有") && T.currentType !== "all" && T.currentType !== data.type)
+	if (
+		!groupmatch(data.type, "目录", "常规", "固有") &&
+		T.actionTypeFilter !== "all" &&
+		T.actionTypeFilter !== data.type
+	)
 		return 0;
 
 	//pc切换为触手时只能选择触手以及系统指令
@@ -24,7 +28,7 @@ Action.globalFilter = function (id) {
 	if (T.selectActPart && Using[pc][T.selectActPart]?.act !== "") return 0;
 
 	//选择过滤器中、
-	if (T.actPartFilter !== "all" && data.usePart && !data.usePart.includes(T.actPartFilter)) return 0;
+	if (T.actPartFilter !== "all" && data.usePart && !data.usePart.has(T.actPartFilter)) return 0;
 
 	//特定分类批处理
 	switch (data.type) {
@@ -42,7 +46,7 @@ Action.globalFilter = function (id) {
 			break;
 
 		case "常规":
-			if (!V.location.tag.has(data.tags)) return 0;
+			if (!V.location.tags.has(data.tags)) return 0;
 			if (Flag.mode > 0 && !data?.option?.has("canTrain")) return 0;
 			break;
 
@@ -52,7 +56,6 @@ Action.globalFilter = function (id) {
 			break;
 
 		case "体位":
-			if (T.selectAct == "t8" && !groupmatch(T.selectPart, "vagina", "anal")) return 0;
 			if (T.selectAct !== "t8") return 0;
 			break;
 
@@ -62,7 +65,7 @@ Action.globalFilter = function (id) {
 		//   return 0
 		case "魔法":
 		case "命令":
-			if (data.type !== T.currentType) return 0;
+			if (data.type !== T.actionTypeFilter) return 0;
 			break;
 	}
 
