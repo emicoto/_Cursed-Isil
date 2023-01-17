@@ -1,30 +1,112 @@
-ActionLoop 执行顺序
+Action处理顺序
 
-进入actionloop
-↓
-初始化场景，获取场景信息和在场角色信息
-↓
-显示场景文本，在场角色列表
-↓
-检测角色日常事件，如果存在先执行角色事件
-↓
-进入行动模式，等待玩家输入
-↓
-玩家选择行动=》{
-选择场景物品 =》 切换为 act event模式，并执行对应事件
-选择常规行动 =》 切换为 act general模式， 并执行行动事件
-选择在场角色 =》 切换为 act interact模式， 进入交流模式
+initScene {
+	load map
+	load character
+	print location infomation
+	print character information
+	init actions menus
+	init actions values
 }
 
-actCheckBefore() => 统一的执行前检测处理
+wait player input
 
-actEvent() => daily event的检测、处理以及执行
-actGeneral() => general action事件的检测、处理以及执行
-actInteract() => talk and touch的检测、处理、以及执行
+get action id
+if action has selectable parts (action parts and target parts)
+	show parts menu
+	wait player input
 
-交流模式：
-行动选择 命令，用口、用手、用腰、用脚，道具，特殊PLAY
-动作选择 具体动作
-目标选择 如果有多个角色参与，则根据角色列出可选部位。也可以选择自己。
-角色A： 手 脚 胸
-角色B： 手 脚 胸
+		get parts id
+		if has selectable options
+			wait player input
+		
+		get options id
+		check action
+
+	else check action
+
+ready for action{
+	if action id == prev id
+		update action options
+	else
+		reset id and update options
+}
+
+check action{
+		if action able
+			do action
+		else
+			cancel action
+			init action values
+}
+
+before action
+	if cancel action
+		reset and init actions values
+
+do action{
+	save actiondetails { action id, target chara id,  action parts id,  target parts id, options id,}
+	if action option has autokeep
+		save action to Using.actor
+
+	action events > print events text
+
+	counter check
+	if counter
+		do counter
+	
+	if has continuos action
+		do keep action
+
+	process sources
+	print action result
+
+	if has palam change event
+		do palam change event
+
+	if has after event
+		do after event
+	
+}
+
+finish action
+	check after event
+	if has after event
+		do after event
+	
+	clear temporary flags and values
+	reset action
+	goto init movement
+
+动作记录用变量
+
+T.select = {
+	id: action id
+	tc: target chara id
+	ap: action parts id
+	tp: target parts id
+  pos: pose id
+}
+记录玩家输入，当action id有变化时会reset
+
+T.action = {
+	id: action id
+	tc: target chara id
+	ap: action parts id
+	tp: target parts id
+  pos: pos id
+}
+确定执行时的记录
+
+T.counter = {
+	id: action id
+	ac: actor chara id
+	ap: action parts id
+	tp: target parts id
+  pos: pos id
+}
+记录npc的counter信息。
+有多少npc就会有多少个？
+或者轮流刷新（处理完一个npc就reset，再处理下一个？）
+
+
