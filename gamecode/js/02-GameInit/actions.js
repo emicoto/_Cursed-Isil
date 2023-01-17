@@ -143,6 +143,10 @@ class Action {
 			return "";
 		};
 
+		this.checkPart = (atg, ...args) => {
+			return 1;
+		};
+
 		if (locationTags) this.tags = locationTags;
 
 		if (defaultText) this.templet = defaultText;
@@ -331,8 +335,8 @@ Action.globalFilter = function (id) {
 	if (id.match(/^use\S+/) && Flag.mode < 2) return 0;
 
 	//占用中。解除倒是没问题。
-	if (T.actPart !== "reset" && Using[pc][T.actPart] == id) return 1;
-	if (T.actPart !== "reset" && Using[pc][T.actPart]?.act !== "") return 0;
+	if (T.selectActPart  && Using[pc][T.selectActPart] == id) return 1;
+	if (T.selectActPart  && Using[pc][T.selectActPart]?.act !== "") return 0;
 
 	//选择过滤器中、
 	if (T.actPartFilter !== "all" && data.usePart && !data.usePart.includes(T.actPartFilter)) return 0;

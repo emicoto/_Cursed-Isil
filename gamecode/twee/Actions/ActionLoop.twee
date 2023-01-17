@@ -50,49 +50,53 @@ $('action').on('init', ()=>{
 $('action').on('before', ()=>{
     console.log('before event', T.actId)
     F.hideActions()
-    F.beforeAction()    
+    F.beforeAction(T.actId)    
     F.showNext()
 	 F.ActNext();
 })
 
 $('action').on('cancel', ()=>{
    console.log('cancel action', T.actId)
-    //在这里执行cancel事件
     F.resetLink()
-    F.actionCancel()
+    F.actionCancel(T.actId)
 })
 
 $('action').on('failed', ()=>{
    console.log('failed action', T.actId)
    F.resetLink()
-   F.actionFailed()
-})
-
-$('action').on('keep', ()=>{
-    console.log('keep event')
-    F.resetLink()
-
+   F.actionFailed(T.actId)
 })
 
 $('action').on('stop', ()=>{
+   //取消持续动作时。在持续动作一览中取消。
     console.log('stop event')
     F.resetLink()
 
 })
 
 $('action').on('event', ()=>{
+   //玩家的动作事件。
     console.log('do event')
     F.resetLink()
-    F.doEvent()
+    F.doAction(T.actId)
 })
 
 $('action').on('counter', ()=>{
+   //对象的攻势。如果是逆推状态，会先处理counter？
     console.log('counter event')
+    F.resetLink()
+    F.setPhase('keep')
+})
+
+$('action').on('keep', ()=>{
+   //持续动作、装备影响的描述和预处理
+    console.log('keep event')
     F.resetLink()
     F.setPhase('result')
 })
 
 $('action').on('result', ()=>{
+   //数据处理和显示
     console.log('result event')
     F.resetLink()
     F.passtime(T.passtime)
@@ -100,12 +104,14 @@ $('action').on('result', ()=>{
 })
 
 $('action').on('after', ()=>{
+   //数值变动事件（刻印获得素质获得等）和后续事件
     console.log('after event')
     F.resetLink()
-    F.setPhase('finish')
+    F.actionAfter(T.actId)
 })
 
 $('action').on('finish', ()=>{
+   //一套流程结束时的处理
     console.log('finish event')
     F.resetLink()
     F.resetAction()

@@ -120,7 +120,7 @@ F.initMainFlow = function () {
 };
 
 F.actBtn = function (actid, data) {
-	const { id, script, event, alterName } = data;
+	const { id, script, event, alterName, option, type } = data;
 	let name = data.name;
 	if (alterName) name = alterName();
 
@@ -128,19 +128,16 @@ F.actBtn = function (actid, data) {
 		return `<div class='actions selectAct'>[ ${name} ]</div>`;
 	}
 
-	if (
-		(groupmatch(data.type, "接触", "触手", "逆位") && !groupmatch(data.option, "doStraight", "reset")) ||
-		(data.type == "道具" && data.targetPart)
-	) {
-		let usePart;
+	if ((groupmatch(type, "接触", "触手", "逆位") && option !== "doStraight") || (type == "道具" && data.targetPart)) {
+		let use;
 		if (data.usePart && data.usePart.length > 1) {
 			if (!(F.justHands(data.usePart) && V.mode !== "reverse")) {
-				usePart = 1;
+				use = 1;
 			}
 		}
 
 		return `<div class='actions'><<link '${data.name}'>>
-        <<run F.checkAction('${id}', 'ready'); F.initActMenu('${id}'${usePart ? ", 1" : ""});>>
+        <<run F.checkAction('${id}', 'ready'); F.initActMenu('${id}'${use ? ", 1" : ""});>>
         <</link>></div>`;
 	}
 
@@ -168,7 +165,6 @@ F.partBtn = function (data, part, use) {
 		return `<div class='actions selectAct'>[ 用${D.bodyparts[part]} ]</div>`;
 	}
 
-	console.log(setpart);
 	return `<div class='actions parts'><<button '${use ? "用" : ""}${D.bodyparts[part]}'>>${setpart}<</button>></div>`;
 };
 
@@ -336,6 +332,11 @@ F.checkAction = function (id, phase) {
 	T.orderGoal = Action.globalOrder(id) + data.order();
 	T.actAble = Action.globalCheck(id) && data.check();
 
+	//有可选对象部位就检测部位执行状况？
+	/*	if (data.targetPart && data.targetPart.includes(T.selectPart)) {
+		T.partAble = data.checkPart(T.selectPart);
+	}*/
+
 	T.phase = phase;
 
 	// 对方处于无意识状态，强行将配合值变零
@@ -386,9 +387,8 @@ F.setPhase = function (mode) {
 	$("action").trigger(mode);
 };
 
-F.beforeAction = function () {
+F.beforeAction = function (id) {
 	T.phase = "before";
-	let id = T.actId;
 	let reText = "";
 
 	//角色每次执行COM时的个人检测。
@@ -440,9 +440,39 @@ F.beforeAction = function () {
 	}
 };
 
-F.doEvent = function () {
-	let id = T.actId;
+F.actionCheckOrder = function () {
+	if (V.system.debug) return "debug";
+	if (T.orderGoal == 0) return "succeed";
 
+	if (T.orderGoal > 0 && T.order >= T.orderGoal) return "succeed";
+
+	if (T.order + player.stats.LUK[1] >= T.orderGoal && random(100) <= player.stats.LUK[1] * 1.5) return "luck succeed";
+
+	if (T.order + T.forceOrder >= T.orderGoal) return "force succeed";
+
+	return "failed";
+};
+
+F.doAction = function (id) {
+	const state = T.actAble ? F.actionCheckOrder() : "cancel";
+
+	if (groupmatch(state, "failed", "cancel")) {
+		F.setPhase(state);
+		return 0;
+	}
+
+	//确认执行，记录动作详细。
+	T.actionDetail = {
+		act: id,
+		target: tc,
+		actPart: T.actPart,
+		targetPart: T.selectPart,
+	};
+
+	F.actionEvent(id, state);
+};
+
+F.actionEvent = function (id, state) {
 	const data = Action.data[id];
 
 	let title = `Action_${id}`;
@@ -451,68 +481,71 @@ F.doEvent = function () {
 	T.phase = "event";
 	F.resetMsg();
 
-	//确认主控有条件执行
-	if (T.actAble) {
-		//确认对象愿意配合执行
-		if (
-			T.orderGoal == 0 ||
-			V.system.debug ||
-			(T.orderGoal > 0 && T.order >= T.orderGoal) ||
-			(T.order + player.stats.LUK[1] >= T.orderGoal && random(100) <= player.stats.LUK[1] * 1.5) ||
-			T.order + T.forceOrder >= T.orderGoal
-		) {
-			//经过时间
-			T.passtime = data.time;
+	//强制成功时
+	if (state == "force succeed") {
+		S.msg.push(`< 强制 ><br>`);
+		T.force = 1;
+	}
 
-			//配合度不足但强制or勉强配合
-			if (T.order < T.orderGoal && !V.system.debug) {
-				if (T.forceOrder) {
-					S.msg.push(`< 强制 ><br>`);
-					T.force = 1;
-				} else {
-					S.msg.push(`勉强配合: ${T.order}+LUK${player.stats.LUK[1]}/${T.orderGoal}<br>`);
-				}
-			}
+	//幸运成功时
+	if (state == "luck succeed") {
+		S.msg.push(`勉强配合: ${T.order}+LUK${player.stats.LUK[1]}/${T.orderGoal}<br>`);
+	}
 
-			//强制时的分支。如果存在的话。
-			if (T.force && Story.has(title + ":Force")) {
-				txt = txt + Story.get(title + ":Force").text;
-			} else {
-				txt = txt + Story.get(title).text;
-			}
-
-			//转换口上内容
-			txt = F.convertKojo(txt);
-
-			F.Msg(txt + "<br>");
-
-			//设置下一个环节的flag。进入counter环节。对象概率执行counter动作。之后才是result和after事件
-			F.Msg(`<<run Action.data['${id}'].effect(); F.setPhase('counter');>>`, 1);
-		} else {
-			//对方不配合执行失败的情况
-			F.setPhase("failed");
-		}
+	//强制时的分支。如果存在的话。
+	if (T.force && Story.has(title + ":Force")) {
+		txt = txt + Story.get(title + ":Force").text;
 	} else {
-		//条件不足执行取消的情况。
-		F.setPhase("cancel");
+		txt = txt + Story.get(title).text;
+	}
+
+	//转换口上内容
+	txt = F.convertKojo(txt);
+
+	F.Msg(txt + "<br>");
+	//设置下一个环节的flag。进入counter环节。对象概率执行counter动作。之后才是result和after事件
+	F.Msg(`<<run Action.data['${id}'].effect(); F.setPhase('counter');>>`, 1);
+};
+
+F.actionAfter = function (id) {
+	let name = T.noNameTag ? "" : F.playerName();
+	let title = `Action_${id}:After`;
+	let c;
+	T.phase = "after";
+
+	if (Story.has(title)) {
+		let txt = `${name}${Story.get(title).text}`;
+		F.Msg(txt);
+		c = 1;
+	}
+
+	if (Kojo.has(tc, "Action", id, "After")) {
+		F.Msg(Kojo.put(tc, "Action", id, "After"));
+		c = 1;
+	}
+
+	//有事件的时候滞后处理
+	if (c) {
+		F.Msg(`<<run F.setPhase('finish')>><<dashline>>`, 1);
+	} else {
+		F.setPhase("finish");
 	}
 };
 
 F.actionCancel = function () {
-	let id = T.actId;
 	let name = T.noNameTag ? "" : F.playerName();
 
 	if (Story.has(`Action_${id}:Cancel`)) {
 		F.Msg(name + Story.get(`Action_${id}:Cancel`).text);
-		F.Msg(`<<run F.resetAction(); F.setPhase('init')>><<dashline>>`, 1);
+		F.Msg(`<<run T.cancel = 1; F.passtime(1); F.resetAction(); F.setPhase('init')>><<dashline>>`, 1);
 	} else {
+		T.cancel = 1;
 		F.resetAction();
 		F.setPhase("init");
 	}
 };
 
 F.actionFailed = function () {
-	let id = T.actId;
 	let name = T.noNameTag ? "" : F.playerName();
 
 	if (Story.has(`Action_${id}:Failed`)) {
@@ -520,7 +553,7 @@ F.actionFailed = function () {
 	} else {
 		F.Msg("对方不愿意配合，执行失败。");
 	}
-	F.Msg(`<<run F.resetAction(); F.setPhase('init')>><<dashline>>`, 1);
+	F.Msg(`<<run T.cancel = 1; F.passtime(1); F.resetAction(); F.setPhase('init')>><<dashline>>`, 1);
 };
 
 F.resetMsg = function () {
@@ -528,6 +561,12 @@ F.resetMsg = function () {
 	T.msgId = 0;
 };
 
+F.actionResult = function () {
+	//passtime 跑完后的处理
+	T.phase = "result";
+};
+
+//无论指令成功与否，都会在最后执行的处理。
 F.resetAction = function () {
 	T.phase = "reset";
 
@@ -537,14 +576,20 @@ F.resetAction = function () {
 		F.initCheckFlag();
 		F.setPhase("init");
 		delete T.cancel;
+		delete T.selectActPart;
 		return 0;
 	}
 
 	//缓存最后一个动作
-	V.lastAct = { act: T.selectAct, actPart: T.selectActPart, targetPart: T.selectPart };
+	V.lastAct = T.actionDetail;
+	V.lastCounter = T.counterDetail;
 
 	T.actId = "";
 	T.actPart = "reset";
+
+	delete T.selectActPart;
+	delete T.actionDetail;
+	delete T.counterDetail;
 
 	F.initCheckFlag();
 };
