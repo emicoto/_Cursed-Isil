@@ -22,12 +22,15 @@ Action.kojo.Isil = function(){
       })
 }
 
-:: Action_Isil_Research
+:: Msg_Isil_Research
 <<you>>向$target.name询问了下最近的研究。<br>
 <<dashline>>
 <<nameTag 'Isil'>>
 “研究？最近在研究植物的精华提取……”<br>
 
+:: Kojo_Isil_PCAction_Talk
+“…………”<br>
+<<you>>试着跟人搭话，但不知道该说什么好。<br>
 
 :: Kojo_Isil_Action_Talk 
 “有什么事吗？”<br>

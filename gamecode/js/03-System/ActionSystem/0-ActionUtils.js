@@ -61,6 +61,7 @@ F.setPhase = function (mode) {
 F.resetMsg = function () {
 	S.msg = [];
 	T.msgId = 0;
+	T.noMsg = 0;
 };
 
 F.actionCheckOrder = function (btn) {

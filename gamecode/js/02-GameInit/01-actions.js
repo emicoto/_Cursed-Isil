@@ -211,6 +211,8 @@ class Action {
 		data.forEach((kojo) => {
 			kojo.action.forEach((obj) => {
 				if (!obj?.type) obj.type = "C";
+				if (!obj?.option) obj.option = "Kojo";
+				else obj.option += "/Kojo";
 				Action.add(obj.id, obj);
 			});
 		});

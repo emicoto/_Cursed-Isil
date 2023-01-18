@@ -46,26 +46,23 @@ F.charaEvent = function (cid) {
 	if (cid == tc && !Cflag[cid][`firstMet${pc}`]) {
 		Cflag[cid][`firstMet${pc}`] = 1;
 
-		if (Kojo.put(cid, "Event", "First")) {
+		if (Kojo.put(cid, { type: "Event", id: "First" })) {
 			F.setEvent("Kojo", "Event_First", cid);
 			return new Wikifier(null, "<<goto EventStart>>");
 		}
 	}
 
-	console.log(cid, pc, !Tsv[tc][`metToday${pc}`]);
-
 	//检测是否今天首次见面
 	if (cid === tc && !Tsv[tc][`metToday${pc}`]) {
-		let p1 = pc,
-			p2 = pc == "Isil" ? "Ayres" : "Isil";
+		let p2 = pc == "Isil" ? "Ayres" : "Isil";
 		let setter = `<<set Tsv.${cid}.metToday${pc} to 1>>`;
 
-		if (V.location.chara.containsAll(p1, p2) && !Tsv[tc][`metToday${p2}`]) {
+		if (V.location.chara.has(p2) && !Tsv[tc][`metToday${p2}`]) {
 			setter += `<<set Tsv.${cid}.metToday${p2} to 1>>`;
 		}
 
-		if (Kojo.put(cid, "Daily", "First")) {
-			return F.txtFlow(`${F.charaName(cid)}${Kojo.put(cid, "Daily", "First")}${setter}`, 0, 1);
+		if (Kojo.has(cid, { type: "Daily", id: "First" })) {
+			return F.txtFlow(`${Kojo.put(cid, { type: "Daily", id: "First" })}${setter}`);
 		}
 	}
 

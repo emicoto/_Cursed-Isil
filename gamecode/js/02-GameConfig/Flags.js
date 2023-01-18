@@ -9,6 +9,7 @@ S.SystemConfig = {
 	alwaysShowPCName: 0,
 	showOrder: 1,
 	defaultPC: "Isil",
+	showPCKojo: 1,
 };
 
 //游戏变量设置。GameInit的时候会批量注册到 $flag下。默认值为0。

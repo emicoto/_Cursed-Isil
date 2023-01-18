@@ -1,26 +1,23 @@
 
-:: Action_t0
+:: Msg_PCAction_t0
 /* 接吻 */
 <<actChara>>吻上了<<targetChara>>的嘴唇。<br>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't0')>>
 
-:: Action_t1
+
+:: Msg_PCAction_t1
 /* 亲吻 */
 <<actChara>>亲吻在了<<targetChara>>的<<targetPart>>上，轻吮吸舔，试图留下自己的印记。<br>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't1')>>
 
-:: Action_t2
+
+:: Msg_PCAction_t2
 /* 抚摸 */
 <<actChara>>的手轻抚着<<targetChara>>的<<targetPart>>。<br>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't2')>>
 
-:: Action_t3
+:: Msg_PCAction_t3
 /* 揉捏 */
 <<actChara>>揉捏着<<targetChara>>的<<targetPart>>。<br>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't3')>>
 
-
-:: Action_t4
+:: Msg_PCAction_t4
 /* 吸舔 */
 <<actChara>>
 <<switch T.selectPart>>
@@ -35,10 +32,9 @@
 <<default>>
    含住了<<targetChara>>的<<= groupmatch(T.selectPart,'handL','handR') ? '手指' : '脚趾' >>，像舔舐糖果般吸舔着。<br>
 <</switch>>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't4')>>
 
 
-:: Action_t5
+:: Msg_PCAction_t5
 /* 吸咬 */
 <<actChara>>
 <<switch T.selectPart>>
@@ -49,7 +45,7 @@
 <</switch>>
 <<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't5')>>
 
-:: Action_t6
+:: Msg_PCAction_t6
 /* 逗弄 */
 <<actChara>>
 <<switch T.selectPart>>
@@ -62,9 +58,9 @@
 <<case 'ears'>>
    反复逗弄着<<targetChara>>的耳朵。<br>
 <</switch>>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't6')>>
 
-:: Action_t7
+
+:: Msg_PCAction_t7
 /* 指交 */
 <<actChara>>
 <<switch T.selectPart>>
@@ -75,9 +71,9 @@
 <<case 'urin'>>
  的手指浅浅插入<<targetChara>>的尿道，在入口附近摩擦着。<br>
 <</switch>>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't7')>>
 
-:: Action_t8
+
+:: Msg_PCAction_t8
 /* 插入 */
 <<actChara>>
 <<switch T.selectPart>>
@@ -88,37 +84,31 @@
 <<case 'anal'>>
    以{0}的姿势，用阴茎撑开<<targetChara>>的菊穴，缓缓地进入。<br>
 <</switch>>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't8')>>
 
 
-:: Action_t9
+:: Msg_PCAction_t9
 /* 抽插 */
 <<actChara>>活动腰身，在<<targetChara>>的<<targetPart>>反复出入着。<br>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't9')>>
 
-:: Action_t10
+:: Msg_PCAction_t10
 /* 撸动 */
 <<actChara>>握住<<targetChara>>的阴茎，前后撸动着。<br>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't10')>>
 
 
-:: Action_t11
+:: Msg_PCAction_t11
 /* 抽插 */
 <<actChara>>模拟性交的动作，活动右手在<<targetChara>>的<<targetPart>>反复进出着。<br>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't11')>>
 
 
-:: Action_t12
+:: Msg_PCAction_t12
 /* 深入 */
 <<actChara>>深深插入了<<targetChara>>的<<targetPart>><br>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't12')>>
 
-:: Action_t13
+:: Msg_PCAction_t13
 /* 深入 */
 <<actChara>>让<<targetChara>>含住了自己的阴茎<br>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't113')>>
 
-:: Action_Rotor
+:: Msg_PCAction_Rotor
 /* 跳蛋 */
 <<actChara>>
 <<switch T.selectPart>>
@@ -127,15 +117,13 @@
 <<default>>
 将跳蛋贴在<<targetChara>>的<<targetPart>>，刺激着。<br>
 <</switch>>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'Rotor')>>
 
-:: Action_Vibrator
+:: Msg_PCAction_Vibrator
 /* 震动棒 */
 <<actChara>>将震动棒塞进了<<targetChara>>的<<targetPart>>。<br>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'Vibrator')>>
 
 /* 触手系 */
-:: Action_x0
+:: Msg_PCAction_x0
 /* 揉捏 */
 触手
 <<switch T.selectPart>>
@@ -148,10 +136,9 @@
 <<case 'nipple'>>
    缠绕在<<targetChara>>的乳头上，巧妙地反复揉捏给予刺激。<br>
 <</switch>>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x0')>>
 
 
-:: Action_x1
+:: Msg_PCAction_x1
 /* 逗弄 */
 <<switch T.selectPart>>
 <<case 'mouth'>>
@@ -163,35 +150,28 @@
 <<case 'urin'>>
    刺探、深入、蠕动。触手反复逗弄着<<targetChara>>的尿道，给予极大的刺激。<br>
 <</switch>>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x1')>>
 
 
-
-:: Action_x2
+:: Msg_PCAction_x2
 /* 吸舔 */
 吸盘触手吸附在<<targetChara>>的<<targetPart>>上，反复吸舔着。<br>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x2')>>
 
-
-:: Action_x3
+:: Msg_PCAction_x3
 /* 吸咬 */
 口器触手含住<<targetChara>>的<<targetPart>>，吸吮轻咬着。<br>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x3')>>
 
 
-:: Action_x4
+:: Msg_PCAction_x4
 /* 撸动 */
 触手缠绕住<<targetChara>>的阴茎，反复撸动着。<br>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x4')>>
 
 
-:: Action_x5
+:: Msg_PCAction_x5
 /* 插入 */
 触手钻进了<<targetChara>>的<<targetPart>>，缓缓往内深入。<br>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x5')>>
 
 
-:: Action_x6
+:: Msg_PCAction_x6
 /* 蠕动 */
 触手
 <<switch T.selectPart>>
@@ -202,50 +182,42 @@
 <<default>>
 缠绕着<<targetChara>>的身躯，在<<targetPart>>表面攀爬蠕动着。<br>
 <</switch>>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x6')>>
 
 
-:: Action_x7
+:: Msg_PCAction_x7
 /* 抽插 */
 触手不停在<<targetChara>>的<<targetPart>>进出，抽插蠕动着。<br>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x7')>>
 
 
-:: Action_x8
+:: Msg_PCAction_x8
 /* 深入 */
 触手往<<targetChara>>的<<targetPart>>内部发出了进攻，往更深处蠕进。<br>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x8')>>
 
 
-:: Action_x9
+:: Msg_PCAction_x9
 /* 抽送 */
 触手激烈地在<<targetChara>>的<<targetPart>>进出着，反复抽送着触身给予莫大的刺激。<br>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x9')>>
 
 
-:: Action_x10
+:: Msg_PCAction_x10
 /* 鞭打 */
 触手甩动触鞭，用巧妙的力度鞭打在<<targetChara>>的<<targetPart>>上。<br>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x10')>>
 
 
-:: Action_x11
+:: Msg_PCAction_x11
 /* 刺入 */
 触手伸出尖锐的细针，狠狠地刺入了<<targetChara>>的<<targetPart>>。<br>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x11')>>
 
-:: Action_x12
+:: Msg_PCAction_x12
 /* 灌入 */
 触手往<<targetChara>>的<<targetPart>>深处灌入大量的药液。<br>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x12')>>
 
 
-:: Action_x13
+:: Msg_PCAction_x13
 /* 注射 */
 触手伸出尖锐的针头，刺入<<targetChara>>的<<targetPart>>并注入药液。<br>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 'x13')>>
 
-:: Action_pose0
+:: Msg_PCAction_pose0
 /* 正常位 */
 <<switch T.selectPart>>
 <<case 'vagina'>>
@@ -254,7 +226,7 @@
    <<you>>把身体覆盖在$target.name身上，掰开$target.name的双腿从正面把阴茎插进了肛门。<br>
 <</switch>>
 
-:: Action_pose1
+:: Msg_PCAction_pose1
 /* 背后位 */
 <<switch T.selectPart>>
 <<case 'vagina'>>
@@ -263,7 +235,7 @@
    <<you>>如同野兽般把$target.name按倒在身下，掰开肉瓣从后面进入了$target.name的身体。<br>
 <</switch>>
 
-:: Action_pose2
+:: Msg_PCAction_pose2
 /* 正座位 */
 <<switch T.selectPart>>
 <<case 'vagina'>>
@@ -272,7 +244,7 @@
    <<you>>让$target.name面对面坐在自己身上，一边亲吻着对方一边让$target.name缓缓坐下将自己的阴茎收纳到肛门里。<br>
 <</switch>>
 
-:: Action_pose3
+:: Msg_PCAction_pose3
 /* 背座位 */
 <<switch T.selectPart>>
 <<case 'vagina'>>
@@ -281,7 +253,7 @@
    <<you>>让$target.name背对自己跨坐到身上，从背后搂住对方，让其慢慢坐下把<<you>>的阴茎吞入肛门里。<br>
 <</switch>>
 
-:: Action_pose4
+:: Msg_PCAction_pose4
 /* 骑乘位 */
 <<switch T.selectPart>>
 <<case 'vagina'>>
@@ -290,7 +262,7 @@
    <<you>>让$target.name骑在自己身上，一手扶着对方腰身让其以舒适的角度把<<you>>的阴茎收入肛门中。<br>
 <</switch>>
 
-:: Action_pose5
+:: Msg_PCAction_pose5
 /* 侧卧位 */
 <<switch T.selectPart>>
 <<case 'vagina'>>
@@ -299,7 +271,7 @@
    <<you>>让$target.name侧卧躺在自己身边，一手穿过对方腰身，从后面缓缓插入$target.name的肛门。<br>
 <</switch>>
 
-:: Action_pose6
+:: Msg_PCAction_pose6
 /* 趴卧位 */
 <<switch T.selectPart>>
 <<case 'vagina'>>

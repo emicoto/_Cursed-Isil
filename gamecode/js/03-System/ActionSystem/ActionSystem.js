@@ -99,6 +99,8 @@ F.checkAction = function (id, phase) {
 };
 
 F.beforeAction = function (id) {
+	const data = Action.data[id];
+
 	T.phase = "before";
 	let reText = "";
 
@@ -110,27 +112,30 @@ F.beforeAction = function (id) {
 
 	//执行before系列事件。这些都是纯文本，只能有选项相关操作。
 	//先执行通用的before事件。主要显示场景变化或持续状态。
-	reText = Story.get("Action_Common:Before").text + ` <<run F.ActNext()>><<if !T.noMsg>><<dashline>><</if>>`;
+	reText = Story.get("Msg_Action_Common:Before").text + ` <<run F.ActNext()>><<if !T.noMsg>><<dashline>><</if>>`;
 
 	F.Msg(reText);
 
-	let txt = F.playerName(),
-		t,
-		c;
+	let type = "PCAction",
+		dif = "Before",
+		check = 1;
 
 	//指令专属的before事件
-	if (Story.has(`Action_${id}:Before`)) {
-		txt = txt + Story.get(`Action_${id}:Before`).text + "<br>";
+	if (Kojo.has(pc, { type, id, dif, check })) {
+		txt = Kojo.put(pc, { type, id, dif });
 		F.Msg(txt);
-		t = 1;
-		c = 1;
 	}
 
 	//执行口上侧before事件。
-	if (Kojo.has(tc, "Action", id, "Before")) {
-		txt = (t ? "" : txt) + Kojo.put(tc, "Action", id, "Before");
+	type = "Action";
+	if (Kojo.has(tc, { type, id, dif })) {
+		txt = Kojo.put(tc, { type, id, dif });
 		F.Msg(txt);
-		c = 1;
+	}
+
+	//角色自定指令的情况。因为格式不一样，前面结果肯定为空(￣▽￣")
+	if (data?.option?.has("Kojo") && Kojo.has(pc, { type: "custom", id, dif })) {
+		F.Msg(Kojo.put(pc, { type: "custom", id, dif }));
 	}
 
 	//在执行文本最后追加下一步，取消的话就直接取消剩余执行事件。
@@ -141,13 +146,9 @@ F.beforeAction = function (id) {
 	//检测是否存在特殊的before处理，存在就在这执行。
 	//if(Action.data[id]?.before) Action.data[id].before();
 
-	if (!Story.has(`Action_${id}`)) {
+	if (!Story.has(`Msg_PCAction_${id}`) && !data?.option?.has("Kojo")) {
 		F.txtFlow("缺乏事件文本", 30, 1);
 		F.setPhase("init");
-	}
-	//已经出现过名牌的话下一步骤会略过
-	else if (c) {
-		T.noNameTag = 1;
 	}
 };
 
@@ -173,8 +174,8 @@ F.doAction = function (id) {
 F.actionEvent = function (id, state) {
 	const data = Action.data[id];
 
-	let title = `Action_${id}`;
-	let txt = T.noNameTag ? "" : F.playerName();
+	let tag = T.noNameTag,
+		txt = "";
 
 	T.phase = "event";
 	F.resetMsg();
@@ -191,35 +192,58 @@ F.actionEvent = function (id, state) {
 	}
 
 	//强制时的分支。如果存在的话。
-	if (T.force && Story.has(title + ":Force")) {
-		txt = txt + Story.get(title + ":Force").text;
-	} else {
-		txt = txt + Story.get(title).text;
+	let type = "PCAction",
+		dif = "Force",
+		check = 1;
+
+	//检测内容文本是否存在。如果PC侧存在主动口上，则替换成pc的。否则显示系统默认文。
+	//如果需要先显示系统文再显示pc和npc口上的情况，还是直接在系统文内设置吧(￣▽￣")
+	if (T.force && Kojo.has(pc, { type, id, dif, check })) {
+		txt = Kojo.put(pc, { type, id, dif, tag });
+	} else if (Kojo.has(pc, { type, id, check })) {
+		txt = Kojo.put(pc, { type, id, tag });
 	}
 
-	//转换口上内容
-	txt = F.convertKojo(txt);
+	//角色自定指令的情况。因为格式不一样，前面结果肯定为空(￣▽￣")
+	if (data?.option?.has("Kojo") && Kojo.has(pc, { type: "custom", id })) {
+		txt = Kojo.put(pc, { type: "custom", id });
+	}
 
-	F.Msg(txt + "<br>");
+	//检测角色口上。如果系统文中就包含了口上的调用，就跳过。
+	type = "Action";
+	if (txt.includes("Kojo.put") === false && Kojo.has(tc, { type, id })) {
+		txt += Kojo.put(tc, { type, id });
+	} else if (txt.includes("Kojo.put")) {
+		txt = F.convertKojo(txt);
+	}
+
+	F.Msg(txt);
 	//设置下一个环节的flag。进入counter环节。对象概率执行counter动作。之后才是result和after事件
 	F.Msg(`<<run Action.data['${id}'].effect(); F.setPhase('counter');>>`, 1);
 };
 
 F.actionAfter = function (id) {
-	let name = T.noNameTag ? "" : F.playerName();
-	let title = `Action_${id}:After`;
+	const data = Action.data[id];
+	let type = "PCAction",
+		dif = "After",
+		check = 1;
 	let c;
 	T.phase = "after";
 
-	if (Story.has(title)) {
-		let txt = `${name}${Story.get(title).text}`;
-		F.Msg(txt);
+	if (Kojo.has(pc, { type, id, dif, check })) {
+		F.Msg(Kojo.put(pc, { type, id, dif }));
 		c = 1;
 	}
 
-	if (Kojo.has(tc, "Action", id, "After")) {
-		F.Msg(Kojo.put(tc, "Action", id, "After"));
+	type = "Action";
+	if (Kojo.has(tc, { type, id, dif })) {
+		F.Msg(Kojo.put(tc, { type, id, dif }));
 		c = 1;
+	}
+
+	//角色自定指令的情况。因为格式不一样，前面结果肯定为空(￣▽￣")
+	if (data?.option?.has("Kojo") && Kojo.has(pc, { type: "custom", id, dif })) {
+		F.Msg(Kojo.put(pc, { type: "custom", id, dif }));
 	}
 
 	//有事件的时候滞后处理
@@ -231,11 +255,14 @@ F.actionAfter = function (id) {
 };
 
 F.actionCancel = function (id) {
-	let name = T.noNameTag ? "" : F.playerName();
+	let tag = T.noNameTag,
+		type = "PCAction",
+		dif = "Cancel",
+		check = 1;
 
-	if (Story.has(`Action_${id}:Cancel`)) {
-		F.Msg(name + Story.get(`Action_${id}:Cancel`).text);
-		F.Msg(`<<run T.cancel = 1; F.passtime(1); F.resetAction(); F.setPhase('init')>><<dashline>>`, 1);
+	if (Kojo.has(pc, { type, id, dif, check, tag })) {
+		F.Msg(Kojo.put(pc, { type, id, dif, tag }));
+		F.Msg(`<<run T.cancel = 1; F.passtime(1); F.resetAction(); F.setPhase('init')>>`, 1);
 	} else {
 		T.cancel = 1;
 		F.resetAction();
@@ -244,14 +271,18 @@ F.actionCancel = function (id) {
 };
 
 F.actionFailed = function (id) {
-	let name = T.noNameTag ? "" : F.playerName();
+	let tag = T.noNameTag,
+		type = "PCAction",
+		dif = "Failed",
+		check = 1;
 
-	if (Story.has(`Action_${id}:Failed`)) {
-		F.Msg(name + Story.get(`Action_${id}:Failed`).text);
+	if (Kojo.has(pc, { type, id, dif, tag, check })) {
+		F.Msg(Kojo.put(pc, { type, id, dif, tag }));
 	} else {
 		F.Msg("对方不愿意配合，执行失败。");
 	}
-	F.Msg(`<<run T.cancel = 1; F.passtime(1); F.resetAction(); F.setPhase('init')>><<dashline>>`, 1);
+
+	F.Msg(`<<run T.cancel = 1; F.passtime(1); F.resetAction(); F.setPhase('init')>>`, 1);
 };
 
 F.actionResult = function () {

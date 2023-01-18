@@ -16,7 +16,7 @@ class Kojo {
 	}
 
 	static title(cid, type, id, dif) {
-		if (dif && ["Before", "After", "Cancel", "Keep", "Failed"].includes(dif)) {
+		if (dif && ["Before", "After", "Cancel", "Keep", "Failed", "Force"].includes(dif)) {
 			dif = ":" + dif;
 		} else if (dif) {
 			dif = "_" + dif;
@@ -32,8 +32,17 @@ class Kojo {
 		return `Kojo_${cid}_${type}${id ? "_" + id : ""}${dif}`;
 	}
 
-	static has(cid, type, id, dif) {
+	static has(cid, { type, id, dif, check } = {}) {
 		let title = Kojo.title(cid, type, id, dif);
+
+		if (type == "custom") {
+			title = `Msg_${id}${dif ? `:${dif}` : ""}`;
+		}
+
+		if (check && !Story.has(title)) {
+			title = `Msg_${type}${id ? `_${id}` : ""}${dif ? `:${dif}` : ""}`;
+			return Story.has(title);
+		}
 		return Story.has(title);
 	}
 	/**
@@ -44,20 +53,44 @@ class Kojo {
 	 * @param {string} branch
 	 * @returns
 	 */
-	static put(cid, type, id, dif) {
+	static put(cid, { type, id, dif, tag } = {}) {
 		let title = Kojo.title(cid, type, id, dif);
 
-		if (Story.has(title)) {
-			let txt = Story.get(title).text;
-			if (!txt.includes("<<nameTag") && type.includes("Action")) {
-				txt = `<br><<nameTag '${cid}'>>` + txt;
-			}
-			return txt + "<br>";
+		if (type == "custom") {
+			title = `Msg_${id}${dif ? `:${dif}` : ""}`;
 		}
 
-		title = `Messsage_${type}${id ? "_" + id : ""}${dif}`;
+		let retext = "";
+
+		T.noMsg = 0;
+
 		if (Story.has(title)) {
-			return Story.get(title).text + "<br>";
+			retext = Story.get(title).text;
+		}
+
+		if (cid == pc && type == "PCAction" && !V.system.showPCKojo) {
+			retext = "";
+		}
+
+		if (!retext) {
+			title = `Msg_${type}${id ? `_${id}` : ""}${dif ? `:${dif}` : ""}`;
+			if (Story.has(title)) {
+				retext = Story.get(title).text;
+			}
+		}
+		if (Config.debug) console.log(title, retext);
+
+		if (retext) {
+			let matcher = [`<<nameTag '${cid}'>>`, `<<nameTag "${cid}">>`];
+			if (!retext.has(matcher) && !tag) {
+				retext = `<<nameTag '${cid}'>>` + retext;
+
+				if (cid == pc) T.noNameTag = 1;
+				else T.noNameTag = 0;
+			}
+			retext += "<<dashline>>";
+
+			return retext;
 		}
 
 		T.noMsg = 1;
@@ -137,6 +170,9 @@ F.convertKojo = function (txt) {
 		const args = t[1].replace(/\s+/g, "").replace(/'|"/g, "").split(",");
 
 		//cid的转换。还是直接eval吧。
+		if (args[0].includes("$")) {
+			args[0] = args[0].replace("$", "V.");
+		}
 		let cid = eval(args[0]);
 
 		if (Config.debug) console.log("args", args, "cid", cid);
