@@ -7,6 +7,9 @@ class Kojo {
 	}
 
 	static get(id, type) {
+		//当角色口上与角色id不一致时
+		if (C[id].kojo !== id) id = C[id].kojo;
+
 		let data = Kojo.data[id];
 		if (!data) return;
 		return type ? data[type] : data;
@@ -21,7 +24,7 @@ class Kojo {
 			dif = "";
 		}
 
-		//如果使用口上与id不一致，则覆盖
+		//如果使用口上与id不一致，则覆盖。大概是随机NPC会不一样吧。
 		if (C[cid].kojo !== cid) {
 			cid = C[cid].kojo;
 		}
@@ -45,7 +48,11 @@ class Kojo {
 		let title = Kojo.title(cid, type, id, dif);
 
 		if (Story.has(title)) {
-			return Story.get(title).text + "<br>";
+			let txt = Story.get(title).text;
+			if (!txt.includes("<<nameTag") && type.includes("Action")) {
+				txt = `<br><<nameTag '${cid}'>>` + txt;
+			}
+			return txt + "<br>";
 		}
 
 		title = `Messsage_${type}${id ? "_" + id : ""}${dif}`;
@@ -64,13 +71,14 @@ class Kojo {
 		this.intro = [];
 		this.schedule = [];
 		this.preset = [];
-		this.comFilter = () => {
+		this.filter = () => {
 			return 1;
 		};
-		this.customCommand = {};
+		this.action = [];
 		this.event = [];
 		this.home = "void";
 		this.relation = {};
+		this.counter = [];
 	}
 	Intro(str) {
 		this.intro = str;
@@ -81,13 +89,13 @@ class Kojo {
 		else this.schedule.push(list);
 		return this;
 	}
-	setComFilter(cond) {
-		this.comFilter = cond;
+	Filter(cond) {
+		this.filter = cond;
 		return this;
 	}
-	setCommand(id, name, func) {
-		if (id) this.customCommand[id] = { name: name, do: func };
-		else this.customCommand.push({ name: name, do: func });
+	Action(id, obj) {
+		if (id) this.action[id] = obj;
+		else this.action.push(obj);
 		return this;
 	}
 	Event(id, name, config, cond) {
@@ -102,6 +110,11 @@ class Kojo {
 	}
 	Relation(id, des, val) {
 		this.relation[id] = [val, des];
+		return this;
+	}
+	Counter(id, obj) {
+		if (id) this.counter[id] = obj;
+		else this.counter.push(obj);
 		return this;
 	}
 }

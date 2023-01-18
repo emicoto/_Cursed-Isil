@@ -206,6 +206,15 @@ class Action {
 		});
 		console.log(Action.data);
 	}
+	static initKojo() {
+		let data = Object.values(Kojo.data).filter((obj) => obj.action.length);
+		data.forEach((kojo) => {
+			kojo.action.forEach((obj) => {
+				if (!obj?.type) obj.type = "C";
+				Action.add(obj.id, obj);
+			});
+		});
+	}
 	static output(mode, type) {
 		const txt = Object.values(Action.data)
 			.filter(
@@ -259,5 +268,6 @@ class Action {
 
 window.Action = Action;
 Action.data = actList;
+Action.kojo = {};
 
 Action.init();

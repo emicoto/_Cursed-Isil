@@ -24,11 +24,15 @@ Action.globalFilter = function (id) {
 	if (id.match(/^use\S+/) && Flag.mode < 2) return 0;
 
 	//占用中。解除倒是没问题。
-	if (T.selectActPart && Using[pc][T.selectActPart] == id) return 1;
+	if (T.selectActPart && Using[pc][T.selectActPart]?.act == id) return 1;
 	if (T.selectActPart && Using[pc][T.selectActPart]?.act !== "") return 0;
 
 	//选择过滤器中、
 	if (T.actPartFilter !== "all" && data.usePart && !data.usePart.has(T.actPartFilter)) return 0;
+
+	//角色侧的控制。
+	const kojo = Kojo.get(tc, "filter");
+	if (kojo && !kojo()) return 0;
 
 	//特定分类批处理
 	switch (data.type) {
@@ -56,7 +60,7 @@ Action.globalFilter = function (id) {
 			break;
 
 		case "体位":
-			if (T.selectAct !== "t8") return 0;
+			if (groupmatch(T.selectAct, "t8", "r1") === false) return 0;
 			break;
 
 		//要有对应道具才行

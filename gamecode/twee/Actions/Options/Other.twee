@@ -1,4 +1,4 @@
-:: Action_Other_Option[script]
+:: Action_Command_Option[script]
 /* 直播 */
 Action.set('Stream')
      .Filter(()=>{
@@ -23,6 +23,8 @@ Action.set('Party')
          return 0
       })
 
+
+:: Action_Other_Options[script]
 /* 衣服管理 */
 Action.set('Clothes')
      .Filter(()=>{

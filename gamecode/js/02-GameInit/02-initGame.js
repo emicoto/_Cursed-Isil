@@ -30,8 +30,7 @@ F.initGame = function () {
 	V.exit = "MainLoop";
 
 	//-------->> 系统变量 <<-----------//
-	V.system = clone(S.config);
-
+	V.system = S.SystemConfig;
 	V.ui = {
 		sidebarpalam: false,
 		overlayer: "",
@@ -41,7 +40,7 @@ F.initGame = function () {
 	V.gametime = { s: 0, m: 0, h: 0, d: 0 };
 
 	//-------->> 指令相关 <<-------------//
-	S.comFilter = new Array(300).fill(0);
+	S.comFilter = {};
 	V.currentFilter = "all";
 	V.selectCom = 0;
 	V.lastCom = 0;
@@ -59,7 +58,7 @@ F.initGame = function () {
 		activePC: "Isil/m0/",
 	};
 
-	D.systemFlag.forEach((key) => {
+	D.gameFlag.forEach((key) => {
 		V.flag[key] = 0;
 	});
 

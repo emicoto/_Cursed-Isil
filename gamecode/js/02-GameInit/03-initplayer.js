@@ -136,6 +136,12 @@ F.initCharacters = function () {
 		F.resetBase(V.chara[i]);
 	}
 
+	//游戏初始化时才初始化口上侧登录的自定义动作。
+	Action.initKojo();
+	for (let chara in Action.kojo) {
+		Action.kojo[chara]();
+	}
+
 	V.master = "m0";
 	V.pc = "Ayres";
 	V.tc = "Isil";

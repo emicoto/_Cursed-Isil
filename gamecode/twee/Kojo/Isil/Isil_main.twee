@@ -1,0 +1,35 @@
+:: Kojo_Isil_Regist[script]
+/* 代码区，用于注册角色颜色、额外的设定、flag信息等 */
+Kojo.set('Isil','#F9F570')
+    .Intro('光属性的高等精灵。') //角色简介。
+    .Home('学生宿舍S302')
+    .Relation('Ayres', '亦敌亦友', 110) // id, 关系描述, 相性值
+    .Schedule(0,['魔法研究室',[1,3,5], 8, 12, 3, 80]) //日程表, 场所, 星期几， 起始时间, 结束时间, 在该地点成功召唤后滞留时长, 召唤概率 
+    .Event({ 
+        name:'Test',
+        config:{  }, //一些额外处理？暂时没想到……
+        cond:()=>{ //事件执行条件。
+            return V.system.debug
+        }
+    })
+    .Action(0,{id:'Isil_Research',name:'研究进展',type:'C'})
+
+:: Kojo_Isil_Actions_Option[script]
+Action.kojo.Isil = function(){
+   Action.set('Isil_Research')
+      .Filter(()=>{
+         return tc === 'Isil'
+      })
+}
+
+:: Action_Isil_Research
+<<you>>向$target.name询问了下最近的研究。<br>
+<<dashline>>
+<<nameTag 'Isil'>>
+“研究？最近在研究植物的精华提取……”<br>
+
+
+:: Kojo_Isil_Action_Talk 
+“有什么事吗？”<br>
+“嗯……这个术式是……”<br>
+$target.name敷衍地附和着你的话。<br>

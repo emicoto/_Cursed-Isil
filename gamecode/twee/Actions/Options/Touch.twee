@@ -158,3 +158,15 @@ Action.set('t12')
      .Order(()=>{
          return 0
       })
+      
+/* 口交 */
+Action.set('t13')
+     .Filter(()=>{
+         return 1
+      })
+     .Check(()=>{
+         return 1
+      })
+     .Order(()=>{
+         return 0
+      })
