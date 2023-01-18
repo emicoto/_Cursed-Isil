@@ -77,14 +77,14 @@ F.ComCheck = function (id) {
 	if (F.uncons(target) || !F.canMove(target)) T.orderGoal = 0;
 
 	T.comPhase = "before";
+	let txt = "";
 
-	let txt = F.playerName();
 	let t, c;
 
 	//角色每次执行COM时的个人检测。
 	//如果口上侧要进行阻止某个指令进行，也会在这里打断。
 	if (Story.has(`Kojo_${tc}_Com`)) {
-		new Wikifier("#hidden", Story.get(`Kojo_${tc}_COM`));
+		new Wikifier("#hidden", Story.get(`Kojo_${tc}_Com`).text);
 	}
 
 	//指令执行时暂时去掉指令栏
@@ -100,19 +100,18 @@ F.ComCheck = function (id) {
 	F.ComMsg(`${Story.get("Command::Before").text}<<run F.ComNext()>><<dashline>>`);
 
 	//指令专属的before事件
-	if (Story.has(`Com_${id}::Before`)) {
-		txt = txt + Story.get(`Com_{id}::Before`).text + "<br>";
+	let type = "Com",
+		dif = "Before";
+	if (Kojo.has(pc, { type, id, dif, check: 1 })) {
+		txt = Kojo.put(pc, { type, id, dif });
 		F.ComMsg(txt);
-		console.log("combefore?");
 		c = 1;
-		t = 1;
 	}
 
 	//执行口上侧Before事件。
-	if (Kojo.put(tc, "Com", id, "Before")) {
-		txt = (t ? "" : txt) + Kojo.put(tc, "Com", id, "Before") + "<br>";
+	if (Kojo.has(tc, { type, id, dif })) {
+		txt = Kojo.put(tc, { type, id, dif });
 		F.ComMsg(txt);
-		console.log("kojobefore?");
 		c = 1;
 	}
 
@@ -135,9 +134,8 @@ F.ComCheck = function (id) {
 F.ComEvent = function (id, next) {
 	const com = comdata[id];
 	const resetHtml = `<<run F.resetCom()>><<dashline>>`;
-
-	let title = `Com_${id}`;
-	let txt = next ? "" : F.playerName();
+	let txt = "",
+		type = "Com";
 	S.msg = [];
 	T.msgId = 0;
 	T.comPhase = "event";
@@ -147,9 +145,9 @@ F.ComEvent = function (id, next) {
 
 	if (T.comCancel) {
 		F.ComMsg(resetHtml);
-	} else if (id === 0) {
+	} else if (com.name == "移动") {
 		//移动直接跳转到移动界面
-		F.ComMsg(Story.get(title).text);
+		F.ComMsg(Story.get(`Com_G0`).text);
 	}
 	//确认主控有能力执行
 	else if (T.comAble) {
@@ -160,8 +158,7 @@ F.ComEvent = function (id, next) {
 			(T.orderGoal > 0 && T.comorder >= T.orderGoal) ||
 			(com?.forceAble && T.comorder + S.ignoreOrder >= T.orderGoal)
 		) {
-			V.passtime = com.time;
-			txt = txt + Story.get(title).text;
+			T.passtime = com.time;
 
 			if (T.comorder < T.orderGoal && !V.system.debug) {
 				S.msg.push(
@@ -170,21 +167,37 @@ F.ComEvent = function (id, next) {
 					}<br>`
 				);
 
-				if (Story.has(title + ":Force")) txt = txt + Story.get(title + ":Force").text;
+				if (Kojo.has(pc, { type, id, dif: "Force", check: 1 })) {
+					txt = Kojo.put(pc, { type, id, dif: "Force" });
+				}
+				if (txt.includes("Kojo.put") === false && Kojo.has(tc, { type, id, dif: "Force" })) {
+					txt += Kojo.put(tc, { type, id, dif: "Force" });
+				}
 
 				T.force = true;
+			} else {
+				txt = Kojo.put(pc, { type, id });
+
+				if (txt.includes("Kojo.put") === false && Kojo.has(tc, { type, id })) {
+					txt += Kojo.put(tc, { type, id });
+				}
 			}
-			txt = F.convertKojo(txt);
+
+			if (txt.includes("Kojo.put")) txt = F.convertKojo(txt);
+
 			F.ComMsg(txt);
 
-			F.ComMsg(`<<run comdata['${id}'].source(); F.passtime(V.passtime); F.ComResult()>>`, 1);
+			F.ComMsg(`<<run comdata['${id}'].source(); F.passtime(T.passtime); F.ComResult()>>`, 1);
 
 			//确认After事件。如果有就添加到 Msg中。
-			if (Story.has(title + ":After")) {
-				txt = `<br><<set _comPhase to 'after'` + Story.get(title + ":After").text;
-
-				txt = F.convertKojo(txt);
+			if (Kojo.has(pc, { type, id, dif: "After", check: 1 })) {
+				txt = `<br><<set _comPhase to 'after'>>` + Kojo.put(pc, { type, id, dif: "After" });
+				if (txt.includes("Kojo.put")) txt = F.convertKojo(txt);
 				F.ComMsg(txt);
+			}
+
+			if (txt.includes("Kojo.put") === false && Kojo.has(tc, { type, id, dif: "After" })) {
+				F.ComMsg(Kojo.put(tc, { type, id, dif: "After" }));
 			}
 
 			//最后加ComEnd()
@@ -196,8 +209,8 @@ F.ComEvent = function (id, next) {
 	}
 	//取消执行
 	else {
-		if (Story.has(title + ":Cancel")) {
-			txt = txt + Story.get(title + ":Cancel").text;
+		if (Kojo.has(pc, { type, id, dif: "Cancel", check: 1 })) {
+			txt = Kojo.put(pc, { type, id, dif: "Cancel" });
 			F.ComMsg(txt);
 		} else
 			F.ComMsg(

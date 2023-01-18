@@ -143,13 +143,13 @@ F.initActMenu = function (actid, usepart) {
 	//有可选部位才生成
 	if (useParts.length) {
 		useParts.forEach((part) => {
-			if (F.partAble(actid, part, pc)) partsMenu.push(F.partBtn(_data, part, 1));
+			if (F.partAble(actid, part, pc) && _data.check(part)) partsMenu.push(F.partBtn(_data, part, 1));
 		});
 	}
 
 	if (targetParts.length && _data?.option !== "noSelectPart") {
 		targetParts.forEach((part) => {
-			if (F.partAble(actid, part, tc)) partsMenu.push(F.partBtn(_data, part));
+			if (F.partAble(actid, part, tc) && _data.check(part)) partsMenu.push(F.partBtn(_data, part));
 		});
 	}
 

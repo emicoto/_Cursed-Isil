@@ -165,13 +165,13 @@ updateActionMenu = function (currentAction, waitInput) {
 	//有可选部位才生成
 	if (selectableParts1.length) {
 		selectableParts1.forEach((part) => {
-			if (F.partAble(currentAction, part, pc)) partsMenu.push(createPartsButton(data, part, 1));
+			if (F.partAble(currentAction, part, pc) && data.check(part)) partsMenu.push(createPartsButton(data, part, 1));
 		});
 	}
 
 	if (selectableParts2.length && data?.option !== "noSelectPart") {
 		selectableParts2.forEach((part) => {
-			if (F.partAble(currentAction, part, tc)) partsMenu.push(createPartsButton(_data, part));
+			if (F.partAble(currentAction, part, tc) && data.check(part)) partsMenu.push(createPartsButton(data, part));
 		});
 	}
 

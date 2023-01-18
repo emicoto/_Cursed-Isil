@@ -25,7 +25,8 @@
 :: PassageReady
 <<run
     _passageready = true;
-    $lastsession = $passage;
+    if($lastsession !== $passage)
+      $lastsession = $passage;
 
     //复原角色的class
     if(G.onLoad || G.onReload){

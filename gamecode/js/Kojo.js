@@ -73,7 +73,7 @@ class Kojo {
 		}
 
 		if (!retext) {
-			title = `Msg_${type}${id ? `_${id}` : ""}${dif ? `:${dif}` : ""}`;
+			title = `${type?.has("Action") ? "Msg_" : ""}${type}${id ? `_${id}` : ""}${dif ? `:${dif}` : ""}`;
 			if (Story.has(title)) {
 				retext = Story.get(title).text;
 			}

@@ -113,9 +113,14 @@ Action.globalPartAble = function (id, part, cid) {
 	const data = Action.data[id];
 	const chara = C[cid];
 
-	if (chara.gender == "female" && part == "penis") return 0;
-
-	if (chara.gender == "male" && part == "vagina") return 0;
+	switch (part) {
+		case "critoris":
+			if (chara.gender !== "female") return 0;
+		case "penis":
+			if (chara.gender == "female") return 0;
+		case "vagina":
+			if (chara.gender == "male") return 0;
+	}
 
 	return Using[cid][part].act == "" || Using[cid][part].act == id;
 };

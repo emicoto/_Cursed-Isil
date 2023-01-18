@@ -5,18 +5,18 @@ createActionBton = function (currentSelect, outputData) {
 };
 
 checkSelectableParts = function (actionId, filterMode) {
-	const { type, usePart, targetPart, option } = Acion.data[actionId];
+	const { type, usePart, targetPart, option, check } = Acion.data[actionId];
 	//检测是否存在可选部位，以及是否在Using占用中。
 	const selectAbleParts = [];
 	if (usePart && (!filterMode || filterMode == 1)) {
 		usePart.forEach((part) => {
-			if (Action.globalPartAble(actionId, part, pc)) selectAbleParts.push(part);
+			if (Action.globalPartAble(actionId, part, pc) && check(part)) selectAbleParts.push(part);
 		});
 	}
 
 	if (targetPart && (!filterMode || filterMode == 2)) {
 		targetPart.forEach((part) => {
-			if (Action.globalPartAble(actionId, part, tc)) {
+			if (Action.globalPartAble(actionId, part, tc) && check(part)) {
 				selectAbleParts.push(part);
 			}
 		});
@@ -67,29 +67,28 @@ inputAction = function (actionId, inputType, selection) {
 		//如果可选项目只有一个，就立刻执行。否则就等待输入部位选项。
 		//如果数据设置有多个选项但全部都执行检测失败时，就会返回0。 动作档案内本来就没有可选项的话……压根不会传递到这个位置啊！！
 		//如果左右手都空着，就默认用右手执行。
-		let able1 = checkSelectableParts(actionId, 1)
-		let able2 = checkSelectableParts(actionId, 2)
-		
-		const hasOption = ()=>{
-			let actOption = (able1.length > 1 && !justHands(able1))
-			let tarOption = (able2.length > 1 && !justHands(able2))
-			let total = able1.length + able2.length
-			
-			if(able1.length <= 1 && able2.length <= 1) return 0
-			return actOption || tarOption
-		}
-		
-		if ( hasOption() ) {
+		let able1 = checkSelectableParts(actionId, 1);
+		let able2 = checkSelectableParts(actionId, 2);
+
+		const hasOption = () => {
+			let actOption = able1.length > 1 && !justHands(able1);
+			let tarOption = able2.length > 1 && !justHands(able2);
+			let total = able1.length + able2.length;
+
+			if (able1.length <= 1 && able2.length <= 1) return 0;
+			return actOption || tarOption;
+		};
+
+		if (hasOption()) {
 			//需等待执行就返回，并刷新界面。
 			F.initCheckFlag();
 			F.resetUI();
-			return 0
+			return 0;
 		}
-		
+
 		//自动选择部位。
-		T.select.ap = able1[0]
-		T.select.tp = able2[0]
-		
+		T.select.ap = able1[0];
+		T.select.tp = able2[0];
 	}
 
 	if (inputType == "partsOption-actor") {
@@ -99,18 +98,18 @@ inputAction = function (actionId, inputType, selection) {
 		if (able.length > 1 && !justHands(able)) {
 			F.initCheckFlag();
 			F.resetUI();
-			return 0
+			return 0;
 		}
 	}
 
 	if (inputType == "partsOption-target") {
 		//选择目标部位。如果存在体位选择，则等待下一个输入。
 		T.select.tp = selection;
-		const data = Action.data[T.select.id]
-		if( groupmatch(data.name, '性交', '逆性交')){
+		const data = Action.data[T.select.id];
+		if (groupmatch(data.name, "性交", "逆性交")) {
 			F.initCheckFlag();
 			F.resetUI();
-			return 0
+			return 0;
 		}
 	}
 

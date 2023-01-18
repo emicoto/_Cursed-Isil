@@ -6167,9 +6167,14 @@ Action.globalPartAble = function (id, part, cid) {
 	const data = Action.data[id];
 	const chara = C[cid];
 
-	if (chara.gender == "female" && part == "penis") return 0;
-
-	if (chara.gender == "male" && part == "vagina") return 0;
+	switch (part) {
+		case "critoris":
+			if (chara.gender !== "female") return 0;
+		case "penis":
+			if (chara.gender == "female") return 0;
+		case "vagina":
+			if (chara.gender == "male") return 0;
+	}
 
 	return Using[cid][part].act == "" || Using[cid][part].act == id;
 };
@@ -6319,13 +6324,13 @@ F.initActMenu = function (actid, usepart) {
 	//有可选部位才生成
 	if (useParts.length) {
 		useParts.forEach((part) => {
-			if (F.partAble(actid, part, pc)) partsMenu.push(F.partBtn(_data, part, 1));
+			if (F.partAble(actid, part, pc) && _data.check(part)) partsMenu.push(F.partBtn(_data, part, 1));
 		});
 	}
 
 	if (targetParts.length && _data?.option !== "noSelectPart") {
 		targetParts.forEach((part) => {
-			if (F.partAble(actid, part, tc)) partsMenu.push(F.partBtn(_data, part));
+			if (F.partAble(actid, part, tc) && _data.check(part)) partsMenu.push(F.partBtn(_data, part));
 		});
 	}
 
@@ -6917,14 +6922,14 @@ F.ComCheck = function (id) {
 	if (F.uncons(target) || !F.canMove(target)) T.orderGoal = 0;
 
 	T.comPhase = "before";
+	let txt = "";
 
-	let txt = F.playerName();
 	let t, c;
 
 	//角色每次执行COM时的个人检测。
 	//如果口上侧要进行阻止某个指令进行，也会在这里打断。
 	if (Story.has(`Kojo_${tc}_Com`)) {
-		new Wikifier("#hidden", Story.get(`Kojo_${tc}_COM`));
+		new Wikifier("#hidden", Story.get(`Kojo_${tc}_Com`).text);
 	}
 
 	//指令执行时暂时去掉指令栏
@@ -6940,19 +6945,18 @@ F.ComCheck = function (id) {
 	F.ComMsg(`${Story.get("Command::Before").text}<<run F.ComNext()>><<dashline>>`);
 
 	//指令专属的before事件
-	if (Story.has(`Com_${id}::Before`)) {
-		txt = txt + Story.get(`Com_{id}::Before`).text + "<br>";
+	let type = "Com",
+		dif = "Before";
+	if (Kojo.has(pc, { type, id, dif, check: 1 })) {
+		txt = Kojo.put(pc, { type, id, dif });
 		F.ComMsg(txt);
-		console.log("combefore?");
 		c = 1;
-		t = 1;
 	}
 
 	//执行口上侧Before事件。
-	if (Kojo.put(tc, "Com", id, "Before")) {
-		txt = (t ? "" : txt) + Kojo.put(tc, "Com", id, "Before") + "<br>";
+	if (Kojo.has(tc, { type, id, dif })) {
+		txt = Kojo.put(tc, { type, id, dif });
 		F.ComMsg(txt);
-		console.log("kojobefore?");
 		c = 1;
 	}
 
@@ -6975,9 +6979,8 @@ F.ComCheck = function (id) {
 F.ComEvent = function (id, next) {
 	const com = comdata[id];
 	const resetHtml = `<<run F.resetCom()>><<dashline>>`;
-
-	let title = `Com_${id}`;
-	let txt = next ? "" : F.playerName();
+	let txt = "",
+		type = "Com";
 	S.msg = [];
 	T.msgId = 0;
 	T.comPhase = "event";
@@ -6987,9 +6990,9 @@ F.ComEvent = function (id, next) {
 
 	if (T.comCancel) {
 		F.ComMsg(resetHtml);
-	} else if (id === 0) {
+	} else if (com.name == "移动") {
 		//移动直接跳转到移动界面
-		F.ComMsg(Story.get(title).text);
+		F.ComMsg(Story.get(`Com_G0`).text);
 	}
 	//确认主控有能力执行
 	else if (T.comAble) {
@@ -7000,8 +7003,7 @@ F.ComEvent = function (id, next) {
 			(T.orderGoal > 0 && T.comorder >= T.orderGoal) ||
 			(com?.forceAble && T.comorder + S.ignoreOrder >= T.orderGoal)
 		) {
-			V.passtime = com.time;
-			txt = txt + Story.get(title).text;
+			T.passtime = com.time;
 
 			if (T.comorder < T.orderGoal && !V.system.debug) {
 				S.msg.push(
@@ -7010,21 +7012,37 @@ F.ComEvent = function (id, next) {
 					}<br>`
 				);
 
-				if (Story.has(title + ":Force")) txt = txt + Story.get(title + ":Force").text;
+				if (Kojo.has(pc, { type, id, dif: "Force", check: 1 })) {
+					txt = Kojo.put(pc, { type, id, dif: "Force" });
+				}
+				if (txt.includes("Kojo.put") === false && Kojo.has(tc, { type, id, dif: "Force" })) {
+					txt += Kojo.put(tc, { type, id, dif: "Force" });
+				}
 
 				T.force = true;
+			} else {
+				txt = Kojo.put(pc, { type, id });
+
+				if (txt.includes("Kojo.put") === false && Kojo.has(tc, { type, id })) {
+					txt += Kojo.put(tc, { type, id });
+				}
 			}
-			txt = F.convertKojo(txt);
+
+			if (txt.includes("Kojo.put")) txt = F.convertKojo(txt);
+
 			F.ComMsg(txt);
 
-			F.ComMsg(`<<run comdata['${id}'].source(); F.passtime(V.passtime); F.ComResult()>>`, 1);
+			F.ComMsg(`<<run comdata['${id}'].source(); F.passtime(T.passtime); F.ComResult()>>`, 1);
 
 			//确认After事件。如果有就添加到 Msg中。
-			if (Story.has(title + ":After")) {
-				txt = `<br><<set _comPhase to 'after'` + Story.get(title + ":After").text;
-
-				txt = F.convertKojo(txt);
+			if (Kojo.has(pc, { type, id, dif: "After", check: 1 })) {
+				txt = `<br><<set _comPhase to 'after'>>` + Kojo.put(pc, { type, id, dif: "After" });
+				if (txt.includes("Kojo.put")) txt = F.convertKojo(txt);
 				F.ComMsg(txt);
+			}
+
+			if (txt.includes("Kojo.put") === false && Kojo.has(tc, { type, id, dif: "After" })) {
+				F.ComMsg(Kojo.put(tc, { type, id, dif: "After" }));
 			}
 
 			//最后加ComEnd()
@@ -7036,8 +7054,8 @@ F.ComEvent = function (id, next) {
 	}
 	//取消执行
 	else {
-		if (Story.has(title + ":Cancel")) {
-			txt = txt + Story.get(title + ":Cancel").text;
+		if (Kojo.has(pc, { type, id, dif: "Cancel", check: 1 })) {
+			txt = Kojo.put(pc, { type, id, dif: "Cancel" });
 			F.ComMsg(txt);
 		} else
 			F.ComMsg(
@@ -7916,7 +7934,7 @@ class Kojo {
 		}
 
 		if (!retext) {
-			title = `Msg_${type}${id ? `_${id}` : ""}${dif ? `:${dif}` : ""}`;
+			title = `${type?.has("Action") ? "Msg_" : ""}${type}${id ? `_${id}` : ""}${dif ? `:${dif}` : ""}`;
 			if (Story.has(title)) {
 				retext = Story.get(title).text;
 			}
@@ -8955,278 +8973,278 @@ F.hasVagina = function (cid) {
 F.justHands = function (useParts) {
 	return useParts.length == 2 && useParts.containsAll("handR", "handL");
 };
-/* twine-user-script #53: "Action_Common_Option" */
+/* twine-user-script #53: "Common.js" */
 /* 放松 */
-Action.set('Relax')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("Relax")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 散步 */
-Action.set('Walk')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("Walk")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 种植 */
-Action.set('Plant')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("Plant")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 洗澡 */
-Action.set('Bath')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("Bath")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 读书 */
-Action.set('Read')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("Read")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 学习 */
-Action.set('Learn')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("Learn")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 听课 */
-Action.set('Class')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("Class")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 做作业 */
-Action.set('HomeWork')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("HomeWork")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 购物 */
-Action.set('Shop')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("Shop")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 煮饭 */
-Action.set('Cook')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("Cook")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 唱歌 */
-Action.set('Sing')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("Sing")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 跳舞 */
-Action.set('Dance')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("Dance")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 演奏 */
-Action.set('PlayMusic')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("PlayMusic")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 钓鱼 */
-Action.set('Fish')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("Fish")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 采集 */
-Action.set('Gather')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("Gather")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 挖矿 */
-Action.set('Mine')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
-/* twine-user-script #54: "Action_Interaction_Option" */
+Action.set("Mine")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
+/* twine-user-script #54: "Interaction.js" */
 /* 闲聊 */
-Action.set('Talk')
-     .Check(()=>{
-         let rate = random(1,100)
-         return rate <= target.mood + 10 && F.canSpeak(target)
-      })
+Action.set("Talk").Check(() => {
+	let rate = random(1, 100);
+	return rate <= target.mood + 10 && F.canSpeak(target);
+});
 
 /* 观察 */
-Action.set('Look')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("Look")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 近况 */
-Action.set('Talk2')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("Talk2")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 兴趣 */
-Action.set('Interest')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("Interest")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 摸头 */
-Action.set('PetHead')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("PetHead")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 调情 */
-Action.set('Firm')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("Firm")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 送礼 */
-Action.set('Gift')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
-/* twine-user-script #55: "Action_Items_Option" */
+Action.set("Gift")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
+/* twine-user-script #55: "Items.js" */
+
 /* 跳蛋 */
 Action.set('Rotor')
      .Filter(()=>{
@@ -9250,930 +9268,917 @@ Action.set('Vibrator')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #56: "Action_Magic_Option" */
+/* twine-user-script #56: "Magic.js" */
 /* 静心咒 */
-Action.set('m0')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("m0")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 净化术 */
-Action.set('m1')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
-/* twine-user-script #57: "Action_Main_Option" */
+Action.set("m1")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
+/* twine-user-script #57: "Main.js" */
 /* 交流 */
-Action.set('Interaction')
-     .Filter(()=>{
-         if(pc === tc) return 0;
-         return Flag.mode < 1
-      })
-     .Event(()=>{
-         if(!Cflag[tc].touchLv)
-            Cflag[tc].touchLv = 1;
-         
-         if(Flag.mode < 1)
-            Flag.mode = 1
-         
-         new Wikifier(null, `<<run F.txtFlow(F.playerName()+'<<you>>和$target.name打了个招呼并走近对方。',30,1)>>`)
-     })
+Action.set("Interaction")
+	.Filter(() => {
+		if (pc === tc) return 0;
+		return Flag.mode < 1;
+	})
+	.Event(() => {
+		if (!Cflag[tc].touchLv) Cflag[tc].touchLv = 1;
+
+		if (Flag.mode < 1) Flag.mode = 1;
+
+		new Wikifier(null, `<<run F.txtFlow(F.playerName()+'<<you>>和$target.name打了个招呼并走近对方。',30,1)>>`);
+	});
 
 /* 接触 */
 //接触成功时Cflag的交流等级才会有变化。
-Action.set('Touch')
-     .Filter(()=>{
-         if(pc === tc) return 0;
-         return Flag.mode < 2
-      })
-     .Event(()=>{
-         if(Flag.mode < 2)
-            Flag.mode = 2
-     })
+Action.set("Touch")
+	.Filter(() => {
+		if (pc === tc) return 0;
+		return Flag.mode < 2;
+	})
+	.Event(() => {
+		if (Flag.mode < 2) Flag.mode = 2;
+	});
 
 /* 推倒 */
-Action.set('TrySex')
-     .Filter(()=>{
-         if(pc === tc) return 0;
-         return Flag.mode < 3
-      })
-     .Check(()=>{
-         //debug模式以及推倒中随时可点。
-         if(V.system.debug || V.mode == 'train')
-            return 1;
+Action.set("TrySex")
+	.Filter(() => {
+		if (pc === tc) return 0;
+		return Flag.mode < 3;
+	})
+	.Check(() => {
+		//debug模式以及推倒中随时可点。
+		if (V.system.debug || V.mode == "train") return 1;
 
-         //对方失去意识+没有其他人
-         if(F.uncons(target) && V.location.chara.length <= 2)
-            return 1;
-         
-         //暂且这样……之后导入TW的理性之壁和好感之壁进行判断(￣▽￣")
-         if(Cflag[tc].favo < 1000 ){
-            T.reason += '【好感不足】'
-            return 0
-         }
+		//对方失去意识+没有其他人
+		if (F.uncons(target) && V.location.chara.length <= 2) return 1;
 
-         return 1
-      })
-     .Order(()=>{
-         return 100
-      })
-      .Name(()=>{
-         if(V.mode == 'train'){
-            return '结束';
-         }
-         if(F.uncons(target)){
-            return '眠奸';
-         }
-         return '推倒';
-      })
-      .Effect(()=>{
-         if(Flag.mode < 4)
-            Flag.mode = 4;
-         
-         if(V.mode !== 'train'){
-            V.mode = 'train';
-            Tsv[tc].woohoo = 1;
-            Tsv[pc].woohoo = 1;
-         }
-         else{
-            V.mode = 'normal';
-            for(let i in Tsv){
-               Tsv[i].woohoo = 0;
-            }
-         }
-      })
+		//暂且这样……之后导入TW的理性之壁和好感之壁进行判断(￣▽￣")
+		if (Cflag[tc].favo < 1000) {
+			T.reason += "【好感不足】";
+			return 0;
+		}
+
+		return 1;
+	})
+	.Order(() => {
+		return 100;
+	})
+	.Name(() => {
+		if (V.mode == "train") {
+			return "结束";
+		}
+		if (F.uncons(target)) {
+			return "眠奸";
+		}
+		return "推倒";
+	})
+	.Effect(() => {
+		if (Flag.mode < 4) Flag.mode = 4;
+
+		if (V.mode !== "train") {
+			V.mode = "train";
+			Tsv[tc].woohoo = 1;
+			Tsv[pc].woohoo = 1;
+		} else {
+			V.mode = "normal";
+			for (let i in Tsv) {
+				Tsv[i].woohoo = 0;
+			}
+		}
+	});
 
 /* 用手 */
-Action.set('useHands')
-     .Filter(()=>{
-         return 0
-      })
-      .Event(()=>{
-         T.actPartFilter = ['handL','handR']
-      })
-
+Action.set("useHands")
+	.Filter(() => {
+		return 0;
+	})
+	.Event(() => {
+		T.actPartFilter = ["handL", "handR"];
+	});
 
 /* 用口 */
-Action.set('useMouth')
-     .Filter(()=>{
-         return 0
-      })
-      .Event(()=>{
-         T.actPartFilter = 'mouth'
-      })
-
+Action.set("useMouth")
+	.Filter(() => {
+		return 0;
+	})
+	.Event(() => {
+		T.actPartFilter = "mouth";
+	});
 
 /* 用阴茎 */
-Action.set('usePenis')
-     .Filter(()=>{
-         return 0//player.gender !== 'female'
-      })
-      .Event(()=>{
-         T.actPartFilter = 'penis'
-      })
-
+Action.set("usePenis")
+	.Filter(() => {
+		return 0; //player.gender !== 'female'
+	})
+	.Event(() => {
+		T.actPartFilter = "penis";
+	});
 
 /* 用阴道 */
-Action.set('useVagina')
-     .Filter(()=>{
-         return 0//player.gender !== 'male'
-      })
-      .Event(()=>{
-         T.actPartFilter = 'vagina'
-      })
+Action.set("useVagina")
+	.Filter(() => {
+		return 0; //player.gender !== 'male'
+	})
+	.Event(() => {
+		T.actPartFilter = "vagina";
+	});
 
 /* 用肛门 */
-Action.set('useAnal')
-     .Filter(()=>{
-         return 0
-      })
-      .Event(()=>{
-         T.actPartFilter = 'anal'
-      })
-
+Action.set("useAnal")
+	.Filter(() => {
+		return 0;
+	})
+	.Event(() => {
+		T.actPartFilter = "anal";
+	});
 
 /* 用脚 */
-Action.set('useFoot')
-     .Filter(()=>{
-         return 0
-      })
-      .Event(()=>{
-         T.actPartFilter = 'foot'
-      })
-
-
+Action.set("useFoot")
+	.Filter(() => {
+		return 0;
+	})
+	.Event(() => {
+		T.actPartFilter = "foot";
+	});
 
 /* 保持动作 */
-Action.set('Keep')
-     .Filter(()=>{
-         return Flag.mode >= 2
-      })
-      .Name(()=>{
-         if(T.keepAction)
-            return '单发'
-         else
-            return '持续'
-      })
-      .Event(()=>{
-         if(!T.keepAction)
-            T.keepAction = 1;
-         else
-            T.keepAction = 0;
-      })
-
+Action.set("Keep")
+	.Filter(() => {
+		return Flag.mode >= 2;
+	})
+	.Name(() => {
+		if (T.keepAction) return "单发";
+		else return "持续";
+	})
+	.Event(() => {
+		if (!T.keepAction) T.keepAction = 1;
+		else T.keepAction = 0;
+	});
 
 /* 自动配合 */
-Action.set('Coop')
-     .Filter(()=>{
-         return Flag.mode >= 2 && V.mode == 'reverse'
-      })
-     .Check(()=>{
-         return 1
-      })
+Action.set("Coop")
+	.Filter(() => {
+		return Flag.mode >= 2 && V.mode == "reverse";
+	})
+	.Check(() => {
+		return 1;
+	});
 
 /* 自动抵抗 */
-Action.set('Resit')
-     .Filter(()=>{
-         return Flag.mode >= 2 && V.mode == 'reverse'
-      })
-     .Check(()=>{
-         return 1
-      })
-
+Action.set("Resit")
+	.Filter(() => {
+		return Flag.mode >= 2 && V.mode == "reverse";
+	})
+	.Check(() => {
+		return 1;
+	});
 
 /* 战斗 */
-Action.set('Combat')
-     .Filter(()=>{
-         return V.mode == 'combat'
-      })
-
+Action.set("Combat").Filter(() => {
+	return V.mode == "combat";
+});
 
 /* 魔法 */
-Action.set('Magic')
-     .Filter(()=>{
-         return F.canSpeak(player)
-      })
-
+Action.set("Magic").Filter(() => {
+	return F.canSpeak(player);
+});
 
 /* 道具 */
-Action.set('Items')
-     .Filter(()=>{
-         return 1
-      })
-
+Action.set("Items").Filter(() => {
+	return 1;
+});
 
 /* 触手 */
-Action.set('Tentacles')
-     .Filter(()=>{
-         return Flag.master
-      })
-     .Event(()=>{
-         T.actionTypeFilter = '触手'
-     })
-
+Action.set("Tentacles")
+	.Filter(() => {
+		return Flag.master;
+	})
+	.Event(() => {
+		T.actionTypeFilter = "触手";
+	});
 
 /* 命令 */
-Action.set('Order')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("Order")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 自慰 */
-Action.set('Self')
-     .Filter(()=>{
-         return (pc === tc && V.location.chara.length <= 1) || T.commandMode
-      })
-     .Check(()=>{
-         return 1
-      })
+Action.set("Self")
+	.Filter(() => {
+		return (pc === tc && V.location.chara.length <= 1) || T.commandMode;
+	})
+	.Check(() => {
+		return 1;
+	});
 
 /* 其他 */
-Action.set('Other')
-     .Filter(()=>{
-         return 1
-      })
-      .Event(()=>{
-         T.actionTypeFilter = '其他'
-      })
-/* twine-user-script #58: "Action_Command_Option" */
+Action.set("Other")
+	.Filter(() => {
+		return 1;
+	})
+	.Event(() => {
+		T.actionTypeFilter = "其他";
+	});
+/* twine-user-script #58: "Other.js" */
+//:: Action_Command_Option[script]
 /* 直播 */
-Action.set('Stream')
-     .Filter(()=>{
-         return 0
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("Stream")
+	.Filter(() => {
+		return 0;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 举行派对 */
-Action.set('Party')
-     .Filter(()=>{
-         return 0
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
-/* twine-user-script #59: "Action_Other_Options" */
+Action.set("Party")
+	.Filter(() => {
+		return 0;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
+
+//::Action_Other_Options[script];
 /* 衣服管理 */
-Action.set('Clothes')
-     .Filter(()=>{
-         return ( V.location.tags.has('衣柜','私室') && pc == tc ) || V.mode == 'train'
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("Clothes")
+	.Filter(() => {
+		return (V.location.tags.has("衣柜", "私室") && pc == tc) || V.mode == "train";
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 行为管理 */
-Action.set('Behavior')
-     .Filter(()=>{
-         return V.mode == 'train'
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("Behavior")
+	.Filter(() => {
+		return V.mode == "train";
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 一键脱光 */
-Action.set('GetNude')
-     .Filter(()=>{
-         return V.mode == 'train'
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
-/* twine-user-script #60: "Action_Pose_Option" */
+Action.set("GetNude")
+	.Filter(() => {
+		return V.mode == "train";
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
+/* twine-user-script #59: "Pose.js" */
+//:: Action_Pose_Option[script]
 /* 正常位 */
-Action.set('pose0')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("pose0")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 背后位 */
-Action.set('pose1')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("pose1")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 正座位 */
-Action.set('pose2')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("pose2")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 背座位 */
-Action.set('pose3')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("pose3")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 骑乘位 */
-Action.set('pose4')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("pose4")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 侧卧位 */
-Action.set('pose5')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("pose5")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 趴卧位 */
-Action.set('pose6')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("pose6")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 站立位 */
-Action.set('pose7')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("pose7")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 背后立位 */
-Action.set('pose8')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("pose8")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 抱立位 */
-Action.set('pose9')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("pose9")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 反抱立位 */
-Action.set('pose10')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("pose10")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 屈曲位 */
-Action.set('pose11')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
-/* twine-user-script #61: "Action_Reverse_Option" */
+Action.set("pose11")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
+/* twine-user-script #60: "Reverse.js" */
+//:: Action_Reverse_Option[script]
 /* 口交 */
-Action.set('r0')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("r0")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 逆性交 */
-Action.set('r1')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("r1")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 收紧 */
-Action.set('r2')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
-/* twine-user-script #62: "Action_Event" */
-Action.set('reset')
-  .Filter(()=>{
-    return T.actPart !== 'reset'
-  })
-  .Event(()=>{
-    T.actPart = 'reset'
-  })
+Action.set("r2")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
+/* twine-user-script #61: "System.js" */
+//:: Action_Event[script]
+Action.set("reset")
+	.Filter(() => {
+		return T.actPart !== "reset";
+	})
+	.Event(() => {
+		T.actPart = "reset";
+	});
 
-Action.set('resetAct')
-   .Filter(()=>{
-      for(let i in Using.pc){
-         if(Using.pc[i].act)
-            return 1
-      }
+Action.set("resetAct")
+	.Filter(() => {
+		for (let i in Using.pc) {
+			if (Using.pc[i].act) return 1;
+		}
 
-      for(let i in Using.tc){
-         if(Using.tc[i].act)
-            return 1
-      }
-      return 0
-   })
-   .Effect(()=>{
-      F.initAction()
-   })
+		for (let i in Using.tc) {
+			if (Using.tc[i].act) return 1;
+		}
+		return 0;
+	})
+	.Effect(() => {
+		F.initAction();
+	});
 
-Action.set('resetAll')
-  .Filter(()=>{
-    return T.actionTypeFilter !== 'all' || T.actPartFilter !== 'all'
-  })
-  .Event(()=>{
-    T.actionTypeFilter = 'all'
-    T.actPartFilter = 'all'
-  })
+Action.set("resetAll")
+	.Filter(() => {
+		return T.actionTypeFilter !== "all" || T.actPartFilter !== "all";
+	})
+	.Event(() => {
+		T.actionTypeFilter = "all";
+		T.actPartFilter = "all";
+	});
 
-Action.set('move')
-  .Filter(()=>{
-    return V.mode == 'normal'
-  })
+Action.set("move").Filter(() => {
+	return V.mode == "normal";
+});
 
-Action.set('fall')
-  .Filter(()=>{
-    return !Flag.master
-  })
-  .Event(()=>{
-    new Wikifier(null, `<<run F.txtFlow(Story.get('FallToDeep').text, 60, 1)>>`)
-  })
+Action.set("fall")
+	.Filter(() => {
+		return !Flag.master;
+	})
+	.Event(() => {
+		new Wikifier(null, `<<run F.txtFlow(Story.get('FallToDeep').text, 60, 1)>>`);
+	});
 
-Action.set('sleep')
-  .Filter(()=>{
-    return V.location.id == 'A0' && (V.date.time >= 1200 || F.baseCheck(player, 'stamina', 0.5)) && pc !== 'm0'
-  })
+Action.set("sleep").Filter(() => {
+	return V.location.id == "A0" && (V.date.time >= 1200 || F.baseCheck(player, "stamina", 0.5)) && pc !== "m0";
+});
 
-Action.set('rise')
-  .Filter(()=>{
-    return Flag.master
-  })
-  .Event(()=>{
-    Flag.master = 0;
-    new Wikifier(null, `<<run F.txtFlow(Story.get('RiseToSurface').text, 60, 1)>>`)
-  })
+Action.set("rise")
+	.Filter(() => {
+		return Flag.master;
+	})
+	.Event(() => {
+		Flag.master = 0;
+		new Wikifier(null, `<<run F.txtFlow(Story.get('RiseToSurface').text, 60, 1)>>`);
+	});
 
-Action.set('resetMode')
-   .Filter(()=>{
-      return Flag.mode > 0 && !groupmatch(V.mode,'reverse','combat')
-   })
-   .Event(()=>{
-      Flag.mode = 0
-      V.mode = 'normal'
-      new Wikifier(null, `<<run F.txtFlow(F.playerName()+'<<you>>从$target.name身边走开了。',30,1)>>`)
-   })
+Action.set("resetMode")
+	.Filter(() => {
+		return Flag.mode > 0 && !groupmatch(V.mode, "reverse", "combat");
+	})
+	.Event(() => {
+		Flag.mode = 0;
+		V.mode = "normal";
+		new Wikifier(null, `<<run F.txtFlow(F.playerName()+'<<you>>从$target.name身边走开了。',30,1)>>`);
+	});
 
-
-Action.set('stopTouch')
-   .Filter(()=>{
-      return Flag.mode > 1 && !groupmatch(V.mode,'reverse','combat')
-   })
-   .Event(()=>{
-      Flag.mode = 1
-      //new Wikifier(null, `<<run F.txtFlow(F.playerName()+'<<you>>把手从$target.name身上挪开了。',30,1)>>`)
-   })
-/* twine-user-script #63: "Action_Tentacles_Option" */
+Action.set("stopTouch")
+	.Filter(() => {
+		return Flag.mode > 1 && !groupmatch(V.mode, "reverse", "combat");
+	})
+	.Event(() => {
+		Flag.mode = 1;
+		//new Wikifier(null, `<<run F.txtFlow(F.playerName()+'<<you>>把手从$target.name身上挪开了。',30,1)>>`)
+	});
+/* twine-user-script #62: "Tentacles.js" */
+//:: Action_Tentacles_Option[script]
 /* 揉捏 */
-Action.set('x0')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("x0")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 逗弄 */
-Action.set('x1')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("x1")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 吸舔 */
-Action.set('x2')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("x2")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 吸咬 */
-Action.set('x3')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("x3")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 撸动 */
-Action.set('x4')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("x4")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 插入 */
-Action.set('x5')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("x5")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 蠕动 */
-Action.set('x6')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("x6")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 抽插 */
-Action.set('x7')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("x7")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 深入 */
-Action.set('x8')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("x8")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 抽送 */
-Action.set('x9')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("x9")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 鞭打 */
-Action.set('x10')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("x10")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 刺入 */
-Action.set('x11')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("x11")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 灌入 */
-Action.set('x12')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("x12")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 注射 */
-Action.set('x13')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
-/* twine-user-script #64: "Action_Touch_Option" */
+Action.set("x13")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
+/* twine-user-script #63: "Touch.js" */
+//:: Action_Touch_Option[script]
+
 /* 接吻 */
-Action.set('t0')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("t0")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 亲吻 */
-Action.set('t1')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("t1")
+	.Filter(() => {
+		return 1;
+	})
+	.Check((part) => {
+		if (!part) return 1;
+
+		switch (part) {
+			case "breast":
+			case "foot":
+			case "butts":
+			case "thighs":
+			case "abdomen":
+				//if(!target.flag.nude)
+				return 0;
+			default:
+				return 1;
+		}
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 抚摸 */
-Action.set('t2')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("t2")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 揉捏 */
-Action.set('t3')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("t3")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 吸舔 */
-Action.set('t4')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("t4")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 吸咬 */
-Action.set('t5')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("t5")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 逗弄 */
-Action.set('t6')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("t6")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 指交 */
-Action.set('t7')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("t7")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 性交 */
-Action.set('t8')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
-      .Script('<<set _inside to 1>>')
-
-
+Action.set("t8")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	})
+	.Script("<<set _inside to 1>>");
 
 /* 抽插 */
-Action.set('t9')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("t9")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 撸动 */
-Action.set('t10')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("t10")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 拳交 */
-Action.set('t11')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
+Action.set("t11")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
 
 /* 深入 */
-Action.set('t12')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
-      
+Action.set("t12")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
+
 /* 口交 */
-Action.set('t13')
-     .Filter(()=>{
-         return 1
-      })
-     .Check(()=>{
-         return 1
-      })
-     .Order(()=>{
-         return 0
-      })
-/* twine-user-script #65: "RegistAllCom" */
+Action.set("t13")
+	.Filter(() => {
+		return 1;
+	})
+	.Check(() => {
+		return 1;
+	})
+	.Order(() => {
+		return 0;
+	});
+/* twine-user-script #64: "RegistAllCom" */
 //批处理多个指令。
 Com.init()
 
@@ -10247,7 +10252,7 @@ Com.globalCond = function(id){
 
     return true
 }
-/* twine-user-script #66: "Com_G1::Script" */
+/* twine-user-script #65: "Com_G1::Script" */
 /* 注册指令事件*/
 Com.set('G1')
     .Check(()=>{ 
@@ -10258,7 +10263,7 @@ Com.set('G1')
     })
 
 /* 事件文本，before执行前文本，after执行后文本，cancel执行取消时文本 */
-/* twine-user-script #67: "Com_G2::Script" */
+/* twine-user-script #66: "Com_G2::Script" */
 Com.set('G2')
     .Check(()=>{
         return random(1,100) <= target.mood + 10 && !target.state.contains('失声','失聪')
@@ -10266,12 +10271,12 @@ Com.set('G2')
     .Effect(()=>{
         Source[tc].favo += 10
     })
-/* twine-user-script #68: "Com_T4::Script" */
+/* twine-user-script #67: "Com_T4::Script" */
 Com.set('T4')
    .Filter(()=>{
         return target.gender !== 'female'
    })
-/* twine-user-script #69: "Com_T99::Script" */
+/* twine-user-script #68: "Com_T99::Script" */
 Com.set('T99')
    .Name(()=>{
         if(V.mode !== 'train'){
@@ -10315,7 +10320,7 @@ Com.set('T99')
             }
         }
    })
-/* twine-user-script #70: "Com_X1::Script" */
+/* twine-user-script #69: "Com_X1::Script" */
 Com.set('X1')
     .Check(()=>{
         //能跑进来时已经过滤掉的情况：非合意且对象具备抵抗能力
@@ -10338,7 +10343,7 @@ Com.set('X1')
         F.getExp(target, 'B', random(2));
     })
     .ForceAble()
-/* twine-user-script #71: "Com_X2::Script" */
+/* twine-user-script #70: "Com_X2::Script" */
 Com.set('X2')
     .Check(()=>{
         //能跑进来时已经过滤掉的情况：非合意且对象具备抵抗能力
@@ -10360,7 +10365,7 @@ Com.set('X2')
         F.getExp(target, '触手奸', random(3));
         F.getExp(target, 'B', random(2));
     })
-/* twine-user-script #72: "Kojo_Isil_Regist" */
+/* twine-user-script #71: "Kojo_Isil_Regist" */
 /* 代码区，用于注册角色颜色、额外的设定、flag信息等 */
 Kojo.set('Isil','#F9F570')
     .Intro('光属性的高等精灵。') //角色简介。
@@ -10376,14 +10381,14 @@ Kojo.set('Isil','#F9F570')
         }
     })
     .Action(0,{id:'Isil_Research',name:'研究进展',type:'C'})
-/* twine-user-script #73: "Kojo_Isil_Actions_Option" */
+/* twine-user-script #72: "Kojo_Isil_Actions_Option" */
 Action.kojo.Isil = function(){
    Action.set('Isil_Research')
       .Filter(()=>{
          return tc === 'Isil'
       })
 }
-/* twine-user-script #74: "Kojo_Nanaly_Regist" */
+/* twine-user-script #73: "Kojo_Nanaly_Regist" */
 /* 纯代码区,用于注册角色信息 */
 /*注意：娜娜莉是姛，如果条件允许应当当玩家是女性/双性时才可攻略*/
 Kojo.set('Nanaly', '#66CCFF') //角色id与 名牌颜色
@@ -11064,20 +11069,10 @@ Com.set(&#39;G0&#39;)
 可惜$target.name没有能力回应&lt;&lt;you&gt;&gt;。
 &lt;&lt;else&gt;&gt;
 但$target.name并没有心情理会&lt;&lt;you&gt;&gt;。
-&lt;&lt;/if&gt;&gt;&lt;br&gt;</tw-passagedata><tw-passagedata pid="81" name="Com_G2" tags="" position="100,1100" size="100,100">&lt;&lt;you&gt;&gt;试着跟$target.name搭话。&lt;br&gt;
-&lt;&lt;=Kojo.put($tc, &#39;Com&#39;, &#39;G2&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="82" name="Com_G2::Before//" tags="" position="225,1100" size="100,100">/*取消前的文本sample */
+&lt;&lt;/if&gt;&gt;&lt;br&gt;</tw-passagedata><tw-passagedata pid="81" name="Com_G2" tags="" position="100,1100" size="100,100">&lt;&lt;you&gt;&gt;试着跟$target.name搭话。&lt;br&gt;</tw-passagedata><tw-passagedata pid="82" name="//Com_G2::Before" tags="" position="225,1100" size="100,100">/*取消前的文本sample */
 $player.name走近$target.name准备搭话。&lt;br&gt;
-&lt;&lt;linkreplace &#39;取消&#39;&gt;&gt;&lt;&lt;resetLink&gt;&gt;&lt;&lt;resetScene&gt;&gt;&lt;&lt;/linkreplace&gt;&gt;&lt;br&gt;</tw-passagedata><tw-passagedata pid="83" name="Com_G2::After//" tags="" position="350,1100" size="100,100">/*指令结束时的文本sample */
-好感增加了一点。&lt;br&gt;</tw-passagedata><tw-passagedata pid="84" name="Com_T0" tags="" position="475,1100" size="100,100">&lt;&lt;you&gt;&gt;的手在$target.name的身上四处游走着。&lt;br&gt;
-&lt;&lt;=Kojo.put($tc, &#39;Com&#39;, &#39;T0&#39;)&gt;&gt;
-&lt;br&gt;</tw-passagedata><tw-passagedata pid="85" name="Com_T1" tags="" position="600,1100" size="100,100">&lt;&lt;you&gt;&gt;把手覆盖在$target.name的胸上开始抚摸。&lt;br&gt;
-&lt;&lt;=Kojo.put($tc, &#39;Com&#39;, &#39;T1&#39;)&gt;&gt;&lt;br&gt;</tw-passagedata><tw-passagedata pid="86" name="Com_T2" tags="" position="725,1100" size="100,100">&lt;&lt;you&gt;&gt;用手轻轻捏住了$target.name的乳头&lt;br&gt;
-&lt;&lt;=Kojo.put($tc, &#39;Com&#39;, &#39;T2&#39;)&gt;&gt;
-&lt;br&gt;</tw-passagedata><tw-passagedata pid="87" name="Com_T3" tags="" position="850,1100" size="100,100">&lt;&lt;you&gt;&gt;用嘴含住了$target.name的乳头，吮吸着。&lt;br&gt;
-&lt;&lt;=Kojo.put($tc, &#39;Com&#39;, &#39;T3&#39;)&gt;&gt;
-&lt;br&gt;</tw-passagedata><tw-passagedata pid="88" name="Com_T4" tags="" position="975,1100" size="100,100">&lt;&lt;you&gt;&gt;轻轻握住了$target.name的阴茎，缓缓地前后撸动。&lt;br&gt;
-&lt;&lt;=Kojo.put($tc, &#39;Com&#39;, &#39;T4&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="89" name="Com_T5" tags="" position="1100,1100" size="100,100">&lt;&lt;you&gt;&gt;将手指探入$target.name的&lt;&lt;=F.splitSex($target,&#39;菊穴&#39;,&#39;秘穴&#39;)&gt;&gt;在入口附近摩擦着。&lt;br&gt;
-&lt;&lt;=Kojo.put($tc, &#39;Com&#39;, &#39;T5&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="90" name="Com_T99" tags="" position="1225,1100" size="100,100">&lt;&lt;if $mode !== &#39;train&#39; &gt;&gt;
+&lt;&lt;linkreplace &#39;取消&#39;&gt;&gt;&lt;&lt;resetLink&gt;&gt;&lt;&lt;resetScene&gt;&gt;&lt;&lt;/linkreplace&gt;&gt;&lt;br&gt;</tw-passagedata><tw-passagedata pid="83" name="Com_G2::After" tags="" position="350,1100" size="100,100">/*指令结束时的文本sample */
+好感增加了一点。&lt;br&gt;</tw-passagedata><tw-passagedata pid="84" name="Com_T0" tags="" position="475,1100" size="100,100">&lt;&lt;you&gt;&gt;的手在$target.name的身上四处游走着。&lt;br&gt;</tw-passagedata><tw-passagedata pid="85" name="Com_T1" tags="" position="600,1100" size="100,100">&lt;&lt;you&gt;&gt;把手覆盖在$target.name的胸上开始抚摸。&lt;br&gt;</tw-passagedata><tw-passagedata pid="86" name="Com_T2" tags="" position="725,1100" size="100,100">&lt;&lt;you&gt;&gt;用手轻轻捏住了$target.name的乳头&lt;br&gt;</tw-passagedata><tw-passagedata pid="87" name="Com_T3" tags="" position="850,1100" size="100,100">&lt;&lt;you&gt;&gt;用嘴含住了$target.name的乳头，吮吸着。&lt;br&gt;</tw-passagedata><tw-passagedata pid="88" name="Com_T4" tags="" position="975,1100" size="100,100">&lt;&lt;you&gt;&gt;轻轻握住了$target.name的阴茎，缓缓地前后撸动。&lt;br&gt;</tw-passagedata><tw-passagedata pid="89" name="Com_T5" tags="" position="1100,1100" size="100,100">&lt;&lt;you&gt;&gt;将手指探入$target.name的&lt;&lt;=F.splitSex($target,&#39;菊穴&#39;,&#39;秘穴&#39;)&gt;&gt;在入口附近摩擦着。&lt;br&gt;</tw-passagedata><tw-passagedata pid="90" name="Com_T99" tags="" position="1225,1100" size="100,100">&lt;&lt;if $mode !== &#39;train&#39; &gt;&gt;
 &lt;&lt;you&gt;&gt;将$target.name带到没人注意到的角落。&lt;br&gt;
 &lt;&lt;=Kojo.put($tc, &#39;Com&#39;, &#39;T99&#39;, &#39;start&#39;)&gt;&gt;
 
@@ -11088,8 +11083,7 @@ $player.name走近$target.name准备搭话。&lt;br&gt;
 &lt;&lt;=either([
     &#39;缠绕、蠕动。&#39;,&#39;揉捏、摩擦。&#39;,&#39;挑弄、点拨。&#39;,&#39;蠕动、揉捏。&#39;,&#39;挑逗、缠绕、扭捏。&#39;
 ])&gt;&gt;触手不停地反复着动作，时重时轻地对乳尖反复进行刺激。
-&lt;br&gt;
-&lt;&lt;=Kojo.put($tc, &#39;Com&#39;, &#39;X1&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="92" name="//Com_X1:Fail" tags="" position="225,1225" size="100,100">因为对方不配合而取消时的文本。
+&lt;br&gt;</tw-passagedata><tw-passagedata pid="92" name="//Com_X1:Fail" tags="" position="225,1225" size="100,100">因为对方不配合而取消时的文本。
 口上分支是 Kojo_Chara_Com_id:Failed</tw-passagedata><tw-passagedata pid="93" name="//Com_X1:Force" tags="" position="350,1225" size="100,100">整个事件脉络都不一样时。
 直接用:Force做分支。
 口上分支是 Kojo_Chara_Com_id:Force;</tw-passagedata><tw-passagedata pid="94" name="Com_X2" tags="" position="475,1225" size="100,100">触手&lt;&lt;=(T.force? `强行爬上${$target.name}的身躯，` : &#39;&#39; )&gt;&gt;沿着$target.name的肌肤往胸部游走，张开吸盘吸附在乳尖上，伸出触须吸舔乳尖。&lt;br&gt;</tw-passagedata><tw-passagedata pid="95" name="Com_X3" tags="" position="600,1225" size="100,100"></tw-passagedata><tw-passagedata pid="96" name="Com_X4" tags="" position="725,1225" size="100,100"></tw-passagedata><tw-passagedata pid="97" name="Com_X5" tags="" position="850,1225" size="100,100"></tw-passagedata><tw-passagedata pid="98" name="CommandLoop:Before" tags="" position="975,1225" size="100,100">/*纯代码区，最先处理 */</tw-passagedata><tw-passagedata pid="99" name="CommandLoop:After" tags="" position="1100,1225" size="100,100">/*纯代码区，最后处理 */</tw-passagedata><tw-passagedata pid="100" name="CommandLoop" tags="" position="1225,1225" size="100,100">&lt;div id=&#39;hidden&#39; class=&#39;hidden&#39;&gt;you can&#39;t see me.&lt;/div&gt;
@@ -11373,7 +11367,7 @@ MP: $target.base.mana[0] / $target.base.mana[1]&lt;br&gt;
 &lt;br&gt;&lt;hr&gt;
 
 &lt;/div&gt;
-&lt;&lt;link &#39;返回&#39; $lastsession&gt;&gt;&lt;&lt;/link&gt;&gt;</tw-passagedata><tw-passagedata pid="119" name="Magicon" tags="" position="1100,1475" size="100,100">&lt;&lt;link &#39;返回&#39; $lastsession&gt;&gt;&lt;&lt;/link&gt;&gt;</tw-passagedata><tw-passagedata pid="120" name="Msg_Isil_Research" tags="" position="1225,1475" size="100,100">&lt;&lt;you&gt;&gt;向$target.name询问了下最近的研究。&lt;br&gt;
+&lt;&lt;link &#39;返回&#39; $lastsession&gt;&gt;&lt;&lt;/link&gt;&gt;</tw-passagedata><tw-passagedata pid="119" name="Magicom" tags="" position="1100,1475" size="100,100">&lt;&lt;link &#39;返回&#39; $lastsession&gt;&gt;&lt;&lt;/link&gt;&gt;</tw-passagedata><tw-passagedata pid="120" name="Msg_Isil_Research" tags="" position="1225,1475" size="100,100">&lt;&lt;you&gt;&gt;向$target.name询问了下最近的研究。&lt;br&gt;
 &lt;&lt;dashline&gt;&gt;
 &lt;&lt;nameTag &#39;Isil&#39;&gt;&gt;
 “研究？最近在研究植物的精华提取……”&lt;br&gt;</tw-passagedata><tw-passagedata pid="121" name="Kojo_Isil_PCAction_Talk" tags="" position="100,1600" size="100,100">“…………”&lt;br&gt;
@@ -12929,7 +12923,8 @@ $target.fullname&lt;br&gt;
 &lt;div id=&#39;update_note&#39;&gt;
 &lt;/div&gt;</tw-passagedata><tw-passagedata pid="302" name="PassageFooter" tags="" position="225,3850" size="100,100"></tw-passagedata><tw-passagedata pid="303" name="PassageReady" tags="" position="350,3850" size="100,100">&lt;&lt;run
     _passageready = true;
-    $lastsession = $passage;
+    if($lastsession !== $passage)
+      $lastsession = $passage;
 
     //复原角色的class
     if(G.onLoad || G.onReload){

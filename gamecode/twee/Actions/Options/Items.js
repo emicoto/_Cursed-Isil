@@ -1,6 +1,6 @@
-:: Action_Magic_Option[script]
-/* 静心咒 */
-Action.set('m0')
+
+/* 跳蛋 */
+Action.set('Rotor')
      .Filter(()=>{
          return 1
       })
@@ -11,8 +11,8 @@ Action.set('m0')
          return 0
       })
 
-/* 净化术 */
-Action.set('m1')
+/* 震动棒 */
+Action.set('Vibrator')
      .Filter(()=>{
          return 1
       })

@@ -148,6 +148,6 @@ MP: $target.base.mana[0] / $target.base.mana[1]<br>
 </div>
 <<link '返回' $lastsession>><</link>>
 
-:: Magicon
+:: Magicom
 
 <<link '返回' $lastsession>><</link>>
