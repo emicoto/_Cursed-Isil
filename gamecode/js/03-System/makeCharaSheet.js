@@ -20,16 +20,17 @@ window.initCSV = function (cid) {
 			path = [arr[0]];
 		}
 
-		if (path[0] == "talent" || path[0] == "traits") {
-		} else {
-			if (!chara[path[0]]) chara[path[0]] = {};
+		const times = raw.split(path[0]).length;
+		if (times > 1 && !chara[path[0]]) chara[path[0]] = [];
+		else if (!chaa[path[0]]) chara[path[0]] = {};
 
-			if (path.length == 3 && !chara[path[0]][path[1]]) chara[path[0]][path[1]] = {};
+		if (path.length == 3 && !chara[path[0]][path[1]]) chara[path[0]][path[1]] = {};
 
-			if (path.length == 1) chara[path[0]] = arr[1];
-			if (path.length == 2) chara[path[0]][path[1]] = arr[1];
-			if (path.length == 3) chara[path[0]][path[1]][path[2]] = arr[1];
-		}
+		if (path.length == 1 && times > 1) chara[path[0]] = chara[path[0]].push(arr[1]);
+      else if(path.length == 1) chara[path[0]] = arr[1]
+      
+		if (path.length == 2) chara[path[0]][path[1]] = arr[1];
+		if (path.length == 3) chara[path[0]][path[1]][path[2]] = arr[1];
 	}
 
 	console.log(chara);
