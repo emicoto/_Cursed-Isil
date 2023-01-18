@@ -1,39 +1,36 @@
 /* Event 系列 */
-
-
-:: Kojo_Chara_Event_First::Before
+/* 把 NPCID 替换成自己角色的id。包括NPCIDName这个 */
+:: Kojo_NPCID_Event_First::Before
 /* 事件开始前的设置  */
 <<set $event.id = 'CE_1'>> /* 设置事件id */
-<<run F.setMemory('CE_1', `${C['Chara'].name} - 初遇`, 'Chara')>> /* 记录到存档中. Chara替换成角色Id */
+<<run F.setMemory('CE_1','角色名字 - 初遇','NPCID')>> /* 记录到存档中. Chara替换成角色Id */
 /* 上面是通用设置. 可以自行添加flag的设置 */
 /* 例如 <<set Cflag['Chara'].test = 123>> */
 
-:: Kojo_Chara_Event_First
+:: Kojo_NPCID_Event_First
 /*  首次登场剧情 */
 
 
-:: Kojo_Chara_Event_FirstParty::Before
+:: Kojo_Nananly_Event_FirstParty::Before
 /* 事件开始前的设置  */
 <<set $event.id = 'CE_2'>> /* 设置事件id */
-<<run F.setMemory('CE_2', `${C['Chara'].name} - 结伴`, 'Chara')>> /* 记录到存档
+<<run F.setMemory('CE_2', `角色名字 - 结伴`, 'NPCID')>> /* 记录到存档
 
-:: Kojo_Chara_Event_FirstParty
+:: Kojo_NPCID_Event_FirstParty
 /* 首次结成队伍的剧情 */
 
 
 
-:: Kojo_Chara_Event_FirstDungeon::Before
+:: Kojo_NPCID_Event_FirstDungeon::Before
 /* 事件开始前的设置  */
 <<set $event.id = 'CE_3'>> /* 设置事件id */
-<<run F.setMemory('CE_3', `${C['Chara'].name} - 森林遗迹`, 'Chara')>> /* 记录到存档
+<<run F.setMemory('CE_3', `角色名字 - 森林遗迹`, 'NPCID')>> /* 记录到存档
 
 
-:: Kojo_Chara_Event_FirstDungeon
-/* 首次攻略遗迹 */
+:: Kojo_NPCID_Event_FirstDungeon
+/* 首次攻略遗迹时 */
 
-
-
-:: Kojo_Chara_Event_Test::Before
+:: Kojo_NPCID_Event_Test::Before
 
 :: Kojo_Chara_Event_Test
 /* 自定事件 */

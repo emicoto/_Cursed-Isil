@@ -1,7 +1,14 @@
-:: Kojo_Chara_Daily_First
+:: Kojo_NPCID_Daily_First
 /* 每天第一次见面时 */
+<<if F.metToday(tc) is 'both'>>/* 两人都在场且都没打招呼的的情况 */
+“早上好呀！”娜娜莉很有精神地向<<you>>和<<partner>>打招呼，胸前的宝石挂坠在阳光下熠熠生辉，“今天也要努力加油喔！”<br>
+<<elseif F.metToday(tc) is 'Isil'>> /* 只有伊希露的情况 */
+“早上好呀！”娜娜莉很有精神地向<<you>>打招呼，胸前的宝石挂坠在阳光下熠熠生辉，“今天也要努力加油喔！”<br>
+<<else>> /* 只有艾瑞斯的情况  1 */
+“早。”娜娜莉礼貌地向<<you>>打招呼，“今天也请加油。”<br>
+<</if>>
 
-:: Kojo_Chara_Daily_Location
+:: Kojo_NPCID_Daily_Location
 /* 在不同场景首次接触时 */
 <<switch $location.name>>
     <<case '魔法学院'>>
@@ -61,28 +68,35 @@
     <<case '植物园'>>
         学校内的植物园, 包括学生菜园
 <</switch>>
-
-:: Kojo_Chara_Daily_Dinner
+/* 这边属于一天只会触发一次的情景事件。动作指令每次执行时显示的文本在Action中。 */
+:: Kojo_NPCID_Daily_Dinner
 /* 一起吃饭时, 地点候选:饭堂, 餐馆, 酒吧 */
 
 
-:: Kojo_Chara_Daily_Plant
+:: Kojo_NPCID_Daily_Plant
 /* 在学校菜园一起种菜 */
 
 
-:: Kojo_Chara_Daily_Walk
+:: Kojo_NPCID_Daily_Walk
 /* 一起散步, 候选地点:学院广场, 植物园, 商业街, 城郊 */
 
 
-:: Kojo_Chara_Daily_Gathering
+:: Kojo_NPCID_Daily_Gathering
 /* 在城郊一起采集, 一般是采药草 */
 
 
-:: Kojo_Chara_Daily_Reading 
+:: Kojo_NPCID_Daily_Fishing
+/* 在城郊一起钓鱼 */
+
+
+:: Kojo_NPCID_Daily_Reading 
 /* 在图书馆一起看书 */
 
-:: Kojo_Chara_Daily_Intro
+:: Kojo_NPCID_Daily_HomeWork
+/* 在图书馆一起做作业写论文 */
+
+:: Kojo_NPCID_Daily_Intro
 /* 场景中与玩家打招呼时 */
 
-:: Kojo_Chara_Daily_GoodBye
+:: Kojo_NPCID_Daily_GoodBye
 /* 场景中玩家走开时 */

@@ -68,22 +68,35 @@
     <<case '植物园'>>
         学校内的植物园, 包括学生菜园
 <</switch>>
-
-:: Kojo_Nanaly_Daily_Dinner
+/* 这边属于一天只会触发一次的情景事件。动作指令每次执行时显示的文本在Action中。 */
+:: Kojo_Chara_Daily_Dinner
 /* 一起吃饭时, 地点候选:饭堂, 餐馆, 酒吧 */
 
 
-:: Kojo_Nanaly_Daily_Plant
+:: Kojo_Chara_Daily_Plant
 /* 在学校菜园一起种菜 */
 
 
-:: Kojo_Nanaly_Daily_Walk
+:: Kojo_Chara_Daily_Walk
 /* 一起散步, 候选地点:学院广场, 植物园, 商业街, 城郊 */
 
 
-:: Kojo_Nanaly_Daily_Gathering
+:: Kojo_Chara_Daily_Gathering
 /* 在城郊一起采集, 一般是采药草 */
 
 
-:: Kojo_Nanaly_Daily_Reading 
+:: Kojo_Chara_Daily_Fishing
+/* 在城郊一起钓鱼 */
+
+
+:: Kojo_Chara_Daily_Reading 
 /* 在图书馆一起看书 */
+
+:: Kojo_Chara_Daily_HomeWork
+/* 在图书馆一起做作业写论文 */
+
+:: Kojo_Chara_Daily_Intro
+/* 场景中与玩家打招呼时 */
+
+:: Kojo_Chara_Daily_GoodBye
+/* 场景中玩家走开时 */
