@@ -173,6 +173,7 @@ F.doAction = function (id) {
 
 F.actionEvent = function (id, state) {
 	const data = Action.data[id];
+	T.passtime = data.time;
 
 	let tag = T.noNameTag,
 		txt = "";

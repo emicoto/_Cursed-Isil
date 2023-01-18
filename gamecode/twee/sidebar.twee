@@ -45,7 +45,7 @@
 
 
 :: StoryHeader
-<div class='headbar-container'>
+<div id='showtime' class='headbar-container'>
     <<showtime>>
     <<showmoney>>
 </div>

@@ -26,6 +26,7 @@ F.resetUI = function (id, option) {
 	//F.refleshContinuosAction();
 
 	F.showNext(1);
+	new Wikifier(null, "<<replace #showtime>><<showtime>><<showmoney>><</replace>>");
 
 	return "";
 };

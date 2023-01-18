@@ -6,7 +6,11 @@ F.summonChara = function () {
 	if (local.id == "A0") {
 		local.chara = ["Ayres", "Isil"];
 	} else {
-		local.chara = ["Besta", pc, "Nanaly"];
+		const charalist = Object.keys(V.chara);
+
+		charalist.delete("Ayres", "Isil", "m0");
+		local.chara = charalist;
+		local.chara.push(pc);
 	}
 };
 

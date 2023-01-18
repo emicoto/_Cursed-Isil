@@ -39,7 +39,7 @@
 
 :: Profile
 <div id='profile'>
-$target.fullname
+$target.fullname  好感：<<print Cflag[tc].favo>>  信赖：<<print Cflag[tc].trust>>  支配：<<print Cflag[tc].sub>>  依存：<<print Cflag[tc].depend>>
 <br><hr>
 
 基础：<br>
@@ -67,7 +67,7 @@ MP: $target.base.mana[0] / $target.base.mana[1]<br>
 	let retext = ''
 	let n=0
 	for(let i in D.palam){
-		retext += `${lan(D.palam[i])}Lv${$target.palam[i][0]}: ${$target.palam[i][1]} / ${$target.palam[i][2]}　　`;
+		retext += `${D.palam[i]}Lv${$target.palam[i][0]}: ${$target.palam[i][1]} / ${$target.palam[i][2]}　　`;
 		n++;
 		if(n%4==0) retext += '<br>';
 	}
@@ -76,14 +76,16 @@ MP: $target.base.mana[0] / $target.base.mana[1]<br>
 <hr>
 
 刻印：<br>
-催眠Lv$target.mark.hypnosis.lv　
-屈服Lv$target.mark.surrender.lv　
-反抗Lv$target.mark.resistance.lv　
-快乐Lv$target.mark.ecstacy.lv　
-痛苦Lv$target.mark.pain.lv　
-恐惧Lv$target.mark.fear.lv　
-耻辱Lv$target.mark.humiliation.lv
-
+<<=
+   let retext = ''
+   let n=0
+   for(let i in D.mark){
+      retext += `${lan(D.mark[i])} Lv${$target.mark[i]}　` 
+      n++
+      if(n%3==0) retext+='<br>'
+   }
+   retext
+>>
 <br><hr>
 
 技能：<br>

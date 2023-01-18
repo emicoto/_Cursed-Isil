@@ -41,35 +41,6 @@ F.showtime = function () {
 	return timeString + ` (${timezone})`;
 };
 
-F.timeProcess = function (t) {
-	const date = V.date;
-
-	date.time += t;
-
-	const days = Math.floor(date.time / 1440);
-	const weeks = (date.week + days) % 7;
-
-	const months = Math.floor(days / 30);
-	const years = Math.floor(months / 12);
-
-	if (days) {
-		date.day += days;
-		date.time -= 1440 * days;
-	}
-
-	date.week = weeks;
-
-	if (months) {
-		date.month += months;
-		date.day -= days;
-	}
-
-	if (years) {
-		date.year += years;
-		date.month -= months;
-	}
-};
-
 F.timePhase = function () {
 	const h = Math.floor(V.date.time / 60);
 	const select = new SelectCase();
