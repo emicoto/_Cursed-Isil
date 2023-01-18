@@ -27,7 +27,10 @@ F.switchChara = function () {
 			t = "Ayres";
 		}
 
-		change = `<<link '[ 切换角色 ]'>><<set $pc to '${p}'>><<set $tc to '${t}'>><<run F.resetScene();>><</link>>`;
+		let reflesh = "F.resetUI()";
+		if (V.passage == "CommandLoop") reflesh = "F.resetScene()";
+
+		change = `<<link '[ 切换角色 ]'>><<set $pc to '${p}'>><<set $tc to '${t}'>><<run ${reflesh};>><</link>>`;
 	}
 
 	if (Config.debug) console.log(change);
