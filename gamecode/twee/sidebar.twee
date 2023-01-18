@@ -4,9 +4,9 @@
 
 :: StoryCaption
 
-<<if $passage == 'Start'>>
+<<if $passage == 'Start' || $passage == 'Start1' >>
 一个用于制作游戏的范本，稍微能玩的版本。<br>
- version 0.1.0<br>
+ version 0.1.3<br>
  author: 狐千月<br>
 <<else>>
 
@@ -46,6 +46,7 @@
 
 
 :: StoryHeader
+<<if !groupmatch($passage, 'Start', 'Start1')>>
 <div id='showtime' class='headbar-container'>
     <<showtime>>
     <<showmoney>>
@@ -58,7 +59,7 @@
         <<showgametime>>
     <</replace>>
 <</repeat>>
-
+<</if>>
 
 :: StoryFooter
 

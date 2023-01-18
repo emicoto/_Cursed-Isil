@@ -129,6 +129,10 @@ F.initCharacters = function () {
 		V.chara[i] = F.initChara[i]();
 	}
 
+	S.charasheet.forEach((cid) => {
+		V.chara[cid] = F.initCharaFromCSV(cid);
+	});
+
 	F.initCharaV();
 
 	for (let i in V.chara) {

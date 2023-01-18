@@ -28,10 +28,11 @@
 </div>
 
 :: StoryMenu
+<<if $passage == 'MainLoop'>>
 <<link 'Inventory'>><</link>>
 <<link 'Profile' 'Profile'>><</link>>
 <<link 'Magicom'>><</link>>
-
+<</if>>
 :: Invenory
 
 <<link '返回' $lastsession>><</link>>

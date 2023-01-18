@@ -296,14 +296,14 @@
 	    return this;
 	  }
 	  initVirginity() {
-	    this.virginiy = {};
+	    this.virginity = {};
 	    const list = ["kiss", "oral", "penis", "anal", "analsex", "vigina", "viginasex", "handholding", "footjob"];
 	    if (this.gender === "male")
 	      list.splice(5, 2);
 	    if (this.gender === "female")
 	      list.splice(2, 1);
 	    list.forEach((k) => {
-	      this.virginiy[k] = [];
+	      this.virginity[k] = [];
 	    });
 	    return this;
 	  }
@@ -373,7 +373,8 @@
 	  }
 	  setExp(arr) {
 	    for (let i in arr) {
-	      this.exp[i] = arr[i];
+	      this.exp[i].total = arr[i];
+	      this.exp[i].aware = arr[i];
 	    }
 	    return this;
 	  }
@@ -398,7 +399,7 @@
 	    return this;
 	  }
 	  setVirginity(part, target, time, situation) {
-	    this.virginiy[part] = [target, time, situation];
+	    this.virginity[part] = [target, time, situation];
 	    return this;
 	  }
 	  initDaily() {

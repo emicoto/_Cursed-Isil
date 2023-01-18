@@ -220,42 +220,6 @@ F.initChara.Nanaly = function () {
 	return chara;
 };
 
-F.initChara.Amia = function () {
-	const chara = new Chara("Amia", "阿米娅", "female", "human")
-		.initChara("both")
-		.setTitle("术士")
-		.setJob("mage")
-		.setBirth([4040, 12, 23])
-		.setTraits(["耐疼", "胆大", "乐观", "不服输"])
-		.setTalent(["快速恢复"])
-		.setSkill(["healing_aura"])
-		.setStats({ STR: 12, CON: 13, DEX: 10, INT: 15, WIL: 16, PSY: 9, ALR: 14 })
-		.setAppearance({
-			eyecolr: "蓝色",
-			haircolor: "棕色",
-			hairstyle: "长马尾",
-			skincolor: "白皙",
-			tall: 1420,
-			weight: 38.5,
-		})
-		.setAbility({
-			magica: 8,
-			craft: 5,
-			medicine: 8,
-			terra: 5,
-		})
-		.setSexAbl({
-			knowledge: 5,
-			technique: 2,
-			endurance: 2,
-		});
-
-	chara.resetVirginity = function () {};
-
-	chara.resetVirginity();
-	return chara;
-};
-
 F.initChara.m0 = function () {
 	const chara = new Chara("m0", "诅咒之触", "male", "tentacles")
 		.initChara("tachi")

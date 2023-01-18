@@ -1,5 +1,25 @@
 
 :: Start [nosave]
+<div id='gametitle'>
+scEra the Cursed
+</div>
+<div id='gamesubtitle'>
+- 伊希露的诅咒 -
+</div>
+<div id='gametitle_selection'>
+<<link '开始游戏' 'Start1'>><</link>><br>
+<<link '游戏设置' 'Option'>><</link>><br>
+</div>
+
+:: Option[nosave, system]
+<li>总是显示主控角色名称 <<checkbox '$system.alwaysShowPCName' 0 1 autocheck>></li>
+<li>总是显示配合度检测  <<checkbox '$system.showOrder' 0 1 autocheck>></li>
+<li title='推荐打开哦。'>指令模式下，如果存在PC口上则优先显示 <<checkbox '$system.showPCKojo' 0 1 autocheck>></li>
+
+<<link 'Back' $lastsession>><</link>>
+
+:: Start1[nosave]
+
 游戏初始设定<br>
 <<dashline>>
 
@@ -17,38 +37,6 @@
 准备好了吗？ 准备好就开始吧。<br>
 
 <br>
-<<button '开始游戏' 'EventStart'>>
-    <<set $player.fullname to `${$player.name}·${$player.surname}`>>
-    <<set $target.fullname to `${$target.name}·${$target.middlename}·${$target.surname}`>>
-    <<run 
-        F.setEvent('Story','Opening')
-        if(T.futa == 2){
-            for(let i in V.chara){
-                V.chara[i].gender = 'inter';
-                V.chara[i].initSexOrgan('v');
-                if(V.chara[i].resetVirginity){
-                    V.chara[i].resetVirginity()
-                }
-            }
-        }
-
-        if(T.lesCP){
-            V.chara['Isil'].gender = 'female';
-            V.chara['Isil'].initVirginity();
-            delete V.chara['Isil'].sexstats.p;
-
-            V.chara['Ayres'].gender = 'female';
-            V.chara['Ayres'].initVirginity();
-            V.chara['Ayres'].resetVirginity()
-            delete V.chara['Ayres'].sexstats.p;
-        }
-
-        if(T.newbie){
-            for(let i in V.chara){
-                V.chara[i].initExp().initVirginity();
-            }
-        }
-
-    >>
-<</button>>
+<<link '开始游戏' 'EventStart'>><<run F.gameStart()>><</link>><br>
+<<link '跳过片头直接开始' 'MainLoop'>><<run F.gameStart(1)>><</link>>
 <br><br> 

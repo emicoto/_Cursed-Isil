@@ -98,7 +98,7 @@ export interface Chara {
 	equip?: any;
 
 	reveals?: any;
-	virginiy?: any;
+	virginity?: any;
 
 	flag: any; //好感、信赖， 学籍情报， 诅咒进展， 诅咒魔力效率等
 }
@@ -395,7 +395,7 @@ export class Chara {
 	}
 
 	initVirginity() {
-		this.virginiy = {};
+		this.virginity = {};
 
 		// [丧失对象，丧失时间，丧失情景]
 
@@ -405,7 +405,7 @@ export class Chara {
 		if (this.gender === "female") list.splice(2, 1);
 
 		list.forEach((k) => {
-			this.virginiy[k] = [];
+			this.virginity[k] = [];
 		});
 
 		return this;
@@ -484,7 +484,8 @@ export class Chara {
 
 	setExp(arr: Dict<number, expkey>) {
 		for (let i in arr) {
-			this.exp[i] = arr[i];
+			this.exp[i].total = arr[i];
+			this.exp[i].aware = arr[i];
 		}
 		return this;
 	}
@@ -523,7 +524,7 @@ export class Chara {
 	}
 
 	setVirginity(part, target, time, situation) {
-		this.virginiy[part] = [target, time, situation];
+		this.virginity[part] = [target, time, situation];
 		return this;
 	}
 

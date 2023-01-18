@@ -11,7 +11,7 @@ race, human,; 也可以用分号注释。
 position, both
 title, 治愈师
 job, mage
-birthday, [4048, 2, 11]
+birthday, 4048, 2, 11
 
 traits, 耐疼
 traits, 胆大

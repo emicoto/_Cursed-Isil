@@ -81,3 +81,40 @@ F.initGame = function () {
 		total: D.time,
 	};
 };
+
+F.gameStart = function (skip) {
+	player.fullname = `${player.name}·${player.surname}`;
+	target.fullname = `${target.name}·${target.middlename}·${target.surname}`;
+
+	if (!skip) {
+		F.setEvent("Story", "Opening");
+	} else {
+		F.setMemory("SE_0", "序章 - 故事开头");
+	}
+	if (T.futa == 2) {
+		for (let i in V.chara) {
+			V.chara[i].gender = "inter";
+			V.chara[i].initSexOrgan("v");
+			if (V.chara[i].resetVirginity) {
+				V.chara[i].resetVirginity();
+			}
+		}
+	}
+
+	if (T.lesCP) {
+		V.chara["Isil"].gender = "female";
+		V.chara["Isil"].initVirginity();
+		delete V.chara["Isil"].sexstats.p;
+
+		V.chara["Ayres"].gender = "female";
+		V.chara["Ayres"].initVirginity();
+		V.chara["Ayres"].resetVirginity();
+		delete V.chara["Ayres"].sexstats.p;
+	}
+
+	if (T.newbie) {
+		for (let i in V.chara) {
+			V.chara[i].initExp().initVirginity();
+		}
+	}
+};

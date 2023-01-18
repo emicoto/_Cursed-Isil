@@ -1,5 +1,5 @@
 :: CharaSheet_Amia[csv]
-/* 正确的注释打开方式 */
+/* 正确的注释打开方式,不做设置的项目要删干净. */
 
 id, Amia
 name, 阿米娅
@@ -11,19 +11,16 @@ race, human,; 也可以用分号注释。
 position, both
 title, 术士
 job, mage
-birthday, [4040, 12, 23]
+birthday, 4040, 12, 23
 
 traits, 耐疼
 traits, 胆大
 traits, 乐观
 traits, 不服输
 
-talent, sp回复
+talent, 恢复快
 
 skill, healing_aura
-skill, clear_aura
-skill, stone_wall
-skill, falling_rocks
 
 appearance.eyecolor, 蓝色
 appearance.haircolor, 棕色
@@ -59,6 +56,3 @@ organ.v.size, 1
 
 flag.jobfame, 120
 flag.schoolfame, 20
-
-virginity.kiss, 初恋对象, 不明, 告白后一个冲动吻上了对方
-virginity.vagina, 自己的手指, 不明, 对初恋对象进行性幻想时用手指破了自己处
