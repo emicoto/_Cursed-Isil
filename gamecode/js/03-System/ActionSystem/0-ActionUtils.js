@@ -1,4 +1,4 @@
-Action.hideMenu = function () {
+Action.hide = function () {
 	const label = "#actionMenu_";
 
 	$(label + 1).addClass("hidden");
@@ -6,13 +6,13 @@ Action.hideMenu = function () {
 	$(label + 3).addClass("hidden");
 	$("#actionOption").addClass("hidden");
 
-	F.reflesh(label + 1, " ");
-	F.reflesh(label + 2, " ");
-	F.reflesh(label + 3, " ");
-	F.reflesh("#actionOpton", " ");
+	ui.replace(label + 1, " ");
+	ui.replace(label + 2, " ");
+	ui.replace(label + 3, " ");
+	ui.replace("#actionOpton", " ");
 };
 
-Action.showMenu = function () {
+Action.show = function () {
 	$("#actionMenu_1").removeClass("hidden");
 	$("#actionMenu_2").removeClass("hidden");
 	$("#actionMenu_3").removeClass("hidden");
@@ -48,12 +48,6 @@ Action.stop = function (id, mode) {
 
 Action.phase = function (mode) {
 	$("action").trigger(mode);
-};
-
-P.resetMsg = function () {
-	S.msg = [];
-	T.msgId = 0;
-	T.noMsg = 0;
 };
 
 Action.checkOrder = function (btn) {

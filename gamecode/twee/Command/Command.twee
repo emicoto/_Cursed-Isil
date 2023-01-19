@@ -106,7 +106,7 @@ Com.set('T4')
 <<you>>轻轻握住了$target.name的阴茎，缓缓地前后撸动。<br>
 
 :: Com_T5
-<<you>>将手指探入$target.name的<<=F.splitSex($target,'菊穴','秘穴')>>在入口附近摩擦着。<br>
+<<you>>将手指探入$target.name的<<=p.splitSex($target,'菊穴','秘穴')>>在入口附近摩擦着。<br>
 
 
 :: Com_T99::Script[script]
@@ -184,8 +184,8 @@ Com.set('X1')
         Source[tc].esB += 100
         Source[tc].resist += Math.floor(1000 - F.Exp(tc, '触手奸')/5)
 
-        F.getExp(target, '触手奸', random(3));
-        F.getExp(target, 'B', random(2));
+        Chara.getexp(target, '触手奸', random(3));
+        Chara.getexp(target, 'B', random(2));
     })
     .ForceAble()
 
@@ -225,8 +225,8 @@ Com.set('X2')
         Source[tc].esB += 100
         Source[tc].resist += Math.floor(1000 - F.Exp(tc, '触手奸')/5)
 
-        F.getExp(target, '触手奸', random(3));
-        F.getExp(target, 'B', random(2));
+        Chara.getexp(target, '触手奸', random(3));
+        Chara.getexp(target, 'B', random(2));
     })
 
 

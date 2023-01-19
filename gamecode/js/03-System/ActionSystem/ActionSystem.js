@@ -21,7 +21,7 @@ F.initMainFlow = function () {
 	if (V.aftermovement) delete V.aftermovement;
 
 	setTimeout(() => {
-		F.txtFlow(text, 30, 1);
+		p.flow(text, 30, 1);
 		setTimeout(() => {
 			F.charaEvent(tc);
 		}, 500);
@@ -39,7 +39,7 @@ F.ActNext = function () {
 	}
 
 	if (T.msgId < S.msg.length && !T.onselect) {
-		F.txtFlow(S.msg[T.msgId]);
+		p.flow(S.msg[T.msgId]);
 		T.msgId++;
 	}
 };
@@ -79,7 +79,7 @@ F.checkAction = function (id, phase) {
 
 	//如果无法进入执行环节，则在这个阶段返回提示信息。
 	if (reText) {
-		F.txtFlow(reText);
+		p.flow(reText);
 	}
 
 	T.selectAct = id;
@@ -114,7 +114,7 @@ F.beforeAction = function (id) {
 	//先执行通用的before事件。主要显示场景变化或持续状态。
 	reText = Story.get("Msg_Action_Common:Before").text + ` <<run F.ActNext()>><<if !T.noMsg>><<dashline>><</if>>`;
 
-	P.Msg(reText);
+	p.msg(reText);
 
 	let type = "PCAction",
 		dif = "Before",
@@ -123,23 +123,23 @@ F.beforeAction = function (id) {
 	//指令专属的before事件
 	if (Kojo.has(pc, { type, id, dif, check })) {
 		txt = Kojo.put(pc, { type, id, dif });
-		P.Msg(txt);
+		p.msg(txt);
 	}
 
 	//执行口上侧before事件。
 	type = "Action";
 	if (Kojo.has(tc, { type, id, dif })) {
 		txt = Kojo.put(tc, { type, id, dif });
-		P.Msg(txt);
+		p.msg(txt);
 	}
 
 	//角色自定指令的情况。因为格式不一样，前面结果肯定为空(￣▽￣")
 	if (data?.option?.has("Kojo") && Kojo.has(pc, { type: "custom", id, dif })) {
-		P.Msg(Kojo.put(pc, { type: "custom", id, dif }));
+		p.msg(Kojo.put(pc, { type: "custom", id, dif }));
 	}
 
 	//在执行文本最后追加下一步，取消的话就直接取消剩余执行事件。
-	P.Msg(
+	p.msg(
 		`<<if !T.cancel>><<run Action.phase('event'); F.ActNext()>><<else>><<run F.resetAction(); Action.phase('init')>><</if>>`
 	);
 
@@ -147,7 +147,7 @@ F.beforeAction = function (id) {
 	//if(Action.data[id]?.before) Action.data[id].before();
 
 	if (!Story.has(`Msg_PCAction_${id}`) && !data?.option?.has("Kojo")) {
-		F.txtFlow("缺乏事件文本", 30, 1);
+		p.flow("缺乏事件文本", 30, 1);
 		Action.phase("init");
 	}
 };
@@ -179,7 +179,7 @@ F.actionEvent = function (id, state) {
 		txt = "";
 
 	T.phase = "event";
-	P.resetMsg();
+	p.resetMsg();
 
 	//强制成功时
 	if (state == "force succeed") {
@@ -218,9 +218,9 @@ F.actionEvent = function (id, state) {
 		txt = F.convertKojo(txt);
 	}
 
-	P.Msg(txt);
+	p.msg(txt);
 	//设置下一个环节的flag。进入counter环节。对象概率执行counter动作。之后才是result和after事件
-	P.Msg(`<<run Action.data['${id}'].effect(); Action.phase('counter');>>`, 1);
+	p.msg(`<<run Action.data['${id}'].effect(); Action.phase('counter');>>`, 1);
 };
 
 F.actionAfter = function (id) {
@@ -232,24 +232,24 @@ F.actionAfter = function (id) {
 	T.phase = "after";
 
 	if (Kojo.has(pc, { type, id, dif, check })) {
-		P.Msg(Kojo.put(pc, { type, id, dif }));
+		p.msg(Kojo.put(pc, { type, id, dif }));
 		c = 1;
 	}
 
 	type = "Action";
 	if (Kojo.has(tc, { type, id, dif })) {
-		P.Msg(Kojo.put(tc, { type, id, dif }));
+		p.msg(Kojo.put(tc, { type, id, dif }));
 		c = 1;
 	}
 
 	//角色自定指令的情况。因为格式不一样，前面结果肯定为空(￣▽￣")
 	if (data?.option?.has("Kojo") && Kojo.has(pc, { type: "custom", id, dif })) {
-		P.Msg(Kojo.put(pc, { type: "custom", id, dif }));
+		p.msg(Kojo.put(pc, { type: "custom", id, dif }));
 	}
 
 	//有事件的时候滞后处理
 	if (c) {
-		P.Msg(`<<run Action.phase('finish')>><<dashline>>`, 1);
+		p.msg(`<<run Action.phase('finish')>><<dashline>>`, 1);
 	} else {
 		Action.phase("finish");
 	}
@@ -262,8 +262,8 @@ F.actionCancel = function (id) {
 		check = 1;
 
 	if (Kojo.has(pc, { type, id, dif, check, tag })) {
-		P.Msg(Kojo.put(pc, { type, id, dif, tag }));
-		P.Msg(`<<run T.cancel = 1; F.passtime(1); F.resetAction(); Action.phase('init')>>`, 1);
+		p.msg(Kojo.put(pc, { type, id, dif, tag }));
+		p.msg(`<<run T.cancel = 1; F.passtime(1); F.resetAction(); Action.phase('init')>>`, 1);
 	} else {
 		T.cancel = 1;
 		F.resetAction();
@@ -278,12 +278,12 @@ F.actionFailed = function (id) {
 		check = 1;
 
 	if (Kojo.has(pc, { type, id, dif, tag, check })) {
-		P.Msg(Kojo.put(pc, { type, id, dif, tag }));
+		p.msg(Kojo.put(pc, { type, id, dif, tag }));
 	} else {
-		P.Msg("对方不愿意配合，执行失败。");
+		p.msg("对方不愿意配合，执行失败。");
 	}
 
-	P.Msg(`<<run T.cancel = 1; F.passtime(1); F.resetAction(); Action.phase('init')>>`, 1);
+	p.msg(`<<run T.cancel = 1; F.passtime(1); F.resetAction(); Action.phase('init')>>`, 1);
 };
 
 F.actionResult = function () {

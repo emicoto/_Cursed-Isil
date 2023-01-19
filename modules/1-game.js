@@ -363,7 +363,7 @@
 				haircolor: set["haircolor"] ? set["haircolor"] : "\u91D1\u8272",
 				hairstyle: set["hairstyle"] ? set["hairstyle"] : "\u6563\u53D1",
 				skincolor: set["skincolor"] ? set["skincolor"] : "\u5065\u5EB7",
-				beauty: charafix.beauty(this),
+				beauty: fix.beauty(this),
 				bodysize: set["bodysize"] ? set["bodysize"] : set["tall"] ? Math.floor((set["tall"] - 1350) / 150) : 2,
 				tall: set["tall"] ? set["tall"] : set["bodysize"] ? set["bodysize"] * 150 + 1300 + random(1, 148) : 1704,
 				weight: set["weight"] ? set["weight"] : 0,

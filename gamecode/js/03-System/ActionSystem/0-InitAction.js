@@ -20,15 +20,15 @@ F.resetUI = function (id, option) {
 	V.target = C[tc];
 	V.player = C[pc];
 
-	F.resetLink();
+	ui.delink();
 	F.updateScene();
-	Action.showMenu();
+	Action.show();
 	F.updateActions(id, option);
 	//F.refleshSidebar();
 	//F.refleshContinuosAction();
 
 	Action.shownext(1);
-	F.reflesh("showtime", "<<showtime>><<showmoney>>");
+	ui.replace("showtime", "<<showtime>><<showmoney>>");
 
 	return "";
 };
@@ -42,7 +42,7 @@ F.initCheckFlag = function () {
 	T.phase = "";
 	T.forceOrder = 0;
 
-	P.resetMsg();
+	p.resetMsg();
 };
 
 F.initTFlag = function () {

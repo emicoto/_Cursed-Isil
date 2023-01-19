@@ -1,30 +1,4 @@
-function percent(arr) {
-	let min = arr[0],
-		max = arr[1];
-
-	if (arr.length == 3) {
-		min = arr[1];
-		max = arr[2];
-	}
-	return Math.clamp(Math.trunc((min / max) * 100), 1, 100);
-}
-window.percent = percent;
-DefineMacroS("percent", percent);
-
-F.setBase = function (name, value) {
-	pc.base[name][0] += value;
-	return "";
-};
-
-F.setPalam = function (name, value) {
-	pc.palam[name][1] += value;
-	return "";
-};
-
-DefineMacroS("setBase", F.setBase);
-DefineMacroS("setPalam", F.setPalam);
-
-F.isClasstime = function () {
+cond.isClasstime = function () {
 	const date = V.date;
 	if (inrange(date.week, 1, 5)) {
 		const select = new SelectCase();
@@ -34,7 +8,7 @@ F.isClasstime = function () {
 	return false;
 };
 
-F.splitSex = function (chara, male, female, inter) {
+p.splitSex = function (chara, male, female, inter) {
 	if (chara.gender === "male") return male;
 	else {
 		if (inter && chara.gender === "inter") {
@@ -44,7 +18,7 @@ F.splitSex = function (chara, male, female, inter) {
 	}
 };
 
-F.gametime = function () {
+F.playtime = function () {
 	let time = V.gametime;
 
 	time.s++;
@@ -62,7 +36,7 @@ F.gametime = function () {
 	}
 };
 
-F.levelMP = function (lv) {
+F.levelMp = function (lv) {
 	lv = Math.clamp(lv + 1, 1, 25);
 	let a = lv * lv * 10 + Math.pow(lv, 3);
 	return Math.floor(a / 10 + 0.5) * 10;
@@ -82,7 +56,7 @@ F.Evole = function (type) {
 	};
 	const max = type == "scale" ? 10 : 25;
 	const per = type !== "scale" && m.abl[type] == 0 ? Math.max(p[type][0] / 2, 1) : p[type][0];
-	const mp = F.levelMP(m.abl[type]) * per;
+	const mp = F.levelMp(m.abl[type]) * per;
 
 	let link = "";
 
@@ -100,7 +74,7 @@ F.Evole = function (type) {
 	return link;
 };
 
-F.getMP = function (ecstacy, type) {
+F.getMp = function (ecstacy, type) {
 	// 每120点快感 +1p。 达到普通高潮需1200快感，强高潮需3000快感，超强高潮需要6000快感
 	// 每次指令结束会将获得魔力暂存在earnMP里。调教结束时，当earnMP大于一才添加到魔力中。
 	// M的程度不足的话，疼痛会抵消掉快感
@@ -108,7 +82,7 @@ F.getMP = function (ecstacy, type) {
 	T.earnMP = ecstacy / 120 + Tsv[`${type}Ex`] * 20;
 };
 
-F.getExp = function (chara, exp, val) {
+Chara.getexp = function (chara, exp, val) {
 	chara.exp[exp].total += val;
 
 	if (!F.uncons(chara)) chara.exp[exp].aware += val;
@@ -118,7 +92,7 @@ F.getExp = function (chara, exp, val) {
 	chara.expUp[exp] += val;
 };
 
-F.getForms = function (level) {
+p.mutants = function (level) {
 	let txt = "";
 	for (let i = 0; i < level; i++) {
 		txt += `【${D.mutant[i]}】`;
@@ -126,14 +100,14 @@ F.getForms = function (level) {
 	return txt;
 };
 
-F.resetLink = function () {
+ui.delink = function () {
 	$("#contentMsg a").remove();
 	V.selectCom = 0;
 	return "";
 };
-DefineMacroS("resetLink", F.resetLink);
+DefineMacroS("resetLink", ui.delink);
 
-P.Msg = function (msg, add) {
+p.msg = function (msg, add) {
 	if (!S.msg) S.msg = [];
 
 	if (add) {
@@ -146,6 +120,12 @@ P.Msg = function (msg, add) {
 	}
 };
 
-F.reflesh = function (label, html) {
+ui.replace = function (label, html) {
 	new Wikifier(null, `<<replace #${label}>>${html}<</replace>>`);
+};
+
+p.resetMsg = function () {
+	S.msg = [];
+	T.msgId = 0;
+	T.noMsg = 0;
 };

@@ -6,7 +6,7 @@ Chara.onLoad = function () {
 	}
 };
 
-charafix.beauty = function (chara) {
+fix.beauty = function (chara) {
 	const traitbuff = function (chara) {
 		let buff = 1;
 
@@ -136,7 +136,7 @@ Chara.init = function () {
 	Chara.initGlobal();
 
 	for (let i in V.chara) {
-		charafix.base(V.chara[i], 1);
+		fix.base(V.chara[i], 1);
 		F.resetBase(V.chara[i]);
 	}
 
@@ -151,7 +151,7 @@ Chara.init = function () {
 	V.tc = "Isil";
 };
 //修正基础属性
-charafix.base = function (chara, mode) {
+fix.base = function (chara, mode) {
 	const { base, stats, race, traits } = chara;
 
 	if (chara.id == "m0") {
@@ -174,11 +174,11 @@ charafix.base = function (chara, mode) {
 		base.sanity[0] = base.sanity[1];
 		base.mana[0] = base.mana[1];
 
-		charafix.stats(chara);
+		fix.stats(chara);
 	}
 };
 //修正角色的属性
-charafix.stats = function (chara) {
+fix.stats = function (chara) {
 	const { stats, equip, race } = chara;
 
 	if (chara.id === "m0") {

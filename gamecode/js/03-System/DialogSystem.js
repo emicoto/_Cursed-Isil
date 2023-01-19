@@ -1,5 +1,5 @@
 // 信息流控制
-F.txtFlow = function (txt, time, dashline) {
+p.flow = function (txt, time, dashline) {
 	if (!time) time = 60;
 
 	new Wikifier(
@@ -15,16 +15,30 @@ F.txtFlow = function (txt, time, dashline) {
 };
 
 //下一步按钮
-F.nextLink = function () {
+ui.next = function () {
 	let next = V.event.next;
 	console.log(V.event.next);
 	if (!next) next = "Next";
 	return `<<link '${next}'>><<run F.nextDialog()>><</link>>`;
 };
-DefineMacroS("eventnext", F.nextLink);
+DefineMacroS("eventnext", ui.next);
+
+class Dialog {
+	logs = {};
+	config = {};
+	constructor(title) {
+		this.title = title;
+		this.index = 0;
+		this.config = {};
+		this.text = [];
+		this.next = null;
+		this.end = false;
+		this.init();
+	}
+}
 
 //获取事件完整文本，并进行解析转化
-F.initText = function (title) {
+Dialog.init = function (title) {
 	const input = Story.get(title).text.split("\n");
 
 	S.dialog[title] = [];
@@ -90,7 +104,7 @@ F.initDialog = function () {
 		F.recEventPoint("sp");
 	}
 
-	F.initText(title);
+	Dialog.init(title);
 	T.eventTitle = title;
 	const p = S.dialog[title][0];
 
@@ -116,7 +130,7 @@ F.dialogFlow = function () {
 	const txt = txtp(p.text);
 	S.history.push(txt);
 
-	F.txtFlow(txt);
+	p.flow(txt);
 
 	e.config = {};
 	e.config = p.config;

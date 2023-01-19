@@ -526,6 +526,29 @@ export class Chara {
 		return this;
 	}
 
+	getExp(exp, value) {
+		this.exp[exp].total += value;
+		if (!this.uncons()) {
+			this.exp[exp].aware += value;
+		}
+		this.expUp[exp] = value;
+		return this;
+	}
+
+	getBase(key, value) {
+		this.base[key][0] += value;
+		return this;
+	}
+
+	getPalam(key, value) {
+		this.palam[key][1] += value;
+		return this;
+	}
+
+	uncons() {
+		return this.state.has("睡眠", "晕厥");
+	}
+
 	setAppearance({
 		eyecolor = "蓝色",
 		haircolor = "金色",
@@ -540,7 +563,7 @@ export class Chara {
 			haircolor: haircolor,
 			hairstyle: hairstyle,
 			skincolor: skincolor,
-			beauty: charafix.beauty(this),
+			beauty: fix.beauty(this),
 			bodysize: bodysize !== undefined ? bodysize : tall ? this.GenerateBodysize(tall) : 2,
 			tall: tall ? tall : bodysize ? this.GenerateTall() : 1704,
 			weight: weight,

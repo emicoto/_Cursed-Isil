@@ -30,7 +30,7 @@
 <<dashline>>
 
 已解锁形态：<<=F.Evole('form')>><br>
-<<=F.getForms(_abl.form)>><br>
+<<=p.mutants(_abl.form)>><br>
 
 <<dashline>>
 

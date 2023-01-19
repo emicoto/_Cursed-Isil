@@ -68,7 +68,7 @@ Com.next = function () {
 		Com.Event(V.selectCom, 1);
 	} else {
 		if (T.msgId < S.msg.length && !T.onselect) {
-			F.txtFlow(S.msg[T.msgId]);
+			p.flow(S.msg[T.msgId]);
 			T.msgId++;
 		}
 	}
@@ -103,26 +103,26 @@ Com.Check = function (id) {
 	Com.shownext();
 
 	if (V.system.showOrder && T.order) {
-		P.Msg(`配合度检测：${T.order}＝${T.comorder}/${T.orderGoal}<br><<dashline>>`);
+		p.msg(`配合度检测：${T.order}＝${T.comorder}/${T.orderGoal}<br><<dashline>>`);
 	}
 
 	//执行before事件。这些都是纯文本。只能有选项相关操作。
 	//先执行通用的 before事件。基本用在场景变化中。
-	P.Msg(`${Story.get("Command::Before").text}<<run Com.next()>><<dashline>>`);
+	p.msg(`${Story.get("Command::Before").text}<<run Com.next()>><<dashline>>`);
 
 	//指令专属的before事件
 	let type = "Com",
 		dif = "Before";
 	if (Kojo.has(pc, { type, id, dif, check: 1 })) {
 		txt = Kojo.put(pc, { type, id, dif });
-		P.Msg(txt);
+		p.msg(txt);
 		c = 1;
 	}
 
 	//执行口上侧Before事件。
 	if (Kojo.has(tc, { type, id, dif })) {
 		txt = Kojo.put(tc, { type, id, dif });
-		P.Msg(txt);
+		p.msg(txt);
 		c = 1;
 	}
 
@@ -130,7 +130,7 @@ Com.Check = function (id) {
 	if (com?.before) com.before();
 
 	if (!Story.has(`Com_${id}`)) {
-		F.txtFlow("缺乏事件文本", 30, 1);
+		p.flow("缺乏事件文本", 30, 1);
 		Com.resetScene();
 	}
 	//存在待执行文本就直接出现Next按钮。
@@ -155,10 +155,10 @@ Com.Event = function (id, next) {
 	$("#contentMsg a").remove();
 
 	if (T.comCancel) {
-		P.Msg(resetHtml);
+		p.msg(resetHtml);
 	} else if (com.name == "移动") {
 		//移动直接跳转到移动界面
-		P.Msg(Story.get(`Com_G0`).text);
+		p.msg(Story.get(`Com_G0`).text);
 	}
 	//确认主控有能力执行
 	else if (T.comAble) {
@@ -196,40 +196,40 @@ Com.Event = function (id, next) {
 
 			if (txt.includes("Kojo.put")) txt = F.convertKojo(txt);
 
-			P.Msg(txt);
+			p.msg(txt);
 
-			P.Msg(`<<run comdata['${id}'].source(); F.passtime(T.passtime); Com.After()>>`, 1);
+			p.msg(`<<run comdata['${id}'].source(); F.passtime(T.passtime); Com.After()>>`, 1);
 
 			//确认After事件。如果有就添加到 Msg中。
 			if (Kojo.has(pc, { type, id, dif: "After", check: 1 })) {
 				txt = `<br><<set _comPhase to 'after'>>` + Kojo.put(pc, { type, id, dif: "After" });
 				if (txt.includes("Kojo.put")) txt = F.convertKojo(txt);
-				P.Msg(txt);
+				p.msg(txt);
 			}
 
 			if (txt.includes("Kojo.put") === false && Kojo.has(tc, { type, id, dif: "After" })) {
-				P.Msg(Kojo.put(tc, { type, id, dif: "After" }));
+				p.msg(Kojo.put(tc, { type, id, dif: "After" }));
 			}
 
 			//最后加ComEnd()
-			P.Msg("<<run Com.endEvent()>>", 1);
+			p.msg("<<run Com.endEvent()>>", 1);
 		} else {
-			P.Msg(`配合度不足：${T.order}＝${T.comorder}/${T.orderGoal}<br><<run F.passtime(1); >>`);
-			P.Msg(resetHtml, 1);
+			p.msg(`配合度不足：${T.order}＝${T.comorder}/${T.orderGoal}<br><<run F.passtime(1); >>`);
+			p.msg(resetHtml, 1);
 		}
 	}
 	//取消执行
 	else {
 		if (Kojo.has(pc, { type, id, dif: "Cancel", check: 1 })) {
 			txt = Kojo.put(pc, { type, id, dif: "Cancel" });
-			P.Msg(txt);
+			p.msg(txt);
 		} else
-			P.Msg(
+			p.msg(
 				`》条件不足无法执行指令：${typeof com.name === "function" ? com.name() : com.name}<br>原因：${T.reason}<br>`
 			);
 
-		P.Msg("<<run F.passtime(1)>>", 1);
-		P.Msg(resetHtml, 1);
+		p.msg("<<run F.passtime(1)>>", 1);
+		p.msg(resetHtml, 1);
 	}
 
 	Com.shownext();
@@ -250,6 +250,6 @@ Com.endEvent = function () {
 
 	let text = "";
 
-	P.Msg(resetHtml);
+	p.msg(resetHtml);
 	Com.next();
 };

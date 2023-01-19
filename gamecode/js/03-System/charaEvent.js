@@ -69,7 +69,7 @@ F.charaEvent = function (cid) {
 		}
 
 		if (Kojo.has(cid, { type: "Daily", id: "First" })) {
-			return F.txtFlow(`${Kojo.put(cid, { type: "Daily", id: "First" })}${setter}`);
+			return p.flow(`${Kojo.put(cid, { type: "Daily", id: "First" })}${setter}`);
 		}
 	}
 
