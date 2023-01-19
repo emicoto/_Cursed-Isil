@@ -22,12 +22,12 @@ F.resetUI = function (id, option) {
 
 	F.resetLink();
 	F.updateScene();
-	F.showActions();
+	Action.showMenu();
 	F.updateActions(id, option);
 	//F.refleshSidebar();
 	//F.refleshContinuosAction();
 
-	F.showNext(1);
+	Action.shownext(1);
 	F.reflesh("showtime", "<<showtime>><<showmoney>>");
 
 	return "";
@@ -42,7 +42,7 @@ F.initCheckFlag = function () {
 	T.phase = "";
 	T.forceOrder = 0;
 
-	F.resetMsg();
+	P.resetMsg();
 };
 
 F.initTFlag = function () {
@@ -58,7 +58,7 @@ F.resetAction = function () {
 	if (T.cancel) {
 		F.initCheckFlag();
 		F.resetTflag();
-		F.setPhase("init");
+		Action.phase("init");
 		return 0;
 	}
 

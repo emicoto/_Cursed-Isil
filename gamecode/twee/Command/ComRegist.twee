@@ -60,7 +60,7 @@ Com.globalCond = function(id){
 
     if( !com.tag.has('常规','魔法','调情','爱抚') && F.isRape(target) && F.canResist(target) && !com.tag.includes('触手')) {
 
-        if(!F.weaker(target, C[pc])) T.reason += '【强奸对象具备抵抗能力】';
+        if(!cond.isWeaker(target, C[pc])) T.reason += '【强奸对象具备抵抗能力】';
         else return true;
 
         return false

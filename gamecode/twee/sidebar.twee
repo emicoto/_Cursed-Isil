@@ -39,7 +39,7 @@
 
     //复原角色的class
     if(G.onLoad || G.onReload){
-        F.LoadCharacters();
+        Chara.onLoad();
         G.onLoad = false;
         G.onReload = false;
     };

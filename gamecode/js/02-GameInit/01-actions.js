@@ -51,7 +51,9 @@ const extendParts = function (raw) {
 
 const actList = {};
 
+//动作class
 class Action {
+	//对动作的各设置项目进行初始化
 	constructor({
 		id,
 		name,
@@ -104,9 +106,11 @@ class Action {
 		this.autokeep = 1;
 	}
 	static makeGroup = "";
+	//追加到动作列表中
 	static add(id, obj) {
 		Action.data[id] = new Action(obj);
 	}
+	//从动作列表中获取动作
 	static get(arg, args) {
 		switch (arg) {
 			case "usePart":
@@ -124,6 +128,7 @@ class Action {
 		return Action.data[id];
 	}
 
+	//创建动作文字模板
 	static create(data, mode) {
 		const { name, templet, targetPart, usePart, type } = data;
 
@@ -199,13 +204,15 @@ class Action {
 
 		return txt;
 	}
-	static init() {
+	//从设置列表中初始化
+	static initdata() {
 		let arr = F.makeList("ActionList", F.extendsRaw);
 		arr.forEach((obj) => {
 			Action.add(obj.id, obj);
 		});
 		console.log(Action.data);
 	}
+	//从角色口上中初始化
 	static initKojo() {
 		let data = Object.values(Kojo.data).filter((obj) => obj.action.length);
 		data.forEach((kojo) => {
@@ -217,6 +224,7 @@ class Action {
 			});
 		});
 	}
+	//打印模板
 	static output(mode, type) {
 		const txt = Object.values(Action.data)
 			.filter(
@@ -272,4 +280,4 @@ window.Action = Action;
 Action.data = actList;
 Action.kojo = {};
 
-Action.init();
+Action.initdata();

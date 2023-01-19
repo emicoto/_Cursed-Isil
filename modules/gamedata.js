@@ -1,3 +1,5 @@
+D.race = ["human", "elvin", "deamon", "wolves", "drawf", "goblin", "catvinx", "centaur", "orc", "titan", "dracon"];
+
 D.base = {
 	health: "健康",
 	stamina: "体力",

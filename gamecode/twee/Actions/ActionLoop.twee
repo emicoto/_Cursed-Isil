@@ -52,9 +52,9 @@ $('action').on('init', ()=>{
 
 $('action').on('before', ()=>{
     console.log('before event', T.actId)
-    F.hideActions()
+    Action.hideMenu()
     F.beforeAction(T.actId)    
-    F.showNext()
+    Action.shownext()
 	 F.ActNext();
 })
 
@@ -88,14 +88,14 @@ $('action').on('counter', ()=>{
    //对象的攻势。如果是逆推状态，会先处理counter？
     console.log('counter event')
     F.resetLink()
-    F.setPhase('keep')
+    Action.phase('keep')
 })
 
 $('action').on('keep', ()=>{
    //持续动作、装备影响的描述和预处理
     console.log('keep event')
     F.resetLink()
-    F.setPhase('result')
+    Action.phase('result')
 })
 
 $('action').on('result', ()=>{
@@ -103,7 +103,7 @@ $('action').on('result', ()=>{
     console.log('result event')
     F.resetLink()
     F.passtime(T.passtime)
-    F.setPhase('after')
+    Action.phase('after')
 })
 
 $('action').on('after', ()=>{
@@ -118,7 +118,7 @@ $('action').on('finish', ()=>{
     console.log('finish event')
     F.resetLink()
     F.resetAction()
-    F.setPhase('init')
+    Action.phase('init')
 })
 
 </script>

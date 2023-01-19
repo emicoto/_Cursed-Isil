@@ -49,7 +49,7 @@ F.makeList = function (path, option) {
 	return result;
 };
 
-chara.setWomb = function (chara) {
+Chara.setWomb = function (chara) {
 	if (chara.pregnancy === undefined) {
 		chara.pregnancy = {};
 	}
@@ -86,7 +86,7 @@ chara.setWomb = function (chara) {
 	console.log(chara.pregnancy);
 };
 
-chara.setParasite = function (chara) {
+Chara.setParasite = function (chara) {
 	chara.parasite = {
 		maxslot: 6,
 		type: "",
@@ -95,7 +95,7 @@ chara.setParasite = function (chara) {
 	};
 };
 
-chara.setRevealDetail = function (reveal, equip) {
+charafix.reveals = function (reveal, equip) {
 	const { detail } = reveal;
 
 	//--- 每次穿脱衣服时会初始化一次然后重新记录每个部位的裸露值。

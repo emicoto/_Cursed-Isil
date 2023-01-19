@@ -55,7 +55,7 @@ export interface Clothes extends Item {
 	allure: number; //魅力加值，乘数
 	defence: number; //防御加值，加数
 
-	cursed?: boolean; //是否诅咒物品。如果是则无法脱下
+	cursed?: 0 | 1; //是否诅咒物品。如果是则无法脱下
 	effect?: Array<any>; //衣服特殊效果。['functionname',args...]
 }
 

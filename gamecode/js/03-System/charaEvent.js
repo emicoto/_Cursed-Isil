@@ -32,7 +32,7 @@ F.switchChara = function () {
 		}
 
 		let reflesh = "F.resetUI()";
-		if (V.passage == "CommandLoop") reflesh = "F.resetScene()";
+		if (V.passage == "CommandLoop") reflesh = "Com.resetScene()";
 
 		change = `<<link '[ 切换角色 ]'>><<set $pc to '${p}'>><<set $tc to '${t}'>><<run ${reflesh};>><</link>>`;
 	}

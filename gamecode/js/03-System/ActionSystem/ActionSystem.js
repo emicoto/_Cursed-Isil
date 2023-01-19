@@ -114,7 +114,7 @@ F.beforeAction = function (id) {
 	//先执行通用的before事件。主要显示场景变化或持续状态。
 	reText = Story.get("Msg_Action_Common:Before").text + ` <<run F.ActNext()>><<if !T.noMsg>><<dashline>><</if>>`;
 
-	F.Msg(reText);
+	P.Msg(reText);
 
 	let type = "PCAction",
 		dif = "Before",
@@ -123,24 +123,24 @@ F.beforeAction = function (id) {
 	//指令专属的before事件
 	if (Kojo.has(pc, { type, id, dif, check })) {
 		txt = Kojo.put(pc, { type, id, dif });
-		F.Msg(txt);
+		P.Msg(txt);
 	}
 
 	//执行口上侧before事件。
 	type = "Action";
 	if (Kojo.has(tc, { type, id, dif })) {
 		txt = Kojo.put(tc, { type, id, dif });
-		F.Msg(txt);
+		P.Msg(txt);
 	}
 
 	//角色自定指令的情况。因为格式不一样，前面结果肯定为空(￣▽￣")
 	if (data?.option?.has("Kojo") && Kojo.has(pc, { type: "custom", id, dif })) {
-		F.Msg(Kojo.put(pc, { type: "custom", id, dif }));
+		P.Msg(Kojo.put(pc, { type: "custom", id, dif }));
 	}
 
 	//在执行文本最后追加下一步，取消的话就直接取消剩余执行事件。
-	F.Msg(
-		`<<if !T.cancel>><<run F.setPhase('event'); F.ActNext()>><<else>><<run F.resetAction(); F.setPhase('init')>><</if>>`
+	P.Msg(
+		`<<if !T.cancel>><<run Action.phase('event'); F.ActNext()>><<else>><<run F.resetAction(); Action.phase('init')>><</if>>`
 	);
 
 	//检测是否存在特殊的before处理，存在就在这执行。
@@ -148,15 +148,15 @@ F.beforeAction = function (id) {
 
 	if (!Story.has(`Msg_PCAction_${id}`) && !data?.option?.has("Kojo")) {
 		F.txtFlow("缺乏事件文本", 30, 1);
-		F.setPhase("init");
+		Action.phase("init");
 	}
 };
 
 F.doAction = function (id) {
-	const state = T.actAble ? F.actionCheckOrder() : "cancel";
+	const state = T.actAble ? Action.checkOrder() : "cancel";
 
 	if (groupmatch(state, "failed", "cancel")) {
-		F.setPhase(state);
+		Action.phase(state);
 		return 0;
 	}
 
@@ -179,7 +179,7 @@ F.actionEvent = function (id, state) {
 		txt = "";
 
 	T.phase = "event";
-	F.resetMsg();
+	P.resetMsg();
 
 	//强制成功时
 	if (state == "force succeed") {
@@ -218,9 +218,9 @@ F.actionEvent = function (id, state) {
 		txt = F.convertKojo(txt);
 	}
 
-	F.Msg(txt);
+	P.Msg(txt);
 	//设置下一个环节的flag。进入counter环节。对象概率执行counter动作。之后才是result和after事件
-	F.Msg(`<<run Action.data['${id}'].effect(); F.setPhase('counter');>>`, 1);
+	P.Msg(`<<run Action.data['${id}'].effect(); Action.phase('counter');>>`, 1);
 };
 
 F.actionAfter = function (id) {
@@ -232,26 +232,26 @@ F.actionAfter = function (id) {
 	T.phase = "after";
 
 	if (Kojo.has(pc, { type, id, dif, check })) {
-		F.Msg(Kojo.put(pc, { type, id, dif }));
+		P.Msg(Kojo.put(pc, { type, id, dif }));
 		c = 1;
 	}
 
 	type = "Action";
 	if (Kojo.has(tc, { type, id, dif })) {
-		F.Msg(Kojo.put(tc, { type, id, dif }));
+		P.Msg(Kojo.put(tc, { type, id, dif }));
 		c = 1;
 	}
 
 	//角色自定指令的情况。因为格式不一样，前面结果肯定为空(￣▽￣")
 	if (data?.option?.has("Kojo") && Kojo.has(pc, { type: "custom", id, dif })) {
-		F.Msg(Kojo.put(pc, { type: "custom", id, dif }));
+		P.Msg(Kojo.put(pc, { type: "custom", id, dif }));
 	}
 
 	//有事件的时候滞后处理
 	if (c) {
-		F.Msg(`<<run F.setPhase('finish')>><<dashline>>`, 1);
+		P.Msg(`<<run Action.phase('finish')>><<dashline>>`, 1);
 	} else {
-		F.setPhase("finish");
+		Action.phase("finish");
 	}
 };
 
@@ -262,12 +262,12 @@ F.actionCancel = function (id) {
 		check = 1;
 
 	if (Kojo.has(pc, { type, id, dif, check, tag })) {
-		F.Msg(Kojo.put(pc, { type, id, dif, tag }));
-		F.Msg(`<<run T.cancel = 1; F.passtime(1); F.resetAction(); F.setPhase('init')>>`, 1);
+		P.Msg(Kojo.put(pc, { type, id, dif, tag }));
+		P.Msg(`<<run T.cancel = 1; F.passtime(1); F.resetAction(); Action.phase('init')>>`, 1);
 	} else {
 		T.cancel = 1;
 		F.resetAction();
-		F.setPhase("init");
+		Action.phase("init");
 	}
 };
 
@@ -278,12 +278,12 @@ F.actionFailed = function (id) {
 		check = 1;
 
 	if (Kojo.has(pc, { type, id, dif, tag, check })) {
-		F.Msg(Kojo.put(pc, { type, id, dif, tag }));
+		P.Msg(Kojo.put(pc, { type, id, dif, tag }));
 	} else {
-		F.Msg("对方不愿意配合，执行失败。");
+		P.Msg("对方不愿意配合，执行失败。");
 	}
 
-	F.Msg(`<<run T.cancel = 1; F.passtime(1); F.resetAction(); F.setPhase('init')>>`, 1);
+	P.Msg(`<<run T.cancel = 1; F.passtime(1); F.resetAction(); Action.phase('init')>>`, 1);
 };
 
 F.actionResult = function () {

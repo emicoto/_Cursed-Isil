@@ -2,7 +2,7 @@ F.baseUp = function (chara, key, val) {
 	chara.base[key][0] += val;
 };
 
-F.baseCheck = function (chara, key, val) {
+cond.baseLt = function (chara, key, val) {
 	if (val === "max") return chara.base[key][0] < chara.base[key][1];
 	else {
 		if (between(val, 0, 1)) {
@@ -87,7 +87,7 @@ F.canResist = function (chara) {
 	return !F.uncons(chara) && F.canMove(chara);
 };
 
-F.weaker = function (a, b) {
+cond.isWeaker = function (a, b) {
 	let ap = F.BP(a);
 	let bp = F.BP(b);
 
@@ -161,7 +161,7 @@ F.justHands = function (useParts) {
 };
 
 Object.defineProperty(window, OnlyU, {
-   get:function(){
-      return pc === tc
-   }
-})
+	get: function () {
+		return pc === tc;
+	},
+});

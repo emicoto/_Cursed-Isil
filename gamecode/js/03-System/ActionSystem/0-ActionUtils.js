@@ -1,4 +1,4 @@
-F.hideActions = function () {
+Action.hideMenu = function () {
 	const label = "#actionMenu_";
 
 	$(label + 1).addClass("hidden");
@@ -12,23 +12,19 @@ F.hideActions = function () {
 	F.reflesh("#actionOpton", " ");
 };
 
-F.showActions = function () {
+Action.showMenu = function () {
 	$("#actionMenu_1").removeClass("hidden");
 	$("#actionMenu_2").removeClass("hidden");
 	$("#actionMenu_3").removeClass("hidden");
 	$("#actionOption").removeClass("hidden");
 };
 
-F.showNext = function (hide) {
+Action.shownext = function (hide) {
 	let html = hide ? "" : `<<link 'Next'>><<run F.ActNext()>><</link>>`;
 	new Wikifier("#next", `<<replace #next>>${html}<</replace>>`);
 };
 
-F.reflesh = function (label, html) {
-	new Wikifier(null, `<<replace #${label}>>${html}<</replace>>`);
-};
-
-F.partAble = function (actid, part, chara) {
+Action.partAble = function (actid, part, chara) {
 	const data = Action.data[actid];
 	if (data.type == "触手") {
 		return Flag.master;
@@ -37,41 +33,30 @@ F.partAble = function (actid, part, chara) {
 	}
 };
 
-F.filterActions = function (...types) {
+Action.typeFilter = function (...types) {
 	return Object.values(Action.data).filter((action) => types.includes(action.type));
-};
-
-F.Msg = function (msg, add) {
-	if (add) {
-		if (!S.msg.length) S.msg[0] = "";
-		S.msg[S.msg.length - 1] += msg;
-	} else if (msg.includes("<fr>")) {
-		S.msg = S.msg.concat(msg.split("<fr>"));
-	} else {
-		S.msg.push(msg);
-	}
 };
 
 /**
  *
  * @param {'cancel' | 'stop'} mode
  */
-F.stopAction = function (id, mode) {
+Action.stop = function (id, mode) {
 	T.stopAct = id;
 	$("action").trigger(mode);
 };
 
-F.setPhase = function (mode) {
+Action.phase = function (mode) {
 	$("action").trigger(mode);
 };
 
-F.resetMsg = function () {
+P.resetMsg = function () {
 	S.msg = [];
 	T.msgId = 0;
 	T.noMsg = 0;
 };
 
-F.actionCheckOrder = function (btn) {
+Action.checkOrder = function (btn) {
 	if (V.system.debug) return "succeed";
 	if (T.orderGoal == 0) return "succeed";
 
@@ -85,15 +70,15 @@ F.actionCheckOrder = function (btn) {
 	return "failed";
 };
 
-F.checkAble = function (id, btn) {
+Action.able = function (id, btn) {
 	if (btn) F.initCheckFlag();
 	const data = Action.data[id];
 	return Action.globalCheck(id) && data.check();
 };
 
-F.checkOrder = function (id, btn) {
+Action.order = function (id, btn) {
 	if (btn) F.initCheckFlag();
 	const data = Action.data[id];
 	T.orderGoal = Action.globalOrder(id) + data.order();
-	return F.actionCheckOrder(btn);
+	return Action.checkOrder(btn);
 };

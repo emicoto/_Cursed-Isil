@@ -30,7 +30,7 @@ Com.set('G0')
 /* 注册指令事件*/
 Com.set('G1')
     .Check(()=>{ 
-        return F.baseCheck(player, 'stamina', 'max')
+        return cond.baseLt(player, 'stamina', 'max')
     })
     .Effect(()=>{ 
         Source[pc].stamina += 30 

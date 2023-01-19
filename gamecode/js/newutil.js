@@ -132,3 +132,20 @@ F.resetLink = function () {
 	return "";
 };
 DefineMacroS("resetLink", F.resetLink);
+
+P.Msg = function (msg, add) {
+	if (!S.msg) S.msg = [];
+
+	if (add) {
+		if (!S.msg.length) S.msg[0] = "";
+		S.msg[S.msg.length - 1] += msg;
+	} else if (msg.includes("<fr>")) {
+		S.msg = S.msg.concat(msg.split("<fr>"));
+	} else {
+		S.msg.push(msg);
+	}
+};
+
+F.reflesh = function (label, html) {
+	new Wikifier(null, `<<replace #${label}>>${html}<</replace>>`);
+};

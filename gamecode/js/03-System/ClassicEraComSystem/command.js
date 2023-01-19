@@ -110,10 +110,10 @@ class Com {
 }
 window.Com = Com;
 
-F.ComFilters = function () {
+Com.filters = function () {
 	const general = clone(D.ComFilterGeneral);
 	const train = clone(D.ComFilterTrain);
-	const end = "<<=F.initComList()>><</link>>";
+	const end = "<<=Com.initList()>><</link>>";
 	const generalink = [];
 	const trainlink = [];
 
@@ -130,7 +130,7 @@ F.ComFilters = function () {
 	)}<<if $mode is 'train'>>${trainlink.join("")}<</if>>`;
 };
 
-F.initComList = function () {
+Com.initList = function () {
 	const command = [];
 
 	Object.values(comdata).forEach((com) => {
@@ -143,7 +143,7 @@ F.initComList = function () {
 		let txt = "";
 
 		if (com.filter() && Com.globalFilter(id)) {
-			txt = `<<com '${name}' ${time} ${id}>><<run F.ComCheck('${id}')>><</com>>`;
+			txt = `<<com '${name}' ${time} ${id}>><<run Com.Check('${id}')>><</com>>`;
 		} else if (V.system.showAllCommand) {
 			txt = `<div class='command unable'><<button '${name}'>><</button>></div>`;
 		}

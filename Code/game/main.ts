@@ -33,9 +33,9 @@ window.gameutils = {
 	UI: {},
 	printer: {},
 	fun: {},
-	chara: {},
+	charafix: {},
 };
-window.gamedata = {};
+window.gamedata = {}; //游戏资料
 window.languagedata = {};
 
 Object.defineProperties(window, {
@@ -67,7 +67,7 @@ Object.defineProperties(window, {
 			return window.gameutils.ui;
 		},
 	},
-	p: {
+	P: {
 		get: function () {
 			return window.gameutils.printer;
 		},
@@ -82,7 +82,7 @@ Object.defineProperties(window, {
 			return window.gameutils.game;
 		},
 	},
-	chara: {
+	charafix: {
 		get: function () {
 			return window.gameutils.chara;
 		},

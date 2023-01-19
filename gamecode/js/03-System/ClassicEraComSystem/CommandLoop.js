@@ -1,24 +1,35 @@
 //----->> 初始化 <<---------------------------//
-F.initComMenu = function () {
+Com.updateMenu = function () {
 	const list = [[V.location.id == "A0", "下沉", "Basement", ""]];
 	let menu = [];
 	list.forEach((a) => {
 		if (a[0]) menu.push(`<<link '[ ${a[1]} ]' '${a[2]}'>>${a[3]}<</link>>`);
 	});
 
-	const html = `<span class='filter'>Filter: ${F.ComFilters()}</span>　｜　${menu.join("")}`;
+	const html = `<span class='filter'>Filter: ${Com.filters()}</span>　｜　${menu.join("")}`;
 
 	new Wikifier(null, `<<replace #commandmenu>>${html}<</replace>>`);
 };
 
-F.initLocation = function () {
+//刷新界面
+Com.resetScene = function () {
+	V.target = C[tc];
+	V.player = C[pc];
+	Com.updateScene();
+	Com.initList();
+	Com.updateMenu();
+	return "";
+};
+DefineMacroS("resetScene", Com.resetScene);
+
+Com.updateScene = function () {
 	const chara = [];
 	let html = "";
 	let change = F.switchChara();
 
 	if (V.location.chara.length) {
 		V.location.chara.forEach((k) => {
-			let com = `<<set $tc to '${k}'>><<run F.charaEvent('${k}'); F.resetScene()>>`;
+			let com = `<<set $tc to '${k}'>><<run F.charaEvent('${k}'); Com.resetScene()>>`;
 
 			let t = `<u><<link '${C[k].name}'>>${com}<</link>></u>　`;
 
@@ -46,7 +57,7 @@ F.initLocation = function () {
 };
 
 //----->> 主要进程处理 <<---------------------------//
-F.ComNext = function () {
+Com.next = function () {
 	//用于刷新content_message区域的文本。
 	if (T.msgId < S.msg.length && S.msg[T.msgId].has("<<selection", "<<linkreplace") && !T.selectwait) {
 		S.msg[T.msgId] += "<<unset _selectwait>><<set _onselect to 1>>";
@@ -54,7 +65,7 @@ F.ComNext = function () {
 	}
 
 	if (T.comPhase == "before" && T.msgId >= S.msg.length && !T.onselect && !T.selectwait) {
-		F.ComEvent(V.selectCom, 1);
+		Com.Event(V.selectCom, 1);
 	} else {
 		if (T.msgId < S.msg.length && !T.onselect) {
 			F.txtFlow(S.msg[T.msgId]);
@@ -63,7 +74,7 @@ F.ComNext = function () {
 	}
 };
 
-F.ComCheck = function (id) {
+Com.Check = function (id) {
 	const com = comdata[id];
 
 	T.comorder = 0;
@@ -88,30 +99,30 @@ F.ComCheck = function (id) {
 	}
 
 	//指令执行时暂时去掉指令栏
-	F.hideCommands();
-	F.shownext();
+	Com.hide();
+	Com.shownext();
 
 	if (V.system.showOrder && T.order) {
-		F.ComMsg(`配合度检测：${T.order}＝${T.comorder}/${T.orderGoal}<br><<dashline>>`);
+		P.Msg(`配合度检测：${T.order}＝${T.comorder}/${T.orderGoal}<br><<dashline>>`);
 	}
 
 	//执行before事件。这些都是纯文本。只能有选项相关操作。
 	//先执行通用的 before事件。基本用在场景变化中。
-	F.ComMsg(`${Story.get("Command::Before").text}<<run F.ComNext()>><<dashline>>`);
+	P.Msg(`${Story.get("Command::Before").text}<<run Com.next()>><<dashline>>`);
 
 	//指令专属的before事件
 	let type = "Com",
 		dif = "Before";
 	if (Kojo.has(pc, { type, id, dif, check: 1 })) {
 		txt = Kojo.put(pc, { type, id, dif });
-		F.ComMsg(txt);
+		P.Msg(txt);
 		c = 1;
 	}
 
 	//执行口上侧Before事件。
 	if (Kojo.has(tc, { type, id, dif })) {
 		txt = Kojo.put(tc, { type, id, dif });
-		F.ComMsg(txt);
+		P.Msg(txt);
 		c = 1;
 	}
 
@@ -120,18 +131,18 @@ F.ComCheck = function (id) {
 
 	if (!Story.has(`Com_${id}`)) {
 		F.txtFlow("缺乏事件文本", 30, 1);
-		F.resetScene();
+		Com.resetScene();
 	}
 	//存在待执行文本就直接出现Next按钮。
 	else if (c) {
-		F.shownext();
-		F.ComNext();
+		Com.shownext();
+		Com.next();
 	} else {
-		F.ComEvent(id);
+		Com.Event(id);
 	}
 };
 
-F.ComEvent = function (id, next) {
+Com.Event = function (id, next) {
 	const com = comdata[id];
 	const resetHtml = `<<run F.resetCom()>><<dashline>>`;
 	let txt = "",
@@ -144,10 +155,10 @@ F.ComEvent = function (id, next) {
 	$("#contentMsg a").remove();
 
 	if (T.comCancel) {
-		F.ComMsg(resetHtml);
+		P.Msg(resetHtml);
 	} else if (com.name == "移动") {
 		//移动直接跳转到移动界面
-		F.ComMsg(Story.get(`Com_G0`).text);
+		P.Msg(Story.get(`Com_G0`).text);
 	}
 	//确认主控有能力执行
 	else if (T.comAble) {
@@ -163,7 +174,7 @@ F.ComEvent = function (id, next) {
 			if (T.comorder < T.orderGoal && !V.system.debug) {
 				S.msg.push(
 					`配合度不足：${T.order}＝${T.comorder}/${T.orderGoal}<br>${
-						com?.forceAble ? "<<run F.ComNext()>>" : ""
+						com?.forceAble ? "<<run Com.next()>>" : ""
 					}<br>`
 				);
 
@@ -185,61 +196,60 @@ F.ComEvent = function (id, next) {
 
 			if (txt.includes("Kojo.put")) txt = F.convertKojo(txt);
 
-			F.ComMsg(txt);
+			P.Msg(txt);
 
-			F.ComMsg(`<<run comdata['${id}'].source(); F.passtime(T.passtime); F.ComResult()>>`, 1);
+			P.Msg(`<<run comdata['${id}'].source(); F.passtime(T.passtime); Com.After()>>`, 1);
 
 			//确认After事件。如果有就添加到 Msg中。
 			if (Kojo.has(pc, { type, id, dif: "After", check: 1 })) {
 				txt = `<br><<set _comPhase to 'after'>>` + Kojo.put(pc, { type, id, dif: "After" });
 				if (txt.includes("Kojo.put")) txt = F.convertKojo(txt);
-				F.ComMsg(txt);
+				P.Msg(txt);
 			}
 
 			if (txt.includes("Kojo.put") === false && Kojo.has(tc, { type, id, dif: "After" })) {
-				F.ComMsg(Kojo.put(tc, { type, id, dif: "After" }));
+				P.Msg(Kojo.put(tc, { type, id, dif: "After" }));
 			}
 
 			//最后加ComEnd()
-			F.ComMsg("<<run F.ComEnd()>>", 1);
+			P.Msg("<<run Com.endEvent()>>", 1);
 		} else {
-			F.ComMsg(`配合度不足：${T.order}＝${T.comorder}/${T.orderGoal}<br><<run F.passtime(1); >>`);
-			F.ComMsg(resetHtml, 1);
+			P.Msg(`配合度不足：${T.order}＝${T.comorder}/${T.orderGoal}<br><<run F.passtime(1); >>`);
+			P.Msg(resetHtml, 1);
 		}
 	}
 	//取消执行
 	else {
 		if (Kojo.has(pc, { type, id, dif: "Cancel", check: 1 })) {
 			txt = Kojo.put(pc, { type, id, dif: "Cancel" });
-			F.ComMsg(txt);
+			P.Msg(txt);
 		} else
-			F.ComMsg(
+			P.Msg(
 				`》条件不足无法执行指令：${typeof com.name === "function" ? com.name() : com.name}<br>原因：${T.reason}<br>`
 			);
 
-		F.ComMsg("<<run F.passtime(1)>>", 1);
-		F.ComMsg(resetHtml, 1);
+		P.Msg("<<run F.passtime(1)>>", 1);
+		P.Msg(resetHtml, 1);
 	}
 
-	F.shownext();
-	F.ComNext();
+	Com.shownext();
+	Com.next();
 };
 
-//数据处理结果的显示。包括高潮、射精、刻印获得、素质变动的处理
-//已经打包扔 timeprocess中了。
-F.ComResult = function () {
+//高潮、射精、刻印获得、素质变动事件的处理
+//数据处理已经打包扔 timeprocess中了。
+Com.After = function () {
 	let text = "";
 	return text;
 };
 
-//指令结束后的事件处理。主要看有无后续事件。 例如高潮后、射精后、刻印获得后、素质变动后等相关事件。
-//未完。跟Action用同一套处理。弄好了再替换好了。
-F.ComEnd = function () {
+//事件结束时的处理
+Com.endEvent = function () {
 	T.comPhase = "end";
 	const resetHtml = `<<run F.resetCom()>><<dashline>>`;
 
 	let text = "";
 
-	F.ComMsg(resetHtml);
-	F.ComNext();
+	P.Msg(resetHtml);
+	Com.next();
 };

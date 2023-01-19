@@ -1,6 +1,6 @@
-F.initChara = {};
+Chara.data = {};
 
-F.initChara.Ayres = function () {
+Chara.data.Ayres = function () {
 	const chara = new Chara("Ayres", "艾瑞斯", "male", "deamon")
 		.initChara("tachi")
 		.setNames({ s: "修格斯" })
@@ -57,7 +57,7 @@ F.initChara.Ayres = function () {
 	return chara;
 };
 
-F.initChara.Isil = function () {
+Chara.data.Isil = function () {
 	const chara = new Chara("Isil", "伊希露", "male", "elvin")
 		.initChara("neko")
 		.setNames({ m: "梅尔", s: "艾西利特" })
@@ -117,7 +117,7 @@ F.initChara.Isil = function () {
 	return chara;
 };
 
-F.initChara.Besta = function () {
+Chara.data.Besta = function () {
 	const chara = new Chara("Besta", "贝斯特", "male", "wolves")
 		.initChara("both")
 		.setNames({ s: "巴尔顿" })
@@ -154,10 +154,10 @@ F.initChara.Besta = function () {
 
 	const scar = ["face", "back", "back", "waistback", "abdomen", "breast", "arms"];
 	scar.forEach((p) => {
-		F.setScar(chara, p, "scar", "never");
+		Chara.getScar(chara, p, "scar", "never");
 	});
 
-	F.countSkin(chara, 0);
+	Chara.skinCounter(chara, 0);
 
 	chara.resetVirginity = function () {
 		this.setVirginity("kiss", "姐姐", "不明", "在姐姐的引导下学会了接吻");
@@ -179,7 +179,7 @@ F.initChara.Besta = function () {
 	return chara;
 };
 
-F.initChara.Nanaly = function () {
+Chara.data.Nanaly = function () {
 	const chara = new Chara("Nanaly", "娜娜莉", "female", "dracon")
 		.initChara("both")
 		.setNames({ s: "艾索斯" })
@@ -220,7 +220,7 @@ F.initChara.Nanaly = function () {
 	return chara;
 };
 
-F.initChara.m0 = function () {
+Chara.data.m0 = function () {
 	const chara = new Chara("m0", "诅咒之触", "male", "tentacles")
 		.initChara("tachi")
 		.setStats({ STR: 16, CON: 15, DEX: 17, INT: 15, WIL: 17, PSY: 17 })

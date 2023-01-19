@@ -1,3 +1,4 @@
+//全局过滤器
 Action.globalFilter = function (id) {
 	const data = Action.data[id];
 
@@ -134,7 +135,7 @@ Action.globalPartAble = function (id, part, cid) {
 		case "urin":
 		case "nipple":
 			//隐私区需要更高的接触等级
-			if (Flag.mode < 2) return 0;
+			if (Flag.mode < 3) return 0;
 	}
 
 	return Using[cid][part].act == "" || Using[cid][part].act == id;

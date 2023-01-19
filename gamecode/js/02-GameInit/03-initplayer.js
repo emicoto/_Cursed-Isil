@@ -1,12 +1,12 @@
 //beauty=ALR*100+wearbuff+traitbuff
-F.LoadCharacters = function () {
+Chara.onLoad = function () {
 	for (let i in V.chara) {
 		let data = V.chara[i];
-		V.chara[i] = Chara.load(data);
+		V.chara[i] = Chara.onLoad(data);
 	}
 };
 
-F.setBeauty = function (chara) {
+charafix.beauty = function (chara) {
 	const traitbuff = function (chara) {
 		let buff = 1;
 
@@ -44,7 +44,7 @@ F.setBeauty = function (chara) {
 	return v + factor(v, chara);
 };
 
-F.setScar = function (chara, part, type, count, times) {
+Chara.getScar = function (chara, part, type, count, times) {
 	const skin = chara.scars;
 	if (!times) times = 1;
 	for (let i = 0; i < times; i++) {
@@ -53,7 +53,7 @@ F.setScar = function (chara, part, type, count, times) {
 	return "";
 };
 
-F.countSkin = function (chara, t) {
+Chara.skinCounter = function (chara, t) {
 	//对各皮肤图层上各伤痕计数器进行计算。
 	const dolayer = function (layer, t) {
 		for (let i = 0; i < layer.length; i++) {
@@ -74,7 +74,7 @@ F.countSkin = function (chara, t) {
 	//记录结果
 	const total = {};
 
-	//统计伤痕, whip鞭痕, scar伤疤, wound创伤, pen笔迹, bruise淤痕
+	//统计伤痕, whip鞭痕, scar伤疤, wound创伤, pen笔迹, bruise淤痕, kissmark吻痕
 	const collect = (skin) => {
 		for (let i in skin) {
 			if (i == "total" || i == "detail") continue;
@@ -122,21 +122,21 @@ F.countSkin = function (chara, t) {
 	return total;
 };
 
-F.initCharacters = function () {
+Chara.init = function () {
 	V.chara = {};
 
-	for (let i in F.initChara) {
-		V.chara[i] = F.initChara[i]();
+	for (let i in Chara.data) {
+		V.chara[i] = Chara.data[i]();
 	}
 
 	S.charasheet.forEach((cid) => {
-		V.chara[cid] = F.initCharaFromCSV(cid);
+		V.chara[cid] = Chara.initCSV(cid);
 	});
 
-	F.initCharaV();
+	Chara.initGlobal();
 
 	for (let i in V.chara) {
-		F.fixBase(V.chara[i], 1);
+		charafix.base(V.chara[i], 1);
 		F.resetBase(V.chara[i]);
 	}
 
@@ -150,8 +150,8 @@ F.initCharacters = function () {
 	V.pc = "Ayres";
 	V.tc = "Isil";
 };
-
-F.fixBase = function (chara, mode) {
+//修正基础属性
+charafix.base = function (chara, mode) {
 	const { base, stats, race, traits } = chara;
 
 	if (chara.id == "m0") {
@@ -174,11 +174,11 @@ F.fixBase = function (chara, mode) {
 		base.sanity[0] = base.sanity[1];
 		base.mana[0] = base.mana[1];
 
-		F.fixStats(chara);
+		charafix.stats(chara);
 	}
 };
-
-F.fixStats = function (chara) {
+//修正角色的属性
+charafix.stats = function (chara) {
 	const { stats, equip, race } = chara;
 
 	if (chara.id === "m0") {
@@ -193,19 +193,7 @@ F.fixStats = function (chara) {
 };
 
 F.raceBonus = function (race, type) {
-	const races = [
-		"human",
-		"elvin",
-		"deamon",
-		"wolves",
-		"drawf",
-		"goblin",
-		"catvinx",
-		"centaur",
-		"orc",
-		"titan",
-		"dracon",
-	];
+	const races = D.race;
 	const P = {
 		//health+stamina+mana = 3.3
 		//atk+def+mtk+mdf=4.4
@@ -221,7 +209,7 @@ F.raceBonus = function (race, type) {
 	return P[type][races.indexOf(race)];
 };
 
-F.initCharaV = function () {
+Chara.initGlobal = function () {
 	for (let i in V.chara) {
 		if (i == "m0") continue;
 

@@ -62,7 +62,7 @@ window.definePropertyFromPath = function (path, obj, value, type) {
 	return obj;
 };
 
-F.initCharaFromCSV = function (cid) {
+Chara.initCSV = function (cid) {
 	const raw = initCSV(cid);
 	const chara = new Chara(raw.id, raw.name, raw.gender, raw.race);
 	if (raw.position) {

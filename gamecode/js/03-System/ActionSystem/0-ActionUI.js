@@ -98,7 +98,7 @@ F.initActMenu = function (actid, usepart) {
 	//创建目录
 	const createMenu = function (list, array, option) {
 		list.forEach((type) => {
-			const _list = F.filterActions(type);
+			const _list = Action.typeFilter(type);
 			_list.forEach((data) => {
 				if (data.filter() && Action.globalFilter(data.id)) {
 					if (option && data.name == "交流") {
@@ -117,7 +117,7 @@ F.initActMenu = function (actid, usepart) {
 	const layer1 = ["交流", "常规", "目录"];
 	const layer2 = ["逆位", "接触", "道具", "触手", "魔法", "战斗", "命令"];
 	const options = ["体位", "其他"];
-	const systems = F.filterActions("固有");
+	const systems = Action.typeFilter("固有");
 
 	//动作可选部位
 	const useParts = usepart && _data?.usePart ? _data.usePart : [];
@@ -143,13 +143,13 @@ F.initActMenu = function (actid, usepart) {
 	//有可选部位才生成
 	if (useParts.length) {
 		useParts.forEach((part) => {
-			if (F.partAble(actid, part, pc) && _data.check(part)) partsMenu.push(F.partBtn(_data, part, 1));
+			if (Action.partAble(actid, part, pc) && _data.check(part)) partsMenu.push(F.partBtn(_data, part, 1));
 		});
 	}
 
 	if (targetParts.length && _data?.option !== "noSelectPart") {
 		targetParts.forEach((part) => {
-			if (F.partAble(actid, part, tc) && _data.check(part)) partsMenu.push(F.partBtn(_data, part));
+			if (Action.partAble(actid, part, tc) && _data.check(part)) partsMenu.push(F.partBtn(_data, part));
 		});
 	}
 

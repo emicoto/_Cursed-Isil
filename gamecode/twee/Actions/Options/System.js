@@ -44,7 +44,7 @@ Action.set("fall")
 	});
 
 Action.set("sleep").Filter(() => {
-	return V.location.id == "A0" && (V.date.time >= 1200 || F.baseCheck(player, "stamina", 0.5)) && pc !== "m0";
+	return V.location.id == "A0" && (V.date.time >= 1200 || cond.baseLt(player, "stamina", 0.5)) && pc !== "m0";
 });
 
 Action.set("rise")

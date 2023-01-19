@@ -16,8 +16,8 @@ readyActionBtn = function (name, id, option) {
 
 //按钮的颜色
 getBtnStyle = function (id) {
-	const able = F.checkAble(id);
-	const order = F.checkOrder(id);
+	const able = Action.able(id);
+	const order = Action.order(id);
 	let style = "gray";
 	if (able) {
 		const select = new SelectCase();
@@ -165,13 +165,15 @@ updateActionMenu = function (currentAction, waitInput) {
 	//有可选部位才生成
 	if (selectableParts1.length) {
 		selectableParts1.forEach((part) => {
-			if (F.partAble(currentAction, part, pc) && data.check(part)) partsMenu.push(createPartsButton(data, part, 1));
+			if (Action.partAble(currentAction, part, pc) && data.check(part))
+				partsMenu.push(createPartsButton(data, part, 1));
 		});
 	}
 
 	if (selectableParts2.length && data?.option !== "noSelectPart") {
 		selectableParts2.forEach((part) => {
-			if (F.partAble(currentAction, part, tc) && data.check(part)) partsMenu.push(createPartsButton(data, part));
+			if (Action.partAble(currentAction, part, tc) && data.check(part))
+				partsMenu.push(createPartsButton(data, part));
 		});
 	}
 
