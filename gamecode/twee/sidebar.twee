@@ -1,6 +1,15 @@
 :: PassageHeader
-<<set $passage to passage()>><<set $tags to tags($passage)>>
-
+<<run
+    $passage = passage(); $tags = tags($passage);
+    if($tags.has('title')){
+        UIBar.stow();
+        UIBar.hide();
+    }
+    else if(UIBar.isHidden()){
+        UIBar.unstow();
+        UIBar.show();
+    }
+>>
 
 :: StoryCaption
 
@@ -39,7 +48,6 @@
     
     if($mode !== 'train')
       $flag.mode = 0;
-
 >>
 
 :: PassageDone

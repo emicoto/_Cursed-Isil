@@ -1,7 +1,7 @@
 
-:: Start [nosave]
+:: Start [nosave, title]
 <div id='gametitle'>
-scEra the Cursed
+Era the Cursed
 </div>
 <div id='gamesubtitle'>
 - 伊希露的诅咒 -
@@ -19,13 +19,12 @@ scEra the Cursed
 <<link 'Back' $lastsession>><</link>>
 
 :: Start1[nosave]
-
 游戏初始设定<br>
 <<dashline>>
 
 <<tips '你' 'curse'>>：<<textbox "$cursedLord.name" $cursedLord.name>><br>
 <br>
-<<tips '执行者' 'arus'>>：<<textbox "$player.name" $player.name>> · $player.surname<br>
+<<tips '执行者' 'ayres'>>：<<textbox "$player.name" $player.name>> · $player.surname<br>
 <br>
 <<tips '伴侣' 'isil'>>：<<textbox "$target.name" $target.name>> · $target.middlename · $target.surname<br>
 <br>

@@ -1,4 +1,5 @@
-const weeks = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
+const weeks = ["暗", "光", "火", "水", "木", "雷", "土"];
+const weekcolor = ["C770FF", "F9FEA8", "FF7447", "8FE1F9", "BFE83F", "E4FCFE", "E1C57A"];
 
 F.timeZone = function (h) {
 	const select = new SelectCase();
@@ -16,10 +17,21 @@ F.timeZone = function (h) {
 	return select.has(h);
 };
 
+F.season = function () {
+	const select = new SelectCase();
+	select.case([3, 5], '<span style="color:#FF84AF">春</span>');
+	select.case([6, 8], '<span style="color:#84E7FF">夏</span>');
+	select.case([9, 11], '<span style="color:#F0BE42">秋</span>');
+	select.else('<span style="color:#D4DEE0">冬</span>');
+	return select.has(V.date.month);
+};
+
 F.showtime = function () {
 	const date = V.date;
 
-	let timeString = `${date.year}年${date.month}月${date.day}日 ${weeks[date.week]}`;
+	let timeString = `${F.season()} · ${date.month}/${date.day} (<span style='color:#${weekcolor[date.week]}'>${
+		weeks[date.week]
+	}</span>)`;
 	let hours = Math.floor(date.time / 60);
 	let minutes = date.time % 60;
 	let timezone = F.timeZone(hours);
@@ -38,7 +50,7 @@ F.showtime = function () {
 		timeString += ` ${hours < 10 ? "0" : ""}${hours}:${minutes < 10 ? "0" : ""}${minutes}`;
 	}
 
-	return timeString + ` (${timezone})`;
+	return timeString + ` <span style='color:#eee'>[${timezone}]</span>`;
 };
 
 F.timePhase = function () {
