@@ -2,7 +2,7 @@ F.initMainFlow = function () {
 	//在这里初始化信息板。 插入移动后的文本。不是经由移动初始化时会有对应的flag判定。
 	//V.aftermovement
 	const local = V.location;
-	let text = F.playerName();
+	let text = p.playerName();
 
 	if (local.id == "A0") {
 		text += `你回到了宿舍房间。<br>`;

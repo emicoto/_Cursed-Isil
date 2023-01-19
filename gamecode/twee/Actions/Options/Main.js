@@ -9,7 +9,7 @@ Action.set("Interaction")
 
 		if (Flag.mode < 1) Flag.mode = 1;
 
-		new Wikifier(null, `<<run p.flow(F.playerName()+'<<you>>和$target.name打了个招呼并走近对方。',30,1)>>`);
+		new Wikifier(null, `<<run p.flow(p.playerName()+'<<you>>和$target.name打了个招呼并走近对方。',30,1)>>`);
 	});
 
 /* 接触 */

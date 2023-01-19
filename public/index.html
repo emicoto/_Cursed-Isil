@@ -19646,7 +19646,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					//在这里初始化信息板。 插入移动后的文本。不是经由移动初始化时会有对应的flag判定。
 					//V.aftermovement
 					const local = V.location;
-					let text = F.playerName();
+					let text = p.playerName();
 
 					if (local.id == "A0") {
 						text += `你回到了宿舍房间。<br>`;
@@ -20441,7 +20441,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					let next = V.event.next;
 					console.log(V.event.next);
 					if (!next) next = "Next";
-					return `<<link '${next}'>><<run F.nextDialog()>><</link>>`;
+					return `<<link '${next}'>><<run Dialog.next()>><</link>>`;
 				};
 				DefineMacroS("eventnext", ui.next);
 
@@ -20474,7 +20474,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				};
 
 				//事件进程初始化
-				F.initEvent = function () {
+				Dialog.initTitle = function () {
 					const e = V.event;
 					let title = `${e.type}_${e.name}`;
 
@@ -20498,7 +20498,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				};
 
 				//当前dialog内容的初始化，同时记录回想节点。
-				F.initDialog = function () {
+				Dialog.init = function () {
 					const e = V.event;
 					let title = e.fullname;
 
@@ -20523,13 +20523,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					e.next = "Next";
 
 					setTimeout(() => {
-						F.dialogFlow(txt);
+						Dialog.flow(txt);
 						e.phase = 0;
 					}, 80);
 				};
 
 				//显示文本，并进行控制处理。
-				F.dialogFlow = function () {
+				Dialog.flow = function () {
 					const e = V.event;
 					const p = S.dialog[T.eventTitle][e.phase];
 
@@ -20558,7 +20558,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				};
 
 				//按下一步按钮或点击文本框时所进行的处理。
-				F.nextDialog = function () {
+				Dialog.next = function () {
 					const e = V.event;
 					const c = V.event.config;
 					const com = c?.com ? c.com : "";
@@ -20566,7 +20566,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 					if (!e.selectwait && e.phase < S.dialog[ch].length) {
 						e.phase++;
-						F.dialogFlow(ch);
+						Dialog.flow(ch);
 					}
 
 					if (e.selectwait) new Wikifier(null, "<<replace #next>> <</replace>>");
@@ -20580,7 +20580,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 							V.selectId = 0;
 
 							if (com) new Wikifier(null, com);
-							F.initDialog();
+							Dialog.init();
 						} else if (e.config.type == "endPhase") {
 							if (c?.name) e.name = c.name;
 							if (c?.eid) e.eid = c.eid;
@@ -20594,7 +20594,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 							e.sp = 0;
 
 							if (com) new Wikifier(null, com);
-							F.initDialog();
+							Dialog.init();
 						} else if (e.config.type == "jump") {
 							new Wikifier(null, `${com}<<timed 80ms>><<goto 'EventStart'>><</timed>>`);
 						} else if (e.config.type == "selectEnd") {
@@ -20602,7 +20602,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 							S.dialog = {};
 
 							if (com) new Wikifier(null, com);
-							F.initDialog();
+							Dialog.init();
 						} else {
 							if (!e.config?.exit) {
 								e.config.exit = S.defaultExit;
@@ -21459,19 +21459,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				}
 				DefineMacroS("skillRank", skillRank);
 
-				F.yourName = function () {
+				p.you = function () {
 					if (V.system.AlwaysShowPCName) {
 						return player.name;
 					}
 					return "你";
 				};
-				DefineMacroS("you", F.yourName);
+				DefineMacroS("you", p.you);
 
-				F.partnerName = function () {
+				p.partner = function () {
 					if (pc == "Isil") return C.Ayres.name;
 					else return C.Isil.name;
 				};
-				DefineMacroS("partner", F.partnerName);
+				DefineMacroS("partner", p.partner);
 
 				/**
 				 *
@@ -21509,11 +21509,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					return "";
 				};
 
-				F.Exp = function (chara, exp) {
+				p.exp = function (chara, exp) {
 					return C[chara].exp[exp].total;
 				};
 
-				F.charaName = function (cid) {
+				p.charaName = function (cid) {
 					const chara = C[cid];
 					let color = Kojo.get(cid, "color");
 					if (!color) color = "#22A0FC";
@@ -21522,25 +21522,25 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					return html;
 				};
 
-				F.playerName = function () {
+				p.playerName = function () {
 					let color = Kojo.get(pc, "color");
 					if (!color) color = "#22A0FC";
 
 					const html = `<span style='color:${color}'>[ ${player.name} ]</span><br>`;
 					return html;
 				};
-				DefineMacroS("pcnameTag", F.playerName);
-				DefineMacroS("nameTag", F.charaName);
+				DefineMacroS("pcnameTag", p.playerName);
+				DefineMacroS("nameTag", p.charaName);
 
 				F.actChara = function () {
-					if (T.actor == V.pc) return F.yourName();
+					if (T.actor == V.pc) return p.you();
 					else return C[T.actor].name;
 				};
 
 				DefineMacroS("actChara", F.actChara);
 
 				F.targetChara = function () {
-					if (T.actTg == V.pc) return F.yourName();
+					if (T.actTg == V.pc) return p.you();
 					else return C[T.actTg].name;
 				};
 
@@ -21568,14 +21568,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					return "hands";
 				};
 
-				F.Actor = function (pc, tc, act, acp) {
+				p.actor = function (pc, tc, act, acp) {
 					T.ac = pc;
 					T.tc = tc;
 					T.actId = act;
 					T.acp = acp;
 					return "";
 				};
-				DefineMacroS("setActor", F.Actor);
+				DefineMacroS("setActor", p.actor);
 
 				//在执行文本时以print的方式加在文本前面。
 				//<<setActor '${T.ac}' '${T.tc}' '${actId}'>>
@@ -22507,7 +22507,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 						if (Flag.mode < 1) Flag.mode = 1;
 
-						new Wikifier(null, `<<run p.flow(F.playerName()+'<<you>>和$target.name打了个招呼并走近对方。',30,1)>>`);
+						new Wikifier(null, `<<run p.flow(p.playerName()+'<<you>>和$target.name打了个招呼并走近对方。',30,1)>>`);
 					});
 
 				/* 接触 */
@@ -23018,7 +23018,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					.Event(() => {
 						Flag.mode = 0;
 						V.mode = "normal";
-						new Wikifier(null, `<<run p.flow(F.playerName()+'<<you>>从$target.name身边走开了。',30,1)>>`);
+						new Wikifier(null, `<<run p.flow(p.playerName()+'<<you>>从$target.name身边走开了。',30,1)>>`);
 					});
 
 				Action.set("stopTouch")
@@ -23027,7 +23027,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					})
 					.Event(() => {
 						Flag.mode = 1;
-						//new Wikifier(null, `<<run p.flow(F.playerName()+'<<you>>把手从$target.name身上挪开了。',30,1)>>`)
+						//new Wikifier(null, `<<run p.flow(p.playerName()+'<<you>>把手从$target.name身上挪开了。',30,1)>>`)
 					});
 				/* twine-user-script #62: "Tentacles.js" */
 				//:: Action_Tentacles_Option[script]
@@ -23540,7 +23540,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				    })
 				    .Effect(()=>{
 				        Source[tc].esB += 100
-				        Source[tc].resist += Math.floor(1000 - F.Exp(tc, '触手奸')/5)
+				        Source[tc].resist += Math.floor(1000 - p.exp(tc, '触手奸')/5)
 
 				        Chara.getexp(target, '触手奸', random(3));
 				        Chara.getexp(target, 'B', random(2));
@@ -23563,7 +23563,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				    })
 				    .Effect(()=>{
 				        Source[tc].esB += 100
-				        Source[tc].resist += Math.floor(1000 - F.Exp(tc, '触手奸')/5)
+				        Source[tc].resist += Math.floor(1000 - p.exp(tc, '触手奸')/5)
 
 				        Chara.getexp(target, '触手奸', random(3));
 				        Chara.getexp(target, 'B', random(2));
@@ -24080,7 +24080,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				>$target.name随意地敷衍着你&lt;br&gt;</tw-passagedata
 			><tw-passagedata pid="102" name="Message_Com_20" tags="" position="225,1350" size="100,100"></tw-passagedata
 			><tw-passagedata pid="103" name="EventStart:Before" tags="" position="350,1350" size="100,100"
-				>&lt;&lt;run F.initEvent()&gt;&gt;</tw-passagedata
+				>&lt;&lt;run Dialog.initTitle()&gt;&gt;</tw-passagedata
 			><tw-passagedata pid="104" name="EventStart" tags="system" position="475,1350" size="100,100"
 				>&lt;&lt;if Story.has(_beforecheck)&gt;&gt; &lt;&lt;include _beforecheck&gt;&gt; &lt;&lt;/if&gt;&gt;
 				&lt;&lt;if Story.has($event.fullname)&gt;&gt; &lt;&lt;timed 30ms&gt;&gt;&lt;&lt;goto
@@ -24088,12 +24088,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				class=&quot;error-view&quot;&gt;&lt;span class=&quot;error&quot;&gt;Error:
 				跳转失败。跳转目标：$event.fullname&lt;/span&gt;&lt;/div&gt; &lt;&lt;/if&gt;&gt;</tw-passagedata
 			><tw-passagedata pid="105" name="EventLoop" tags="" position="600,1350" size="100,100"
-				>&lt;div id=&#39;content&#39; class=&#39;content&#39; onClick=&#39;if(!V.event?.afterselect)F.nextDialog();
+				>&lt;div id=&#39;content&#39; class=&#39;content&#39; onClick=&#39;if(!V.event?.afterselect)Dialog.next();
 				else delete V.event.afterselect;&#39;&gt; &lt;div id=&#39;contentMsg&#39; &gt; &lt;/div&gt; &lt;div
 				id=&quot;msg_end&quot; style=&quot;height:0px; overflow:hidden&quot;&gt;&lt;/div&gt; &lt;/div&gt; &lt;div
 				id=&#39;next&#39;&gt; &lt;&lt;eventnext&gt;&gt; &lt;/div&gt; &lt;div id=&#39;effets&#39;&gt; &lt;&lt;if
 				$event.effets&gt;&gt; &lt;&lt;set _effect to `Effects_${$event.effets}`&gt;&gt; &lt;&lt;include
-				_effect&gt;&gt; &lt;&lt;/if&gt;&gt; &lt;/div&gt; &lt;script&gt; F.initDialog()
+				_effect&gt;&gt; &lt;&lt;/if&gt;&gt; &lt;/div&gt; &lt;script&gt; Dialog.init()
 				&lt;/script&gt;</tw-passagedata
 			><tw-passagedata pid="106" name="EventLoop:After" tags="" position="725,1350" size="100,100"
 				>&lt;&lt;run if(Config.debug) console.log(&#39;postEventLoop&#39;); &gt;&gt;</tw-passagedata

@@ -63,7 +63,7 @@ Action.set("resetMode")
 	.Event(() => {
 		Flag.mode = 0;
 		V.mode = "normal";
-		new Wikifier(null, `<<run p.flow(F.playerName()+'<<you>>从$target.name身边走开了。',30,1)>>`);
+		new Wikifier(null, `<<run p.flow(p.playerName()+'<<you>>从$target.name身边走开了。',30,1)>>`);
 	});
 
 Action.set("stopTouch")
@@ -72,5 +72,5 @@ Action.set("stopTouch")
 	})
 	.Event(() => {
 		Flag.mode = 1;
-		//new Wikifier(null, `<<run p.flow(F.playerName()+'<<you>>把手从$target.name身上挪开了。',30,1)>>`)
+		//new Wikifier(null, `<<run p.flow(p.playerName()+'<<you>>把手从$target.name身上挪开了。',30,1)>>`)
 	});

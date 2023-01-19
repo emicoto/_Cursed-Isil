@@ -182,7 +182,7 @@ Com.set('X1')
     })
     .Effect(()=>{
         Source[tc].esB += 100
-        Source[tc].resist += Math.floor(1000 - F.Exp(tc, '触手奸')/5)
+        Source[tc].resist += Math.floor(1000 - p.exp(tc, '触手奸')/5)
 
         Chara.getexp(target, '触手奸', random(3));
         Chara.getexp(target, 'B', random(2));
@@ -223,7 +223,7 @@ Com.set('X2')
     })
     .Effect(()=>{
         Source[tc].esB += 100
-        Source[tc].resist += Math.floor(1000 - F.Exp(tc, '触手奸')/5)
+        Source[tc].resist += Math.floor(1000 - p.exp(tc, '触手奸')/5)
 
         Chara.getexp(target, '触手奸', random(3));
         Chara.getexp(target, 'B', random(2));
