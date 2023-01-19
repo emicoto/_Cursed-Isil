@@ -1,14 +1,14 @@
-F.extendTags = function (raw) {
+const extendTags = function (raw) {
 	return raw.split("|");
 };
 
-F.extendsRaw = function (raw, key) {
+const extendsRaw = function (raw, key) {
 	if (key == "locationTags") return F.extendTags(raw);
 	if (key == "targetPart" || key == "usePart") return F.extendParts(raw);
 	return raw;
 };
 
-F.extendParts = function (raw) {
+const extendParts = function (raw) {
 	let list = "mbpcvauehfnsrgd";
 	let re = raw;
 
@@ -200,7 +200,7 @@ class Action {
 		return txt;
 	}
 	static init() {
-		let arr = F.initList("ActionList", F.extendsRaw);
+		let arr = F.makeList("ActionList", F.extendsRaw);
 		arr.forEach((obj) => {
 			Action.add(obj.id, obj);
 		});

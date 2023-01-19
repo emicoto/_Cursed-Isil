@@ -1,9 +1,6 @@
 Action.globalFilter = function (id) {
 	const data = Action.data[id];
 
-	//只有你！
-	const onlyU = pc === tc;
-
 	//不需要对象的单独指令id
 	const noTarget = [];
 	//不需要对象的分类，如果有例外处理就在指令内部设置。
@@ -21,7 +18,7 @@ Action.globalFilter = function (id) {
 	if (pc == "m0" && !groupmatch(data.type, "触手", "固有", "目录", "其他")) return 0;
 
 	//使用部位过滤器只会在接触以上模式出现
-	if (id.match(/^use\S+/) && Flag.mode < 2) return 0;
+	if (id.match(/^use\S+/) && Flag.mode < 3) return 0;
 
 	//占用中。解除倒是没问题。
 	if (T.selectActPart && Using[pc][T.selectActPart]?.act == id) return 1;
@@ -46,7 +43,7 @@ Action.globalFilter = function (id) {
 			break;
 
 		case "逆位":
-			if (V.mode !== "reverse") return 0;
+			if (V.mode !== "reverse" && player.type == "tachi") return 0;
 			break;
 
 		case "常规":
@@ -92,8 +89,20 @@ Action.globalCheck = function (id) {
 
 Action.globalOrder = function (id) {
 	const data = Action.data[id];
+	let order = 0;
 
 	switch (data.type) {
+		case "接触":
+			order = S.orderConfig.touch;
+			break;
+		case "体位":
+			order = S.orderConfig.pose;
+			break;
+		case "道具":
+			if (data?.option?.has("toy")) {
+				order = S.orderConfig.sextoy;
+			}
+			break;
 		case "触手":
 			if (!F.isFallen(target)) {
 				T.orderMsg += "【未堕落(-30)】";
@@ -103,10 +112,11 @@ Action.globalOrder = function (id) {
 				T.orderMsg += "【对宿主的强制调教(+50)】";
 				T.forceOrde += 50;
 			}
+			order = S.orderConfig.tentacles;
 			break;
 	}
 
-	return 0;
+	return order;
 };
 
 Action.globalPartAble = function (id, part, cid) {
@@ -120,6 +130,11 @@ Action.globalPartAble = function (id, part, cid) {
 			if (chara.gender == "female") return 0;
 		case "vagina":
 			if (chara.gender == "male") return 0;
+		case "anal":
+		case "urin":
+		case "nipple":
+			//隐私区需要更高的接触等级
+			if (Flag.mode < 2) return 0;
 	}
 
 	return Using[cid][part].act == "" || Using[cid][part].act == id;

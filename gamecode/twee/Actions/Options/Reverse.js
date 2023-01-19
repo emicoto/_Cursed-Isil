@@ -26,7 +26,7 @@ Action.set("r1")
 /* 收紧 */
 Action.set("r2")
 	.Filter(() => {
-		return 1;
+		return T.inside;
 	})
 	.Check(() => {
 		return 1;

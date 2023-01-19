@@ -27,7 +27,7 @@ Action.set("Touch")
 Action.set("TrySex")
 	.Filter(() => {
 		if (pc === tc) return 0;
-		return Flag.mode < 3;
+		return 1;
 	})
 	.Check(() => {
 		//debug模式以及推倒中随时可点。
@@ -57,7 +57,7 @@ Action.set("TrySex")
 		return "推倒";
 	})
 	.Effect(() => {
-		if (Flag.mode < 4) Flag.mode = 4;
+		if (Flag.mode < 3) Flag.mode = 3;
 
 		if (V.mode !== "train") {
 			V.mode = "train";

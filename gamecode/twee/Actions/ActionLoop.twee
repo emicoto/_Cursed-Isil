@@ -14,7 +14,10 @@
     </div>
 <div id="msg_end" style="height:0px; overflow:hidden"></div>
 </div>
+/* 持续中动作 */
+<div id='keeping'>
 
+</id>
 /* 主目录 */
 <div id='actionMenu_1'>
 

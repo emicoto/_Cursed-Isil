@@ -274,26 +274,3 @@ F.initCharaV = function () {
 		});
 	}
 };
-
-F.initAction = function (cid) {
-	Act[cid] = {};
-	Using[cid] = {};
-	if (cid == "m0") {
-		Act[cid].tentacles = [];
-		Using[cid].tentacles = [];
-		for (let i = 0; i < V.cursedLord.abl.num + 2; i++) {
-			Act[cid].tentacles.push({ act: "", tc: "", use: "" });
-			Using[cid].tentacles.push({ act: "", tc: "", use: "" });
-		}
-	} else {
-		let list = ["handR", "handL", "mouth", "penis", "vagina", "anal", "foot"];
-		let listb = ["breast", "critoris", "urin", "ears", "neck", "butts", "nipple", "thighs", "abdomen"].concat(list);
-
-		list.forEach((k) => {
-			Act[cid][k] = { tc: "", act: "", use: "" }; // 作为actor执行命令时判定点
-		});
-		listb.forEach((k) => {
-			Using[cid][k] = { act: "", actor: "", use: "" }; // 持续动作占用中部位。
-		});
-	}
-};

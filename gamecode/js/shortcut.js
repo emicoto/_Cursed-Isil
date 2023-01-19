@@ -159,3 +159,9 @@ F.hasVagina = function (cid) {
 F.justHands = function (useParts) {
 	return useParts.length == 2 && useParts.containsAll("handR", "handL");
 };
+
+Object.defineProperty(window, OnlyU, {
+   get:function(){
+      return pc === tc
+   }
+})

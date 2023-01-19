@@ -1,12 +1,15 @@
 F.hideActions = function () {
-	$("#actionMenu_1").addClass("hidden");
-	$("#actionMenu_2").addClass("hidden");
-	$("#actionMenu_3").addClass("hidden");
+	const label = "#actionMenu_";
+
+	$(label + 1).addClass("hidden");
+	$(label + 2).addClass("hidden");
+	$(label + 3).addClass("hidden");
 	$("#actionOption").addClass("hidden");
-	new Wikifier(null, "<<replace #actionMenu_1>> <</replace>>");
-	new Wikifier(null, "<<replace #actionMenu_2>> <</replace>>");
-	new Wikifier(null, "<<replace #actionMenu_3>> <</replace>>");
-	new Wikifier(null, "<<replace #actionOption>> <</replace>>");
+
+	F.reflesh(label + 1, " ");
+	F.reflesh(label + 2, " ");
+	F.reflesh(label + 3, " ");
+	F.reflesh("#actionOpton", " ");
 };
 
 F.showActions = function () {
@@ -21,10 +24,14 @@ F.showNext = function (hide) {
 	new Wikifier("#next", `<<replace #next>>${html}<</replace>>`);
 };
 
+F.reflesh = function (label, html) {
+	new Wikifier(null, `<<replace #${label}>>${html}<</replace>>`);
+};
+
 F.partAble = function (actid, part, chara) {
 	const data = Action.data[actid];
 	if (data.type == "触手") {
-		return 1;
+		return Flag.master;
 	} else {
 		return Action.globalPartAble(actid, part, chara);
 	}

@@ -1,21 +1,20 @@
-declare var lang: typeof window.lang;
 
-export function lan(txt: string[] | string, DEF?: string) {
+export function lan(txt, ...txts) {
 	let CN, EN;
 
 	if (Array.isArray(txt)) {
 		CN = txt[0];
-		EN = txt[1] ? txt[1] : CN;
+		EN = txt[1] ? txt[1] : CN
 	}
 
-	if (typeof txt === "string" && DEF) {
+	if (typeof txt === "string") {
 		CN = txt;
-		EN = DEF;
+		EN = txts[0] ? txts[0] : txt
 	}
 
-	if (lang == "CN" && isValid(CN)) return CN;
-	if (lang == "EN" && isValid(EN)) return EN;
-	return DEF;
+	if (lang == "CN" && CN) return CN;
+	if (lang == "EN" && EN) return EN;
+	return txt
 }
 
 var language = "CN";

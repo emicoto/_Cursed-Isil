@@ -1,4 +1,4 @@
-F.initActionMode = function () {
+F.initActions = function () {
 	T.actionTypeFilter = "all";
 	T.actPartFilter = "all";
 	T.actor = V.pc;
@@ -6,11 +6,13 @@ F.initActionMode = function () {
 
 	T.actPart = "reset";
 
-	F.initAction("m0");
+	initAction("m0");
 
 	V.location.chara.forEach((cid) => {
 		F.initAction(cid);
 	});
+
+	F.resetUI();
 };
 
 //刷新画面
@@ -19,34 +21,16 @@ F.resetUI = function (id, option) {
 	V.player = C[pc];
 
 	F.resetLink();
-	F.updateMap();
+	F.updateScene();
 	F.showActions();
-	F.initActMenu(id, option);
+	F.updateActions(id, option);
 	//F.refleshSidebar();
 	//F.refleshContinuosAction();
 
 	F.showNext(1);
-	new Wikifier(null, "<<replace #showtime>><<showtime>><<showmoney>><</replace>>");
+	F.reflesh("showtime", "<<showtime>><<showmoney>>");
 
 	return "";
-};
-
-F.initActionInput = function (id = "") {
-	T.select = {
-		id: id,
-		tc: id ? tc : "",
-		ap: "",
-		tp: "",
-	};
-};
-
-F.initActionDetail = function (id = "") {
-	T.action = {
-		id: id,
-		tc: id ? tc : "",
-		ap: "",
-		tp: "",
-	};
 };
 
 F.initCheckFlag = function () {
@@ -61,22 +45,20 @@ F.initCheckFlag = function () {
 	F.resetMsg();
 };
 
+F.initTFlag = function () {
+	const deleteList = ["actPart", "selectPart", "cancel", "force", "onSelect", "stopAct", "afterMovement"];
+	deleteList.forEach((key) => {
+		T[key] = null;
+	});
+};
 //无论指令成功与否，都会在最后执行的处理。
 F.resetAction = function () {
 	T.phase = "reset";
 
-	delete T.force;
-	delete T.noNameTag;
-	delete T.aftermovement;
-	delete T.onselect;
-
 	if (T.cancel) {
 		F.initCheckFlag();
+		F.resetTflag();
 		F.setPhase("init");
-		delete T.cancel;
-		delete T.actPart;
-		delete T.selectPart;
-		delete T.selectActPart;
 		return 0;
 	}
 
@@ -86,11 +68,42 @@ F.resetAction = function () {
 
 	T.actId = "";
 
-	delete T.actPart;
-	delete T.selectPart;
-	delete T.selectActPart;
-	delete T.actionDetail;
-	delete T.counterDetail;
+	T.actionDetail = {};
+	T.counterDetail = {};
 
+	F.initTflag();
 	F.initCheckFlag();
+};
+
+D.actAbleParts = ["handR", "handL", "mouth", "penis", "vagina", "anal", "foot"];
+
+D.selectAbleParts = ["breast", "critoris", "urin", "ears", "neck", "butts", "nipple", "thighs", "abdomen"].concat(
+	actAbleParts
+);
+
+F.initCharaAction = function (cid) {
+	Act[cid] = {};
+	Using[cid] = {};
+	if (cid == "m0") {
+		const num = F.tentaclesNum();
+
+		Act[cid].tentacles = [];
+		Using[cid].tentacles = [];
+
+		for (let i = 0; i < num; i++) {
+			Act[cid].tentacles.push({ act: "", tc: "", use: "" });
+			Using[cid].tentacles.push({ act: "", tc: "", use: "" });
+		}
+	} else {
+		D.actAbleParts.forEach((k) => {
+			Act[cid][k] = { tc: "", act: "", use: "" }; // 作为actor执行命令时判定点
+		});
+		D.selectAbleParts.forEach((k) => {
+			Using[cid][k] = { act: "", actor: "", use: "" }; // 持续动作占用中部位。
+		});
+	}
+};
+
+F.tentaclesNum = function () {
+	return V.cursedLord.abl.num + 2;
 };
