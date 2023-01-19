@@ -7630,16 +7630,11 @@ window.initCSV = function (cid) {
 			//总之先把空行喝注释行去掉。
 			continue;
 		//提取表格
-		const arr = line.replace(/\s/g, "").split(",");
-
+		const arr = line.split(",");
 		//总之先初始化路径
-		let path;
-		if (arr[0].includes(".")) {
-			path = arr[0].split(".");
-		} else {
-			path = [arr[0]];
-		}
+		let path = arr[0].split(".");
 
+		//重复项目是array
 		const times = _raw.split(`#L#${arr[0]},`).length - 1;
 		let values = clearCommentFromArray(arr.splice(1));
 		if (values.length == 1) values = values[0];
