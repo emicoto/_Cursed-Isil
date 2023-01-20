@@ -39,5 +39,5 @@ Com.reset = function () {
 	V.selectCom = 0;
 
 	//刷新画面
-	F.resetScene();
+	Com.resetScene();
 };

@@ -5,6 +5,7 @@ Decompile/*
 Material
 _templet
 _oldfile
+_package
 *.zip
 *.rar
 *.7z
