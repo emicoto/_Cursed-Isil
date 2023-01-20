@@ -87,6 +87,15 @@ const createMenu = function (typelist, outputArray, currentSelect, layer) {
 	});
 };
 
+ui.showhtml = function (tag, menu) {
+	if (menu.length) {
+		$(`#${tag}`).removeClass("hidden");
+		ui.replace(tag, menu.join(""));
+	} else {
+		$(`#${tag}`).addClass("hidden");
+	}
+};
+
 Action.hide = function () {
 	const label = "#actionMenu_";
 
@@ -111,7 +120,7 @@ Action.show = function () {
 };
 
 Action.shownext = function (hide) {
-	let html = hide ? "" : `<<link 'Next'>><<run F.ActNext()>><</link>>`;
+	let html = hide ? "" : `<<link 'Next'>><<run Action.next()>><</link>>`;
 	new Wikifier("#next", `<<replace #next>>${html}<</replace>>`);
 };
 
@@ -127,8 +136,8 @@ Action.updateMenu = function (selectId, option) {
 	const systems = Action.typeFilter("固有");
 
 	//可选部位
-	const actorOption = option && actPart ? actPart : [];
-	const targetOption = targetPart ? targetPart : [];
+	const actorOption = Action.SelectableParts(selectId, 1);
+	const targetOption = Action.SelectableParts(selectId, 2);
 
 	//目录一览
 	const mainActionMenu = ["", ""];
@@ -150,19 +159,15 @@ Action.updateMenu = function (selectId, option) {
 	});
 
 	//可选部位
-	if (actorOption.length) {
+	if (actorOption.length > 1) {
 		actorOption.forEach((part) => {
-			if (Action.globalPartAble(selectId, part, pc) && filter(part)) {
-				partsMenu.push(createPartsBtn(selectId, part, "actor"));
-			}
+			partsMenu.push(createPartsBtn(selectId, part, "actor"));
 		});
 	}
 
-	if (targetOption.length) {
+	if (targetOption.length > 1) {
 		targetOption.forEach((part) => {
-			if (Action.globalPartAble(selectId, part, tc) && filter(part)) {
-				partsMenu.push(createPartsBtn(selectId, part, "target"));
-			}
+			partsMenu.push(createPartsBtn(selectId, part, "target"));
 		});
 	}
 
@@ -178,35 +183,9 @@ Action.updateMenu = function (selectId, option) {
 
 	ui.replace("actionMenu_1", html);
 
-	const showhtml = function (tag, menu) {
-		if (menu.length) {
-			$(`#${tag}`).removeClass("hidden");
-			ui.replace(tag, menu.join(""));
-		} else {
-			$(`#${tag}`).addClass("hidden");
-		}
-	};
-
-	showhtml("actionMenu_2", subActionMenu);
-	showhtml("actionOption", optionMenu);
-	showhtml("actionMenu_3", partsMenu);
-};
-
-//刷新界面和对象
-Action.redraw = function () {
-	V.target = C[tc];
-	V.player = C[pc];
-
-	ui.delink();
-	Action.updateScene();
-	Action.show();
-	Action.updateMenu(id, option);
-	Action.shownext(1);
-	//Action.onGoing();
-	//ui.sidebar()
-
-	ui.replace("showtime", "<<showtime>><<showmoney>>");
-	return "";
+	ui.showhtml("actionMenu_2", subActionMenu);
+	ui.showhtml("actionOption", optionMenu);
+	ui.showhtml("actionMenu_3", partsMenu);
 };
 
 const createKeepingLinks = function (cid, actId, part) {
@@ -236,7 +215,23 @@ Action.onGoing = function () {
 			charaHtml.push(html.join(""));
 		}
 	});
-	if (charaHtml.length) {
-		ui.replace("keeping", charaHtml.join(""));
-	}
+
+	ui.showhtml("keeping", charaHtml);
+};
+
+//刷新界面和对象
+Action.redraw = function () {
+	V.target = C[tc];
+	V.player = C[pc];
+
+	ui.delink();
+	Action.updateScene();
+	Action.show();
+	Action.updateMenu(id, option);
+	Action.shownext(1);
+	Action.onGoing();
+	//ui.sidebar()
+
+	ui.replace("showtime", "<<showtime>><<showmoney>>");
+	return "";
 };

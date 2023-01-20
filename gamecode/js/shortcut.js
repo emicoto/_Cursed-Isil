@@ -69,3 +69,7 @@ F.metToday = function (cid) {
 
 	return "met";
 };
+
+F.tentaclesNum = function () {
+	return V.cursedLord.abl.num + 2;
+};

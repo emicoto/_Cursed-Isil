@@ -41,7 +41,9 @@ Com.updateScene = function () {
 				//console.log(k, C[k].name, t)
 			} else {
 				let name = C[k].name;
-				if (tc == k) name = `< ${C[k].name} >　`;
+				if (tc == k)
+					name = `< ${C[k].name} >
+            `;
 				t = `<span style='color:#AAA'>${name}</span>　`;
 			}
 

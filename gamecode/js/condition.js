@@ -33,7 +33,7 @@ cond.canSpeak = function (chara) {
 };
 
 cond.canMove = function (chara) {
-	return !chara.state.has("束缚", "石化");
+	return !chara.state.has("拘束", "石化");
 };
 
 cond.canActNormal = function (chara) {
@@ -45,7 +45,15 @@ cond.isSleeping = function (chara) {
 };
 
 cond.isUncons = function (chara) {
-	return chara.state.has("睡眠", "晕厥") || (chara.base.sanity[0] < 10 && chara.base.stamina[0] < 10);
+	return chara.state.has("睡眠", "晕厥") || (cond.baseLt(chara, "stamina", 10) && cond.baseLt(chara, "sanity", 10));
+};
+
+cond.isActive = function (chara) {
+	return (
+		!chara.state.has("睡眠", "晕厥", "精神崩溃", "拘束", "石化") &&
+		!cond.baseLt(chara, "stamina", 0.1) &&
+		!cond.baseLt(chara, "sanity", 0.1)
+	);
 };
 
 cond.isRape = function (chara) {
@@ -67,16 +75,27 @@ cond.isWeaker = function (a, b) {
 	}
 };
 
-//是否有充足精力进行抵抗。
-cond.isEnergetic = function (a) {
-	const hp = (a.base.health[0] * 2) / a.base.health[1]; //影响抵御上限
+//是否有充足精力进行抵抗。a是角色档案。
+cond.isEnergetic = function (a, compareValue) {
+	//首先获取HP的影响值。HP影响抵御上限。公式：HP*2/HP上限
+	const hp = (a.base.health[0] * 2) / a.base.health[1];
+
+	//体力的比重值换算。公式：体力/体力上限*100*HP影响值
 	const stamina = Math.floor((a.base.stamina[0] / a.base.stamina[1]) * 100 * hp);
-	const sanity = Math.floor((a.base.sanity[0] / a.base.sanity[1]) * 100 * ((hp / 2) * 1.5));
+
+	//理智的比重值换算。公式：理智/理智上限*100*HP影响值*0.75
+	const sanity = Math.floor((a.base.sanity[0] / a.base.sanity[1]) * 100 * (hp * 0.75));
+
+	//魔力的比重值换算。公式：魔力/魔力上限*50
 	const mana = Math.floor((a.base.mana[0] / a.base.mana[1]) * 50);
 
+	//当health, stamina, sanity, mana的处于满值时，总值估算为：200+150+50=400
+	//理想情况下，总值低于160时，角色无法进行有效的抵抗。
+	if (!compareValue) compareValue = 160;
+
 	if (Config.debug) console.log(hp, stamina, sanity, mana);
-	//2, 200, 150, 50
-	return stamina + sanity + mana > 160;
+
+	return stamina + sanity + mana > compareValue;
 };
 
 cond.isFallen = function (chara) {

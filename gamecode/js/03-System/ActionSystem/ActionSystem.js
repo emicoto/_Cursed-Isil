@@ -1,109 +1,230 @@
-F.initMainFlow = function () {
-	//在这里初始化信息板。 插入移动后的文本。不是经由移动初始化时会有对应的flag判定。
-	//V.aftermovement
-	const local = V.location;
-	let text = p.playerName();
+const { groupmatch } = require("Code/utils/efun");
 
-	if (local.id == "A0") {
-		text += `你回到了宿舍房间。<br>`;
-		if (pc == "Ayres") {
-			text += `${C["Isil"].name}在房间里。`;
-		} else {
-			text += `${C["Ayres"].name}在房间里。`;
-		}
-	} else {
-		text += `你来到了学院广场公园。<br>你注意到了${C["Besta"].name}在这里散步。`;
+cond.hasSelectableParts = function (parts) {
+	if (!parts || parts.length <= 1) return false;
+	return (cond.justHands(parts) && V.mode !== "reverse") === false;
+};
+
+Action.onInput = function (actionId, inputType, selection) {
+	const { event, type, option, name } = Action.data[actionId];
+
+	//先记录玩家的输入。如果id或对象不同，就重置记录。
+	//type 是体位时则无视id的变化。
+	if ((type !== "体位" && T?.select?.id !== actionId) || T?.select?.target !== tc || T?.select?.actor !== pc) {
+		T.select = {
+			id: actionId,
+			actor: pc,
+			target: tc,
+		};
 	}
 
+	//如果是事件，直接执行事件并刷新界面。
+	if (inputType == "event") {
+		event();
+		Action.redraw();
+		return;
+	}
+
+	//如果是一次性动作，直接准备进入下一步 。
+	if (groupmatch(inputType, "oneAction", "useOneTimeItem", "command")) {
+	}
+
+	//如果是接触性动作或需等待选择动作部位，则先检测可选项。
+	if (groupmatch(inputType, "touchAction", "useEquipItem", "OptionalAction")) {
+		let able1 = checkSelectableParts(actionId, 1);
+		let able2 = checkSelectableParts(actionId, 2);
+
+		const hasOption = () => {
+			if (able1.length <= 1 && able2.length <= 1) return 0;
+
+			return cond.hasSelectableParts(able1) || cond.hasSelectableParts(able2);
+		};
+
+		//如果有可选项就先返回，并刷新界面。
+		if (hasOption()) {
+			Action.redraw();
+			return;
+		}
+
+		//如果没有可选项，就自动选择部位，并准备执行。
+		T.select.actPart = able1[0];
+		T.select.tgPart = able2[0];
+	}
+
+	//选择动作部位。如果存在可选的目标部位就等待玩家选择，否则自动选择。
+	if (inputType == "partsOption-actor") {
+		//先记录玩家的输入。
+		T.select.actPart = selection;
+
+		let able = checkSelectableParts(actionId, 2);
+		if (cond.hasSelectableParts(able)) {
+			Action.redraw();
+			return;
+		}
+
+		//自动选择部位。
+		T.select.tgPart = able[0];
+	}
+
+	//选择目标部位。
+	if (inputType == "partsOption-target") {
+		T.select.tgPart = selection;
+
+		//如果存在体位选择，就等待玩家选择。
+		if (groupmatch(name, "性交", "逆性交")) {
+			Action.redraw();
+			return;
+		}
+	}
+
+	if (inputType == "selectPose") {
+		T.select.pose = actionId;
+	}
+
+	T.actId = actionId;
+
+	//在控制台输出执行详情
+	console.log("执行动作：" + name, "\n", T.select, T.action);
+
+	//进入执行检测阶段。
+	Action.check(actionId);
+};
+
+//创建角色交互按钮
+ui.createCharaBtn = function (charalist) {
+	if (!charalist) return;
+
+	const html = [];
+
+	charalist.forEach((cid, i) => {
+		const com = `<<set $tc to '${cid}'>><<run Action.redraw(); F.charaEvent('${cid}');>>`;
+		let name = C[cid].name;
+		let link = `<u><<link '${name}'>> ${com} <</link>></u>`;
+
+		if (tc == cid) {
+			name = `< ${name} >`;
+			link = `<span style='color:#76FAF4'><${name}></span>`;
+		}
+
+		html.push(link);
+	});
+	return html;
+};
+
+//更新场景
+Action.updateScene = function () {
+	const { name, id, chara, tags, option, des } = V.location;
+	const charalist = ui.createCharaBtn(chara);
+	let charaSwitch = F.switchChara();
+
+	let html = `主控 <span style='color:#fff000'>${player.name}</span>${charaSwitch}　|　所在位置 ${name}　|　`;
+	if (charalist.length) html += `${charalist.join("　")}<br>`;
+
+	//如果当前地点有描述，则显示描述并包括角色列表。
+	//例如：这里是……，有谁、谁、谁在这里。
+	//选择角色后会有 "你的目光移向了……" 的提示。
+	/*if (des) {
+      html += `${des()}，${charalist.join("、")}在这里。`;
+   }*/
+	ui.replace("location", html);
+};
+
+Action.updateMovement = function () {
+	const local = V.location;
+
+	//每次移动后的场景初始化。根据当前场景获取移动信息，和角色信息。
+	//地图系统还没弄好，暂时用这个代替。
+	let txt = p.playerName();
+	if (local.id == "A0") {
+		txt += "<<you>>回到了宿舍房间。<br>";
+		if (pc == "Ayres") txt += `${C.Isil.name}`;
+		else txt += `${C.Ayres.name}`;
+		txt += "在房间里。";
+	} else {
+		txt += "<<you>>来到了学院的活动广场。<br>";
+	}
+
+	//根据角色们的日程进行召唤。
 	F.summonChara();
-	//F.resetAction(); 初始化act、using缓存，并设置默认动作
 
-	if (V.aftermovement) delete V.aftermovement;
-
-	setTimeout(() => {
-		p.flow(text, 30, 1);
+	if (V.aftermovement) {
 		setTimeout(() => {
-			F.charaEvent(tc);
-		}, 500);
-	}, 100);
+			p.flow(text, 30, 1);
+		}, 100);
+		delete V.aftermovement;
+	}
 
 	return "";
 };
 
-//----->> 主要进程处理 <<---------------------------//v
-F.ActNext = function () {
-	//用于刷新content_message区域的文本。
-	if (T.msgId < S.msg.length && S.msg[T.msgId].has("<<selection", "<<linkreplace") && !T.selectwait) {
-		S.msg[T.msgId] += "<<unset _selectwait>><<set _onselect to 1>>";
+//---------->> 主要进程处理 <<----------//
+Action.next = function () {
+	//用于刷新contentMsg的内容。
+
+	//如果有选择项，就等待玩家选择。
+	if (T.msgId < S.msg.length && S.msg[T.msgId].has("<<select", "<<linkrelace") && !T.selectwait) {
+		S.msg[T.msgId] += `<<unset _selectwait>><<set _onselect to 1>>`;
 		T.selectwait = 1;
 	}
 
+	//控制文本进程。
 	if (T.msgId < S.msg.length && !T.onselect) {
 		p.flow(S.msg[T.msgId]);
 		T.msgId++;
 	}
 };
 
-F.checkAction = function (id, phase) {
-	const data = Action.data[id];
+//---------->> 执行检测 <<----------//
+Action.check = function (actionId) {
+	const data = Action.data[actionId];
 
 	let reText = "";
+	//总之先清除一下检测flag。
+	Action.clearCheck();
 
-	F.initCheckFlag();
+	//检测是否有执行条件，以及对象配合度。
+	T.orderResult = Action.globalOrder(actionId) + data.order(T.select.tgPart);
+	T.actAble = Action.globalCheck(actionId) && data.check(T.select.tgPart);
 
-	//触手系能无视伊希露本人意志对本人强制执行，但对本人有很多负面影响。
-	//这部分处理放global统一处理。
-	T.orderGoal = Action.globalOrder(id) + data.order();
-	T.actAble = Action.globalCheck(id) && data.check();
+	T.phase = "check";
 
-	//有可选对象部位就检测部位执行状况？
-	/*	if (data.targetPart && data.targetPart.includes(T.selectPart)) {
-		T.partAble = data.checkPart(T.selectPart);
-	}*/
+	//对方处于无意识状态的话，强行将需求配合值设为0。
+	if (target.uncons()) T.orderGoal = 0;
 
-	T.phase = phase;
+	//有意识但无法动弹，追加强制flag。
+	if (target.unable()) T.forceOrder += 100;
 
-	// 对方处于无意识状态，强行将配合值变零
-	if (cond.isUncons(target)) T.orderGoal = 0;
-
-	// 有意识但无法动弹, 追加强制flag
-	if (!cond.canMove(target)) T.forceOrder += 100;
-
+	//如果设置了配合度的显示，会在这里进行提示。
 	if (V.system.showOrder && T.orderMsg && T.orderGoal > 0) {
-		reText += `配合度检测：${T.orderMsg}=${T.order}/${T.orderGoal}<br><<dashline>>`;
+		reText += `配合度检测：${T.orderMsg} = ${T.order}/${T.orderGoal}<br><<dashline>>`;
 	}
 
 	if (!T.actAble && T.reason) {
 		reText += `执行条件不足，原因：${T.reason}<br><<dashline>>`;
 	}
 
-	//如果无法进入执行环节，则在这个阶段返回提示信息。
-	if (reText) {
-		p.flow(reText);
-	}
+	//确定执行前先保存当前选项。
+	T.action = clone(T.select);
 
-	T.selectAct = id;
+	//记录动作id和执行者，用在文本输出中。;
+	T.actor = pc;
+	T.target = tc;
 
-	//如果动作还在准备阶段，则在这里中断。
-	if (phase == "ready") {
-		F.initCheckFlag();
-		F.resetUI();
-		return 0;
-	}
+	if (reText) p.flow(reText);
 
-	T.actId = id;
-	//记录动作部位。
-	T.actPart = T.selectActPart ? T.selectActPart : data.actPart ? data.actPart[0] : "reset";
+	//确认无法执行的话，就在这个地方打断。
+	if (!T.actAble) Action.phase("cancel");
 
-	$("action").trigger("before");
+	Action.phase("before");
 };
 
-F.beforeAction = function (id) {
+//---------->> 执行前事件 <<----------//
+Action.before = function (id) {
 	const data = Action.data[id];
 
 	T.phase = "before";
-	let reText = "";
 
+	let reText = "";
 	//角色每次执行COM时的个人检测。
 	//如果口上侧要进行阻止某个指令进行，也会在这里打断。
 	if (Story.has(`Kojo_${tc}_BeforeAction`)) {
@@ -112,7 +233,7 @@ F.beforeAction = function (id) {
 
 	//执行before系列事件。这些都是纯文本，只能有选项相关操作。
 	//先执行通用的before事件。主要显示场景变化或持续状态。
-	reText = Story.get("Msg_Action_Common:Before").text + ` <<run F.ActNext()>><<if !T.noMsg>><<dashline>><</if>>`;
+	reText = Story.get("Msg_Action_Common:Before").text + ` <<run Action.next()>><<if !T.noMsg>><<dashline>><</if>>`;
 
 	p.msg(reText);
 
@@ -140,7 +261,7 @@ F.beforeAction = function (id) {
 
 	//在执行文本最后追加下一步，取消的话就直接取消剩余执行事件。
 	p.msg(
-		`<<if !T.cancel>><<run Action.phase('event'); F.ActNext()>><<else>><<run F.resetAction(); Action.phase('init')>><</if>>`
+		`<<if !T.cancel>><<run Action.phase('event'); Action.next()>><<else>><<run Action.reset(); Action.phase('init')>><</if>>`
 	);
 
 	//检测是否存在特殊的before处理，存在就在这执行。
@@ -152,33 +273,16 @@ F.beforeAction = function (id) {
 	}
 };
 
-F.doAction = function (id) {
-	const state = T.actAble ? Action.checkOrder() : "cancel";
-
-	if (groupmatch(state, "failed", "cancel")) {
-		Action.phase(state);
-		return 0;
-	}
-
-	//确认执行，记录动作详细。
-	T.action = {
-		act: id,
-		target: tc,
-		actPart: T.actPart,
-		targetPart: T.selectPart,
-	};
-
-	F.actionEvent(id, state);
-};
-
-F.actionEvent = function (id, state) {
+//---------->> 执行事件 <<----------//
+Action.event = function (id) {
 	const data = Action.data[id];
+	const state = Action.checkOrder();
+	let tag = T.noNameTag;
+	txt = "";
+
 	T.passtime = data.time;
-
-	let tag = T.noNameTag,
-		txt = "";
-
 	T.phase = "event";
+
 	p.resetMsg();
 
 	//强制成功时
@@ -212,8 +316,13 @@ F.actionEvent = function (id, state) {
 
 	//检测角色口上。如果系统文中就包含了口上的调用，就跳过。
 	type = "Action";
-	if (txt.includes("Kojo.put") === false && Kojo.has(tc, { type, id })) {
-		txt += Kojo.put(tc, { type, id });
+	if (txt.includes("Kojo.put") === false) {
+		if (T.force && Kojo.has(tc, { type, id, dif })) {
+			txt += Kojo.put(tc, { type, id, dif });
+		}
+		if (!T.force && Kojo.has(tc, { type, id })) {
+			txt += Kojo.put(tc, { type, id });
+		}
 	} else if (txt.includes("Kojo.put")) {
 		txt = F.convertKojo(txt);
 	}
@@ -223,7 +332,14 @@ F.actionEvent = function (id, state) {
 	p.msg(`<<run Action.data['${id}'].effect(); Action.phase('counter');>>`, 1);
 };
 
-F.actionAfter = function (id) {
+//---------->> 设置counter事件 <<----------//
+Action.counter = function (id) {};
+
+//---------->> 设置result事件 <<----------//
+Action.result = function (id) {};
+
+//---------->> 设置after事件 <<----------//
+Action.after = function (id) {
 	const data = Action.data[id];
 	let type = "PCAction",
 		dif = "After",
@@ -255,7 +371,7 @@ F.actionAfter = function (id) {
 	}
 };
 
-F.actionCancel = function (id) {
+Action.cancel = function (id) {
 	let tag = T.noNameTag,
 		type = "PCAction",
 		dif = "Cancel",
@@ -263,15 +379,15 @@ F.actionCancel = function (id) {
 
 	if (Kojo.has(pc, { type, id, dif, check, tag })) {
 		p.msg(Kojo.put(pc, { type, id, dif, tag }));
-		p.msg(`<<run T.cancel = 1; F.passtime(1); F.resetAction(); Action.phase('init')>>`, 1);
+		p.msg(`<<run T.cancel = 1; F.passtime(1); Action.reset(); Action.phase('init')>>`, 1);
 	} else {
 		T.cancel = 1;
-		F.resetAction();
+		Action.reset();
 		Action.phase("init");
 	}
 };
 
-F.actionFailed = function (id) {
+Action.Failed = function (actionId) {
 	let tag = T.noNameTag,
 		type = "PCAction",
 		dif = "Failed",
@@ -283,10 +399,7 @@ F.actionFailed = function (id) {
 		p.msg("对方不愿意配合，执行失败。");
 	}
 
-	p.msg(`<<run T.cancel = 1; F.passtime(1); F.resetAction(); Action.phase('init')>>`, 1);
+	p.msg(`<<run T.cancel = 1; F.passtime(1); Action.reset(); Action.phase('init')>>`, 1);
 };
 
-F.actionResult = function () {
-	//passtime 跑完后的处理
-	T.phase = "result";
-};
+//---------->> 设置finish事件 <<----------//

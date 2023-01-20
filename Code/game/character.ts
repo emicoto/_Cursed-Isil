@@ -546,13 +546,26 @@ export class Chara {
 	}
 
 	uncons() {
-		return this.state.has("睡眠", "晕厥")
+		return this.state.has("睡眠", "晕厥");
 	}
 
-   bp(){
-	   const s = this.stats;
-	   return s.STR[1] * 15 + s.CON[1] * 8 + s.DEX[1] * 8 + s.INT[1] * 8 + s.WIL[1] * 10 + s.PSY[1];
-   }
+	unable() {
+		return this.state.has("拘束", "石化") || cond.isEnergetic(this, 30);
+	}
+
+	active() {
+		return (
+			!this.state.has("睡眠", "晕厥", "拘束", "石化", "精神崩溃") &&
+			!cond.baseLt(this, "health", 0.05) &&
+			!cond.baseLt(this, "sanity", 10) &&
+			!cond.baseLt(this, "stamina", 10)
+		);
+	}
+
+	bp() {
+		const s = this.stats;
+		return s.STR[1] * 15 + s.CON[1] * 8 + s.DEX[1] * 8 + s.INT[1] * 8 + s.WIL[1] * 10 + s.PSY[1];
+	}
 
 	setAppearance({
 		eyecolor = "蓝色",

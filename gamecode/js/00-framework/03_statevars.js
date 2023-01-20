@@ -7,7 +7,6 @@ const tsv = {};
 const stats = {};
 const exp = {};
 const juel = {};
-const action = {};
 const using = {};
 const flag = {};
 
@@ -123,12 +122,6 @@ Object.defineProperties(window, {
 	Juel: {
 		get: function () {
 			return juel;
-		},
-	},
-
-	Act: {
-		get: function () {
-			return action;
 		},
 	},
 

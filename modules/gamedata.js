@@ -271,3 +271,9 @@ D.state = [
 ];
 
 D.mutant = ["光滑", "吸盘", "口器", "隆起", "针", "软刺", "阴茎"];
+
+D.actAbleParts = ["handR", "handL", "mouth", "penis", "vagina", "anal", "foot"];
+
+D.selectAbleParts = ["breast", "critoris", "urin", "ears", "neck", "butts", "nipple", "thighs", "abdomen"].concat(
+	actAbleParts
+);

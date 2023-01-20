@@ -19295,7 +19295,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 					return `<div class='actions'><<link '${data.name}'>>
 				            ${script ? script : ""}
-				            ${event ? `<<run Action.data['${id}'].event(); F.resetUI()>>` : `<<run F.checkAction('${id}', 'do');>>`}
+				            ${event ? `<<run Action.data['${id}'].event(); Action.redraw()>>` : `<<run F.checkAction('${id}', 'do');>>`}
 				            <</link>></div>`;
 				};
 
@@ -19327,7 +19327,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 					if (V.location.chara.length) {
 						V.location.chara.forEach((k) => {
-							let com = `<<set $tc to '${k}'>><<run F.charaEvent('${k}'); F.resetUI()>>`;
+							let com = `<<set $tc to '${k}'>><<run F.charaEvent('${k}'); Action.redraw()>>`;
 
 							let t = `<u><<link '${C[k].name}'>>${com}<</link>></u>　`;
 
@@ -19364,7 +19364,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 						let name = data.name;
 						if (alterName) name = alterName();
 						return `<div class='actions'><<link '[ ${name} ]' ${option ? `'${option}'` : ""}>>${
-							event ? `<<run Action.data['${id}'].event(); F.resetUI();>>` : ""
+							event ? `<<run Action.data['${id}'].event(); Action.redraw();>>` : ""
 						}<</link>></div>`;
 					}
 
@@ -19471,7 +19471,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				};
 
 				Action.shownext = function (hide) {
-					let html = hide ? "" : `<<link 'Next'>><<run F.ActNext()>><</link>>`;
+					let html = hide ? "" : `<<link 'Next'>><<run Action.next()>><</link>>`;
 					new Wikifier("#next", `<<replace #next>>${html}<</replace>>`);
 				};
 
@@ -19533,13 +19533,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				};
 
 				Action.able = function (id, btn) {
-					if (btn) F.initCheckFlag();
+					if (btn) Action.initCheck();
 					const data = Action.data[id];
 					return Action.globalCheck(id) && data.check();
 				};
 
 				Action.order = function (id, btn) {
-					if (btn) F.initCheckFlag();
+					if (btn) Action.initCheck();
 					const data = Action.data[id];
 					T.orderGoal = Action.globalOrder(id) + data.order();
 					return Action.checkOrder(btn);
@@ -19561,7 +19561,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				};
 
 				//刷新画面
-				F.resetUI = function (id, option) {
+				Action.redraw = function (id, option) {
 					V.target = C[tc];
 					V.player = C[pc];
 
@@ -19596,7 +19596,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					};
 				};
 
-				F.initCheckFlag = function () {
+				Action.initCheck = function () {
 					T.order = 0;
 					T.reason = "";
 					T.orderMsg = "";
@@ -19618,7 +19618,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					delete T.onselect;
 
 					if (T.cancel) {
-						F.initCheckFlag();
+						Action.initCheck();
 						Action.phase("init");
 						delete T.cancel;
 						delete T.actPart;
@@ -19639,7 +19639,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					delete T.actionDetail;
 					delete T.counterDetail;
 
-					F.initCheckFlag();
+					Action.initCheck();
 				};
 				/* twine-user-script #33: "ActionSystem.js" */
 				F.initMainFlow = function () {
@@ -19660,7 +19660,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					}
 
 					F.summonChara();
-					//F.resetAction(); 初始化act、using缓存，并设置默认动作
+					//Action.reset(); 初始化act、using缓存，并设置默认动作
 
 					if (V.aftermovement) delete V.aftermovement;
 
@@ -19693,7 +19693,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 					let reText = "";
 
-					F.initCheckFlag();
+					Action.initCheck();
 
 					//触手系能无视伊希露本人意志对本人强制执行，但对本人有很多负面影响。
 					//这部分处理放global统一处理。
@@ -19730,8 +19730,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 					//如果动作还在准备阶段，则在这里中断。
 					if (phase == "ready") {
-						F.initCheckFlag();
-						F.resetUI();
+						Action.initCheck();
+						Action.redraw();
 						return 0;
 					}
 
@@ -19756,7 +19756,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 					//执行before系列事件。这些都是纯文本，只能有选项相关操作。
 					//先执行通用的before事件。主要显示场景变化或持续状态。
-					reText = Story.get("Msg_Action_Common:Before").text + ` <<run F.ActNext()>><<if !T.noMsg>><<dashline>><</if>>`;
+					reText = Story.get("Msg_Action_Common:Before").text + ` <<run Action.next()>><<if !T.noMsg>><<dashline>><</if>>`;
 
 					p.msg(reText);
 
@@ -19784,7 +19784,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 					//在执行文本最后追加下一步，取消的话就直接取消剩余执行事件。
 					p.msg(
-						`<<if !T.cancel>><<run Action.phase('event'); F.ActNext()>><<else>><<run F.resetAction(); Action.phase('init')>><</if>>`
+						`<<if !T.cancel>><<run Action.phase('event'); Action.next()>><<else>><<run Action.reset(); Action.phase('init')>><</if>>`
 					);
 
 					//检测是否存在特殊的before处理，存在就在这执行。
@@ -19907,10 +19907,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 					if (Kojo.has(pc, { type, id, dif, check, tag })) {
 						p.msg(Kojo.put(pc, { type, id, dif, tag }));
-						p.msg(`<<run T.cancel = 1; F.passtime(1); F.resetAction(); Action.phase('init')>>`, 1);
+						p.msg(`<<run T.cancel = 1; F.passtime(1); Action.reset(); Action.phase('init')>>`, 1);
 					} else {
 						T.cancel = 1;
-						F.resetAction();
+						Action.reset();
 						Action.phase("init");
 					}
 				};
@@ -19927,7 +19927,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 						p.msg("对方不愿意配合，执行失败。");
 					}
 
-					p.msg(`<<run T.cancel = 1; F.passtime(1); F.resetAction(); Action.phase('init')>>`, 1);
+					p.msg(`<<run T.cancel = 1; F.passtime(1); Action.reset(); Action.phase('init')>>`, 1);
 				};
 
 				F.actionResult = function () {
@@ -20649,7 +20649,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 							t = "Ayres";
 						}
 
-						let reflesh = "F.resetUI()";
+						let reflesh = "Action.redraw()";
 						if (V.passage == "CommandLoop") reflesh = "Com.resetScene()";
 
 						change = `<<link '[ 切换角色 ]'>><<set $pc to '${p}'>><<set $tc to '${t}'>><<run ${reflesh};>><</link>>`;
@@ -23618,7 +23618,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			><tw-passagedata pid="2" name="FallToDeep" tags="" position="225,100" size="100,100"
 				>&lt;&lt;you&gt;&gt;的意识下沉到了深渊……&lt;br&gt; &lt;br&gt; &lt;div&gt;&lt;&lt;linkreplace
 				&quot;放任诅咒&quot;&gt;&gt;&lt;&lt;set $flag.master to 1 &gt;&gt;&lt;&lt;run
-				F.resetUI()&gt;&gt;&lt;&lt;/linkreplace&gt;&gt;&lt;/div&gt; &lt;div&gt;&lt;&lt;link &#39;查看深渊&#39;
+				Action.redraw()&gt;&gt;&lt;&lt;/linkreplace&gt;&gt;&lt;/div&gt; &lt;div&gt;&lt;&lt;link &#39;查看深渊&#39;
 				&#39;Basement&#39;&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;/div&gt; &lt;div&gt;&lt;&lt;linkreplace
 				&quot;什么也不做&quot;&gt;&gt;&lt;&lt;resetLink&gt;&gt;&lt;&lt;/linkreplace&gt;&gt;&lt;/div&gt;</tw-passagedata
 			><tw-passagedata pid="3" name="RiseToSurface" tags="" position="350,100" size="100,100"
@@ -23739,16 +23739,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			><tw-passagedata pid="30" name="MainLoop" tags="" position="1225,350" size="100,100"
 				>&lt;action&gt;&lt;/action&gt; &lt;div id=&#39;hidden&#39; class=&#39;hidden&#39;&gt;you can&#39;t see
 				me.&lt;/div&gt; &lt;div id=&#39;location&#39;&gt;&lt;/div&gt; &lt;br&gt; &lt;div id=&#39;content&#39;
-				class=&#39;content&#39; onClick=&#39;if(S.msg)F.ActNext();&#39;&gt; &lt;div id=&#39;contentMsg&#39;&gt;
+				class=&#39;content&#39; onClick=&#39;if(S.msg)Action.next();&#39;&gt; &lt;div id=&#39;contentMsg&#39;&gt;
 				&lt;/div&gt; &lt;div id=&quot;msg_end&quot; style=&quot;height:0px; overflow:hidden&quot;&gt;&lt;/div&gt;
 				&lt;/div&gt; /* 主目录 */ &lt;div id=&#39;actionMenu_1&#39;&gt; &lt;/div&gt; &lt;div id=
 				&#39;actionMenu_2&#39;&gt; /* 角色互动模式下，行动有下分类时的可用动作 */ &lt;/div&gt; &lt;div
 				id=&#39;actionMenu_3&#39;&gt; /* 可用的动作目标 */ &lt;/div&gt; /* 额外的动作选项。如体位，情景play */
 				&lt;div id=&#39;actionOption&#39;&gt; &lt;/div&gt; &lt;div id=&#39;next&#39;&gt; &lt;/div&gt; &lt;script&gt;
-				F.initActionMode() F.initMainFlow() F.resetUI() $(&#39;action&#39;).on(&#39;init&#39;, ()=&gt;{
-				console.log(&#39;init action&#39;) F.resetUI() $(&#39;action&#39;).trigger(&#39;loop&#39;) })
+				F.initActionMode() F.initMainFlow() Action.redraw() $(&#39;action&#39;).on(&#39;init&#39;, ()=&gt;{
+				console.log(&#39;init action&#39;) Action.redraw() $(&#39;action&#39;).trigger(&#39;loop&#39;) })
 				$(&#39;action&#39;).on(&#39;before&#39;, ()=&gt;{ console.log(&#39;before event&#39;, T.actId) Action.hide()
-				F.beforeAction(T.actId) Action.shownext() F.ActNext(); }) $(&#39;action&#39;).on(&#39;cancel&#39;, ()=&gt;{
+				F.beforeAction(T.actId) Action.shownext() Action.next(); }) $(&#39;action&#39;).on(&#39;cancel&#39;, ()=&gt;{
 				console.log(&#39;cancel action&#39;, T.actId) ui.delink() F.actionCancel(T.actId) })
 				$(&#39;action&#39;).on(&#39;failed&#39;, ()=&gt;{ console.log(&#39;failed action&#39;, T.actId) ui.delink()
 				F.actionFailed(T.actId) }) $(&#39;action&#39;).on(&#39;stop&#39;, ()=&gt;{
@@ -23763,7 +23763,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				$(&#39;action&#39;).on(&#39;after&#39;, ()=&gt;{ //数值变动事件（刻印获得素质获得等）和后续事件
 				console.log(&#39;after event&#39;) ui.delink() F.actionAfter(T.actId) })
 				$(&#39;action&#39;).on(&#39;finish&#39;, ()=&gt;{ //一套流程结束时的处理 console.log(&#39;finish event&#39;)
-				ui.delink() F.resetAction() Action.phase(&#39;init&#39;) }) &lt;/script&gt;</tw-passagedata
+				ui.delink() Action.reset() Action.phase(&#39;init&#39;) }) &lt;/script&gt;</tw-passagedata
 			><tw-passagedata pid="31" name="Msg_PCAction_t0" tags="" position="100,475" size="100,100"
 				>/* 接吻 */ &lt;&lt;actChara&gt;&gt;吻上了&lt;&lt;targetChara&gt;&gt;的嘴唇。&lt;br&gt;</tw-passagedata
 			><tw-passagedata pid="32" name="Msg_PCAction_t1" tags="" position="225,475" size="100,100"
