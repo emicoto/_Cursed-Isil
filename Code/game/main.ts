@@ -28,14 +28,13 @@ declare global {
 
 window.database = {};
 window.gameutils = {
-	game: {},
 	condition: {},
 	UI: {},
 	printer: {},
-	fun: {},
-	chara: {},
+	utils: {},
+	fix: {},
 };
-window.gamedata = {};
+window.gamedata = {}; //游戏资料
 window.languagedata = {};
 
 Object.defineProperties(window, {
@@ -59,7 +58,7 @@ Object.defineProperties(window, {
 
 	F: {
 		get: function () {
-			return window.gameutils.fun;
+			return window.gameutils.utils;
 		},
 	},
 	ui: {
@@ -77,14 +76,9 @@ Object.defineProperties(window, {
 			return window.gameutils.condition;
 		},
 	},
-	G: {
+	fix: {
 		get: function () {
-			return window.gameutils.game;
-		},
-	},
-	chara: {
-		get: function () {
-			return window.gameutils.chara;
+			return window.gameutils.fix;
 		},
 	},
 });

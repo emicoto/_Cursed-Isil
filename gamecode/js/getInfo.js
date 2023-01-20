@@ -32,19 +32,19 @@ function skillRank(v) {
 }
 DefineMacroS("skillRank", skillRank);
 
-F.yourName = function () {
+p.you = function () {
 	if (V.system.AlwaysShowPCName) {
 		return player.name;
 	}
 	return "你";
 };
-DefineMacroS("you", F.yourName);
+DefineMacroS("you", p.you);
 
-F.partnerName = function () {
+p.partner = function () {
 	if (pc == "Isil") return C.Ayres.name;
 	else return C.Isil.name;
 };
-DefineMacroS("partner", F.partnerName);
+DefineMacroS("partner", p.partner);
 
 /**
  *
@@ -82,11 +82,11 @@ F.getClass = function () {
 	return "";
 };
 
-F.Exp = function (chara, exp) {
+p.exp = function (chara, exp) {
 	return C[chara].exp[exp].total;
 };
 
-F.charaName = function (cid) {
+p.charaName = function (cid) {
 	const chara = C[cid];
 	let color = Kojo.get(cid, "color");
 	if (!color) color = "#22A0FC";
@@ -95,60 +95,66 @@ F.charaName = function (cid) {
 	return html;
 };
 
-F.playerName = function () {
+p.playerName = function () {
 	let color = Kojo.get(pc, "color");
 	if (!color) color = "#22A0FC";
 
 	const html = `<span style='color:${color}'>[ ${player.name} ]</span><br>`;
 	return html;
 };
-DefineMacroS("pcnameTag", F.playerName);
-DefineMacroS("nameTag", F.charaName);
+DefineMacroS("pcnameTag", p.playerName);
+DefineMacroS("nameTag", p.charaName);
 
-F.actChara = function () {
-	if (T.actor == V.pc) return F.yourName();
+p.actor = function () {
+	if (T.actor == V.pc) return p.you();
 	else return C[T.actor].name;
 };
 
-DefineMacroS("actChara", F.actChara);
+DefineMacroS("actor", p.actor);
 
-F.targetChara = function () {
-	if (T.actTg == V.pc) return F.yourName();
+p.target = function () {
+	if (T.actTg == V.pc) return p.you();
 	else return C[T.actTg].name;
 };
 
-DefineMacroS("targetChara", F.targetChara);
+DefineMacroS("target", p.target);
 
-F.targetPart = function () {
+p.targetPart = function () {
 	//const p = F.checkUse(T.actTg, T.actId);
 	//之后根据特定部位弄点差分。主要是胸部、秘穴、菊穴、阴茎这几个部位。
 	return D.bodyparts[T.selectPart];
 };
-F.actPart = function () {
+p.actPart = function () {
 	//阴茎会有特殊描述处理？
 	return D.bodyparts[T.actPart];
 };
 
-DefineMacroS("targetPart", F.targetPart);
-DefineMacroS("actPart", F.actPart);
+DefineMacroS("targetPart", p.targetPart);
+DefineMacroS("actPart", p.actPart);
 
-F.checkUse = function (cid, act) {
-	T.actId = act;
-	for (let i in Using[cid]) {
-		const info = Using[cid][i];
-		if (info.act == act) return i;
+//检测各个部位中的占用状态 。 如果为空或与当前id一致则返回true，否则返回false
+cond.partIsEmpty = function (cid, id, part) {
+	return Using[cid][part] == id || !Using[cid][part];
+};
+
+//检查触手有无空余，有返回空余部位id，没有返回 -1
+cond.hasUnuseTentacle = function () {
+	const tentacle = Using.m0.tentacles;
+	for (let i = 0; i < tentacle.length; i++) {
+		const info = tentacle[i];
+		if (!info.act) return i;
 	}
-	return "hands";
+	return -1;
 };
 
-F.Actor = function (pc, tc, act, acp) {
-	T.ac = pc;
-	T.tc = tc;
-	T.actId = act;
-	T.acp = acp;
-	return "";
-};
-DefineMacroS("setActor", F.Actor);
+//事件中进行设置时
+F.setActor = function (cid, tid, ...parts) {
+	T.actor = cid;
+	T.actTg = tid;
 
-//在执行文本时以print的方式加在文本前面。
-//<<setActor '${T.ac}' '${T.tc}' '${actId}'>>
+	if (parts[0]) T.selectPart = parts[0];
+	else T.selectPart = "body";
+	if (parts[1]) T.actPart = parts[1];
+	else T.actPart = "hands";
+};
+DefineMacroS("setActor", F.setActor);

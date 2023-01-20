@@ -12,7 +12,7 @@ Era the Cursed
 Era the Cursed
 
 :: StoryInit
-<<run F.initGame(); F.initCharacters(); >>
+<<run game.init(); Chara.init(); >>
 
 <<set $debt to 0>>
 <<set $wallet to 5000>>

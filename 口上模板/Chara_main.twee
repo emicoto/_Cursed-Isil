@@ -14,10 +14,13 @@ Kojo.set('NPCID', '#66CCFF') //角色id与 名牌颜色
 
     /* .Event({
         name:'Test', //事件id, 英文名
+
         title:'事件标题',
-        config:{},  // 设置项目, 暂时还没想好有啥可以设置
+
+        config:{},  // 设置项目, 可以在事件开始或结束时自动处理数据。详细看系统设置文档
+
         cond:()=>{
-            return V.system.debug  // 事件的执行条件. 根据flag,或其他参数进行设置
+            return Cflag['cid'].test <= 0  // 事件的执行条件. 根据flag,或其他参数进行设置
         }
     })*/
     //.Action(0,{id:'NPCID_Actionname',name:'指令名',type:'C'}) //id的格式必须是NPCID_ActionName。 自定义指令。type是分类。详细看系统设置文档

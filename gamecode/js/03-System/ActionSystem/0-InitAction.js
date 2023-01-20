@@ -1,39 +1,37 @@
-F.initActions = function () {
+Action.initMode = function () {
 	T.actionTypeFilter = "all";
-	T.actPartFilter = "all";
+	T.select = {};
 	T.actor = V.pc;
-	T.actTg = V.pc !== V.tc ? V.tc : V.pc;
+	T.target = V.tc;
+	T.actId = "";
 
-	T.actPart = "reset";
-
-	initAction("m0");
-
+	Action.initChara("m0");
 	V.location.chara.forEach((cid) => {
-		F.initAction(cid);
+		Action.initChara(cid);
 	});
 
-	F.resetUI();
+	Action.redraw();
 };
 
-//刷新画面
-F.resetUI = function (id, option) {
-	V.target = C[tc];
-	V.player = C[pc];
+Action.initChara = function (cid) {
+	Using[cid] = {};
 
-	F.resetLink();
-	F.updateScene();
-	F.showActions();
-	F.updateActions(id, option);
-	//F.refleshSidebar();
-	//F.refleshContinuosAction();
+	if (cid == "m0") {
+		const num = F.tentaclesNum();
+		Using[cid].tentacles = [];
 
-	F.showNext(1);
-	F.reflesh("showtime", "<<showtime>><<showmoney>>");
+		for (let i = 0; i < num; i++) {
+			Using[cid].tentacles.push({ action: "", target: "", onPart: "" });
+		}
+		return;
+	}
 
-	return "";
+	D.selectAbleParts.forEach((part) => {
+		Using[cid][part] = { action: "", actor: "", target: "", onPart: "" };
+	});
 };
 
-F.initCheckFlag = function () {
+Action.clearCheck = function () {
 	T.order = 0;
 	T.reason = "";
 	T.orderMsg = "";
@@ -42,68 +40,53 @@ F.initCheckFlag = function () {
 	T.phase = "";
 	T.forceOrder = 0;
 
-	F.resetMsg();
+	p.resetMsg();
 };
 
-F.initTFlag = function () {
+Action.initFlag = function () {
 	const deleteList = ["actPart", "selectPart", "cancel", "force", "onSelect", "stopAct", "afterMovement"];
 	deleteList.forEach((key) => {
 		T[key] = null;
 	});
 };
-//无论指令成功与否，都会在最后执行的处理。
-F.resetAction = function () {
+
+//清除所有动作flag
+Action.reset = function () {
 	T.phase = "reset";
 
 	if (T.cancel) {
-		F.initCheckFlag();
-		F.resetTflag();
-		F.setPhase("init");
+		Action.clearCheck();
+		Action.initFlag();
+		Action.phase("reset");
 		return 0;
 	}
 
-	//缓存最后一个动作
-	V.lastAct = T.actionDetail;
-	V.lastCounter = T.counterDetail;
+	//缓存最后一个动作。
+	V.lastAction = clone(T.action);
+	V.lastCounter = clone(T.counter);
 
-	T.actId = "";
-
-	T.actionDetail = {};
-	T.counterDetail = {};
-
-	F.initTflag();
-	F.initCheckFlag();
-};
-
-D.actAbleParts = ["handR", "handL", "mouth", "penis", "vagina", "anal", "foot"];
-
-D.selectAbleParts = ["breast", "critoris", "urin", "ears", "neck", "butts", "nipple", "thighs", "abdomen"].concat(
-	actAbleParts
-);
-
-F.initCharaAction = function (cid) {
-	Act[cid] = {};
-	Using[cid] = {};
-	if (cid == "m0") {
-		const num = F.tentaclesNum();
-
-		Act[cid].tentacles = [];
-		Using[cid].tentacles = [];
-
-		for (let i = 0; i < num; i++) {
-			Act[cid].tentacles.push({ act: "", tc: "", use: "" });
-			Using[cid].tentacles.push({ act: "", tc: "", use: "" });
-		}
-	} else {
-		D.actAbleParts.forEach((k) => {
-			Act[cid][k] = { tc: "", act: "", use: "" }; // 作为actor执行命令时判定点
-		});
-		D.selectAbleParts.forEach((k) => {
-			Using[cid][k] = { act: "", actor: "", use: "" }; // 持续动作占用中部位。
-		});
+	if (T.action.id !== Tsv[pc].lastAction) {
+		Tsv[pc].lastAction = T.action.id;
 	}
+	if (T.counter.id !== Tsv[tc].lastAction) {
+		Tsv[tc].lastAction = T.counter.id;
+	}
+
+	//清除当前动作。只保留T.select中的选择
+	T.actId = "";
+	T.action = {};
+	T.counter = {};
+
+	Action.clearCheck();
+	Action.initFlag();
 };
 
-F.tentaclesNum = function () {
-	return V.cursedLord.abl.num + 2;
+//清除持续中的动作状态
+Action.unset = function (cid, part, id) {
+	if (part == "tentacles") {
+		Using[cid][part][id] = { action: "", target: "", onPart: "" };
+		return;
+	}
+
+	Using[cid][part] = { action: "", target: "", onPart: "", actor: "" };
 };

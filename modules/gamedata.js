@@ -1,3 +1,5 @@
+D.race = ["human", "elvin", "deamon", "wolves", "drawf", "goblin", "catvinx", "centaur", "orc", "titan", "dracon"];
+
 D.base = {
 	health: "健康",
 	stamina: "体力",
@@ -269,3 +271,9 @@ D.state = [
 ];
 
 D.mutant = ["光滑", "吸盘", "口器", "隆起", "针", "软刺", "阴茎"];
+
+D.actAbleParts = ["handR", "handL", "mouth", "penis", "vagina", "anal", "foot"];
+
+D.selectAbleParts = ["breast", "critoris", "urin", "ears", "neck", "butts", "nipple", "thighs", "abdomen"].concat(
+	actAbleParts
+);

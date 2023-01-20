@@ -14,12 +14,8 @@ Action.set("t0")
 
 /* 亲吻 */
 Action.set("t1")
+	//过滤器自带可选部位的判断
 	.Filter((part) => {
-		return 1;
-	})
-	.Check((part) => {
-		if (!part) return 1;
-
 		switch (part) {
 			case "breast":
 			case "foot":
@@ -30,6 +26,9 @@ Action.set("t1")
 			default:
 				return 1;
 		}
+	})
+	.Check(() => {
+		return 1;
 	})
 	.Order(() => {
 		return 0;

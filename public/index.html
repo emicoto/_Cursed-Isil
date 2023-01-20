@@ -14899,7 +14899,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 							haircolor: set["haircolor"] ? set["haircolor"] : "\u91D1\u8272",
 							hairstyle: set["hairstyle"] ? set["hairstyle"] : "\u6563\u53D1",
 							skincolor: set["skincolor"] ? set["skincolor"] : "\u5065\u5EB7",
-							beauty: F.setBeauty(this),
+							beauty: fix.beauty(this),
 							bodysize: set["bodysize"]
 								? set["bodysize"]
 								: set["tall"]
@@ -18073,7 +18073,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 				F.extendsRaw = function (raw, key) {
 					if (key == "locationTags") return F.extendTags(raw);
-					if (key == "targetPart" || key == "usePart") return F.extendParts(raw);
+					if (key == "targetPart" || key == "actPart") return F.extendParts(raw);
 					return raw;
 				};
 
@@ -18126,7 +18126,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 						name,
 						time = 5,
 						mode = 0,
-						usePart,
+						actPart,
 						targetPart,
 						option,
 						defaultText,
@@ -18141,11 +18141,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 						this.time = this.type == "固有" ? 0 : parseInt(time);
 						this.mode = parseInt(mode);
 
-						if (usePart) this.usePart = usePart;
+						if (actPart) this.actPart = actPart;
 						if (targetPart) this.targetPart = targetPart;
 						if (option) this.option = option;
 
-						if (this.type == "触手") this.usePart = ["tentacles"];
+						if (this.type == "触手") this.actPart = ["tentacles"];
 
 						this.filter = () => {
 							return 1;
@@ -18178,8 +18178,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					}
 					static get(arg, args) {
 						switch (arg) {
-							case "usePart":
-								return Object.values(Action.data).filter((action) => action.usePart && action.usePart.has(args));
+							case "actPart":
+								return Object.values(Action.data).filter((action) => action.actPart && action.actPart.has(args));
 							case "targetPart":
 								return Object.values(Action.data).filter((action) => action.targetPart && action.targetPart.has(args));
 							case "type":
@@ -18194,7 +18194,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					}
 
 					static create(data, mode) {
-						const { name, templet, targetPart, usePart, type } = data;
+						const { name, templet, targetPart, actPart, type } = data;
 
 						let groupTitle = `:: Action_${type}_Options[script]\n`;
 
@@ -18217,7 +18217,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 							return parts
 								.map((tar) => {
 									const m2 = reverse ? D.bodyparts[use] : D.bodyparts[tar];
-									const m3 = reverse ? D.bodyparts[tar] : use ? D.bodyparts[use] : "{usePart}";
+									const m3 = reverse ? D.bodyparts[tar] : use ? D.bodyparts[use] : "{actPart}";
 
 									return `<<case '${tar}'>>\n${convertTemplet(templet, m2, m3)}<br>\n`;
 								})
@@ -18247,7 +18247,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 						switch (type) {
 							case "接触":
 							case "触手":
-								txt += makeTxt(0, usePart[0], targetPart);
+								txt += makeTxt(0, actPart[0], targetPart);
 								break;
 							case "道具":
 								txt += makeTxt(0, "hands", targetPart);
@@ -18256,7 +18256,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 								txt += makeTxt(0, "penis", targetPart);
 								break;
 							case "逆位":
-								txt += makeTxt(1, "penis", usePart, 1);
+								txt += makeTxt(1, "penis", actPart, 1);
 								break;
 							default:
 								if (templet) {
@@ -18487,14 +18487,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 						const list = ["fear", "mortify", "humilate", "depress", "resist", "uncomfort", "angry"];
 					})
 					.setOrder((cid, ...args) => {
-						if (F.weaker(target, player)) return 10;
-						else if (F.baseCheck(target, "health", 0.3) || F.baseCheck(target, "stamina", 0.1)) return 15;
+						if (cond.isWeaker(target, player)) return 10;
+						else if (cond.baseLt(target, "health", 0.3) || cond.baseLt(target, "stamina", 0.1)) return 15;
 						else return 2;
 					});
 				/* twine-user-script #26: "02-initChara.js" */
-				F.initChara = {};
+				Chara.data = {};
 
-				F.initChara.Ayres = function () {
+				Chara.data.Ayres = function () {
 					const chara = new Chara("Ayres", "艾瑞斯", "male", "deamon")
 						.initChara("tachi")
 						.setNames({ s: "修格斯" })
@@ -18551,7 +18551,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					return chara;
 				};
 
-				F.initChara.Isil = function () {
+				Chara.data.Isil = function () {
 					const chara = new Chara("Isil", "伊希露", "male", "elvin")
 						.initChara("neko")
 						.setNames({ m: "梅尔", s: "艾西利特" })
@@ -18611,7 +18611,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					return chara;
 				};
 
-				F.initChara.Besta = function () {
+				Chara.data.Besta = function () {
 					const chara = new Chara("Besta", "贝斯特", "male", "wolves")
 						.initChara("both")
 						.setNames({ s: "巴尔顿" })
@@ -18648,10 +18648,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 					const scar = ["face", "back", "back", "waistback", "abdomen", "breast", "arms"];
 					scar.forEach((p) => {
-						F.setScar(chara, p, "scar", "never");
+						Chara.getScar(chara, p, "scar", "never");
 					});
 
-					F.countSkin(chara, 0);
+					Chara.skinCounter(chara, 0);
 
 					chara.resetVirginity = function () {
 						this.setVirginity("kiss", "姐姐", "不明", "在姐姐的引导下学会了接吻");
@@ -18673,7 +18673,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					return chara;
 				};
 
-				F.initChara.Nanaly = function () {
+				Chara.data.Nanaly = function () {
 					const chara = new Chara("Nanaly", "娜娜莉", "female", "dracon")
 						.initChara("both")
 						.setNames({ s: "艾索斯" })
@@ -18714,7 +18714,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					return chara;
 				};
 
-				F.initChara.m0 = function () {
+				Chara.data.m0 = function () {
 					const chara = new Chara("m0", "诅咒之触", "male", "tentacles")
 						.initChara("tachi")
 						.setStats({ STR: 16, CON: 15, DEX: 17, INT: 15, WIL: 17, PSY: 17 })
@@ -18723,7 +18723,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					return chara;
 				};
 				/* twine-user-script #27: "02-initGame.js" */
-				F.initGame = function () {
+				game.init = function () {
 					//-------->> 记录类变量 <<-----------//
 					S.dialog = {};
 					S.history = [];
@@ -18807,7 +18807,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					};
 				};
 
-				F.gameStart = function (skip) {
+				game.start = function (skip) {
 					player.fullname = `${player.name}·${player.surname}`;
 					target.fullname = `${target.name}·${target.middlename}·${target.surname}`;
 
@@ -18845,14 +18845,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				};
 				/* twine-user-script #28: "03-initplayer.js" */
 				//beauty=ALR*100+wearbuff+traitbuff
-				F.LoadCharacters = function () {
+				Chara.onLoad = function () {
 					for (let i in V.chara) {
 						let data = V.chara[i];
-						V.chara[i] = Chara.load(data);
+						V.chara[i] = Chara.onLoad(data);
 					}
 				};
 
-				F.setBeauty = function (chara) {
+				fix.beauty = function (chara) {
 					const traitbuff = function (chara) {
 						let buff = 1;
 
@@ -18873,7 +18873,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					};
 
 					const basic = function (chara) {
-						return chara.stats.ALR[1] * 100 * traitbuff(chara);
+						return fix.stats.ALR[1] * 100 * traitbuff(chara);
 					};
 
 					const factor = function (v, chara) {
@@ -18890,7 +18890,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					return v + factor(v, chara);
 				};
 
-				F.setScar = function (chara, part, type, count, times) {
+				Chara.getScar = function (chara, part, type, count, times) {
 					const skin = chara.scars;
 					if (!times) times = 1;
 					for (let i = 0; i < times; i++) {
@@ -18899,7 +18899,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					return "";
 				};
 
-				F.countSkin = function (chara, t) {
+				Chara.skinCounter = function (chara, t) {
 					//对各皮肤图层上各伤痕计数器进行计算。
 					const dolayer = function (layer, t) {
 						for (let i = 0; i < layer.length; i++) {
@@ -18968,21 +18968,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					return total;
 				};
 
-				F.initCharacters = function () {
+				Chara.init = function () {
 					V.chara = {};
 
-					for (let i in F.initChara) {
-						V.chara[i] = F.initChara[i]();
+					for (let i in Chara.data) {
+						V.chara[i] = Chara.data[i]();
 					}
 
 					S.charasheet.forEach((cid) => {
-						V.chara[cid] = F.initCharaFromCSV(cid);
+						V.chara[cid] = Chara.initCSV(cid);
 					});
 
-					F.initCharaV();
+					Chara.initGlobal();
 
 					for (let i in V.chara) {
-						F.fixBase(V.chara[i], 1);
+						fix.base(V.chara[i], 1);
 						F.resetBase(V.chara[i]);
 					}
 
@@ -18997,11 +18997,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					V.tc = "Isil";
 				};
 
-				F.fixBase = function (chara, mode) {
+				fix.base function (chara, mode) {
 					const { base, stats, race, traits } = chara;
 
 					if (chara.id == "m0") {
-						chara.base = clone(C.Ayres.base);
+						fix.base clone(C.Ayres.base);
 					}
 
 					base.health[1] = Math.floor(stats.CON[1] * 50 * F.raceBonus(race, "health") + 0.5);
@@ -19020,15 +19020,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 						base.sanity[0] = base.sanity[1];
 						base.mana[0] = base.mana[1];
 
-						F.fixStats(chara);
+						fix.stats(chara);
 					}
 				};
 
-				F.fixStats = function (chara) {
+				fix.stats = function (chara) {
 					const { stats, equip, race } = chara;
 
 					if (chara.id === "m0") {
-						chara.stats = clone(C.Ayres.stats);
+						fix.stats = clone(C.Ayres.stats);
 						return;
 					}
 
@@ -19067,7 +19067,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					return P[type][races.indexOf(race)];
 				};
 
-				F.initCharaV = function () {
+				Chara.initGlobal = function () {
 					for (let i in V.chara) {
 						if (i == "m0") continue;
 
@@ -19174,7 +19174,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					if (T.selectActPart && Using[pc][T.selectActPart]?.act !== "") return 0;
 
 					//选择过滤器中、
-					if (T.actPartFilter !== "all" && data.usePart && !data.usePart.has(T.actPartFilter)) return 0;
+					if (T.actPartFilter !== "all" && data.actPart && !data.actPart.has(T.actPartFilter)) return 0;
 
 					//角色侧的控制。
 					const kojo = Kojo.get(tc, "filter");
@@ -19188,7 +19188,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 						case "接触":
 							if (Flag.mode < 2) return 0;
-							if (!F.uncons(target) && data.mode > Cflag[tc].touchLv + 0.5) return 0;
+							if (!cond.isUncons(target) && data.mode > Cflag[tc].touchLv + 0.5) return 0;
 							break;
 
 						case "逆位":
@@ -19227,7 +19227,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 					switch (data.type) {
 						case "触手":
-							if (!F.isFallen(target) && !F.uncons(target) && !Flag.aware) {
+							if (!cond.isFallen(target) && !cond.isUncons(target) && !Flag.aware) {
 								T.reason += "【未堕落的对象】";
 								return 0;
 							}
@@ -19241,7 +19241,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 					switch (data.type) {
 						case "触手":
-							if (!F.isFallen(target)) {
+							if (!cond.isFallen(target)) {
 								T.orderMsg += "【未堕落(-30)】";
 								T.order -= 30;
 							}
@@ -19282,8 +19282,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 					if ((groupmatch(type, "接触", "触手", "逆位") && option !== "doStraight") || (type == "道具" && data.targetPart)) {
 						let use;
-						if (data.usePart && data.usePart.length > 1) {
-							if (!(F.justHands(data.usePart) && V.mode !== "reverse")) {
+						if (data.actPart && data.actPart.length > 1) {
+							if (!(cond.justHands(data.actPart) && V.mode !== "reverse")) {
 								use = 1;
 							}
 						}
@@ -19295,7 +19295,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 					return `<div class='actions'><<link '${data.name}'>>
 				            ${script ? script : ""}
-				            ${event ? `<<run Action.data['${id}'].event(); F.resetUI()>>` : `<<run F.checkAction('${id}', 'do');>>`}
+				            ${event ? `<<run Action.data['${id}'].event(); Action.redraw()>>` : `<<run F.checkAction('${id}', 'do');>>`}
 				            <</link>></div>`;
 				};
 
@@ -19327,7 +19327,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 					if (V.location.chara.length) {
 						V.location.chara.forEach((k) => {
-							let com = `<<set $tc to '${k}'>><<run F.charaEvent('${k}'); F.resetUI()>>`;
+							let com = `<<set $tc to '${k}'>><<run F.charaEvent('${k}'); Action.redraw()>>`;
 
 							let t = `<u><<link '${C[k].name}'>>${com}<</link>></u>　`;
 
@@ -19354,7 +19354,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					new Wikifier(null, `<<replace #location>>${html}<</replace>>`);
 				};
 
-				F.initActMenu = function (actid, usepart) {
+				F.initActMenu = function (actid, actPart) {
 					//获取当前动作数据
 					const _data = Action.data[actid];
 
@@ -19364,14 +19364,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 						let name = data.name;
 						if (alterName) name = alterName();
 						return `<div class='actions'><<link '[ ${name} ]' ${option ? `'${option}'` : ""}>>${
-							event ? `<<run Action.data['${id}'].event(); F.resetUI();>>` : ""
+							event ? `<<run Action.data['${id}'].event(); Action.redraw();>>` : ""
 						}<</link>></div>`;
 					}
 
 					//创建目录
 					const createMenu = function (list, array, option) {
 						list.forEach((type) => {
-							const _list = F.filterActions(type);
+							const _list = Action.typeFilter(type);
 							_list.forEach((data) => {
 								if (data.filter() && Action.globalFilter(data.id)) {
 									if (option && data.name == "交流") {
@@ -19390,10 +19390,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					const layer1 = ["交流", "常规", "目录"];
 					const layer2 = ["逆位", "接触", "道具", "触手", "魔法", "战斗", "命令"];
 					const options = ["体位", "其他"];
-					const systems = F.filterActions("固有");
+					const systems = Action.typeFilter("固有");
 
 					//动作可选部位
-					const useParts = usepart && _data?.usePart ? _data.usePart : [];
+					const actParts = actPart && _data?.actPart ? _data.actPart : [];
 					const targetParts = _data?.targetPart ? _data.targetPart : [];
 
 					//初始化
@@ -19414,15 +19414,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					});
 
 					//有可选部位才生成
-					if (useParts.length) {
-						useParts.forEach((part) => {
-							if (F.partAble(actid, part, pc) && _data.check(part)) partsMenu.push(F.partBtn(_data, part, 1));
+					if (actParts.length) {
+						actParts.forEach((part) => {
+							if (Action.partAble(actid, part, pc) && _data.check(part)) partsMenu.push(F.partBtn(_data, part, 1));
 						});
 					}
 
 					if (targetParts.length && _data?.option !== "noSelectPart") {
 						targetParts.forEach((part) => {
-							if (F.partAble(actid, part, tc) && _data.check(part)) partsMenu.push(F.partBtn(_data, part));
+							if (Action.partAble(actid, part, tc) && _data.check(part)) partsMenu.push(F.partBtn(_data, part));
 						});
 					}
 
@@ -19452,7 +19452,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					showhtml("actionMenu_3", partsMenu);
 				};
 				/* twine-user-script #31: "0-ActionUtils.js" */
-				F.hideActions = function () {
+				Action.hide = function () {
 					$("#actionMenu_1").addClass("hidden");
 					$("#actionMenu_2").addClass("hidden");
 					$("#actionMenu_3").addClass("hidden");
@@ -19463,19 +19463,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					new Wikifier(null, "<<replace #actionOption>> <</replace>>");
 				};
 
-				F.showActions = function () {
+				Action.show = function () {
 					$("#actionMenu_1").removeClass("hidden");
 					$("#actionMenu_2").removeClass("hidden");
 					$("#actionMenu_3").removeClass("hidden");
 					$("#actionOption").removeClass("hidden");
 				};
 
-				F.showNext = function (hide) {
-					let html = hide ? "" : `<<link 'Next'>><<run F.ActNext()>><</link>>`;
+				Action.shownext = function (hide) {
+					let html = hide ? "" : `<<link 'Next'>><<run Action.next()>><</link>>`;
 					new Wikifier("#next", `<<replace #next>>${html}<</replace>>`);
 				};
 
-				F.partAble = function (actid, part, chara) {
+				Action.partAble = function (actid, part, chara) {
 					const data = Action.data[actid];
 					if (data.type == "触手") {
 						return 1;
@@ -19484,11 +19484,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					}
 				};
 
-				F.filterActions = function (...types) {
+				Action.typeFilter = function (...types) {
 					return Object.values(Action.data).filter((action) => types.includes(action.type));
 				};
 
-				F.Msg = function (msg, add) {
+				p.msg = function (msg, add) {
 					if (add) {
 						if (!S.msg.length) S.msg[0] = "";
 						S.msg[S.msg.length - 1] += msg;
@@ -19503,22 +19503,22 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				 *
 				 * @param {'cancel' | 'stop'} mode
 				 */
-				F.stopAction = function (id, mode) {
+				Action.stop = function (id, mode) {
 					T.stopAct = id;
 					$("action").trigger(mode);
 				};
 
-				F.setPhase = function (mode) {
+				Action.phase = function (mode) {
 					$("action").trigger(mode);
 				};
 
-				F.resetMsg = function () {
+				p.resetMsg = function () {
 					S.msg = [];
 					T.msgId = 0;
 					T.noMsg = 0;
 				};
 
-				F.actionCheckOrder = function (btn) {
+				Action.checkOrder = function (btn) {
 					if (V.system.debug) return "succeed";
 					if (T.orderGoal == 0) return "succeed";
 
@@ -19532,17 +19532,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					return "failed";
 				};
 
-				F.checkAble = function (id, btn) {
-					if (btn) F.initCheckFlag();
+				Action.able = function (id, btn) {
+					if (btn) Action.initCheck();
 					const data = Action.data[id];
 					return Action.globalCheck(id) && data.check();
 				};
 
-				F.checkOrder = function (id, btn) {
-					if (btn) F.initCheckFlag();
+				Action.order = function (id, btn) {
+					if (btn) Action.initCheck();
 					const data = Action.data[id];
 					T.orderGoal = Action.globalOrder(id) + data.order();
-					return F.actionCheckOrder(btn);
+					return Action.checkOrder(btn);
 				};
 				/* twine-user-script #32: "0-InitAction.js" */
 				F.initActionMode = function () {
@@ -19561,18 +19561,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				};
 
 				//刷新画面
-				F.resetUI = function (id, option) {
+				Action.redraw = function (id, option) {
 					V.target = C[tc];
 					V.player = C[pc];
 
-					F.resetLink();
+					ui.delink();
 					F.updateMap();
-					F.showActions();
+					Action.show();
 					F.initActMenu(id, option);
 					//F.refleshSidebar();
 					//F.refleshContinuosAction();
 
-					F.showNext(1);
+					Action.shownext(1);
 					new Wikifier(null, "<<replace #showtime>><<showtime>><<showmoney>><</replace>>");
 
 					return "";
@@ -19596,7 +19596,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					};
 				};
 
-				F.initCheckFlag = function () {
+				Action.initCheck = function () {
 					T.order = 0;
 					T.reason = "";
 					T.orderMsg = "";
@@ -19605,7 +19605,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					T.phase = "";
 					T.forceOrder = 0;
 
-					F.resetMsg();
+					p.resetMsg();
 				};
 
 				//无论指令成功与否，都会在最后执行的处理。
@@ -19618,8 +19618,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					delete T.onselect;
 
 					if (T.cancel) {
-						F.initCheckFlag();
-						F.setPhase("init");
+						Action.initCheck();
+						Action.phase("init");
 						delete T.cancel;
 						delete T.actPart;
 						delete T.selectPart;
@@ -19639,14 +19639,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					delete T.actionDetail;
 					delete T.counterDetail;
 
-					F.initCheckFlag();
+					Action.initCheck();
 				};
 				/* twine-user-script #33: "ActionSystem.js" */
 				F.initMainFlow = function () {
 					//在这里初始化信息板。 插入移动后的文本。不是经由移动初始化时会有对应的flag判定。
 					//V.aftermovement
 					const local = V.location;
-					let text = F.playerName();
+					let text = p.playerName();
 
 					if (local.id == "A0") {
 						text += `你回到了宿舍房间。<br>`;
@@ -19660,12 +19660,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					}
 
 					F.summonChara();
-					//F.resetAction(); 初始化act、using缓存，并设置默认动作
+					//Action.reset(); 初始化act、using缓存，并设置默认动作
 
 					if (V.aftermovement) delete V.aftermovement;
 
 					setTimeout(() => {
-						F.txtFlow(text, 30, 1);
+						p.flow(text, 30, 1);
 						setTimeout(() => {
 							F.charaEvent(tc);
 						}, 500);
@@ -19683,7 +19683,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					}
 
 					if (T.msgId < S.msg.length && !T.onselect) {
-						F.txtFlow(S.msg[T.msgId]);
+						p.flow(S.msg[T.msgId]);
 						T.msgId++;
 					}
 				};
@@ -19693,7 +19693,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 					let reText = "";
 
-					F.initCheckFlag();
+					Action.initCheck();
 
 					//触手系能无视伊希露本人意志对本人强制执行，但对本人有很多负面影响。
 					//这部分处理放global统一处理。
@@ -19708,10 +19708,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					T.phase = phase;
 
 					// 对方处于无意识状态，强行将配合值变零
-					if (F.uncons(target)) T.orderGoal = 0;
+					if (cond.isUncons(target)) T.orderGoal = 0;
 
 					// 有意识但无法动弹, 追加强制flag
-					if (!F.canMove(target)) T.forceOrder += 100;
+					if (!cond.canMove(target)) T.forceOrder += 100;
 
 					if (V.system.showOrder && T.orderMsg && T.orderGoal > 0) {
 						reText += `配合度检测：${T.orderMsg}=${T.order}/${T.orderGoal}<br><<dashline>>`;
@@ -19723,21 +19723,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 					//如果无法进入执行环节，则在这个阶段返回提示信息。
 					if (reText) {
-						F.txtFlow(reText);
+						p.flow(reText);
 					}
 
 					T.selectAct = id;
 
 					//如果动作还在准备阶段，则在这里中断。
 					if (phase == "ready") {
-						F.initCheckFlag();
-						F.resetUI();
+						Action.initCheck();
+						Action.redraw();
 						return 0;
 					}
 
 					T.actId = id;
 					//记录动作部位。
-					T.actPart = T.selectActPart ? T.selectActPart : data.usePart ? data.usePart[0] : "reset";
+					T.actPart = T.selectActPart ? T.selectActPart : data.actPart ? data.actPart[0] : "reset";
 
 					$("action").trigger("before");
 				};
@@ -19756,9 +19756,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 					//执行before系列事件。这些都是纯文本，只能有选项相关操作。
 					//先执行通用的before事件。主要显示场景变化或持续状态。
-					reText = Story.get("Msg_Action_Common:Before").text + ` <<run F.ActNext()>><<if !T.noMsg>><<dashline>><</if>>`;
+					reText = Story.get("Msg_Action_Common:Before").text + ` <<run Action.next()>><<if !T.noMsg>><<dashline>><</if>>`;
 
-					F.Msg(reText);
+					p.msg(reText);
 
 					let type = "PCAction",
 						dif = "Before",
@@ -19767,40 +19767,40 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					//指令专属的before事件
 					if (Kojo.has(pc, { type, id, dif, check })) {
 						txt = Kojo.put(pc, { type, id, dif });
-						F.Msg(txt);
+						p.msg(txt);
 					}
 
 					//执行口上侧before事件。
 					type = "Action";
 					if (Kojo.has(tc, { type, id, dif })) {
 						txt = Kojo.put(tc, { type, id, dif });
-						F.Msg(txt);
+						p.msg(txt);
 					}
 
 					//角色自定指令的情况。因为格式不一样，前面结果肯定为空(￣▽￣")
 					if (data?.option?.has("Kojo") && Kojo.has(pc, { type: "custom", id, dif })) {
-						F.Msg(Kojo.put(pc, { type: "custom", id, dif }));
+						p.msg(Kojo.put(pc, { type: "custom", id, dif }));
 					}
 
 					//在执行文本最后追加下一步，取消的话就直接取消剩余执行事件。
-					F.Msg(
-						`<<if !T.cancel>><<run F.setPhase('event'); F.ActNext()>><<else>><<run F.resetAction(); F.setPhase('init')>><</if>>`
+					p.msg(
+						`<<if !T.cancel>><<run Action.phase('event'); Action.next()>><<else>><<run Action.reset(); Action.phase('init')>><</if>>`
 					);
 
 					//检测是否存在特殊的before处理，存在就在这执行。
 					//if(Action.data[id]?.before) Action.data[id].before();
 
 					if (!Story.has(`Msg_PCAction_${id}`) && !data?.option?.has("Kojo")) {
-						F.txtFlow("缺乏事件文本", 30, 1);
-						F.setPhase("init");
+						p.flow("缺乏事件文本", 30, 1);
+						Action.phase("init");
 					}
 				};
 
 				F.doAction = function (id) {
-					const state = T.actAble ? F.actionCheckOrder() : "cancel";
+					const state = T.actAble ? Action.checkOrder() : "cancel";
 
 					if (groupmatch(state, "failed", "cancel")) {
-						F.setPhase(state);
+						Action.phase(state);
 						return 0;
 					}
 
@@ -19823,7 +19823,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 						txt = "";
 
 					T.phase = "event";
-					F.resetMsg();
+					p.resetMsg();
 
 					//强制成功时
 					if (state == "force succeed") {
@@ -19862,9 +19862,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 						txt = F.convertKojo(txt);
 					}
 
-					F.Msg(txt);
+					p.msg(txt);
 					//设置下一个环节的flag。进入counter环节。对象概率执行counter动作。之后才是result和after事件
-					F.Msg(`<<run Action.data['${id}'].effect(); F.setPhase('counter');>>`, 1);
+					p.msg(`<<run Action.data['${id}'].effect(); Action.phase('counter');>>`, 1);
 				};
 
 				F.actionAfter = function (id) {
@@ -19876,26 +19876,26 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					T.phase = "after";
 
 					if (Kojo.has(pc, { type, id, dif, check })) {
-						F.Msg(Kojo.put(pc, { type, id, dif }));
+						p.msg(Kojo.put(pc, { type, id, dif }));
 						c = 1;
 					}
 
 					type = "Action";
 					if (Kojo.has(tc, { type, id, dif })) {
-						F.Msg(Kojo.put(tc, { type, id, dif }));
+						p.msg(Kojo.put(tc, { type, id, dif }));
 						c = 1;
 					}
 
 					//角色自定指令的情况。因为格式不一样，前面结果肯定为空(￣▽￣")
 					if (data?.option?.has("Kojo") && Kojo.has(pc, { type: "custom", id, dif })) {
-						F.Msg(Kojo.put(pc, { type: "custom", id, dif }));
+						p.msg(Kojo.put(pc, { type: "custom", id, dif }));
 					}
 
 					//有事件的时候滞后处理
 					if (c) {
-						F.Msg(`<<run F.setPhase('finish')>><<dashline>>`, 1);
+						p.msg(`<<run Action.phase('finish')>><<dashline>>`, 1);
 					} else {
-						F.setPhase("finish");
+						Action.phase("finish");
 					}
 				};
 
@@ -19906,12 +19906,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 						check = 1;
 
 					if (Kojo.has(pc, { type, id, dif, check, tag })) {
-						F.Msg(Kojo.put(pc, { type, id, dif, tag }));
-						F.Msg(`<<run T.cancel = 1; F.passtime(1); F.resetAction(); F.setPhase('init')>>`, 1);
+						p.msg(Kojo.put(pc, { type, id, dif, tag }));
+						p.msg(`<<run T.cancel = 1; F.passtime(1); Action.reset(); Action.phase('init')>>`, 1);
 					} else {
 						T.cancel = 1;
-						F.resetAction();
-						F.setPhase("init");
+						Action.reset();
+						Action.phase("init");
 					}
 				};
 
@@ -19922,12 +19922,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 						check = 1;
 
 					if (Kojo.has(pc, { type, id, dif, tag, check })) {
-						F.Msg(Kojo.put(pc, { type, id, dif, tag }));
+						p.msg(Kojo.put(pc, { type, id, dif, tag }));
 					} else {
-						F.Msg("对方不愿意配合，执行失败。");
+						p.msg("对方不愿意配合，执行失败。");
 					}
 
-					F.Msg(`<<run T.cancel = 1; F.passtime(1); F.resetAction(); F.setPhase('init')>>`, 1);
+					p.msg(`<<run T.cancel = 1; F.passtime(1); Action.reset(); Action.phase('init')>>`, 1);
 				};
 
 				F.actionResult = function () {
@@ -19936,26 +19936,26 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				};
 				/* twine-user-script #34: "CommandLoop.js" */
 				//----->> 初始化 <<---------------------------//
-				F.initComMenu = function () {
+				Com.updateMenu = function () {
 					const list = [[V.location.id == "A0", "下沉", "Basement", ""]];
 					let menu = [];
 					list.forEach((a) => {
 						if (a[0]) menu.push(`<<link '[ ${a[1]} ]' '${a[2]}'>>${a[3]}<</link>>`);
 					});
 
-					const html = `<span class='filter'>Filter: ${F.ComFilters()}</span>　｜　${menu.join("")}`;
+					const html = `<span class='filter'>Filter: ${Com.filters()}</span>　｜　${menu.join("")}`;
 
 					new Wikifier(null, `<<replace #commandmenu>>${html}<</replace>>`);
 				};
 
-				F.initLocation = function () {
+				Com.updateScene = function () {
 					const chara = [];
 					let html = "";
 					let change = F.switchChara();
 
 					if (V.location.chara.length) {
 						V.location.chara.forEach((k) => {
-							let com = `<<set $tc to '${k}'>><<run F.charaEvent('${k}'); F.resetScene()>>`;
+							let com = `<<set $tc to '${k}'>><<run F.charaEvent('${k}'); Com.resetScene()>>`;
 
 							let t = `<u><<link '${C[k].name}'>>${com}<</link>></u>　`;
 
@@ -19983,7 +19983,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				};
 
 				//----->> 主要进程处理 <<---------------------------//
-				F.ComNext = function () {
+				Com.next = function () {
 					//用于刷新content_message区域的文本。
 					if (T.msgId < S.msg.length && S.msg[T.msgId].has("<<selection", "<<linkreplace") && !T.selectwait) {
 						S.msg[T.msgId] += "<<unset _selectwait>><<set _onselect to 1>>";
@@ -19991,16 +19991,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					}
 
 					if (T.comPhase == "before" && T.msgId >= S.msg.length && !T.onselect && !T.selectwait) {
-						F.ComEvent(V.selectCom, 1);
+						Com.Event(V.selectCom, 1);
 					} else {
 						if (T.msgId < S.msg.length && !T.onselect) {
-							F.txtFlow(S.msg[T.msgId]);
+							p.flow(S.msg[T.msgId]);
 							T.msgId++;
 						}
 					}
 				};
 
-				F.ComCheck = function (id) {
+				Com.Check = function (id) {
 					const com = comdata[id];
 
 					T.comorder = 0;
@@ -20011,7 +20011,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					T.msgId = 0;
 
 					//如果对方无反抗之力，目标值强行变零。
-					if (F.uncons(target) || !F.canMove(target)) T.orderGoal = 0;
+					if (cond.isUncons(target) || !cond.canMove(target)) T.orderGoal = 0;
 
 					T.comPhase = "before";
 					let txt = "";
@@ -20025,30 +20025,30 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					}
 
 					//指令执行时暂时去掉指令栏
-					F.hideCommands();
-					F.shownext();
+					Com.hide();
+					Com.shownext();
 
 					if (V.system.showOrder && T.order) {
-						F.ComMsg(`配合度检测：${T.order}＝${T.comorder}/${T.orderGoal}<br><<dashline>>`);
+						p.msg(`配合度检测：${T.order}＝${T.comorder}/${T.orderGoal}<br><<dashline>>`);
 					}
 
 					//执行before事件。这些都是纯文本。只能有选项相关操作。
 					//先执行通用的 before事件。基本用在场景变化中。
-					F.ComMsg(`${Story.get("Command::Before").text}<<run F.ComNext()>><<dashline>>`);
+					p.msg(`${Story.get("Command::Before").text}<<run Com.next()>><<dashline>>`);
 
 					//指令专属的before事件
 					let type = "Com",
 						dif = "Before";
 					if (Kojo.has(pc, { type, id, dif, check: 1 })) {
 						txt = Kojo.put(pc, { type, id, dif });
-						F.ComMsg(txt);
+						p.msg(txt);
 						c = 1;
 					}
 
 					//执行口上侧Before事件。
 					if (Kojo.has(tc, { type, id, dif })) {
 						txt = Kojo.put(tc, { type, id, dif });
-						F.ComMsg(txt);
+						p.msg(txt);
 						c = 1;
 					}
 
@@ -20056,21 +20056,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					if (com?.before) com.before();
 
 					if (!Story.has(`Com_${id}`)) {
-						F.txtFlow("缺乏事件文本", 30, 1);
-						F.resetScene();
+						p.flow("缺乏事件文本", 30, 1);
+						Com.resetScene();
 					}
 					//存在待执行文本就直接出现Next按钮。
 					else if (c) {
-						F.shownext();
-						F.ComNext();
+						Com.shownext();
+						Com.next();
 					} else {
-						F.ComEvent(id);
+						Com.Event(id);
 					}
 				};
 
-				F.ComEvent = function (id, next) {
+				Com.Event = function (id, next) {
 					const com = comdata[id];
-					const resetHtml = `<<run F.resetCom()>><<dashline>>`;
+					const resetHtml = `<<run Com.reset()>><<dashline>>`;
 					let txt = "",
 						type = "Com";
 					S.msg = [];
@@ -20081,10 +20081,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					$("#contentMsg a").remove();
 
 					if (T.comCancel) {
-						F.ComMsg(resetHtml);
+						p.msg(resetHtml);
 					} else if (com.name == "移动") {
 						//移动直接跳转到移动界面
-						F.ComMsg(Story.get(`Com_G0`).text);
+						p.msg(Story.get(`Com_G0`).text);
 					}
 					//确认主控有能力执行
 					else if (T.comAble) {
@@ -20100,7 +20100,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 							if (T.comorder < T.orderGoal && !V.system.debug) {
 								S.msg.push(
 									`配合度不足：${T.order}＝${T.comorder}/${T.orderGoal}<br>${
-										com?.forceAble ? "<<run F.ComNext()>>" : ""
+										com?.forceAble ? "<<run Com.next()>>" : ""
 									}<br>`
 								);
 
@@ -20122,63 +20122,63 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 							if (txt.includes("Kojo.put")) txt = F.convertKojo(txt);
 
-							F.ComMsg(txt);
+							p.msg(txt);
 
-							F.ComMsg(`<<run comdata['${id}'].source(); F.passtime(T.passtime); F.ComResult()>>`, 1);
+							p.msg(`<<run comdata['${id}'].source(); F.passtime(T.passtime); Com.After()>>`, 1);
 
 							//确认After事件。如果有就添加到 Msg中。
 							if (Kojo.has(pc, { type, id, dif: "After", check: 1 })) {
 								txt = `<br><<set _comPhase to 'after'>>` + Kojo.put(pc, { type, id, dif: "After" });
 								if (txt.includes("Kojo.put")) txt = F.convertKojo(txt);
-								F.ComMsg(txt);
+								p.msg(txt);
 							}
 
 							if (txt.includes("Kojo.put") === false && Kojo.has(tc, { type, id, dif: "After" })) {
-								F.ComMsg(Kojo.put(tc, { type, id, dif: "After" }));
+								p.msg(Kojo.put(tc, { type, id, dif: "After" }));
 							}
 
 							//最后加ComEnd()
-							F.ComMsg("<<run F.ComEnd()>>", 1);
+							p.msg("<<run Com.endEvent()>>", 1);
 						} else {
-							F.ComMsg(`配合度不足：${T.order}＝${T.comorder}/${T.orderGoal}<br><<run F.passtime(1); >>`);
-							F.ComMsg(resetHtml, 1);
+							p.msg(`配合度不足：${T.order}＝${T.comorder}/${T.orderGoal}<br><<run F.passtime(1); >>`);
+							p.msg(resetHtml, 1);
 						}
 					}
 					//取消执行
 					else {
 						if (Kojo.has(pc, { type, id, dif: "Cancel", check: 1 })) {
 							txt = Kojo.put(pc, { type, id, dif: "Cancel" });
-							F.ComMsg(txt);
+							p.msg(txt);
 						} else
-							F.ComMsg(
+							p.msg(
 								`》条件不足无法执行指令：${typeof com.name === "function" ? com.name() : com.name}<br>原因：${T.reason}<br>`
 							);
 
-						F.ComMsg("<<run F.passtime(1)>>", 1);
-						F.ComMsg(resetHtml, 1);
+						p.msg("<<run F.passtime(1)>>", 1);
+						p.msg(resetHtml, 1);
 					}
 
-					F.shownext();
-					F.ComNext();
+					Com.shownext();
+					Com.next();
 				};
 
 				//数据处理结果的显示。包括高潮、射精、刻印获得、素质变动的处理
 				//已经打包扔 timeprocess中了。
-				F.ComResult = function () {
+				Com.After = function () {
 					let text = "";
 					return text;
 				};
 
 				//指令结束后的事件处理。主要看有无后续事件。 例如高潮后、射精后、刻印获得后、素质变动后等相关事件。
 				//未完。跟Action用同一套处理。弄好了再替换好了。
-				F.ComEnd = function () {
+				Com.endEvent = function () {
 					T.comPhase = "end";
-					const resetHtml = `<<run F.resetCom()>><<dashline>>`;
+					const resetHtml = `<<run Com.reset()>><<dashline>>`;
 
 					let text = "";
 
-					F.ComMsg(resetHtml);
-					F.ComNext();
+					p.msg(resetHtml);
+					Com.next();
 				};
 				/* twine-user-script #35: "command.js" */
 				Macro.add("com", {
@@ -20293,10 +20293,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				}
 				window.Com = Com;
 
-				F.ComFilters = function () {
+				Com.filters = function () {
 					const general = clone(D.ComFilterGeneral);
 					const train = clone(D.ComFilterTrain);
-					const end = "<<=F.initComList()>><</link>>";
+					const end = "<<=Com.initList()>><</link>>";
 					const generalink = [];
 					const trainlink = [];
 
@@ -20313,7 +20313,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					)}<<if $mode is 'train'>>${trainlink.join("")}<</if>>`;
 				};
 
-				F.initComList = function () {
+				Com.initList = function () {
 					const command = [];
 
 					Object.values(comdata).forEach((com) => {
@@ -20326,7 +20326,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 						let txt = "";
 
 						if (com.filter() && Com.globalFilter(id)) {
-							txt = `<<com '${name}' ${time} ${id}>><<run F.ComCheck('${id}')>><</com>>`;
+							txt = `<<com '${name}' ${time} ${id}>><<run Com.Check('${id}')>><</com>>`;
 						} else if (V.system.showAllCommand) {
 							txt = `<div class='command unable'><<button '${name}'>><</button>></div>`;
 						}
@@ -20341,8 +20341,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				/* twine-user-script #36: "utils.js" */
 				//----->> 小功能 <<---------------------------//
 
-				F.shownext = function () {
-					let html = `<<link 'Next'>><<run F.ComNext()>><</link>>`;
+				Com.shownext = function () {
+					let html = `<<link 'Next'>><<run Com.next()>><</link>>`;
 					new Wikifier("#commandzone", `<<replace #commandzone transition>>${html}<</replace>>`);
 				};
 
@@ -20358,25 +20358,25 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					}
 				};
 
-				F.hideCommands = function () {
+				Com.hide = function () {
 					new Wikifier(null, `<<replace #commandmenu>> <</replace>>`);
 					new Wikifier(null, "<<replace #commandzone>> <</replace>>");
 				};
 
 				//刷新界面
-				F.resetScene = function () {
+				Com.resetScene = function () {
 					V.target = C[tc];
 					V.player = C[pc];
-					F.initLocation();
-					F.initComList();
-					F.initComMenu();
+					Com.updateScene();
+					Com.initList();
+					Com.updateMenu();
 
 					return "";
 				};
-				DefineMacroS("resetScene", F.resetScene);
+				DefineMacroS("resetScene", Com.resetScene);
 
 				//信息处理
-				F.ComMsg = function (msg, add) {
+				p.msg = function (msg, add) {
 					if (!S.msg) S.msg = [];
 					if (add) {
 						if (!S.msg.length) S.msg[0] = "";
@@ -20389,7 +20389,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				};
 
 				//无论指令成功与否，都会在最后执行的处理
-				F.resetCom = function () {
+				Com.reset = function () {
 					//更新事件状态
 					T.comPhase = "reset";
 
@@ -20417,11 +20417,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					V.selectCom = 0;
 
 					//刷新画面
-					F.resetScene();
+					Com.resetScene();
 				};
 				/* twine-user-script #37: "DialogSystem.js" */
 				// 信息流控制
-				F.txtFlow = function (txt, time, dashline) {
+				p.flow = function (txt, time, dashline) {
 					if (!time) time = 60;
 
 					new Wikifier(
@@ -20437,16 +20437,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				};
 
 				//下一步按钮
-				F.nextLink = function () {
+				ui.next = function () {
 					let next = V.event.next;
 					console.log(V.event.next);
 					if (!next) next = "Next";
-					return `<<link '${next}'>><<run F.nextDialog()>><</link>>`;
+					return `<<link '${next}'>><<run Dialog.next()>><</link>>`;
 				};
-				DefineMacroS("eventnext", F.nextLink);
+				DefineMacroS("eventnext", ui.next);
 
 				//获取事件完整文本，并进行解析转化
-				F.initText = function (title) {
+				Dialog.init = function (title) {
 					const input = Story.get(title).text.split("\n");
 
 					S.dialog[title] = [];
@@ -20474,7 +20474,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				};
 
 				//事件进程初始化
-				F.initEvent = function () {
+				Dialog.initTitle = function () {
 					const e = V.event;
 					let title = `${e.type}_${e.name}`;
 
@@ -20498,7 +20498,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				};
 
 				//当前dialog内容的初始化，同时记录回想节点。
-				F.initDialog = function () {
+				Dialog.init = function () {
 					const e = V.event;
 					let title = e.fullname;
 
@@ -20512,33 +20512,33 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 						F.recEventPoint("sp");
 					}
 
-					F.initText(title);
+					Dialog.init(title);
 					T.eventTitle = title;
 					const p = S.dialog[title][0];
 
 					if (!p) return "";
 
-					const txt = txtp(p.text);
+					const txt = p.txt(p.text);
 					e.config = p.config;
 					e.next = "Next";
 
 					setTimeout(() => {
-						F.dialogFlow(txt);
+						Dialog.flow(txt);
 						e.phase = 0;
 					}, 80);
 				};
 
 				//显示文本，并进行控制处理。
-				F.dialogFlow = function () {
+				Dialog.flow = function () {
 					const e = V.event;
 					const p = S.dialog[T.eventTitle][e.phase];
 
 					if (!p) return "";
 
-					const txt = txtp(p.text);
+					const txt = p.txt(p.text);
 					S.history.push(txt);
 
-					F.txtFlow(txt);
+					p.flow(txt);
 
 					e.config = {};
 					e.config = p.config;
@@ -20558,7 +20558,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				};
 
 				//按下一步按钮或点击文本框时所进行的处理。
-				F.nextDialog = function () {
+				Dialog.next = function () {
 					const e = V.event;
 					const c = V.event.config;
 					const com = c?.com ? c.com : "";
@@ -20566,7 +20566,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 					if (!e.selectwait && e.phase < S.dialog[ch].length) {
 						e.phase++;
-						F.dialogFlow(ch);
+						Dialog.flow(ch);
 					}
 
 					if (e.selectwait) new Wikifier(null, "<<replace #next>> <</replace>>");
@@ -20580,7 +20580,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 							V.selectId = 0;
 
 							if (com) new Wikifier(null, com);
-							F.initDialog();
+							Dialog.init();
 						} else if (e.config.type == "endPhase") {
 							if (c?.name) e.name = c.name;
 							if (c?.eid) e.eid = c.eid;
@@ -20594,7 +20594,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 							e.sp = 0;
 
 							if (com) new Wikifier(null, com);
-							F.initDialog();
+							Dialog.init();
 						} else if (e.config.type == "jump") {
 							new Wikifier(null, `${com}<<timed 80ms>><<goto 'EventStart'>><</timed>>`);
 						} else if (e.config.type == "selectEnd") {
@@ -20602,7 +20602,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 							S.dialog = {};
 
 							if (com) new Wikifier(null, com);
-							F.initDialog();
+							Dialog.init();
 						} else {
 							if (!e.config?.exit) {
 								e.config.exit = S.defaultExit;
@@ -20641,7 +20641,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 						if (V.pc === "Isil" || V.pc === "m0") {
 							p = "Ayres";
 							t = "Isil";
-						} else if (V.pc == "Ayres" && F.uncons(C["Isil"])) {
+						} else if (V.pc == "Ayres" && cond.isUncons(C["Isil"])) {
 							p = "m0";
 							t = "Isil";
 						} else {
@@ -20649,8 +20649,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 							t = "Ayres";
 						}
 
-						let reflesh = "F.resetUI()";
-						if (V.passage == "CommandLoop") reflesh = "F.resetScene()";
+						let reflesh = "Action.redraw()";
+						if (V.passage == "CommandLoop") reflesh = "Com.resetScene()";
 
 						change = `<<link '[ 切换角色 ]'>><<set $pc to '${p}'>><<set $tc to '${t}'>><<run ${reflesh};>><</link>>`;
 					}
@@ -20687,7 +20687,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 						}
 
 						if (Kojo.has(cid, { type: "Daily", id: "First" })) {
-							return F.txtFlow(`${Kojo.put(cid, { type: "Daily", id: "First" })}${setter}`);
+							return p.flow(`${Kojo.put(cid, { type: "Daily", id: "First" })}${setter}`);
 						}
 					}
 
@@ -20768,7 +20768,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					return obj;
 				};
 
-				F.initCharaFromCSV = function (cid) {
+				Chara.initCSV = function (cid) {
 					const raw = initCSV(cid);
 					const chara = new Chara(raw.id, raw.name, raw.gender, raw.race);
 					if (raw.position) {
@@ -20984,7 +20984,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 						if (msg) retext.push(msg);
 					}
 
-					if (retext.length > 1) F.Msg(retext.join("<br>") + "<<dashline>>");
+					if (retext.length > 1) p.msg(retext.join("<br>") + "<<dashline>>");
 				};
 
 				F.trackCheck = function (chara, cid) {};
@@ -21246,7 +21246,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				 *
 				 * @param {string} text
 				 */
-				F.tranSelect = function (text) {
+				p.convertSelection = function (text) {
 					let replace = text.includes("@replace");
 					let txt, html;
 
@@ -21281,7 +21281,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					return text.replace(txt[0], html);
 				};
 
-				F.transTips = function (text) {
+				p.convertTips = function (text) {
 					let txt = text.match(/:tips:(.+)\|(.+):/);
 					return text.replace(txt[0], `<<tips '${txt[1]}' '${txt[2]}'>>`);
 				};
@@ -21290,10 +21290,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				 *
 				 * @param {string | string[]} text
 				 */
-				window.txtp = function (text) {
+				window.p.txt = function (text) {
 					const trans = function (t) {
-						if (t.includes(":tips:")) t = F.transTips(t);
-						if (t.includes(":select:")) t = F.tranSelect(t);
+						if (t.includes(":tips:")) t = p.convertTips(t);
+						if (t.includes(":select:")) t = p.convertSelection(t);
 						if (t.includes("/L")) t = t.replace("/L", "<br>");
 
 						if (t.includes("<fr>")) {
@@ -21459,19 +21459,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				}
 				DefineMacroS("skillRank", skillRank);
 
-				F.yourName = function () {
+				p.you = function () {
 					if (V.system.AlwaysShowPCName) {
 						return player.name;
 					}
 					return "你";
 				};
-				DefineMacroS("you", F.yourName);
+				DefineMacroS("you", p.you);
 
-				F.partnerName = function () {
+				p.partner = function () {
 					if (pc == "Isil") return C.Ayres.name;
 					else return C.Isil.name;
 				};
-				DefineMacroS("partner", F.partnerName);
+				DefineMacroS("partner", p.partner);
 
 				/**
 				 *
@@ -21509,11 +21509,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					return "";
 				};
 
-				F.Exp = function (chara, exp) {
+				p.exp = function (chara, exp) {
 					return C[chara].exp[exp].total;
 				};
 
-				F.charaName = function (cid) {
+				p.charaName = function (cid) {
 					const chara = C[cid];
 					let color = Kojo.get(cid, "color");
 					if (!color) color = "#22A0FC";
@@ -21522,25 +21522,25 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					return html;
 				};
 
-				F.playerName = function () {
+				p.playerName = function () {
 					let color = Kojo.get(pc, "color");
 					if (!color) color = "#22A0FC";
 
 					const html = `<span style='color:${color}'>[ ${player.name} ]</span><br>`;
 					return html;
 				};
-				DefineMacroS("pcnameTag", F.playerName);
-				DefineMacroS("nameTag", F.charaName);
+				DefineMacroS("pcnameTag", p.playerName);
+				DefineMacroS("nameTag", p.charaName);
 
 				F.actChara = function () {
-					if (T.actor == V.pc) return F.yourName();
+					if (T.actor == V.pc) return p.you();
 					else return C[T.actor].name;
 				};
 
 				DefineMacroS("actChara", F.actChara);
 
 				F.targetChara = function () {
-					if (T.actTg == V.pc) return F.yourName();
+					if (T.actTg == V.pc) return p.you();
 					else return C[T.actTg].name;
 				};
 
@@ -21568,14 +21568,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					return "hands";
 				};
 
-				F.Actor = function (pc, tc, act, acp) {
+				p.actor = function (pc, tc, act, acp) {
 					T.ac = pc;
 					T.tc = tc;
 					T.actId = act;
 					T.acp = acp;
 					return "";
 				};
-				DefineMacroS("setActor", F.Actor);
+				DefineMacroS("setActor", p.actor);
 
 				//在执行文本时以print的方式加在文本前面。
 				//<<setActor '${T.ac}' '${T.tc}' '${actId}'>>
@@ -21608,7 +21608,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					return select.has(V.date.month);
 				};
 
-				F.showtime = function () {
+				p.time = function () {
 					const date = V.date;
 
 					let timeString = `${F.season()} · ${date.month}/${date.day} (<span style='color:#${weekcolor[date.week]}'>${
@@ -21708,18 +21708,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				window.percent = percent;
 				DefineMacroS("percent", percent);
 
-				F.setBase = function (name, value) {
+				charaget.base = function (name, value) {
 					pc.base[name][0] += value;
 					return "";
 				};
 
-				F.setPalam = function (name, value) {
+				charaget.palam = function (name, value) {
 					pc.palam[name][1] += value;
 					return "";
 				};
 
-				DefineMacroS("setBase", F.setBase);
-				DefineMacroS("setPalam", F.setPalam);
+				DefineMacroS("setBase", charaget.base);
+				DefineMacroS("setPalam", charaget.palam);
 
 				F.isClasstime = function () {
 					const date = V.date;
@@ -21731,7 +21731,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					return false;
 				};
 
-				F.splitSex = function (chara, male, female, inter) {
+				p.splitSex = function (chara, male, female, inter) {
 					if (chara.gender === "male") return male;
 					else {
 						if (inter && chara.gender === "inter") {
@@ -21741,7 +21741,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					}
 				};
 
-				F.gametime = function () {
+				F.playtime = function () {
 					let time = V.gametime;
 
 					time.s++;
@@ -21759,7 +21759,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					}
 				};
 
-				F.levelMP = function (lv) {
+				F.levelMp = function (lv) {
 					lv = Math.clamp(lv + 1, 1, 25);
 					let a = lv * lv * 10 + Math.pow(lv, 3);
 					return Math.floor(a / 10 + 0.5) * 10;
@@ -21779,7 +21779,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					};
 					const max = type == "scale" ? 10 : 25;
 					const per = type !== "scale" && m.abl[type] == 0 ? Math.max(p[type][0] / 2, 1) : p[type][0];
-					const mp = F.levelMP(m.abl[type]) * per;
+					const mp = F.levelMp(m.abl[type]) * per;
 
 					let link = "";
 
@@ -21797,7 +21797,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					return link;
 				};
 
-				F.getMP = function (ecstacy, type) {
+				g.getmp = function (ecstacy, type) {
 					// 每120点快感 +1p。 达到普通高潮需1200快感，强高潮需3000快感，超强高潮需要6000快感
 					// 每次指令结束会将获得魔力暂存在earnMP里。调教结束时，当earnMP大于一才添加到魔力中。
 					// M的程度不足的话，疼痛会抵消掉快感
@@ -21805,17 +21805,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					T.earnMP = ecstacy / 120 + Tsv[`${type}Ex`] * 20;
 				};
 
-				F.getExp = function (chara, exp, val) {
+				Chara.getexp = function (chara, exp, val) {
 					chara.exp[exp].total += val;
 
-					if (!F.uncons(chara)) chara.exp[exp].aware += val;
+					if (!cond.isUncons(chara)) chara.exp[exp].aware += val;
 
 					if (!chara.expUp[exp]) chara.expUp[exp] = 0;
 
 					chara.expUp[exp] += val;
 				};
 
-				F.getForms = function (level) {
+				p.mutants = function (level) {
 					let txt = "";
 					for (let i = 0; i < level; i++) {
 						txt += `【${D.mutant[i]}】`;
@@ -21823,12 +21823,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					return txt;
 				};
 
-				F.resetLink = function () {
+				ui.delink = function () {
 					$("#contentMsg a").remove();
 					V.selectCom = 0;
 					return "";
 				};
-				DefineMacroS("resetLink", F.resetLink);
+				DefineMacroS("resetLink", ui.delink);
 				/* twine-user-script #51: "selection.js" */
 				Macro.add('selection',{
 				    tags:['pick'],
@@ -22019,7 +22019,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					chara.base[key][0] += val;
 				};
 
-				F.baseCheck = function (chara, key, val) {
+				cond.baseLt = function (chara, key, val) {
 					if (val === "max") return chara.base[key][0] < chara.base[key][1];
 					else {
 						if (between(val, 0, 1)) {
@@ -22052,17 +22052,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 				F.resetBase = function (chara) {
 					const list = ["dirty", "drug", "alcohol", "stress"];
-					for (let i in chara.base) {
+					for (let i in fix.base) {
 						if (list.includes(i)) chara.base[i][0] = 0;
 						else chara.base[i][0] = chara.base[i][1];
 					}
 				};
 
-				F.canSpeak = function (chara) {
+				cond.canSpeak = function (chara) {
 					return !chara.state.has("失声", "失聪", "口球", "自闭");
 				};
 
-				F.canMove = function (chara) {
+				cond.canMove = function (chara) {
 					return !chara.state.has("束缚", "石化");
 				};
 
@@ -22070,16 +22070,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					return !chara.state.has("精神崩溃", "毒瘾发作", "性瘾发作");
 				};
 
-				F.sleep = function (chara) {
+				cond.isSleeping = function (chara) {
 					return chara.state.includes("睡眠");
 				};
 
-				F.uncons = function (chara) {
+				cond.isUncons = function (chara) {
 					return chara.state.has("睡眠", "晕厥") || (chara.base.sanity[0] < 10 && chara.base.stamina[0] < 10);
 				};
 
 				F.BP = function (chara) {
-					const s = chara.stats;
+					const s = fix.stats;
 					return s.STR[1] * 15 + s.CON[1] * 8 + s.DEX[1] * 8 + s.INT[1] * 8 + s.WIL[1] * 10 + s.PSY[1];
 				};
 
@@ -22096,27 +22096,27 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					chara.flag[key] += val;
 				};
 
-				F.isRape = function (chara) {
+				cond.isRape = function (chara) {
 					return (V.mode == "train" || chara.tsv?.woohoo) && !chara.tsv.oksign;
 				};
 
-				F.canResist = function (chara) {
-					return !F.uncons(chara) && F.canMove(chara);
+				cond.candResist = function (chara) {
+					return !cond.isUncons(chara) && cond.canMove(chara);
 				};
 
-				F.weaker = function (a, b) {
+				cond.isWeaker = function (a, b) {
 					let ap = F.BP(a);
 					let bp = F.BP(b);
 
 					if (ap < bp * 0.8) {
 						return true;
 					} else {
-						return ap / bp <= 1.25 && F.isEnergetic(a);
+						return ap / bp <= 1.25 && cond.isEnergetic(a);
 					}
 				};
 
 				//是否有充足精力进行抵抗。
-				F.isEnergetic = function (a) {
+				cond.isEnergetic = function (a) {
 					const hp = (a.base.health[0] * 2) / a.base.health[1]; //影响抵御上限
 					const stamina = Math.floor((a.base.stamina[0] / a.base.stamina[1]) * 100 * hp);
 					const sanity = Math.floor((a.base.sanity[0] / a.base.sanity[1]) * 100 * ((hp / 2) * 1.5));
@@ -22127,7 +22127,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					return stamina + sanity + mana > 160;
 				};
 
-				F.isFallen = function (chara) {
+				cond.isFallen = function (chara) {
 					if (chara.flag.fallen) return true;
 					if (chara.flag.depend >= 2500) return true;
 
@@ -22169,12 +22169,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					return C[cid].gender !== "female";
 				};
 
-				F.hasVagina = function (cid) {
+				cond.hasVagina = function (cid) {
 					return C[cid].gender !== "male";
 				};
 
-				F.justHands = function (useParts) {
-					return useParts.length == 2 && useParts.containsAll("handR", "handL");
+				cond.justHands = function (actParts) {
+					return actParts.length == 2 && actParts.containsAll("handR", "handL");
 				};
 				/* twine-user-script #53: "Common.js" */
 				/* 放松 */
@@ -22372,7 +22372,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				/* 闲聊 */
 				Action.set("Talk").Check(() => {
 					let rate = random(1, 100);
-					return rate <= target.mood + 10 && F.canSpeak(target);
+					return rate <= target.mood + 10 && cond.canSpeak(target);
 				});
 
 				/* 观察 */
@@ -22507,7 +22507,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 						if (Flag.mode < 1) Flag.mode = 1;
 
-						new Wikifier(null, `<<run F.txtFlow(F.playerName()+'<<you>>和$target.name打了个招呼并走近对方。',30,1)>>`);
+						new Wikifier(null, `<<run p.flow(p.playerName()+'<<you>>和$target.name打了个招呼并走近对方。',30,1)>>`);
 					});
 
 				/* 接触 */
@@ -22532,7 +22532,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 						if (V.system.debug || V.mode == "train") return 1;
 
 						//对方失去意识+没有其他人
-						if (F.uncons(target) && V.location.chara.length <= 2) return 1;
+						if (cond.isUncons(target) && V.location.chara.length <= 2) return 1;
 
 						//暂且这样……之后导入TW的理性之壁和好感之壁进行判断(￣▽￣")
 						if (Cflag[tc].favo < 1000) {
@@ -22549,7 +22549,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 						if (V.mode == "train") {
 							return "结束";
 						}
-						if (F.uncons(target)) {
+						if (cond.isUncons(target)) {
 							return "眠奸";
 						}
 						return "推倒";
@@ -22662,7 +22662,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 				/* 魔法 */
 				Action.set("Magic").Filter(() => {
-					return F.canSpeak(player);
+					return cond.canSpeak(player);
 				});
 
 				/* 道具 */
@@ -22995,11 +22995,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 						return !Flag.master;
 					})
 					.Event(() => {
-						new Wikifier(null, `<<run F.txtFlow(Story.get('FallToDeep').text, 60, 1)>>`);
+						new Wikifier(null, `<<run p.flow(Story.get('FallToDeep').text, 60, 1)>>`);
 					});
 
 				Action.set("sleep").Filter(() => {
-					return V.location.id == "A0" && (V.date.time >= 1200 || F.baseCheck(player, "stamina", 0.5)) && pc !== "m0";
+					return V.location.id == "A0" && (V.date.time >= 1200 || cond.baseLt(player, "stamina", 0.5)) && pc !== "m0";
 				});
 
 				Action.set("rise")
@@ -23008,7 +23008,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					})
 					.Event(() => {
 						Flag.master = 0;
-						new Wikifier(null, `<<run F.txtFlow(Story.get('RiseToSurface').text, 60, 1)>>`);
+						new Wikifier(null, `<<run p.flow(Story.get('RiseToSurface').text, 60, 1)>>`);
 					});
 
 				Action.set("resetMode")
@@ -23018,7 +23018,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					.Event(() => {
 						Flag.mode = 0;
 						V.mode = "normal";
-						new Wikifier(null, `<<run F.txtFlow(F.playerName()+'<<you>>从$target.name身边走开了。',30,1)>>`);
+						new Wikifier(null, `<<run p.flow(p.playerName()+'<<you>>从$target.name身边走开了。',30,1)>>`);
 					});
 
 				Action.set("stopTouch")
@@ -23027,7 +23027,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					})
 					.Event(() => {
 						Flag.mode = 1;
-						//new Wikifier(null, `<<run F.txtFlow(F.playerName()+'<<you>>把手从$target.name身上挪开了。',30,1)>>`)
+						//new Wikifier(null, `<<run p.flow(p.playerName()+'<<you>>把手从$target.name身上挪开了。',30,1)>>`)
 					});
 				/* twine-user-script #62: "Tentacles.js" */
 				//:: Action_Tentacles_Option[script]
@@ -23410,7 +23410,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				    //需要对象
 				    if(!notarget.includes(id) && onlyU ) return false;
 				    //需要对象处于可活动状态
-				    if( F.uncons(target) && active.includes(id) ) return false;
+				    if( cond.isUncons(target) && active.includes(id) ) return false;
 
 				    return true
 
@@ -23440,15 +23440,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				    const com = comdata[id]
 				    const target = C[tc]
 
-				    if( !com.tag.has('常规','魔法','调情','爱抚') && F.isRape(target) && F.canResist(target) && !com.tag.includes('触手')) {
+				    if( !com.tag.has('常规','魔法','调情','爱抚') && cond.isRape(target) && cond.candResist(target) && !com.tag.includes('触手')) {
 
-				        if(!F.weaker(target, C[pc])) T.reason += '【强奸对象具备抵抗能力】';
+				        if(!cond.isWeaker(target, C[pc])) T.reason += '【强奸对象具备抵抗能力】';
 				        else return true;
 
 				        return false
 				    }
 
-				    if( com.tag.includes('触手') && !F.isFallen(target) && !F.uncons(target) ){
+				    if( com.tag.includes('触手') && !cond.isFallen(target) && !cond.isUncons(target) ){
 				        T.reason += '【对象未堕落并且清醒着】'
 				        return false
 				    }
@@ -23459,7 +23459,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				/* 注册指令事件*/
 				Com.set('G1')
 				    .Check(()=>{
-				        return F.baseCheck(player, 'stamina', 'max')
+				        return cond.baseLt(player, 'stamina', 'max')
 				    })
 				    .Effect(()=>{
 				        Source[pc].stamina += 30
@@ -23483,7 +23483,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				Com.set('T99')
 				   .Name(()=>{
 				        if(V.mode !== 'train'){
-				            if(F.uncons(target)){
+				            if(cond.isUncons(target)){
 				                return '眠奸';
 				            }
 				            return '推倒';
@@ -23496,7 +23496,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				        if(V.debug)
 				            return true;
 
-				        if(F.uncons(target)){
+				        if(cond.isUncons(target)){
 				            return true;
 				        }
 
@@ -23540,10 +23540,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				    })
 				    .Effect(()=>{
 				        Source[tc].esB += 100
-				        Source[tc].resist += Math.floor(1000 - F.Exp(tc, '触手奸')/5)
+				        Source[tc].resist += Math.floor(1000 - p.exp(tc, '触手奸')/5)
 
-				        F.getExp(target, '触手奸', random(3));
-				        F.getExp(target, 'B', random(2));
+				        Chara.getexp(target, '触手奸', random(3));
+				        Chara.getexp(target, 'B', random(2));
 				    })
 				    .ForceAble()
 				/* twine-user-script #70: "Com_X2::Script" */
@@ -23563,10 +23563,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				    })
 				    .Effect(()=>{
 				        Source[tc].esB += 100
-				        Source[tc].resist += Math.floor(1000 - F.Exp(tc, '触手奸')/5)
+				        Source[tc].resist += Math.floor(1000 - p.exp(tc, '触手奸')/5)
 
-				        F.getExp(target, '触手奸', random(3));
-				        F.getExp(target, 'B', random(2));
+				        Chara.getexp(target, '触手奸', random(3));
+				        Chara.getexp(target, 'B', random(2));
 				    })
 				/* twine-user-script #71: "Kojo_Isil_Regist" */
 				/* 代码区，用于注册角色颜色、额外的设定、flag信息等 */
@@ -23618,7 +23618,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			><tw-passagedata pid="2" name="FallToDeep" tags="" position="225,100" size="100,100"
 				>&lt;&lt;you&gt;&gt;的意识下沉到了深渊……&lt;br&gt; &lt;br&gt; &lt;div&gt;&lt;&lt;linkreplace
 				&quot;放任诅咒&quot;&gt;&gt;&lt;&lt;set $flag.master to 1 &gt;&gt;&lt;&lt;run
-				F.resetUI()&gt;&gt;&lt;&lt;/linkreplace&gt;&gt;&lt;/div&gt; &lt;div&gt;&lt;&lt;link &#39;查看深渊&#39;
+				Action.redraw()&gt;&gt;&lt;&lt;/linkreplace&gt;&gt;&lt;/div&gt; &lt;div&gt;&lt;&lt;link &#39;查看深渊&#39;
 				&#39;Basement&#39;&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;/div&gt; &lt;div&gt;&lt;&lt;linkreplace
 				&quot;什么也不做&quot;&gt;&gt;&lt;&lt;resetLink&gt;&gt;&lt;&lt;/linkreplace&gt;&gt;&lt;/div&gt;</tw-passagedata
 			><tw-passagedata pid="3" name="RiseToSurface" tags="" position="350,100" size="100,100"
@@ -23635,7 +23635,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				>/* 交流 */ &lt;&lt;you&gt;&gt;与$target.name打了个招呼。&lt;br&gt; /* 进入交流模式， 并出现交流指令
 				*/</tw-passagedata
 			><tw-passagedata pid="8" name="Msg_PCAction_Talk:Cancel" tags="" position="975,100" size="100,100"
-				>&lt;&lt;you&gt;&gt;试着跟对方搭话， &lt;&lt;if !F.canSpeak($target)&gt;&gt;
+				>&lt;&lt;you&gt;&gt;试着跟对方搭话， &lt;&lt;if !cond.canSpeak($target)&gt;&gt;
 				可惜$target.name没有能力回应&lt;&lt;you&gt;&gt;。 &lt;&lt;else&gt;&gt;
 				但$target.name并没有心情理会&lt;&lt;you&gt;&gt;。 &lt;&lt;/if&gt;&gt;&lt;br&gt;</tw-passagedata
 			><tw-passagedata pid="9" name="Msg_PCAction_Talk" tags="" position="1100,100" size="100,100"
@@ -23692,7 +23692,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				战斗, alterName Magic, 魔法 Items, 道具 Tentacles, 触手 Order, 命令 Self, 自慰 Other, 其他 /* 交流模式，
 				常规交流 */ #C, id, name, time, option Talk, 闲聊, 5, canTrain Look, 观察, 2, canTrain Talk2, 近况, 5
 				Interest, 兴趣, 5 PetHead, 摸头, 2 Firm, 调情, 3 Gift, 送礼, 2 /* 攻受通用 = 部分攻方 */ /* mode: 1: normal,
-				1.5: between 1 and 2, 2: harassment/affection, 3: woohoo */ #T, id, name, mode, usePart, targetPart,
+				1.5: between 1 and 2, 2: harassment/affection, 3: woohoo */ #T, id, name, mode, actPart, targetPart,
 				autokeep, defaultText, option reset, 复位, 0, , , , ,doStraight t0, 接吻, 1.5, m, m, y,{0}吻上了{1}的嘴唇。,
 				doStraight t1, 亲吻, 2, m, --mvaur, n, {0}亲吻在了{1}的{2}上，轻吮吸舔，试图留下自己的印记。 t2, 抚摸, 1, h,
 				--ur, n, {0}的手轻抚着{1}的{2}。 t3, 按摩, 1, h, bpvahnsg, n, {0}给按摩着{1}的{2}。 t3, 揉捏, 1.5, h, bpces,
@@ -23702,7 +23702,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				{0}以{4}的姿势用{3}插入了{1}的{2}。 t9, 抽插, 3, p, mva, y, {0}活动腰身，在{1}的{2}反复出入着。,doStraight
 				t10, 撸动, 3, h, p, y, {0}握住{1}的{2}，前后撸动着。 t11, 拳交, 3, h, va, n,
 				{0}的拳头粗暴地捅进了{1}的{2}里面，反复抽插着。 t12, 深入, 3, p, va, n, {0}深深插入了{1}的{2}。 t13, 口交,
-				3, 9, m, y,{0}让{1}含住了自己的阴茎。 /* 大概是受方主控专用动作？ */ #R, id, name, mode, usePart,
+				3, 9, m, y,{0}让{1}含住了自己的阴茎。 /* 大概是受方主控专用动作？ */ #R, id, name, mode, actPart,
 				targetPart, autokeep, defaultText, option r0, 逆口交, 1, m, hp, y, {0}用{3}含住了{1}的{2}，用舌头反复舔动。
 				r1, 逆性交, 3, va, p, y, {0}让{1}插入了自己的的{3}。, noSelectPart r2, 收紧, 3, va, ph, n,
 				{0}控制自身{3}，紧紧夹住了{1}的{2}。, doStraight /* 体位切换 */ #P, id, name, targetPart, defaultText pose0,
@@ -23739,32 +23739,31 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			><tw-passagedata pid="30" name="MainLoop" tags="" position="1225,350" size="100,100"
 				>&lt;action&gt;&lt;/action&gt; &lt;div id=&#39;hidden&#39; class=&#39;hidden&#39;&gt;you can&#39;t see
 				me.&lt;/div&gt; &lt;div id=&#39;location&#39;&gt;&lt;/div&gt; &lt;br&gt; &lt;div id=&#39;content&#39;
-				class=&#39;content&#39; onClick=&#39;if(S.msg)F.ActNext();&#39;&gt; &lt;div id=&#39;contentMsg&#39;&gt;
+				class=&#39;content&#39; onClick=&#39;if(S.msg)Action.next();&#39;&gt; &lt;div id=&#39;contentMsg&#39;&gt;
 				&lt;/div&gt; &lt;div id=&quot;msg_end&quot; style=&quot;height:0px; overflow:hidden&quot;&gt;&lt;/div&gt;
 				&lt;/div&gt; /* 主目录 */ &lt;div id=&#39;actionMenu_1&#39;&gt; &lt;/div&gt; &lt;div id=
 				&#39;actionMenu_2&#39;&gt; /* 角色互动模式下，行动有下分类时的可用动作 */ &lt;/div&gt; &lt;div
 				id=&#39;actionMenu_3&#39;&gt; /* 可用的动作目标 */ &lt;/div&gt; /* 额外的动作选项。如体位，情景play */
 				&lt;div id=&#39;actionOption&#39;&gt; &lt;/div&gt; &lt;div id=&#39;next&#39;&gt; &lt;/div&gt; &lt;script&gt;
-				F.initActionMode() F.initMainFlow() F.resetUI() $(&#39;action&#39;).on(&#39;init&#39;, ()=&gt;{
-				console.log(&#39;init action&#39;) F.resetUI() $(&#39;action&#39;).trigger(&#39;loop&#39;) })
-				$(&#39;action&#39;).on(&#39;before&#39;, ()=&gt;{ console.log(&#39;before event&#39;, T.actId)
-				F.hideActions() F.beforeAction(T.actId) F.showNext() F.ActNext(); })
-				$(&#39;action&#39;).on(&#39;cancel&#39;, ()=&gt;{ console.log(&#39;cancel action&#39;, T.actId)
-				F.resetLink() F.actionCancel(T.actId) }) $(&#39;action&#39;).on(&#39;failed&#39;, ()=&gt;{
-				console.log(&#39;failed action&#39;, T.actId) F.resetLink() F.actionFailed(T.actId) })
-				$(&#39;action&#39;).on(&#39;stop&#39;, ()=&gt;{ //取消持续动作时。在持续动作一览中取消。
-				console.log(&#39;stop event&#39;) F.resetLink() }) $(&#39;action&#39;).on(&#39;event&#39;, ()=&gt;{
-				//玩家的动作事件。 console.log(&#39;do event&#39;, T.actId) F.resetLink() F.doAction(T.actId) })
-				$(&#39;action&#39;).on(&#39;counter&#39;, ()=&gt;{ //对象的攻势。如果是逆推状态，会先处理counter？
-				console.log(&#39;counter event&#39;) F.resetLink() F.setPhase(&#39;keep&#39;) })
-				$(&#39;action&#39;).on(&#39;keep&#39;, ()=&gt;{ //持续动作、装备影响的描述和预处理 console.log(&#39;keep
-				event&#39;) F.resetLink() F.setPhase(&#39;result&#39;) }) $(&#39;action&#39;).on(&#39;result&#39;, ()=&gt;{
-				//数据处理和显示 console.log(&#39;result event&#39;) F.resetLink() F.passtime(T.passtime)
-				F.setPhase(&#39;after&#39;) }) $(&#39;action&#39;).on(&#39;after&#39;, ()=&gt;{
-				//数值变动事件（刻印获得素质获得等）和后续事件 console.log(&#39;after event&#39;) F.resetLink()
-				F.actionAfter(T.actId) }) $(&#39;action&#39;).on(&#39;finish&#39;, ()=&gt;{ //一套流程结束时的处理
-				console.log(&#39;finish event&#39;) F.resetLink() F.resetAction() F.setPhase(&#39;init&#39;) })
-				&lt;/script&gt;</tw-passagedata
+				F.initActionMode() F.initMainFlow() Action.redraw() $(&#39;action&#39;).on(&#39;init&#39;, ()=&gt;{
+				console.log(&#39;init action&#39;) Action.redraw() $(&#39;action&#39;).trigger(&#39;loop&#39;) })
+				$(&#39;action&#39;).on(&#39;before&#39;, ()=&gt;{ console.log(&#39;before event&#39;, T.actId) Action.hide()
+				F.beforeAction(T.actId) Action.shownext() Action.next(); }) $(&#39;action&#39;).on(&#39;cancel&#39;, ()=&gt;{
+				console.log(&#39;cancel action&#39;, T.actId) ui.delink() F.actionCancel(T.actId) })
+				$(&#39;action&#39;).on(&#39;failed&#39;, ()=&gt;{ console.log(&#39;failed action&#39;, T.actId) ui.delink()
+				F.actionFailed(T.actId) }) $(&#39;action&#39;).on(&#39;stop&#39;, ()=&gt;{
+				//取消持续动作时。在持续动作一览中取消。 console.log(&#39;stop event&#39;) ui.delink() })
+				$(&#39;action&#39;).on(&#39;event&#39;, ()=&gt;{ //玩家的动作事件。 console.log(&#39;do event&#39;, T.actId)
+				ui.delink() F.doAction(T.actId) }) $(&#39;action&#39;).on(&#39;counter&#39;, ()=&gt;{
+				//对象的攻势。如果是逆推状态，会先处理counter？ console.log(&#39;counter event&#39;) ui.delink()
+				Action.phase(&#39;keep&#39;) }) $(&#39;action&#39;).on(&#39;keep&#39;, ()=&gt;{
+				//持续动作、装备影响的描述和预处理 console.log(&#39;keep event&#39;) ui.delink()
+				Action.phase(&#39;result&#39;) }) $(&#39;action&#39;).on(&#39;result&#39;, ()=&gt;{ //数据处理和显示
+				console.log(&#39;result event&#39;) ui.delink() F.passtime(T.passtime) Action.phase(&#39;after&#39;) })
+				$(&#39;action&#39;).on(&#39;after&#39;, ()=&gt;{ //数值变动事件（刻印获得素质获得等）和后续事件
+				console.log(&#39;after event&#39;) ui.delink() F.actionAfter(T.actId) })
+				$(&#39;action&#39;).on(&#39;finish&#39;, ()=&gt;{ //一套流程结束时的处理 console.log(&#39;finish event&#39;)
+				ui.delink() Action.reset() Action.phase(&#39;init&#39;) }) &lt;/script&gt;</tw-passagedata
 			><tw-passagedata pid="31" name="Msg_PCAction_t0" tags="" position="100,475" size="100,100"
 				>/* 接吻 */ &lt;&lt;actChara&gt;&gt;吻上了&lt;&lt;targetChara&gt;&gt;的嘴唇。&lt;br&gt;</tw-passagedata
 			><tw-passagedata pid="32" name="Msg_PCAction_t1" tags="" position="225,475" size="100,100"
@@ -23965,7 +23964,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				粗细Lv_abl.thick (&lt;&lt;=6+_abl.thick*6&gt;&gt;mm) &lt;&lt;=F.Evole(&#39;thick&#39;)&gt;&gt;&lt;br&gt;
 				数量Lv_abl.num (&lt;&lt;=2+_abl.num&gt;&gt;根) &lt;&lt;=F.Evole(&#39;num&#39;)&gt;&gt;&lt;br&gt;
 				&lt;&lt;dashline&gt;&gt; 已解锁形态：&lt;&lt;=F.Evole(&#39;form&#39;)&gt;&gt;&lt;br&gt;
-				&lt;&lt;=F.getForms(_abl.form)&gt;&gt;&lt;br&gt; &lt;&lt;dashline&gt;&gt; 其他能力：&lt;br&gt;
+				&lt;&lt;=p.mutants(_abl.form)&gt;&gt;&lt;br&gt; &lt;&lt;dashline&gt;&gt; 其他能力：&lt;br&gt;
 				淫液Lv_abl.drug 剂量：&lt;&lt;=0 + _abl.drug*50&gt;&gt;cc &lt;&lt;=F.Evole(&#39;drug&#39;)&gt;&gt;&lt;br&gt;
 				催眠Lv_abl.hypnos 效果：意识渗透&lt;&lt;=0 + _abl.hypnos*5 &gt;&gt;% &lt;&lt;if
 				_abl.hypnos&gt;&gt;睡眠深度+&lt;&lt;=80 +
@@ -24021,7 +24020,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				找了个合适的地方坐下休息了一会， &lt;&lt;/if&gt;&gt; 恢复了 $player.sup.stamina
 				点体力。&lt;br&gt;</tw-passagedata
 			><tw-passagedata pid="80" name="Com_G2::Cancel" tags="" position="1225,975" size="100,100"
-				>&lt;&lt;you&gt;&gt;试着跟对方搭话， &lt;&lt;if !F.canSpeak($target)&gt;&gt;
+				>&lt;&lt;you&gt;&gt;试着跟对方搭话， &lt;&lt;if !cond.canSpeak($target)&gt;&gt;
 				可惜$target.name没有能力回应&lt;&lt;you&gt;&gt;。 &lt;&lt;else&gt;&gt;
 				但$target.name并没有心情理会&lt;&lt;you&gt;&gt;。 &lt;&lt;/if&gt;&gt;&lt;br&gt;</tw-passagedata
 			><tw-passagedata pid="81" name="Com_G2" tags="" position="100,1100" size="100,100"
@@ -24042,7 +24041,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			><tw-passagedata pid="88" name="Com_T4" tags="" position="975,1100" size="100,100"
 				>&lt;&lt;you&gt;&gt;轻轻握住了$target.name的阴茎，缓缓地前后撸动。&lt;br&gt;</tw-passagedata
 			><tw-passagedata pid="89" name="Com_T5" tags="" position="1100,1100" size="100,100"
-				>&lt;&lt;you&gt;&gt;将手指探入$target.name的&lt;&lt;=F.splitSex($target,&#39;菊穴&#39;,&#39;秘穴&#39;)&gt;&gt;在入口附近摩擦着。&lt;br&gt;</tw-passagedata
+				>&lt;&lt;you&gt;&gt;将手指探入$target.name的&lt;&lt;=p.splitSex($target,&#39;菊穴&#39;,&#39;秘穴&#39;)&gt;&gt;在入口附近摩擦着。&lt;br&gt;</tw-passagedata
 			><tw-passagedata pid="90" name="Com_T99" tags="" position="1225,1100" size="100,100"
 				>&lt;&lt;if $mode !== &#39;train&#39; &gt;&gt;
 				&lt;&lt;you&gt;&gt;将$target.name带到没人注意到的角落。&lt;br&gt; &lt;&lt;=Kojo.put($tc, &#39;Com&#39;,
@@ -24071,16 +24070,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			><tw-passagedata pid="100" name="CommandLoop" tags="" position="1225,1225" size="100,100"
 				>&lt;div id=&#39;hidden&#39; class=&#39;hidden&#39;&gt;you can&#39;t see me.&lt;/div&gt; &lt;div
 				id=&#39;location&#39;&gt;&lt;/div&gt; &lt;br&gt; &lt;div id=&#39;content&#39; class=&#39;content&#39;
-				onClick=&#39;if(S.msg)F.ComNext();&#39;&gt; &lt;div id=&#39;contentMsg&#39;&gt; &lt;/div&gt; &lt;div
+				onClick=&#39;if(S.msg)Com.next();&#39;&gt; &lt;div id=&#39;contentMsg&#39;&gt; &lt;/div&gt; &lt;div
 				id=&quot;msg_end&quot; style=&quot;height:0px; overflow:hidden&quot;&gt;&lt;/div&gt; &lt;/div&gt; &lt;div
 				id=&#39;commandmenu&#39;&gt; &lt;/div&gt; &lt;br&gt; &lt;div id=&#39;commandzone&#39;&gt; &lt;/div&gt;
-				&lt;div id=&#39;next&#39;&gt; &lt;/div&gt; &lt;script&gt; F.initMainFlow() F.initLocation() F.initComMenu()
-				F.initComList() &lt;/script&gt;</tw-passagedata
+				&lt;div id=&#39;next&#39;&gt; &lt;/div&gt; &lt;script&gt; F.initMainFlow() Com.updateScene()
+				Com.updateMenu() Com.initList() &lt;/script&gt;</tw-passagedata
 			><tw-passagedata pid="101" name="Messsage_Com_2" tags="" position="100,1350" size="100,100"
 				>$target.name随意地敷衍着你&lt;br&gt;</tw-passagedata
 			><tw-passagedata pid="102" name="Message_Com_20" tags="" position="225,1350" size="100,100"></tw-passagedata
 			><tw-passagedata pid="103" name="EventStart:Before" tags="" position="350,1350" size="100,100"
-				>&lt;&lt;run F.initEvent()&gt;&gt;</tw-passagedata
+				>&lt;&lt;run Dialog.initTitle()&gt;&gt;</tw-passagedata
 			><tw-passagedata pid="104" name="EventStart" tags="system" position="475,1350" size="100,100"
 				>&lt;&lt;if Story.has(_beforecheck)&gt;&gt; &lt;&lt;include _beforecheck&gt;&gt; &lt;&lt;/if&gt;&gt;
 				&lt;&lt;if Story.has($event.fullname)&gt;&gt; &lt;&lt;timed 30ms&gt;&gt;&lt;&lt;goto
@@ -24088,12 +24087,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				class=&quot;error-view&quot;&gt;&lt;span class=&quot;error&quot;&gt;Error:
 				跳转失败。跳转目标：$event.fullname&lt;/span&gt;&lt;/div&gt; &lt;&lt;/if&gt;&gt;</tw-passagedata
 			><tw-passagedata pid="105" name="EventLoop" tags="" position="600,1350" size="100,100"
-				>&lt;div id=&#39;content&#39; class=&#39;content&#39; onClick=&#39;if(!V.event?.afterselect)F.nextDialog();
+				>&lt;div id=&#39;content&#39; class=&#39;content&#39; onClick=&#39;if(!V.event?.afterselect)Dialog.next();
 				else delete V.event.afterselect;&#39;&gt; &lt;div id=&#39;contentMsg&#39; &gt; &lt;/div&gt; &lt;div
 				id=&quot;msg_end&quot; style=&quot;height:0px; overflow:hidden&quot;&gt;&lt;/div&gt; &lt;/div&gt; &lt;div
 				id=&#39;next&#39;&gt; &lt;&lt;eventnext&gt;&gt; &lt;/div&gt; &lt;div id=&#39;effets&#39;&gt; &lt;&lt;if
 				$event.effets&gt;&gt; &lt;&lt;set _effect to `Effects_${$event.effets}`&gt;&gt; &lt;&lt;include
-				_effect&gt;&gt; &lt;&lt;/if&gt;&gt; &lt;/div&gt; &lt;script&gt; F.initDialog()
+				_effect&gt;&gt; &lt;&lt;/if&gt;&gt; &lt;/div&gt; &lt;script&gt; Dialog.init()
 				&lt;/script&gt;</tw-passagedata
 			><tw-passagedata pid="106" name="EventLoop:After" tags="" position="725,1350" size="100,100"
 				>&lt;&lt;run if(Config.debug) console.log(&#39;postEventLoop&#39;); &gt;&gt;</tw-passagedata
@@ -24109,8 +24108,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			><tw-passagedata pid="109" name="StoryDisplayTitle" tags="" position="1100,1350" size="100,100"
 				>Era the Cursed</tw-passagedata
 			><tw-passagedata pid="110" name="StoryInit" tags="" position="1225,1350" size="100,100"
-				>&lt;&lt;run F.initGame(); F.initCharacters(); &gt;&gt; &lt;&lt;set $debt to 0&gt;&gt; &lt;&lt;set $wallet
-				to 5000&gt;&gt; &lt;&lt;set D.date = [4062,3,14]&gt;&gt; &lt;&lt;set $date = { year:4062, month:3, day:14,
+				>&lt;&lt;run game.init(); Chara.init(); &gt;&gt; &lt;&lt;set $debt to 0&gt;&gt; &lt;&lt;set $wallet to
+				5000&gt;&gt; &lt;&lt;set D.date = [4062,3,14]&gt;&gt; &lt;&lt;set $date = { year:4062, month:3, day:14,
 				week:1, time:1120 }&gt;&gt; /* total=以4062-3-14 0:00为基准的绝对时间, 与Date()同理, 每月固定30天。*/
 				&lt;&lt;set $time = { passed:0, wakeup:450, total:1120 }&gt;&gt; &lt;&lt;set $location = { id:&#39;A0&#39;,
 				name:&#39;学生宿舍S302&#39;,
@@ -24140,8 +24139,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				autocheck&gt;&gt;&lt;br&gt; 主CP纯女性化？ &lt;&lt;checkbox &quot;_lesCP&quot; _lesCP
 				autocheck&gt;&gt;&lt;br&gt; &lt;&lt;dashline&gt;&gt; 准备好了吗？ 准备好就开始吧。&lt;br&gt; &lt;br&gt;
 				&lt;&lt;link &#39;开始游戏&#39; &#39;EventStart&#39;&gt;&gt;&lt;&lt;run
-				F.gameStart()&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;br&gt; &lt;&lt;link &#39;跳过片头直接开始&#39;
-				&#39;MainLoop&#39;&gt;&gt;&lt;&lt;run F.gameStart(1)&gt;&gt;&lt;&lt;/link&gt;&gt;
+				game.start()&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;br&gt; &lt;&lt;link &#39;跳过片头直接开始&#39;
+				&#39;MainLoop&#39;&gt;&gt;&lt;&lt;run game.start(1)&gt;&gt;&lt;&lt;/link&gt;&gt;
 				&lt;br&gt;&lt;br&gt;</tw-passagedata
 			><tw-passagedata pid="114" name="LeftSide" tags="" position="475,1475" size="100,100"
 				>&lt;&lt;if $mode is &quot;normal&quot;&gt;&gt; &lt;&lt;include &quot;LeftSidePanel&quot;&gt;&gt;
@@ -24222,9 +24221,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			><tw-passagedata pid="131" name="Kojo_Isil_Com_G2:Before" tags="" position="100,1725" size="100,100"
 				>单个:属于文本分支。 两个::属于功能分支。 确认执行前的事件文本。 可以进行flag操作。但尽量不要有数据处理。
 				如果有选项可取消执行，则操作_comCancel 变量。&lt;br&gt; 要记得加
-				F.resetCom()在linkreplace区域里面。&lt;br&gt; &lt;br&gt; &lt;&lt;linkreplace
+				Com.reset()在linkreplace区域里面。&lt;br&gt; &lt;br&gt; &lt;&lt;linkreplace
 				&quot;取消执行&quot;&gt;&gt;&lt;&lt;set _comCancel to true&gt;&gt;&lt;&lt;resetLink&gt;&gt;&lt;&lt;run
-				F.resetCom()&gt;&gt;&lt;&lt;/linkreplace&gt;&gt; &lt;&lt;selection replace&gt;&gt; &lt;&lt;pick
+				Com.reset()&gt;&gt;&lt;&lt;/linkreplace&gt;&gt; &lt;&lt;selection replace&gt;&gt; &lt;&lt;pick
 				&#39;分支？&#39;&gt;&gt;123 &lt;&lt;pick &#39;分支2？？&#39;&gt;&gt;abc
 				&lt;&lt;/selection&gt;&gt;</tw-passagedata
 			><tw-passagedata pid="132" name="//Kojo_Isil_Com_G2:Cancel" tags="" position="225,1725" size="100,100"
@@ -24243,7 +24242,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				$target.name敷衍地附和着你的话。&lt;br&gt; &lt;fr&gt; 进行一个翻页的测试&lt;br&gt; &lt;fr&gt;
 				翻页！&lt;br&gt; &lt;fr&gt; 最后一页啦</tw-passagedata
 			><tw-passagedata pid="137" name="Kojo_Isil_Com_X1" tags="" position="850,1725" size="100,100"
-				>/* 触手，玩弄乳头 */ &lt;&lt;if F.uncons(target)&gt;&gt; /* F.uncons() 判定是否失去意识 */
+				>/* 触手，玩弄乳头 */ &lt;&lt;if cond.isUncons(target)&gt;&gt; /* cond.isUncons() 判定是否失去意识 */
 				&quot;……嗯唔……&quot;&lt;br&gt; 沉睡中的伊希露难受地呼吸着。&lt;br&gt; &lt;&lt;else&gt;&gt; “…………”&lt;br&gt;
 				伊希露咬紧牙关，忍受着触手带来的不适感。&lt;br&gt; &lt;&lt;/if&gt;&gt;</tw-passagedata
 			><tw-passagedata pid="138" name="PCKojo" tags="" position="975,1725" size="100,100"
@@ -25411,7 +25410,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			><tw-passagedata pid="304" name="PassageFooter" tags="" position="475,3850" size="100,100"></tw-passagedata
 			><tw-passagedata pid="305" name="PassageReady" tags="" position="600,3850" size="100,100"
 				>&lt;&lt;run _passageready = true; if($lastsession !== $passage) $lastsession = $passage; //复原角色的class
-				if(G.onLoad || G.onReload){ F.LoadCharacters(); G.onLoad = false; G.onReload = false; }; $player = C[pc];
+				if(G.onLoad || G.onReload){ Chara.onLoad(); G.onLoad = false; G.onReload = false; }; $player = C[pc];
 				$target = C[tc]; if($mode !== &#39;train&#39;) $flag.mode = 0; &gt;&gt;</tw-passagedata
 			><tw-passagedata pid="306" name="PassageDone" tags="" position="725,3850" size="100,100"></tw-passagedata
 			><tw-passagedata pid="307" name="StoryHeader" tags="" position="850,3850" size="100,100"
@@ -25430,11 +25429,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				#E3C118&#39;&gt;G&lt;/span&gt;&lt;/div&gt; &lt;&lt;/if&gt;&gt; &lt;div class=&#39;headbar-li&#39;&gt;魔力
 				&lt;&lt;print $cursedLord.MP&gt;&gt;&lt;span style=&#39;color: #E31EF3&#39;&gt;P&lt;/span&gt;&lt;/div&gt;
 				&lt;&lt;/widget&gt;&gt; &lt;&lt;widget &quot;showtime&quot;&gt;&gt; &lt;div
-				class=&#39;headbar-li&#39;&gt;&lt;&lt;=F.showtime()&gt;&gt;&lt;/div&gt; &lt;&lt;/widget&gt;&gt;
-				&lt;&lt;widget &quot;meterbar&quot;&gt;&gt; &lt;&lt;silently&gt;&gt; &lt;&lt;if $args[0]&gt;&gt; &lt;&lt;set
-				_percent to $args[0]&gt;&gt; &lt;&lt;else&gt;&gt; &lt;&lt;set _percent to 100&gt;&gt; &lt;&lt;/if&gt;&gt;
-				&lt;&lt;set _percent2 to (100-_percent) &gt;&gt; &lt;&lt;if $args[1] and $args[1].length&gt;&gt; &lt;&lt;set
-				_rgb to $args[1]&gt;&gt; &lt;&lt;else&gt;&gt; &lt;&lt;set _rgb to [208,16,68]&gt;&gt; &lt;&lt;/if&gt;&gt;
+				class=&#39;headbar-li&#39;&gt;&lt;&lt;=p.time()&gt;&gt;&lt;/div&gt; &lt;&lt;/widget&gt;&gt; &lt;&lt;widget
+				&quot;meterbar&quot;&gt;&gt; &lt;&lt;silently&gt;&gt; &lt;&lt;if $args[0]&gt;&gt; &lt;&lt;set _percent to
+				$args[0]&gt;&gt; &lt;&lt;else&gt;&gt; &lt;&lt;set _percent to 100&gt;&gt; &lt;&lt;/if&gt;&gt; &lt;&lt;set
+				_percent2 to (100-_percent) &gt;&gt; &lt;&lt;if $args[1] and $args[1].length&gt;&gt; &lt;&lt;set _rgb to
+				$args[1]&gt;&gt; &lt;&lt;else&gt;&gt; &lt;&lt;set _rgb to [208,16,68]&gt;&gt; &lt;&lt;/if&gt;&gt;
 				&lt;&lt;for _r to 0; _r lt 3; _r++&gt;&gt; &lt;&lt;set _rgb[_r] to
 				Math.floor(_rgb[_r]*(_percent/100))&gt;&gt; &lt;&lt;/for&gt;&gt; &lt;&lt;set _color to `rgb(${_rgb[0]},
 				${_rgb[1]}, ${_rgb[2]})`&gt;&gt; &lt;&lt;/silently&gt;&gt; &lt;&lt;print &#39;&lt;div id=&quot;meter&quot;
@@ -25477,7 +25476,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				&lt;a class=&quot;hoverTxt&quot;&gt;&lt;&lt;print $args[1]&gt;&gt; &lt;span @id=&quot;&#39;hoverTxt&#39; +
 				_HoverTxtCount&quot; class=&quot;hoverBox&quot; @style=&quot;&#39;left: -&#39; + _left + &#39;px; width:
 				&#39; + _width + &#39;px;&#39;&quot;&gt; &lt;&lt;print $args[2]&gt;&gt; &lt;/span&gt; &lt;/a&gt;
-				&lt;&lt;/widget&gt;&gt; &lt;&lt;widget &quot;showgametime&quot;&gt;&gt; &lt;&lt;run F.gametime()&gt;&gt;
+				&lt;&lt;/widget&gt;&gt; &lt;&lt;widget &quot;showgametime&quot;&gt;&gt; &lt;&lt;run F.playtime()&gt;&gt;
 				&lt;&lt;print `${$gametime.d}D.${$gametime.h}:${$gametime.m}:${$gametime.s}`&gt;&gt; &lt;&lt;/widget&gt;&gt;
 				&lt;&lt;widget &quot;returnPhase&quot;&gt;&gt; &lt;&lt;set $event.phase -= 1&gt;&gt;
 				&lt;&lt;/widget&gt;&gt;</tw-passagedata

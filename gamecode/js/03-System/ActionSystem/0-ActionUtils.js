@@ -1,77 +1,21 @@
-F.hideActions = function () {
-	const label = "#actionMenu_";
-
-	$(label + 1).addClass("hidden");
-	$(label + 2).addClass("hidden");
-	$(label + 3).addClass("hidden");
-	$("#actionOption").addClass("hidden");
-
-	F.reflesh(label + 1, " ");
-	F.reflesh(label + 2, " ");
-	F.reflesh(label + 3, " ");
-	F.reflesh("#actionOpton", " ");
-};
-
-F.showActions = function () {
-	$("#actionMenu_1").removeClass("hidden");
-	$("#actionMenu_2").removeClass("hidden");
-	$("#actionMenu_3").removeClass("hidden");
-	$("#actionOption").removeClass("hidden");
-};
-
-F.showNext = function (hide) {
-	let html = hide ? "" : `<<link 'Next'>><<run F.ActNext()>><</link>>`;
-	new Wikifier("#next", `<<replace #next>>${html}<</replace>>`);
-};
-
-F.reflesh = function (label, html) {
-	new Wikifier(null, `<<replace #${label}>>${html}<</replace>>`);
-};
-
-F.partAble = function (actid, part, chara) {
-	const data = Action.data[actid];
-	if (data.type == "触手") {
-		return Flag.master;
-	} else {
-		return Action.globalPartAble(actid, part, chara);
-	}
-};
-
-F.filterActions = function (...types) {
+Action.typeFilter = function (...types) {
 	return Object.values(Action.data).filter((action) => types.includes(action.type));
-};
-
-F.Msg = function (msg, add) {
-	if (add) {
-		if (!S.msg.length) S.msg[0] = "";
-		S.msg[S.msg.length - 1] += msg;
-	} else if (msg.includes("<fr>")) {
-		S.msg = S.msg.concat(msg.split("<fr>"));
-	} else {
-		S.msg.push(msg);
-	}
 };
 
 /**
  *
  * @param {'cancel' | 'stop'} mode
  */
-F.stopAction = function (id, mode) {
+Action.stop = function (id, mode) {
 	T.stopAct = id;
 	$("action").trigger(mode);
 };
 
-F.setPhase = function (mode) {
+Action.phase = function (mode) {
 	$("action").trigger(mode);
 };
 
-F.resetMsg = function () {
-	S.msg = [];
-	T.msgId = 0;
-	T.noMsg = 0;
-};
-
-F.actionCheckOrder = function (btn) {
+Action.checkOrder = function (btn) {
 	if (V.system.debug) return "succeed";
 	if (T.orderGoal == 0) return "succeed";
 
@@ -85,15 +29,62 @@ F.actionCheckOrder = function (btn) {
 	return "failed";
 };
 
-F.checkAble = function (id, btn) {
-	if (btn) F.initCheckFlag();
+Action.able = function (id, part, btn) {
+	if (btn) Action.clearCheck();
 	const data = Action.data[id];
-	return Action.globalCheck(id) && data.check();
+	return Action.globalCheck(id) && data.check(part);
 };
 
-F.checkOrder = function (id, btn) {
-	if (btn) F.initCheckFlag();
+Action.order = function (id, part, btn) {
+	if (btn) Action.clearCheck();
 	const data = Action.data[id];
-	T.orderGoal = Action.globalOrder(id) + data.order();
-	return F.actionCheckOrder(btn);
+	T.orderGoal = Action.globalOrder(id) + data.order(part);
+	return Action.checkOrder(btn);
+};
+
+Action.getInputType = function (actionId, selection) {
+	//判定指令属于什么类型，以便后续处理。
+	const { type, actPart, targetPart, option, event } = Action.data[actionId];
+
+	if (event) return "event";
+
+	switch (type) {
+		case "体位":
+			return "selectPose";
+		case "接触":
+		case "触手":
+		case "逆位":
+			return "touchAction";
+		case "道具":
+			if (actPart || targetPart) return "useEquipItem";
+			else return "useOneTimeItem";
+		default:
+			if ((actPart || targetPart) && !option.has("doStraight")) return "OptionalAction";
+
+			if (groupmatch(type, "常规", "交流") || option.has("doStraight")) return "oneAction";
+	}
+
+	return "command";
+};
+
+Action.SelectableParts = function (actionId, filterMode) {
+	const { actPart, targetPart, filter } = Acion.data[actionId];
+
+	//检测是否存在可选部位，以及是否在Using占用中。
+	const selectAbleParts = [];
+	if (actPart && (!filterMode || filterMode == 1)) {
+		actPart.forEach((part) => {
+			if (Action.globalPartAble(actionId, part, pc) && filter(part)) selectAbleParts.push(part);
+		});
+	}
+
+	if (targetPart && (!filterMode || filterMode == 2)) {
+		targetPart.forEach((part) => {
+			if (Action.globalPartAble(actionId, part, tc) && filter(part)) {
+				selectAbleParts.push(part);
+			}
+		});
+	}
+
+	return selectAbleParts;
 };

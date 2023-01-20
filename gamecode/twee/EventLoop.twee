@@ -1,5 +1,5 @@
 :: EventStart:Before
-<<run F.initEvent()>>
+<<run Dialog.initTitle()>>
 
 :: EventStart[system]
 <<if Story.has(_beforecheck)>>
@@ -13,7 +13,8 @@
 <</if>>
 
 :: EventLoop
-<div id='content' class='content' onClick='if(!V.event?.afterselect)F.nextDialog(); else delete V.event.afterselect;'>
+<div id='hidden' class='hidden'>you can't see me.</div>
+<div id='content' class='content' onClick='if(!V.event?.afterselect)Dialog.next(); else delete V.event.afterselect;'>
     <div id='contentMsg' >
     </div>
 <div id="msg_end" style="height:0px; overflow:hidden"></div>
@@ -31,7 +32,7 @@
 </div>
 
 <script>
-    F.initDialog()
+    Dialog.init()
 </script>
 
 :: EventLoop:After

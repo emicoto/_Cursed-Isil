@@ -1,8 +1,3 @@
-window.Dlog = function (text, config) {
-	const ch = T.passage;
-	S.dialog[ch].push({ txt: text, config: config });
-	return "";
-};
 
 F.resetEvent = function () {
 	V.event = {
@@ -53,20 +48,3 @@ F.setMemory = function (id, title, chara) {
 		};
 	}
 };
-
-F.recEventPoint = function (t) {
-	const c = V.event.type;
-	const v = V.event[t];
-	const id = V.event.id;
-	let k;
-
-	if (t == "sp" && V.event.ep) {
-		k = `ep${V.event.ep}:sp${v}`;
-	} else {
-		k = t + v;
-	}
-
-	if (V.memory[c][id] && V.memory[c][id][t].includes(k) === false) V.memory[c][id][t].push(k);
-};
-
-F.recKojoCom = function () {};

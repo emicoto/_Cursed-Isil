@@ -1,3 +1,4 @@
+//全局过滤器
 Action.globalFilter = function (id) {
 	const data = Action.data[id];
 
@@ -25,7 +26,7 @@ Action.globalFilter = function (id) {
 	if (T.selectActPart && Using[pc][T.selectActPart]?.act !== "") return 0;
 
 	//选择过滤器中、
-	if (T.actPartFilter !== "all" && data.usePart && !data.usePart.has(T.actPartFilter)) return 0;
+	if (T.actPartFilter !== "all" && data.actPart && !data.actPart.has(T.actPartFilter)) return 0;
 
 	//角色侧的控制。
 	const kojo = Kojo.get(tc, "filter");
@@ -34,29 +35,42 @@ Action.globalFilter = function (id) {
 	//特定分类批处理
 	switch (data.type) {
 		case "触手":
+			//不是触手模式，或时间段不对，就不显示
 			if (!Flag.master || (data.mode > 2 && V.date.time < 1200)) return 0;
+
+			//如果没有空余触手，就不显示
+			if (cond.hasUnuseTentacle() == -1) return 0;
 			break;
 
 		case "接触":
+			//交流深度不足
 			if (Flag.mode < 2) return 0;
-			if (!F.uncons(target) && data.mode > Cflag[tc].touchLv + 0.5) return 0;
+
+			//对象npc清醒，同时解禁等级不足
+			if (!cond.isUncons(target) && data.mode > Cflag[tc].touchLv + 0.5) return 0;
 			break;
 
 		case "逆位":
+			//不是逆位模式，或者pc不是受
 			if (V.mode !== "reverse" && player.type == "tachi") return 0;
 			break;
 
 		case "常规":
+			//当前地点不符合
 			if (!V.location.tags.has(data.tags)) return 0;
+			//不是常规模式，同时指令不允许在train模式下使用
 			if (Flag.mode > 0 && !data?.option?.has("canTrain")) return 0;
 			break;
 
 		case "交流":
+			//模式不对
 			if (Flag.mode < 1) return 0;
+			//不是交流模式，同时指令不允许在train模式下使用
 			if (Flag.mode > 1 && !data?.option?.has("canTrain")) return 0;
 			break;
 
 		case "体位":
+			//只会在选择插入的时候出现
 			if (groupmatch(T.selectAct, "t8", "r1") === false) return 0;
 			break;
 
@@ -66,6 +80,7 @@ Action.globalFilter = function (id) {
 		//   return 0
 		case "魔法":
 		case "命令":
+			//选了过滤器时才显示
 			if (data.type !== T.actionTypeFilter) return 0;
 			break;
 	}
@@ -78,7 +93,7 @@ Action.globalCheck = function (id) {
 
 	switch (data.type) {
 		case "触手":
-			if (!F.isFallen(target) && !F.uncons(target) && !Flag.aware) {
+			if (!cond.isFallen(target) && !cond.isUncons(target) && !Flag.aware) {
 				T.reason += "【未堕落的对象】";
 				return 0;
 			}
@@ -104,7 +119,7 @@ Action.globalOrder = function (id) {
 			}
 			break;
 		case "触手":
-			if (!F.isFallen(target)) {
+			if (!cond.isFallen(target)) {
 				T.orderMsg += "【未堕落(-30)】";
 				T.order -= 30;
 			}
@@ -134,7 +149,7 @@ Action.globalPartAble = function (id, part, cid) {
 		case "urin":
 		case "nipple":
 			//隐私区需要更高的接触等级
-			if (Flag.mode < 2) return 0;
+			if (Flag.mode < 3) return 0;
 	}
 
 	return Using[cid][part].act == "" || Using[cid][part].act == id;

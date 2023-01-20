@@ -30,6 +30,12 @@ D.gameFlag = [
 	//秩序值，影响路线选择
 	"chaos",
 	//混沌值，影响路线选择
+
+	"Isil",
+	//Isil的可用状态，0=不可用，1=可用
+
+	"Ayres",
+	//Ayres的可用状态，0=不可用，1=可用
 ];
 
 //角色类变量看modules的flags.js

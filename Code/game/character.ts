@@ -112,10 +112,15 @@ interface iName {
 }
 
 export class Chara {
+	static data: Dict<Chara> = {};
 	static load(chara: Chara) {
 		const { cid, name, gender, race, kojo } = chara;
 		const init = new Chara(cid, name, gender, race, kojo, chara);
 		return init;
+	}
+	static new(cid: string, name: string, gender: genderFull, race: race, kojo?) {
+		Chara.data[cid] = new Chara(cid, name, gender, race, kojo);
+		return Chara.data[cid];
 	}
 	constructor(id: string, name: string, gender: genderFull, race: race, kojo?: string, chara?) {
 		if (chara) {
@@ -262,7 +267,6 @@ export class Chara {
 		if (groupmatch(part, "p", "a", "v")) {
 			this.sexstats[part].wet = 0;
 			this.sexstats[part].cum = 0;
-			if (part == "p") this.sexstats[part].maxcum = this.sexstats[part].size * 50 + 50;
 		}
 
 		if (part == "p") this.setPenis(adj);
@@ -276,27 +280,32 @@ export class Chara {
 		return this;
 	}
 
-	setPenis(adj?) {
-		//P标准Size表. 具体会在长度与宽度 +-8/+-6
-		const Psize = [
-			[60, 15], //0，微型
-			[90, 22], //1, 迷你
-			[120, 32], //2, 短小
-			[140, 42], //3, 普通
-			[160, 52], //4, 大
-			[180, 62], //5, 巨大
-			[210, 74], //6, 马屌
-			[250, 86], //7, 深渊
-		];
+	maxcum() {
+		const p = this.sexstats.p;
+		return (p.size * 50 + 50) * (p.trait.includes("浓厚") ? 10 : 1);
+	}
+	static Psize = [
+		[60, 15], //0，微型
+		[90, 22], //1, 迷你
+		[120, 32], //2, 短小
+		[140, 42], //3, 普通
+		[160, 52], //4, 大
+		[180, 62], //5, 巨大
+		[210, 74], //6, 马屌
+		[250, 86], //7, 深渊
+	];
 
+	setPenis({ type = "阴茎", trait = [], d, l }) {
+		//P标准Size表. 具体会在长度与宽度 +-8/+-6
+		const Psize = Chara.Psize;
 		const P = this.sexstats.p;
 		const size = Psize[P.size];
-		P.type = adj?.type ? adj.type : "阴茎";
-		P.trait = adj?.trait ? adj.trait : [];
-		P.d = adj?.d ? adj.d : size[1] + random(-8, 8);
-		P.l = adj?.l ? adj.l : size[0] + random(-8, 8);
+		P.type = type;
+		P.trait = trait;
+		P.d = d ? d : size[1] + random(-8, 8);
+		P.l = l ? l : size[0] + random(-8, 8);
 
-		if (P.trait.includes("浓厚")) P.maxcum *= 10;
+		P.maxcum = this.maxcum();
 
 		return this;
 	}
@@ -306,22 +315,32 @@ export class Chara {
 		return this;
 	}
 	setVagi() {
-		const bodysize = this.appearance.bodysize ? this.appearance.bodysize : 1;
-		const max = bodysize * 2 - 2.4;
-
-		this.sexstats.v.d = this.sexstats.v.size * max + 14 + random(-4, 4);
-		this.sexstats.v.l = bodysize * 21 + 80 + random(-2, 8);
+		this.sexstats.v.d = this.fixVagiDiameter();
+		this.sexstats.v.l = this.GenerateVagiDepth();
 
 		return this;
 	}
+	maxHoleSize() {
+		return this.bodysize() * 2 - 2.4;
+	}
+	fixVagiDiameter() {
+		const max = this.maxHoleSize();
+		return this.sexstats.v.size * max + 14 + random(-2, 4);
+	}
+	GenerateVagiDepth() {
+		return this.bodysize() * 21 + 80 + random(-4, 8);
+	}
 	setAnal() {
-		const bodysize = this.appearance.bodysize ? this.appearance.bodysize : 1;
-		const max = bodysize * 2 - 2.4;
-
-		this.sexstats.a.d = this.sexstats.a.size * max + 12 + random(-4, 4);
-		this.sexstats.a.l = bodysize * 32 + 140 + random(-2, 8);
-
+		this.sexstats.a.d = this.fixAnalDiameter();
+		this.sexstats.a.l = this.GenerateAnalDepth();
 		return this;
+	}
+	fixAnalDiameter() {
+		const max = this.maxHoleSize();
+		return this.sexstats.a.size * max + 12 + random(-2, 4);
+	}
+	GenerateAnalDepth() {
+		return this.bodysize() * 32 + 140 + random(-4, 8);
 	}
 	setBreast(adj?) {
 		this.sexstats.b.maxmilk = adj?.maxmilk ? adj.maxmilk : 0;
@@ -330,12 +349,9 @@ export class Chara {
 	}
 	setUrin() {
 		const size = this.sexstats.u.size;
-		const bodysize = this.appearance.bodysize ? this.appearance.bodysize : 1;
-		let up = bodysize / 2 + 0.5;
-		if (this.gender == "male") up = 1;
 
-		this.sexstats.u.d = size * up + 0.5 + random(-2, 4) / 10;
-		this.sexstats.u.l = this.sexstats?.p?.l ? this.sexstats.p.l + random(24, 40) : 42 + random(1, 20) + bodysize * 6;
+		this.sexstats.u.d = this.fixUrinDiameter();
+		this.sexstats.u.l = this.GenerateUrinDepth();
 
 		if (this.gender === "female") {
 			this.sexstats.u.wet = 0;
@@ -343,6 +359,27 @@ export class Chara {
 		}
 
 		return this;
+	}
+	bodysize() {
+		if (this.appearance.bodysize === undefined) this.appearance.bodysize = 2;
+		const { bodysize } = this.appearance;
+		return bodysize ? bodysize : 1;
+	}
+	MaxUrinhole() {
+		const bodysize = this.bodysize();
+		let max = bodysize / 2 + 0.5;
+		if (this.gender !== "female") max = 1;
+		return max;
+	}
+	fixUrinDiameter() {
+		const max = this.MaxUrinhole();
+		const size = this.sexstats.u.size;
+		return size * max + 0.5 + random(-2, 4) / 10;
+	}
+	GenerateUrinDepth() {
+		const penis = this.sexstats?.p?.l;
+		if (penis) return penis + random(24, 40);
+		return 42 + random(1, 20) + this.bodysize() * 6;
 	}
 	setMouth() {
 		const size = [30, 40, 50, 60, 70, 80];
@@ -398,8 +435,7 @@ export class Chara {
 		this.virginity = {};
 
 		// [丧失对象，丧失时间，丧失情景]
-
-		const list = ["kiss", "oral", "penis", "anal", "analsex", "vigina", "viginasex", "handholding", "footjob"];
+		const list = clone(D.virginity);
 
 		if (this.gender === "male") list.splice(5, 2);
 		if (this.gender === "female") list.splice(2, 1);
@@ -411,7 +447,7 @@ export class Chara {
 		return this;
 	}
 
-	setNames(names: iName) {
+	setNames(names?: iName) {
 		if (names.v) this.name = names.v;
 		if (names.m) this.middlename = names.m;
 		if (names.s) this.surname = names.s;
@@ -458,9 +494,9 @@ export class Chara {
 		return this;
 	}
 
-	setStats(arr: Dict<number, statskey>) {
+	setStats(obj: Dict<number, statskey>) {
 		D.stats.forEach((k) => {
-			if (arr[k]) this.stats[k] = [arr[k], arr[k]];
+			if (obj[k]) this.stats[k] = [obj[k], obj[k]];
 			else if (!this.stats[k]) this.stats[k] = [10, 10];
 
 			this.flag[`base${k}`] = this.stats[k][0];
@@ -468,9 +504,9 @@ export class Chara {
 		return this;
 	}
 
-	setAbility(arr: Dict<number, ablkey>) {
-		for (let i in arr) {
-			this.abl[i].lv = arr[i];
+	setAbility(obj: Dict<number, ablkey>) {
+		for (let i in obj) {
+			this.abl[i].lv = obj[i];
 		}
 		return this;
 	}
@@ -490,30 +526,69 @@ export class Chara {
 		return this;
 	}
 
-	setAppearance(set: {
-		eyecolr?: string;
-		haircolor?: string;
-		hairstyle?: string;
-		skincolor?: string;
-		bodysize?: number;
-		tall?: number;
-		weight?: number;
+	getExp(exp, value) {
+		this.exp[exp].total += value;
+		if (!this.uncons()) {
+			this.exp[exp].aware += value;
+		}
+		this.expUp[exp] = value;
+		return this;
+	}
+
+	getBase(key, value) {
+		this.base[key][0] += value;
+		return this;
+	}
+
+	getPalam(key, value) {
+		this.palam[key][1] += value;
+		return this;
+	}
+
+	uncons() {
+		return this.state.has("睡眠", "晕厥");
+	}
+
+	unable() {
+		return this.state.has("拘束", "石化") || cond.isEnergetic(this, 30);
+	}
+
+	active() {
+		return (
+			!this.state.has("睡眠", "晕厥", "拘束", "石化", "精神崩溃") &&
+			!cond.baseLt(this, "health", 0.05) &&
+			!cond.baseLt(this, "sanity", 10) &&
+			!cond.baseLt(this, "stamina", 10)
+		);
+	}
+
+	bp() {
+		const s = this.stats;
+		return s.STR[1] * 15 + s.CON[1] * 8 + s.DEX[1] * 8 + s.INT[1] * 8 + s.WIL[1] * 10 + s.PSY[1];
+	}
+
+	setAppearance({
+		eyecolor = "蓝色",
+		haircolor = "金色",
+		hairstyle = "散发",
+		skincolor = "健康",
+		bodysize,
+		tall,
+		weight = 0,
 	}) {
 		const appearance = {
-			eyecolor: set["eyecolr"] ? set["eyecolr"] : "蓝色",
-
-			haircolor: set["haircolor"] ? set["haircolor"] : "金色",
-			hairstyle: set["hairstyle"] ? set["hairstyle"] : "散发",
-			skincolor: set["skincolor"] ? set["skincolor"] : "健康",
-			beauty: F.setBeauty(this),
-			bodysize: set["bodysize"] ? set["bodysize"] : set["tall"] ? Math.floor((set["tall"] - 1350) / 150) : 2,
-			tall: set["tall"] ? set["tall"] : set["bodysize"] ? set["bodysize"] * 150 + 1300 + random(1, 148) : 1704,
-			weight: set["weight"] ? set["weight"] : 0,
+			eyecolor: eyecolor,
+			haircolor: haircolor,
+			hairstyle: hairstyle,
+			skincolor: skincolor,
+			beauty: fix.beauty(this),
+			bodysize: bodysize !== undefined ? bodysize : tall ? this.GenerateBodysize(tall) : 2,
+			tall: tall ? tall : bodysize ? this.GenerateTall() : 1704,
+			weight: weight,
 		};
 
 		if (!appearance.weight) {
-			let tall = appearance.tall / 1000;
-			appearance.weight = Math.floor(tall * tall * 19 + 0.5) + random(1, 20) / 10;
+			appearance.weight = this.GenerateWeight(appearance.tall);
 		}
 
 		for (let i in appearance) {
@@ -521,6 +596,21 @@ export class Chara {
 		}
 
 		return this;
+	}
+
+	GenerateTall(size?) {
+		const bodysize = size !== undefined ? size : this.appearance.bodysize;
+		return bodysize * 150 + 1300 + random(1, 148);
+	}
+
+	GenerateBodysize(_tall?) {
+		const tall = _tall ? _tall : this.appearance.tall;
+		return Math.floor((tall - 1350) / 150);
+	}
+
+	GenerateWeight(_tall) {
+		const tall = _tall / 1000;
+		return Math.floor(tall * tall * 19 + 0.5) + random(1, 20) / 10;
 	}
 
 	setVirginity(part, target, time, situation) {
@@ -564,6 +654,7 @@ export class Chara {
 		this.flag[`${key}fame`] = val;
 		return this;
 	}
+
 	resetPalam() {
 		for (let i in this.palam) {
 			this.palam[i][0] = 0;
@@ -582,5 +673,5 @@ export class Chara {
 }
 
 Object.defineProperties(window, {
-	Chara: { value: Object.freeze(Chara) },
+	Chara: { value: Chara },
 });
