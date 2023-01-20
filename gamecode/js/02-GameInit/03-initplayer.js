@@ -2,7 +2,7 @@
 Chara.onLoad = function () {
 	for (let i in V.chara) {
 		let data = V.chara[i];
-		V.chara[i] = Chara.load(data);
+		V.chara[i] = Chara.onLoad(data);
 	}
 };
 
