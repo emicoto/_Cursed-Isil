@@ -64,10 +64,10 @@ F.checkAction = function (id, phase) {
 	T.phase = phase;
 
 	// 对方处于无意识状态，强行将配合值变零
-	if (F.uncons(target)) T.orderGoal = 0;
+	if (cond.isUncons(target)) T.orderGoal = 0;
 
 	// 有意识但无法动弹, 追加强制flag
-	if (!F.canMove(target)) T.forceOrder += 100;
+	if (!cond.canMove(target)) T.forceOrder += 100;
 
 	if (V.system.showOrder && T.orderMsg && T.orderGoal > 0) {
 		reText += `配合度检测：${T.orderMsg}=${T.order}/${T.orderGoal}<br><<dashline>>`;

@@ -1,141 +1,140 @@
-const source = {}
-const sup = {}
-const base = {}
-const palam = {}
-const cflag = {}
-const tsv = {}
-const stats = {}
-const exp = {}
-const juel = {}
-const action = {}
-const using = {}
-const flag = {}
+const source = {};
+const sup = {};
+const base = {};
+const palam = {};
+const cflag = {};
+const tsv = {};
+const stats = {};
+const exp = {};
+const juel = {};
+const action = {};
+const using = {};
+const flag = {};
 
 Object.defineProperties(window, {
 	V: {
-		get: function() {
+		get: function () {
 			return State.variables;
-		}
+		},
 	},
 
 	T: {
-		get: function() {
+		get: function () {
 			return State.temporary;
-		}
+		},
 	},
 
 	S: {
-		get: function(){
+		get: function () {
 			return setup;
-		}
+		},
 	},
 
 	C: {
-		get:function(){
+		get: function () {
 			return State.variables.chara;
-		}
+		},
 	},
 
-	Flag:{
-		get:function(){
+	Flag: {
+		get: function () {
 			return State.variables.flag;
-		}
+		},
 	},
 
-	tc:{
-		get:function(){
-			return State.variables.tc
+	tc: {
+		get: function () {
+			return State.variables.tc;
 		},
 
-		set:function(v){
-			State.variables.tc = v
-		}
-	},
-
-	pc:{
-		get:function(){
-			return State.variables.pc
+		set: function (v) {
+			State.variables.tc = v;
 		},
-		set:function(v){
-			State.variables.pc = v
-		}
 	},
 
-	player:{
-		get:function(){
-			return C[pc]
-		}
+	pc: {
+		get: function () {
+			return State.variables.pc;
+		},
+		set: function (v) {
+			State.variables.pc = v;
+		},
 	},
 
-	target:{
-		get:function(){
-			return C[tc]
-		}
+	player: {
+		get: function () {
+			return C[pc];
+		},
 	},
 
-	Base:{
-		get: function(){
-			return base
-		}
+	target: {
+		get: function () {
+			return C[tc];
+		},
 	},
 
-	Stats:{
-		get:function(){
-			return stats
-		}
+	Base: {
+		get: function () {
+			return base;
+		},
 	},
 
-	Palam:{
-		get:function(){
-			return palam
-		}
+	Stats: {
+		get: function () {
+			return stats;
+		},
 	},
 
-	Source:{
-		get: function(){
-			return source
-		}
+	Palam: {
+		get: function () {
+			return palam;
+		},
 	},
 
-	Sup:{
-		get: function(){
-			return sup
-		}
+	Source: {
+		get: function () {
+			return source;
+		},
 	},
 
-	Cflag:{
-		get: function(){
-			return cflag
-		}
-	},
-	Tsv:{
-		get: function(){
-			return tsv
-		}
+	Sup: {
+		get: function () {
+			return sup;
+		},
 	},
 
-	Exp:{
-		get: function(){
-			return exp
-		}
+	Cflag: {
+		get: function () {
+			return cflag;
+		},
+	},
+	Tsv: {
+		get: function () {
+			return tsv;
+		},
 	},
 
-	Juel:{
-		get:function(){
-			return juel
-		}
+	Exp: {
+		get: function () {
+			return exp;
+		},
 	},
 
-	Act:{
-		get:function(){
-			return action
-		}
+	Juel: {
+		get: function () {
+			return juel;
+		},
 	},
 
-	Using:{
-		get:function(){
-			return using
-		}
-	}
-	
+	Act: {
+		get: function () {
+			return action;
+		},
+	},
+
+	Using: {
+		get: function () {
+			return using;
+		},
+	},
 });

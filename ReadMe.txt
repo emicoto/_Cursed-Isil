@@ -247,7 +247,7 @@ CommandLoop.js
   timeprocess.js
 
   F.timezone 获取时间带名称
-  F.showtime 根据设置显示当前游戏内日期和时间
+  p.time 根据设置显示当前游戏内日期和时间
 
   F.passtime 时间经过处理总控制。 代入参数是经过的时间
 

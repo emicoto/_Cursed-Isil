@@ -12,7 +12,7 @@
 <</widget>>
 
 <<widget "showtime">>
-<div class='headbar-li'><<=F.showtime()>></div>
+<div class='headbar-li'><<=p.time()>></div>
 <</widget>>
 
 <<widget "meterbar">>

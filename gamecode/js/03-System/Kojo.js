@@ -131,9 +131,9 @@ class Kojo {
 		else this.action.push(obj);
 		return this;
 	}
-	Event(id, name, config, cond) {
-		if (id) this.event[id] = { name, config, cond };
-		else this.event.push({ name, config, cond });
+	Event(id, obj) {
+		if (id) this.event[id] = obj;
+		else this.event.push(obj);
 
 		return this;
 	}

@@ -40,7 +40,7 @@ Action.globalFilter = function (id) {
 
 		case "接触":
 			if (Flag.mode < 2) return 0;
-			if (!F.uncons(target) && data.mode > Cflag[tc].touchLv + 0.5) return 0;
+			if (!cond.isUncons(target) && data.mode > Cflag[tc].touchLv + 0.5) return 0;
 			break;
 
 		case "逆位":
@@ -79,7 +79,7 @@ Action.globalCheck = function (id) {
 
 	switch (data.type) {
 		case "触手":
-			if (!F.isFallen(target) && !F.uncons(target) && !Flag.aware) {
+			if (!cond.isFallen(target) && !cond.isUncons(target) && !Flag.aware) {
 				T.reason += "【未堕落的对象】";
 				return 0;
 			}
@@ -105,7 +105,7 @@ Action.globalOrder = function (id) {
 			}
 			break;
 		case "触手":
-			if (!F.isFallen(target)) {
+			if (!cond.isFallen(target)) {
 				T.orderMsg += "【未堕落(-30)】";
 				T.order -= 30;
 			}

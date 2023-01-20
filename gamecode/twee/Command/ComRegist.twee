@@ -28,7 +28,7 @@ Com.globalFilter = function (id) {
     //需要对象
     if(!notarget.includes(id) && onlyU ) return false; 
     //需要对象处于可活动状态
-    if( F.uncons(target) && active.includes(id) ) return false; 
+    if( cond.isUncons(target) && active.includes(id) ) return false; 
 
     return true
 
@@ -58,7 +58,7 @@ Com.globalCond = function(id){
     const com = comdata[id]
     const target = C[tc]
 
-    if( !com.tag.has('常规','魔法','调情','爱抚') && F.isRape(target) && F.canResist(target) && !com.tag.includes('触手')) {
+    if( !com.tag.has('常规','魔法','调情','爱抚') && cond.isRape(target) && cond.candResist(target) && !com.tag.includes('触手')) {
 
         if(!cond.isWeaker(target, C[pc])) T.reason += '【强奸对象具备抵抗能力】';
         else return true;
@@ -66,7 +66,7 @@ Com.globalCond = function(id){
         return false
     }
 
-    if( com.tag.includes('触手') && !F.isFallen(target) && !F.uncons(target) ){
+    if( com.tag.includes('触手') && !cond.isFallen(target) && !cond.isUncons(target) ){
         T.reason += '【对象未堕落并且清醒着】'
         return false
     }

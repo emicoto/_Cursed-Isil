@@ -1,3 +1,4 @@
+//添加macro com
 Macro.add("com", {
 	tags: null,
 	handler: function () {
@@ -26,11 +27,15 @@ Macro.add("com", {
 });
 
 window.comdata = {};
+
+//era经典指令系统
 class Com {
+   //新建指令
 	static new(id, obj) {
 		comdata[id] = new Com(obj);
 		return comdata[id];
 	}
+   //获取指令设置
 	static set(id, time) {
 		if (time) {
 			return comdata[id].Time(time);
@@ -38,7 +43,7 @@ class Com {
 			return comdata[id];
 		}
 	}
-
+   //初始化指令列表
 	static init() {
 		const list = F.makeList("ComList");
 		list.forEach((obj) => {
@@ -46,7 +51,7 @@ class Com {
 		});
 		console.log(comdata);
 	}
-
+   //构建指令
 	constructor({ id, name, tags = [], type, time = 5 }) {
 		this.id = id;
 		this.name = name;
@@ -54,14 +59,21 @@ class Com {
 
 		if (tags.length) this.tag = this.tag.concat(tags);
 
+      //过滤器
 		this.filter = () => {
 			return true;
-		}; //特定的过滤器。
+		}; 
+      //条件
 		this.cond = () => {
 			return true;
 		};
+      //效果
 		this.source = () => {};
+
+      //默认经历时间
 		this.time = time;
+
+      //配合值需求
 		this.order = () => {
 			return 0;
 		};
@@ -86,6 +98,7 @@ class Com {
 		this.time = t;
 		return this;
 	}
+   //添加标签
 	addTag(arg, ...args) {
 		this.tag.push(arg);
 		if (args) {
@@ -98,6 +111,7 @@ class Com {
 		//录入reason同时返回order值
 		return this;
 	}
+   //动态设置指令名
 	Name(callback) {
 		this.name = callback;
 		return this;
@@ -110,6 +124,7 @@ class Com {
 }
 window.Com = Com;
 
+//生成指令过滤目录
 Com.filters = function () {
 	const general = clone(D.ComFilterGeneral);
 	const train = clone(D.ComFilterTrain);
@@ -130,6 +145,7 @@ Com.filters = function () {
 	)}<<if $mode is 'train'>>${trainlink.join("")}<</if>>`;
 };
 
+//生成指令列表
 Com.initList = function () {
 	const command = [];
 

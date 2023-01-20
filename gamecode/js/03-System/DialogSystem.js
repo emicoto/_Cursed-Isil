@@ -110,7 +110,7 @@ Dialog.init = function () {
 
 	if (!p) return "";
 
-	const txt = txtp(p.text);
+	const txt = p.txt(p.text);
 	e.config = p.config;
 	e.next = "Next";
 
@@ -144,7 +144,7 @@ Dialog.flow = function () {
 
 	if (!p) return "";
 
-	const txt = txtp(p.text);
+	const txt = p.txt(p.text);
 	S.history.push(txt);
 
 	p.flow(txt);

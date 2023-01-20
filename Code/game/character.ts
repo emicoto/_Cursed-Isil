@@ -546,8 +546,13 @@ export class Chara {
 	}
 
 	uncons() {
-		return this.state.has("睡眠", "晕厥");
+		return this.state.has("睡眠", "晕厥")
 	}
+
+   bp(){
+	   const s = this.stats;
+	   return s.STR[1] * 15 + s.CON[1] * 8 + s.DEX[1] * 8 + s.INT[1] * 8 + s.WIL[1] * 10 + s.PSY[1];
+   }
 
 	setAppearance({
 		eyecolor = "蓝色",

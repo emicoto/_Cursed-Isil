@@ -23,7 +23,7 @@ F.switchChara = function () {
 		if (V.pc === "Isil" || V.pc === "m0") {
 			p = "Ayres";
 			t = "Isil";
-		} else if (V.pc == "Ayres" && F.uncons(C["Isil"])) {
+		} else if (V.pc == "Ayres" && cond.isUncons(C["Isil"])) {
 			p = "m0";
 			t = "Isil";
 		} else {
@@ -50,6 +50,7 @@ F.charaEvent = function (cid) {
 
 	const chara = C[cid];
 
+	//检测是否首次见面
 	if (cid == tc && !Cflag[cid][`firstMet${pc}`]) {
 		Cflag[cid][`firstMet${pc}`] = 1;
 
@@ -73,14 +74,14 @@ F.charaEvent = function (cid) {
 		}
 	}
 
+	//检测是否有角色事件
 	const cevent = Kojo.get(cid, "event");
 	if (!cevent) return;
 
 	cevent.forEach((obj) => {
-		const title = `Kojo_${cid}_Event_${obj.name}`;
-
-		if (Story.has(title) && obj.cond() && V.location.chara.includes(cid)) {
-			F.setEvent("Kojo", `Event_${obj.name}`, cid);
+		const { id, cond } = obj;
+		if (Kojo.has(cid, { type: "Event", id }) && cond()) {
+			F.setEvent("Kojo", `Event_${id}`, cid);
 			return new Wikifier(null, "<<goto EventStart>>");
 		}
 	});

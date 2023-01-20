@@ -5,25 +5,13 @@ Com.shownext = function () {
 	new Wikifier("#commandzone", `<<replace #commandzone transition>>${html}<</replace>>`);
 };
 
-//每次移动后的target复位
-F.resetTarget = function () {
-	const local = clone(V.location.chara);
-
-	if (local.length > 1) {
-		local.delete(V.pc, 1);
-		V.tc = local[0];
-	} else {
-		V.tc = V.pc;
-	}
-};
-
 Com.hide = function () {
 	new Wikifier(null, `<<replace #commandmenu>> <</replace>>`);
 	new Wikifier(null, "<<replace #commandzone>> <</replace>>");
 };
 
 //无论指令成功与否，都会在最后执行的处理
-F.resetCom = function () {
+Com.reset = function () {
 	//更新事件状态
 	T.comPhase = "reset";
 

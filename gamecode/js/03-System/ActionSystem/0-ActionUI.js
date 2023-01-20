@@ -10,7 +10,7 @@ F.actBtn = function (actid, data) {
 	if ((groupmatch(type, "接触", "触手", "逆位") && option !== "doStraight") || (type == "道具" && data.targetPart)) {
 		let use;
 		if (data.usePart && data.usePart.length > 1) {
-			if (!(F.justHands(data.usePart) && V.mode !== "reverse")) {
+			if (!(cond.justHands(data.usePart) && V.mode !== "reverse")) {
 				use = 1;
 			}
 		}

@@ -1,23 +1,3 @@
-cond.isClasstime = function () {
-	const date = V.date;
-	if (inrange(date.week, 1, 5)) {
-		const select = new SelectCase();
-		select.case([500, 720], true).case([800, 1020], true).else(false);
-		return select.has(date.time);
-	}
-	return false;
-};
-
-p.splitSex = function (chara, male, female, inter) {
-	if (chara.gender === "male") return male;
-	else {
-		if (inter && chara.gender === "inter") {
-			return inter;
-		}
-		return female;
-	}
-};
-
 F.playtime = function () {
 	let time = V.gametime;
 
@@ -85,47 +65,9 @@ F.getMp = function (ecstacy, type) {
 Chara.getexp = function (chara, exp, val) {
 	chara.exp[exp].total += val;
 
-	if (!F.uncons(chara)) chara.exp[exp].aware += val;
+	if (!cond.isUncons(chara)) chara.exp[exp].aware += val;
 
 	if (!chara.expUp[exp]) chara.expUp[exp] = 0;
 
 	chara.expUp[exp] += val;
-};
-
-p.mutants = function (level) {
-	let txt = "";
-	for (let i = 0; i < level; i++) {
-		txt += `【${D.mutant[i]}】`;
-	}
-	return txt;
-};
-
-ui.delink = function () {
-	$("#contentMsg a").remove();
-	V.selectCom = 0;
-	return "";
-};
-DefineMacroS("resetLink", ui.delink);
-
-p.msg = function (msg, add) {
-	if (!S.msg) S.msg = [];
-
-	if (add) {
-		if (!S.msg.length) S.msg[0] = "";
-		S.msg[S.msg.length - 1] += msg;
-	} else if (msg.includes("<fr>")) {
-		S.msg = S.msg.concat(msg.split("<fr>"));
-	} else {
-		S.msg.push(msg);
-	}
-};
-
-ui.replace = function (label, html) {
-	new Wikifier(null, `<<replace #${label}>>${html}<</replace>>`);
-};
-
-p.resetMsg = function () {
-	S.msg = [];
-	T.msgId = 0;
-	T.noMsg = 0;
 };

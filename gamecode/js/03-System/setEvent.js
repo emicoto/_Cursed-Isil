@@ -1,8 +1,3 @@
-window.Dlog = function (text, config) {
-	const ch = T.passage;
-	S.dialog[ch].push({ txt: text, config: config });
-	return "";
-};
 
 F.resetEvent = function () {
 	V.event = {

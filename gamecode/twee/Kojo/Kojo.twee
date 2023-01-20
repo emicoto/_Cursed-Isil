@@ -56,19 +56,19 @@ if(!Cflag['Isil'].fallen && $selectCom == 30){
 确认执行前的事件文本。
 可以进行flag操作。但尽量不要有数据处理。
 如果有选项可取消执行，则操作_comCancel 变量。<br>
-要记得加 F.resetCom()在linkreplace区域里面。<br>
+要记得加 Com.reset()在linkreplace区域里面。<br>
 <br>
-<<linkreplace "取消执行">><<set _comCancel to true>><<resetLink>><<run F.resetCom()>><</linkreplace>>
+<<linkreplace "取消执行">><<set _comCancel to true>><<resetLink>><<run Com.reset()>><</linkreplace>>
 <<selection replace>>
 <<pick '分支？'>>123
 <<pick '分支2？？'>>abc
 <</selection>>
 
-:: //Kojo_Isil_Com_G2:Cancel
+:: Kojo_Isil_Com_G2:Cancel
 指令取消时的事件文本。
 可以进行flag操作。但尽量不要有数据处理。
 
-:: //Kojo_Isil_Com_G2:Failed
+:: Kojo_Isil_Com_G2:Failed
 指令失败时的事件文本。
 可以进行flag操作。但尽量不要有数据处理。
 
@@ -83,7 +83,7 @@ if(!Cflag['Isil'].fallen && $selectCom == 30){
     正常是的段落分支。<br>
 <</if>>
 
-:: //Kojo_Isil_Com_G2:After
+:: Kojo_Isil_Com_G2:After
 执行结束时的事件文本。
 可以进行flag操作。但尽量不要有数据处理。
 
@@ -101,7 +101,7 @@ $target.name敷衍地附和着你的话。<br>
 
 :: Kojo_Isil_Com_X1
 /* 触手，玩弄乳头 */
-<<if F.uncons(target)>> /* F.uncons() 判定是否失去意识 */
+<<if cond.isUncons(target)>> /* cond.isUncons() 判定是否失去意识 */
 "……嗯唔……"<br>
 沉睡中的伊希露难受地呼吸着。<br>
 <<else>>

@@ -63,7 +63,7 @@ Com.set('G2')
 
 :: Com_G2::Cancel
 <<you>>试着跟对方搭话，
-<<if !F.canSpeak($target)>>
+<<if !cond.canSpeak($target)>>
 可惜$target.name没有能力回应<<you>>。
 <<else>>
 但$target.name并没有心情理会<<you>>。
@@ -113,7 +113,7 @@ Com.set('T4')
 Com.set('T99')
    .Name(()=>{
         if(V.mode !== 'train'){
-            if(F.uncons(target)){
+            if(cond.isUncons(target)){
                 return '眠奸';                
             }           
             return '推倒';
@@ -126,7 +126,7 @@ Com.set('T99')
         if(V.debug)
             return true;
 
-        if(F.uncons(target)){
+        if(cond.isUncons(target)){
             return true;
         }
         

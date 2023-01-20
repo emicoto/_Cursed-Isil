@@ -1,4 +1,6 @@
 //----->> 初始化 <<---------------------------//
+
+//刷新指令目录
 Com.updateMenu = function () {
 	const list = [[V.location.id == "A0", "下沉", "Basement", ""]];
 	let menu = [];
@@ -22,6 +24,7 @@ Com.resetScene = function () {
 };
 DefineMacroS("resetScene", Com.resetScene);
 
+//刷新场景
 Com.updateScene = function () {
 	const chara = [];
 	let html = "";
@@ -57,6 +60,8 @@ Com.updateScene = function () {
 };
 
 //----->> 主要进程处理 <<---------------------------//
+
+//下一步
 Com.next = function () {
 	//用于刷新content_message区域的文本。
 	if (T.msgId < S.msg.length && S.msg[T.msgId].has("<<selection", "<<linkreplace") && !T.selectwait) {
@@ -74,6 +79,7 @@ Com.next = function () {
 	}
 };
 
+//执行检测
 Com.Check = function (id) {
 	const com = comdata[id];
 
@@ -85,7 +91,7 @@ Com.Check = function (id) {
 	T.msgId = 0;
 
 	//如果对方无反抗之力，目标值强行变零。
-	if (F.uncons(target) || !F.canMove(target)) T.orderGoal = 0;
+	if (cond.isUncons(target) || !cond.canMove(target)) T.orderGoal = 0;
 
 	T.comPhase = "before";
 	let txt = "";
@@ -142,9 +148,10 @@ Com.Check = function (id) {
 	}
 };
 
+//执行事件
 Com.Event = function (id, next) {
 	const com = comdata[id];
-	const resetHtml = `<<run F.resetCom()>><<dashline>>`;
+	const resetHtml = `<<run Com.reset()>><<dashline>>`;
 	let txt = "",
 		type = "Com";
 	S.msg = [];
@@ -246,7 +253,7 @@ Com.After = function () {
 //事件结束时的处理
 Com.endEvent = function () {
 	T.comPhase = "end";
-	const resetHtml = `<<run F.resetCom()>><<dashline>>`;
+	const resetHtml = `<<run Com.reset()>><<dashline>>`;
 
 	let text = "";
 

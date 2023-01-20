@@ -1,4 +1,4 @@
-window.initCSV = function (cid) {
+const initCSV = function (cid) {
 	const _raw = Story.get(`CharaSheet_${cid}`).text.replace(/\n/g, "#L#").replace(/\s/, "");
 	const raw = _raw.split("#L#");
 
@@ -25,7 +25,7 @@ window.initCSV = function (cid) {
 	return chara;
 };
 
-window.clearCommentFromArray = function (arr) {
+const clearCommentFromArray = function (arr) {
 	for (let i = 0; i < arr.length; i++) {
 		if (arr[i].includes("/*") || arr[i][0] == ";") {
 			arr.deleteAt(i);
