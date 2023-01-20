@@ -9,19 +9,22 @@
         UIBar.unstow();
         UIBar.show();
     }
+    if(groupmatch($passage, 'Start', 'Start1')){
+        $('#story-header').addClass('hidden')
+    }
+    else{
+       $('#story-header').removeClass('hidden') 
+    }
 >>
 
 :: StoryCaption
 
-<<if $passage == 'Start' || $passage == 'Start1' >>
 一个用于制作游戏的范本，稍微能玩的版本。<br>
- version 0.1.3<br>
+ version 0.1.5<br>
  author: 狐千月<br>
-<<else>>
 
 /* 这里显示目前操作角色的信息 */
 
-<</if>>
 
 <div id='random_tips'>
 </div>

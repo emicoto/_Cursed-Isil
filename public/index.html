@@ -3639,7 +3639,7 @@ Config.saves.id = "Game";
 /*debug will enable or disable the feature only for new games*/
 window.StartConfig = {
 	debug: false,
-	version: "0.1.1",
+	version: "0.1.5",
 };
 
 Config.saves.autosave = ["autosave", "eventend"];
@@ -13501,15 +13501,18 @@ $target.fullname&lt;br&gt;
         UIBar.unstow();
         UIBar.show();
     }
-&gt;&gt;</tw-passagedata><tw-passagedata pid="304" name="StoryCaption" tags="" position="475,3850" size="100,100">&lt;&lt;if $passage == &#39;Start&#39; || $passage == &#39;Start1&#39; &gt;&gt;
-一个用于制作游戏的范本，稍微能玩的版本。&lt;br&gt;
- version 0.1.3&lt;br&gt;
+    if(groupmatch($passage, &#39;Start&#39;, &#39;Start1&#39;)){
+        $(&#39;#story-header&#39;).addClass(&#39;hidden&#39;)
+    }
+    else{
+       $(&#39;#story-header&#39;).removeClass(&#39;hidden&#39;) 
+    }
+&gt;&gt;</tw-passagedata><tw-passagedata pid="304" name="StoryCaption" tags="" position="475,3850" size="100,100">一个用于制作游戏的范本，稍微能玩的版本。&lt;br&gt;
+ version 0.1.5&lt;br&gt;
  author: 狐千月&lt;br&gt;
-&lt;&lt;else&gt;&gt;
 
 /* 这里显示目前操作角色的信息 */
 
-&lt;&lt;/if&gt;&gt;
 
 &lt;div id=&#39;random_tips&#39;&gt;
 &lt;/div&gt;

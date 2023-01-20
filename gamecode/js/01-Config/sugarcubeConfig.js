@@ -28,7 +28,7 @@ Config.saves.id = "Game";
 /*debug will enable or disable the feature only for new games*/
 window.StartConfig = {
 	debug: false,
-	version: "0.1.1",
+	version: "0.1.5",
 };
 
 Config.saves.autosave = ["autosave", "eventend"];
