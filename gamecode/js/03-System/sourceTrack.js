@@ -45,7 +45,8 @@ F.sourceUp = function (chara) {
 		if (chara.sup[i] !== 0) {
 			//将变动记录作为文本记录到 S.msg ?
 			const v = chara.sup[i];
-			msg = `>> ${D.palam[i]}${v > 0 ? "+" : "-"}${v} = ${palam[1]} / ${palam[2]}`;
+			const lv = chara.palam[i][0] + 1;
+			msg = `>> ${D.palam[i]}${v > 0 ? " + " : " - "}${v} = ${chara.palam[i][1] + v} / ${D.palamLv[lv]}`;
 		}
 
 		if (base.includes(i) && chara.source[i]) {
@@ -53,7 +54,7 @@ F.sourceUp = function (chara) {
 		}
 
 		if (palam.includes(i) && chara.source[i]) {
-			const lv = chara.palam[i][0];
+			const lv = chara.palam[i][0] + 1;
 
 			chara.palam[i][1] += chara.source[i];
 

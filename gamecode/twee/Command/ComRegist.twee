@@ -41,7 +41,7 @@ Com.globalOrder = function(id){
 
     for(const [k, obj] of Object.entries(Trait.data) ){
         if( target.traits.includes(k) && com.tag.has('调教') ){
-            let order = obj.effect('onOrder', id)
+            let order = ( typeof obj.onOrder == 'function' ? obj.onOrder(id) : null)
             if(!order) order = obj.order;
 
             if(order) {

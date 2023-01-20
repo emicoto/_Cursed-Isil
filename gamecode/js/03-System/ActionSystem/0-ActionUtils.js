@@ -39,6 +39,12 @@ Action.order = function (id, part, btn) {
 	if (btn) Action.clearCheck();
 	const data = Action.data[id];
 	T.orderGoal = Action.globalOrder(id) + data.order(part);
+
+	//对方处于无意识状态的话，强行将需求配合值设为0。
+	if (target.uncons()) T.orderGoal = 0;
+	//有意识但无法动弹，追加强制flag。
+	if (target.unable()) T.forceOrder += 100;
+
 	return Action.checkOrder(btn);
 };
 
@@ -55,7 +61,8 @@ Action.getInputType = function (actionId, selection) {
 		case "接触":
 		case "触手":
 		case "逆位":
-			return "touchAction";
+			if (option?.has("doStraight")) return "oneAction";
+			else return "touchAction";
 		case "道具":
 			if (actPart || targetPart) return "useEquipItem";
 			else return "useOneTimeItem";
@@ -87,6 +94,5 @@ Action.SelectableParts = function (actionId, filterMode) {
 			}
 		});
 	}
-
 	return selectAbleParts;
 };

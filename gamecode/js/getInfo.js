@@ -82,8 +82,8 @@ F.getClass = function () {
 	return "";
 };
 
-P.exp = function (chara, exp) {
-	return C[chara].exp[exp].total;
+P.exp = function (cid, exp) {
+	return C[cid].exp[exp].total;
 };
 
 P.charaName = function (cid) {
@@ -113,20 +113,22 @@ P.actor = function () {
 DefineMacroS("actor", P.actor);
 
 P.target = function () {
-	if (T.actTg == V.pc) return P.you();
-	else return C[T.actTg].name;
+	if (T.target == V.pc) return P.you();
+	else return C[T.target].name;
 };
 
 DefineMacroS("target", P.target);
 
 P.targetPart = function () {
-	//const p = F.checkUse(T.actTg, T.actId);
+	const p = T.action.tgPart;
 	//之后根据特定部位弄点差分。主要是胸部、秘穴、菊穴、阴茎这几个部位。
-	return D.bodyparts[T.selectPart];
+	return D.bodyparts[p];
 };
 P.actpart = function () {
 	//阴茎会有特殊描述处理？
-	return D.bodyparts[T.actPart];
+	const p = T.action.actPart;
+
+	return D.bodyparts[p];
 };
 
 DefineMacroS("targetPart", P.targetPart);
@@ -134,7 +136,7 @@ DefineMacroS("actPart", P.actpart);
 
 //检测各个部位中的占用状态 。 如果为空或与当前id一致则返回true，否则返回false
 cond.partIsEmpty = function (cid, id, part) {
-	return Using[cid][part] == id || !Using[cid][part];
+	return Using[cid][part].action == id || !Using[cid][part].action;
 };
 
 //检查触手有无空余，有返回空余部位id，没有返回 -1
@@ -142,7 +144,7 @@ cond.hasUnuseTentacle = function () {
 	const tentacle = Using.m0.tentacles;
 	for (let i = 0; i < tentacle.length; i++) {
 		const info = tentacle[i];
-		if (!info.act) return i;
+		if (!info.action) return i;
 	}
 	return -1;
 };
@@ -150,7 +152,7 @@ cond.hasUnuseTentacle = function () {
 //事件中进行设置时
 F.setActor = function (cid, tid, ...parts) {
 	T.actor = cid;
-	T.actTg = tid;
+	T.target = tid;
 
 	if (parts[0]) T.selectPart = parts[0];
 	else T.selectPart = "body";

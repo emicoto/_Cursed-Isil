@@ -1950,7 +1950,7 @@ Object.defineProperty(String.prototype, "readBracketedList", {
 	    return this.state.has("\u7761\u7720", "\u6655\u53A5");
 	  }
 	  unable() {
-	    return this.state.has("\u62D8\u675F", "\u77F3\u5316") || cond.isEnergetic(this, 30);
+	    return this.state.has("\u62D8\u675F", "\u77F3\u5316") || !cond.isEnergetic(this, 30);
 	  }
 	  active() {
 	    return !this.state.has("\u7761\u7720", "\u6655\u53A5", "\u62D8\u675F", "\u77F3\u5316", "\u7CBE\u795E\u5D29\u6E83") && !cond.baseLt(this, "health", 0.05) && !cond.baseLt(this, "sanity", 10) && !cond.baseLt(this, "stamina", 10);
@@ -3618,10 +3618,10 @@ Save.onLoad.add(function (save) {
 	window.onLoadUpdateCheck = true;
 });
 
-F.onReload = true;
+game.onReload = true;
 
 Save.onLoad.add(function (save) {
-	S.onLoad = true;
+	game.onLoad = true;
 	const data = sessionStorage.getItem("comFilter");
 	S.comFilter = JSON.parse(data);
 });
@@ -5175,8 +5175,8 @@ const extendTags = function (raw) {
 };
 
 const extendsRaw = function (raw, key) {
-	if (key == "locationTags") return F.extendTags(raw);
-	if (key == "targetPart" || key == "actPart") return F.extendParts(raw);
+	if (key == "locationTags") return extendTags(raw);
+	if (key == "targetPart" || key == "actPart") return extendParts(raw);
 	return raw;
 };
 
@@ -5378,7 +5378,7 @@ class Action {
 	}
 	//从设置列表中初始化
 	static initdata() {
-		let arr = F.makeList("ActionList", F.extendsRaw);
+		let arr = F.makeList("ActionList", extendsRaw);
 		arr.forEach((obj) => {
 			Action.add(obj.id, obj);
 		});
@@ -6225,6 +6225,8 @@ Chara.initGlobal = function () {
 //全局过滤器
 Action.globalFilter = function (id) {
 	const data = Action.data[id];
+	//缩略一下
+	const s = T.select;
 
 	//不需要对象的单独指令id
 	const noTarget = [];
@@ -6245,12 +6247,9 @@ Action.globalFilter = function (id) {
 	//使用部位过滤器只会在接触以上模式出现
 	if (id.match(/^use\S+/) && Flag.mode < 3) return 0;
 
-	//占用中。解除倒是没问题。
-	if (T.selectActPart && Using[pc][T.selectActPart]?.act == id) return 1;
-	if (T.selectActPart && Using[pc][T.selectActPart]?.act !== "") return 0;
-
-	//选择过滤器中、
-	if (T.actPartFilter !== "all" && data.actPart && !data.actPart.has(T.actPartFilter)) return 0;
+	//占用中。解除不在这里。不过可以切换部位
+	if (s.tgPart && Using[pc][s.tgPart]?.action == id) return 1;
+	if (s.tgPart && Using[pc][s.tgPart]?.action !== "") return 0;
 
 	//角色侧的控制。
 	const kojo = Kojo.get(tc, "filter");
@@ -6362,6 +6361,9 @@ Action.globalPartAble = function (id, part, cid) {
 	const data = Action.data[id];
 	const chara = C[cid];
 
+	//初始化中
+	if (!Using[cid][part]) return 1;
+
 	switch (part) {
 		case "critoris":
 			if (chara.gender !== "female") return 0;
@@ -6376,20 +6378,26 @@ Action.globalPartAble = function (id, part, cid) {
 			if (Flag.mode < 3) return 0;
 	}
 
-	return Using[cid][part].act == "" || Using[cid][part].act == id;
+	return Using[cid][part].action == "" || Using[cid][part].action == id;
 };
 /* twine-user-script #30: "0-ActionUI.js" */
 const selectedActionBtn = function (name) {
-	return `<div class='actioins selectAct'>[ ${name} ]</div>`;
+	return `<div class='actions selectAct'>[ ${name} ]</div>`;
 };
 
-const getBtnStyle = function (id, part) {
+const getBtnStyle = function (id, part, state) {
+	const data = Action.data[id];
 	const able = Action.able(id, part, 1);
 	const order = Action.order(id, part, 1);
 	let style = "gray";
-	if (able) {
+	if (able || groupmatch(data.type, "目录", "交流", "固有", "常规")) {
 		const select = new SelectCase();
-		select.case("succeed", "gold").case("luck succeed", "orange").case("force succeed", "blue").else("red");
+		select
+			.case("succeed", "gold")
+			.case("luck succeed", "orange")
+			.case("force succeed", "blue")
+			.case("failed", "red")
+			.else("");
 		style = select.has(order);
 	}
 	return style;
@@ -6397,31 +6405,30 @@ const getBtnStyle = function (id, part) {
 
 const createActionBtn = function (currentSelect, actionData, layer) {
 	const { id, alterName, type, onReady } = actionData;
-
 	//如果有自定义名称，就用自定义名称。
 	let name = actionData.name;
 	if (alterName) name = alterName();
+	let option = Action.SelectableParts(id);
 
 	//如果是当前选中的，就清除链接并加上选中标记。
-	if (currentSelect == id || (type == "目录" && T.actionTypeFilter == id)) {
+	if ((currentSelect == id && cond.hasSelectableParts(option)) || (type == "目录" && T.actionTypeFilter == id)) {
 		return selectedActionBtn(name);
 	}
 
 	const inputType = Action.getInputType(id);
 	const ready = onReady ? `<<run Action.data['${id}'].onReady() >>` : "";
-
 	const style = getBtnStyle(id);
 	const link = layer == 1 ? "link" : "button";
 
 	return `<div class='actions ${style}'><<${link} '${name}'>><<run Action.onInput('${id}', '${inputType}')>>${ready}<</${link}>></div>`;
 };
 
-const createOptionBtn = function (actionData, option, selectType) {
-	const { id } = actionData;
+const createOptionBtn = function (actionId, option, selectType) {
+	//console.log(actionId, option, selectType);
 
-	let name = option;
+	let name = D.bodyparts[option];
 	if (selectType == "actor") {
-		name = `用${option}`;
+		name = `用${name}`;
 	}
 
 	//如果是当前选中的，就清除链接并加上选中标记。
@@ -6430,9 +6437,9 @@ const createOptionBtn = function (actionData, option, selectType) {
 	}
 
 	const inputType = selectType == "actor" ? "partsOption-actor" : "partsOption-target";
-	const style = getBtnStyle(id, option);
+	const style = getBtnStyle(actionId, option);
 
-	return `<div class='actions ${style}'><<button '${name}'>><<run Action.onInput('${id}', '${inputType}', '${option}')>><</button>></div>`;
+	return `<div class='actions ${style}'><<button '${name}'>><<run Action.onInput('${actionId}', '${inputType}', '${option}')>><</button>></div>`;
 };
 
 const createSystemLinks = function (data) {
@@ -6441,7 +6448,7 @@ const createSystemLinks = function (data) {
 	if (option) option = `'${option}'`;
 	else option = "";
 
-	console.log(name, option);
+	//console.log(name, option);
 
 	return `<div class='actions'><<link '[ ${name} ]' ${option}>>${
 		event ? `<<run Action.data['${id}'].event(); Action.redraw();>>` : ""
@@ -6480,25 +6487,25 @@ ui.showhtml = function (tag, menu) {
 };
 
 Action.hide = function () {
-	const label = "#actionMenu_";
+	const label = "actionMenu_";
 
-	$(label + 1).addClass("hidden");
-	$(label + 2).addClass("hidden");
-	$(label + 3).addClass("hidden");
+	$(`#${label + 1}`).addClass("hidden");
+	$(`#${label + 2}`).addClass("hidden");
+	$(`#${label + 3}`).addClass("hidden");
 	$("#actionOption").addClass("hidden");
 
 	ui.replace(label + 1, " ");
 	ui.replace(label + 2, " ");
 	ui.replace(label + 3, " ");
-	ui.replace("#actionOpton", " ");
+	ui.replace("actionOption", " ");
 };
 
 Action.show = function () {
-	const label = "#actionMenu_";
+	const label = "actionMenu_";
 
-	$(label + 1).removeClass("hidden");
-	$(label + 2).removeClass("hidden");
-	$(label + 3).removeClass("hidden");
+	$(`#${label + 1}`).removeClass("hidden");
+	$(`#${label + 2}`).removeClass("hidden");
+	$(`#${label + 3}`).removeClass("hidden");
 	$("#actionOption").removeClass("hidden");
 };
 
@@ -6507,9 +6514,9 @@ Action.shownext = function (hide) {
 	new Wikifier("#next", `<<replace #next>>${html}<</replace>>`);
 };
 
-Action.updateMenu = function (selectId, option) {
+Action.updateMenu = function () {
 	//获取当前动作数据。
-	const data = Action.data[selectId];
+	const selectId = T.select.id;
 
 	//指令排序
 	const layer1 = ["交流", "常规", "目录"];
@@ -6541,15 +6548,15 @@ Action.updateMenu = function (selectId, option) {
 	});
 
 	//可选部位
-	if (actorOption?.length > 1) {
+	if (actorOption?.length > 1 && !cond.justHands(actorOption)) {
 		actorOption.forEach((part) => {
-			partsMenu.push(createPartsBtn(selectId, part, "actor"));
+			partsMenu.push(createOptionBtn(selectId, part, "actor"));
 		});
 	}
 
-	if (targetOption?.length > 1) {
+	if (targetOption?.length > 1 && !cond.justHands(targetOption)) {
 		targetOption.forEach((part) => {
-			partsMenu.push(createPartsBtn(selectId, part, "target"));
+			partsMenu.push(createOptionBtn(selectId, part, "target"));
 		});
 	}
 
@@ -6562,6 +6569,8 @@ Action.updateMenu = function (selectId, option) {
 	if (systemMenu.length) {
 		html += `<div class='actions'> | </div> ${systemMenu.join("")}`;
 	}
+
+	//console.log(selectId, partsMenu);
 
 	ui.replace("actionMenu_1", html);
 
@@ -6602,14 +6611,14 @@ Action.onGoing = function () {
 };
 
 //刷新界面和对象
-Action.redraw = function (id, option) {
+Action.redraw = function () {
 	V.target = C[tc];
 	V.player = C[pc];
 
 	ui.delink();
 	Action.updateScene();
 	Action.show();
-	Action.updateMenu(id, option);
+	Action.updateMenu();
 	Action.shownext(1);
 	Action.onGoing();
 	//ui.sidebar()
@@ -6659,6 +6668,12 @@ Action.order = function (id, part, btn) {
 	if (btn) Action.clearCheck();
 	const data = Action.data[id];
 	T.orderGoal = Action.globalOrder(id) + data.order(part);
+
+	//对方处于无意识状态的话，强行将需求配合值设为0。
+	if (target.uncons()) T.orderGoal = 0;
+	//有意识但无法动弹，追加强制flag。
+	if (target.unable()) T.forceOrder += 100;
+
 	return Action.checkOrder(btn);
 };
 
@@ -6675,7 +6690,8 @@ Action.getInputType = function (actionId, selection) {
 		case "接触":
 		case "触手":
 		case "逆位":
-			return "touchAction";
+			if (option?.has("doStraight")) return "oneAction";
+			else return "touchAction";
 		case "道具":
 			if (actPart || targetPart) return "useEquipItem";
 			else return "useOneTimeItem";
@@ -6707,7 +6723,6 @@ Action.SelectableParts = function (actionId, filterMode) {
 			}
 		});
 	}
-
 	return selectAbleParts;
 };
 /* twine-user-script #32: "0-InitAction.js" */
@@ -6752,6 +6767,7 @@ Action.clearCheck = function () {
 	T.orderGoal = 0;
 	T.phase = "";
 	T.forceOrder = 0;
+	T.orderResult = "";
 
 	P.resetMsg();
 };
@@ -6766,6 +6782,7 @@ Action.initFlag = function () {
 //清除所有动作flag
 Action.reset = function () {
 	T.phase = "reset";
+	T.actId = "";
 
 	if (T.cancel) {
 		Action.clearCheck();
@@ -6781,12 +6798,11 @@ Action.reset = function () {
 	if (T.action.id !== Tsv[pc].lastAction) {
 		Tsv[pc].lastAction = T.action.id;
 	}
-	if (T.counter.id !== Tsv[tc].lastAction) {
+	if (T?.counter?.id !== Tsv[tc].lastAction) {
 		Tsv[tc].lastAction = T.counter.id;
 	}
 
 	//清除当前动作。只保留T.select中的选择
-	T.actId = "";
 	T.action = {};
 	T.counter = {};
 
@@ -6805,8 +6821,9 @@ Action.unset = function (cid, part, id) {
 };
 /* twine-user-script #33: "ActionSystem.js" */
 cond.hasSelectableParts = function (parts) {
+	let arr = Array.from(new Set(parts));
 	if (!parts || parts.length <= 1) return false;
-	return (cond.justHands(parts) && V.mode !== "reverse") === false;
+	return (cond.justHands(arr) && V.mode !== "reverse") === false;
 };
 
 Action.onInput = function (actionId, inputType, selection) {
@@ -6835,15 +6852,14 @@ Action.onInput = function (actionId, inputType, selection) {
 
 	//如果是接触性动作或需等待选择动作部位，则先检测可选项。
 	if (groupmatch(inputType, "touchAction", "useEquipItem", "OptionalAction")) {
-		let able1 = checkSelectableParts(actionId, 1);
-		let able2 = checkSelectableParts(actionId, 2);
+		let able1 = Action.SelectableParts(actionId, 1);
+		let able2 = Action.SelectableParts(actionId, 2);
 
 		const hasOption = () => {
 			if (able1.length <= 1 && able2.length <= 1) return 0;
 
 			return cond.hasSelectableParts(able1) || cond.hasSelectableParts(able2);
 		};
-
 		//如果有可选项就先返回，并刷新界面。
 		if (hasOption()) {
 			Action.redraw();
@@ -6860,7 +6876,7 @@ Action.onInput = function (actionId, inputType, selection) {
 		//先记录玩家的输入。
 		T.select.actPart = selection;
 
-		let able = checkSelectableParts(actionId, 2);
+		let able = Action.SelectableParts(actionId, 2);
 		if (cond.hasSelectableParts(able)) {
 			Action.redraw();
 			return;
@@ -6951,12 +6967,9 @@ Action.updateMovement = function () {
 	//根据角色们的日程进行召唤。
 	F.summonChara();
 
-	if (V.aftermovement) {
-		setTimeout(() => {
-			P.flow(text, 30, 1);
-		}, 100);
-		delete V.aftermovement;
-	}
+	setTimeout(() => {
+		P.flow(txt, 30, 1);
+	}, 100);
 
 	return "";
 };
@@ -6979,24 +6992,18 @@ Action.next = function () {
 };
 
 //---------->> 执行检测 <<----------//
-Action.check = function (actionId) {
-	const data = Action.data[actionId];
+Action.check = function (id) {
+	const data = Action.data[id];
 
 	let reText = "";
 	//总之先清除一下检测flag。
 	Action.clearCheck();
 
 	//检测是否有执行条件，以及对象配合度。
-	T.orderResult = Action.globalOrder(actionId) + data.order(T.select.tgPart);
-	T.actAble = Action.globalCheck(actionId) && data.check(T.select.tgPart);
+	T.orderResult = Action.order(id, T.select.tgPart);
+	T.actAble = Action.able(id, T.select.tgPart);
 
 	T.phase = "check";
-
-	//对方处于无意识状态的话，强行将需求配合值设为0。
-	if (target.uncons()) T.orderGoal = 0;
-
-	//有意识但无法动弹，追加强制flag。
-	if (target.unable()) T.forceOrder += 100;
 
 	//如果设置了配合度的显示，会在这里进行提示。
 	if (V.system.showOrder && T.orderMsg && T.orderGoal > 0) {
@@ -7013,7 +7020,7 @@ Action.check = function (actionId) {
 	//记录动作id和执行者，用在文本输出中。;
 	T.actor = pc;
 	T.target = tc;
-
+	T.actId = T.select.id;
 	if (reText) P.flow(reText);
 
 	//确认无法执行的话，就在这个地方打断。
@@ -7047,15 +7054,15 @@ Action.before = function (id) {
 
 	//指令专属的before事件
 	if (Kojo.has(pc, { type, id, dif, check })) {
-		txt = Kojo.put(pc, { type, id, dif });
-		P.msg(txt);
+		reText = Kojo.put(pc, { type, id, dif });
+		P.msg(reText);
 	}
 
 	//执行口上侧before事件。
 	type = "Action";
 	if (Kojo.has(tc, { type, id, dif })) {
-		txt = Kojo.put(tc, { type, id, dif });
-		P.msg(txt);
+		reText = Kojo.put(tc, { type, id, dif });
+		P.msg(reText);
 	}
 
 	//角色自定指令的情况。因为格式不一样，前面结果肯定为空(￣▽￣")
@@ -7080,9 +7087,9 @@ Action.before = function (id) {
 //---------->> 执行事件 <<----------//
 Action.event = function (id) {
 	const data = Action.data[id];
-	const state = Action.checkOrder();
+
 	let tag = T.noNameTag;
-	txt = "";
+	let reText = "";
 
 	T.passtime = data.time;
 	T.phase = "event";
@@ -7090,13 +7097,13 @@ Action.event = function (id) {
 	P.resetMsg();
 
 	//强制成功时
-	if (state == "force succeed") {
+	if (T.orderResult == "force succeed") {
 		S.msg.push(`< 强制 ><br>`);
 		T.force = 1;
 	}
 
 	//幸运成功时
-	if (state == "luck succeed") {
+	if (T.orderResult == "luck succeed") {
 		S.msg.push(`勉强配合: ${T.order}+LUK${player.stats.LUK[1]}/${T.orderGoal}<br>`);
 	}
 
@@ -7108,30 +7115,30 @@ Action.event = function (id) {
 	//检测内容文本是否存在。如果PC侧存在主动口上，则替换成pc的。否则显示系统默认文。
 	//如果需要先显示系统文再显示pc和npc口上的情况，还是直接在系统文内设置吧(￣▽￣")
 	if (T.force && Kojo.has(pc, { type, id, dif, check })) {
-		txt = Kojo.put(pc, { type, id, dif, tag });
+		reText = Kojo.put(pc, { type, id, dif, tag });
 	} else if (Kojo.has(pc, { type, id, check })) {
-		txt = Kojo.put(pc, { type, id, tag });
+		reText = Kojo.put(pc, { type, id, tag });
 	}
 
 	//角色自定指令的情况。因为格式不一样，前面结果肯定为空(￣▽￣")
 	if (data?.option?.has("Kojo") && Kojo.has(pc, { type: "custom", id })) {
-		txt = Kojo.put(pc, { type: "custom", id });
+		reText = Kojo.put(pc, { type: "custom", id });
 	}
 
 	//检测角色口上。如果系统文中就包含了口上的调用，就跳过。
 	type = "Action";
-	if (txt.includes("Kojo.put") === false) {
+	if (reText.includes("Kojo.put") === false) {
 		if (T.force && Kojo.has(tc, { type, id, dif })) {
-			txt += Kojo.put(tc, { type, id, dif });
+			reText += Kojo.put(tc, { type, id, dif });
 		}
 		if (!T.force && Kojo.has(tc, { type, id })) {
-			txt += Kojo.put(tc, { type, id });
+			reText += Kojo.put(tc, { type, id });
 		}
-	} else if (txt.includes("Kojo.put")) {
-		txt = F.convertKojo(txt);
+	} else if (reText.includes("Kojo.put")) {
+		reText = F.convertKojo(reText);
 	}
 
-	P.msg(txt);
+	P.msg(reText);
 	//设置下一个环节的flag。进入counter环节。对象概率执行counter动作。之后才是result和after事件
 	P.msg(`<<run Action.data['${id}'].effect(); Action.phase('counter');>>`, 1);
 };
@@ -7191,7 +7198,7 @@ Action.cancel = function (id) {
 	}
 };
 
-Action.Failed = function (actionId) {
+Action.Failed = function (id) {
 	let tag = T.noNameTag,
 		type = "PCAction",
 		dif = "Failed",
@@ -7381,6 +7388,31 @@ Com.initList = function () {
 		new Wikifier(null, `<<replace #commandzone>>${command.join("")}<</replace>>`);
 	} // 数量过多时启动分页显示。
 };
+
+Com.updateMovement = function () {
+	const local = V.location;
+
+	//每次移动后的场景初始化。根据当前场景获取移动信息，和角色信息。
+	//地图系统还没弄好，暂时用这个代替。
+	let txt = P.playerName();
+	if (local.id == "A0") {
+		txt += "<<you>>回到了宿舍房间。<br>";
+		if (pc == "Ayres") txt += `${C.Isil.name}`;
+		else txt += `${C.Ayres.name}`;
+		txt += "在房间里。";
+	} else {
+		txt += "<<you>>来到了学院的活动广场。<br>";
+	}
+
+	//根据角色们的日程进行召唤。
+	F.summonChara();
+
+	setTimeout(() => {
+		P.flow(txt, 30, 1);
+	}, 100);
+
+	return "";
+};
 /* twine-user-script #35: "1-commandEvent.js" */
 //----->> 初始化 <<---------------------------//
 
@@ -7475,6 +7507,7 @@ Com.Check = function (id) {
 	T.orderGoal = Com.globalOrder(id) + com.order();
 	T.comAble = Com.globalCond(id) && com.cond();
 	T.msgId = 0;
+	console.log(T.comAble);
 
 	//如果对方无反抗之力，目标值强行变零。
 	if (cond.isUncons(target) || !cond.canMove(target)) T.orderGoal = 0;
@@ -7500,7 +7533,9 @@ Com.Check = function (id) {
 
 	//执行before事件。这些都是纯文本。只能有选项相关操作。
 	//先执行通用的 before事件。基本用在场景变化中。
-	P.msg(`${Story.get("Command::Before").text}<<run Com.next()>><<dashline>>`);
+	P.msg(
+		`${Story.get("Command::Before").text}<<run Com.next()>><<if _noMsg>><<unset _noMsg>><<else>><<dashline>><</if>>`
+	);
 
 	//指令专属的before事件
 	let type = "Com",
@@ -7537,7 +7572,7 @@ Com.Check = function (id) {
 //执行事件
 Com.Event = function (id, next) {
 	const com = comdata[id];
-	const resetHtml = `<<run Com.reset()>><<dashline>>`;
+	const resetHtml = `<<run Com.reset()>>`;
 	let txt = "",
 		type = "Com";
 	S.msg = [];
@@ -7639,7 +7674,7 @@ Com.After = function () {
 //事件结束时的处理
 Com.endEvent = function () {
 	T.comPhase = "end";
-	const resetHtml = `<<run Com.reset()>><<dashline>>`;
+	const resetHtml = `<<run Com.reset()>>`;
 
 	let text = "";
 
@@ -7977,9 +8012,11 @@ class Kojo {
 		if (type == "custom") {
 			title = `Msg_${id}${dif ? `:${dif}` : ""}`;
 		}
+		//console.log(title);
 
 		if (check && !Story.has(title)) {
-			title = `Msg_${type}${id ? `_${id}` : ""}${dif ? `:${dif}` : ""}`;
+			title = `${type?.has("Action") ? "Msg_" : ""}${type}${id ? `_${id}` : ""}${dif ? `:${dif}` : ""}`;
+			//console.log(title);
 			return Story.has(title);
 		}
 		return Story.has(title);
@@ -8455,7 +8492,8 @@ F.sourceUp = function (chara) {
 		if (chara.sup[i] !== 0) {
 			//将变动记录作为文本记录到 S.msg ?
 			const v = chara.sup[i];
-			msg = `>> ${D.palam[i]}${v > 0 ? "+" : "-"}${v} = ${palam[1]} / ${palam[2]}`;
+			const lv = chara.palam[i][0] + 1;
+			msg = `>> ${D.palam[i]}${v > 0 ? " + " : " - "}${v} = ${chara.palam[i][1] + v} / ${D.palamLv[lv]}`;
 		}
 
 		if (base.includes(i) && chara.source[i]) {
@@ -8463,7 +8501,7 @@ F.sourceUp = function (chara) {
 		}
 
 		if (palam.includes(i) && chara.source[i]) {
-			const lv = chara.palam[i][0];
+			const lv = chara.palam[i][0] + 1;
 
 			chara.palam[i][1] += chara.source[i];
 
@@ -8859,8 +8897,8 @@ F.getClass = function () {
 	return "";
 };
 
-P.exp = function (chara, exp) {
-	return C[chara].exp[exp].total;
+P.exp = function (cid, exp) {
+	return C[cid].exp[exp].total;
 };
 
 P.charaName = function (cid) {
@@ -8890,20 +8928,22 @@ P.actor = function () {
 DefineMacroS("actor", P.actor);
 
 P.target = function () {
-	if (T.actTg == V.pc) return P.you();
-	else return C[T.actTg].name;
+	if (T.target == V.pc) return P.you();
+	else return C[T.target].name;
 };
 
 DefineMacroS("target", P.target);
 
 P.targetPart = function () {
-	//const p = F.checkUse(T.actTg, T.actId);
+	const p = T.action.tgPart;
 	//之后根据特定部位弄点差分。主要是胸部、秘穴、菊穴、阴茎这几个部位。
-	return D.bodyparts[T.selectPart];
+	return D.bodyparts[p];
 };
 P.actpart = function () {
 	//阴茎会有特殊描述处理？
-	return D.bodyparts[T.actPart];
+	const p = T.action.actPart;
+
+	return D.bodyparts[p];
 };
 
 DefineMacroS("targetPart", P.targetPart);
@@ -8911,7 +8951,7 @@ DefineMacroS("actPart", P.actpart);
 
 //检测各个部位中的占用状态 。 如果为空或与当前id一致则返回true，否则返回false
 cond.partIsEmpty = function (cid, id, part) {
-	return Using[cid][part] == id || !Using[cid][part];
+	return Using[cid][part].action == id || !Using[cid][part].action;
 };
 
 //检查触手有无空余，有返回空余部位id，没有返回 -1
@@ -8919,7 +8959,7 @@ cond.hasUnuseTentacle = function () {
 	const tentacle = Using.m0.tentacles;
 	for (let i = 0; i < tentacle.length; i++) {
 		const info = tentacle[i];
-		if (!info.act) return i;
+		if (!info.action) return i;
 	}
 	return -1;
 };
@@ -8927,7 +8967,7 @@ cond.hasUnuseTentacle = function () {
 //事件中进行设置时
 F.setActor = function (cid, tid, ...parts) {
 	T.actor = cid;
-	T.actTg = tid;
+	T.target = tid;
 
 	if (parts[0]) T.selectPart = parts[0];
 	else T.selectPart = "body";
@@ -9340,25 +9380,25 @@ F.BP = function (chara) {
 	return s.STR[1] * 15 + s.CON[1] * 8 + s.DEX[1] * 8 + s.INT[1] * 8 + s.WIL[1] * 10 + s.PSY[1];
 };
 
-F.setFame = function (chara, key, val) {
-	chara.flag[`${key}fame`] = val;
+F.setFame = function (cid, key, val) {
+	C[cid].flag[`${key}fame`] = val;
 };
-F.fameUp = function (chara, key, val) {
-	chara.flag[`${key}fame`] += val;
+F.fameUp = function (cid, key, val) {
+	C[cid].flag[`${key}fame`] += val;
 };
-F.setFavo = function (chara, key, val) {
-	chara.flag[key] = val;
+F.setFavo = function (cid, key, val) {
+	C[cid].flag[key] = val;
 };
-F.favoUp = function (chara, key, val) {
-	chara.flag[key] += val;
-};
-
-F.getState = function (chara, key) {
-	chara.state.push(key);
+F.favoUp = function (cid, key, val) {
+	C[cid].flag[key] += val;
 };
 
-F.lostState = function (chara, key) {
-	chara.state.delete(key);
+F.getState = function (cid, key) {
+	C[cid].state.push(key);
+};
+
+F.lostState = function (cid, key) {
+	C[cid].state.delete(key);
 };
 
 F.liqUp = function (liq, key, val) {
@@ -9848,7 +9888,7 @@ Action.set("Interaction")
 
 		if (Flag.mode < 1) Flag.mode = 1;
 
-		new Wikifier(null, `<<run P.flow(p.playerName()+'<<you>>和$target.name打了个招呼并走近对方。',30,1)>>`);
+		new Wikifier(null, `<<run P.flow(P.playerName()+'<<you>>和$target.name打了个招呼并走近对方。',30,1)>>`);
 	});
 
 /* 接触 */
@@ -10359,7 +10399,7 @@ Action.set("resetMode")
 	.Event(() => {
 		Flag.mode = 0;
 		V.mode = "normal";
-		new Wikifier(null, `<<run P.flow(p.playerName()+'<<you>>从$target.name身边走开了。',30,1)>>`);
+		new Wikifier(null, `<<run P.flow(P.playerName()+'<<you>>从$target.name身边走开了。',30,1)>>`);
 	});
 
 Action.set("stopTouch")
@@ -10368,7 +10408,7 @@ Action.set("stopTouch")
 	})
 	.Event(() => {
 		Flag.mode = 1;
-		//new Wikifier(null, `<<run P.flow(p.playerName()+'<<you>>把手从$target.name身上挪开了。',30,1)>>`)
+		//new Wikifier(null, `<<run P.flow(P.playerName()+'<<you>>把手从$target.name身上挪开了。',30,1)>>`)
 	});
 /* twine-user-script #64: "Tentacles.js" */
 //:: Action_Tentacles_Option[script]
@@ -10761,7 +10801,7 @@ Com.globalOrder = function(id){
 
     for(const [k, obj] of Object.entries(Trait.data) ){
         if( target.traits.includes(k) && com.tag.has('调教') ){
-            let order = obj.effect('onOrder', id)
+            let order = ( typeof obj.onOrder == 'function' ? obj.onOrder(id) : null)
             if(!order) order = obj.order;
 
             if(order) {
@@ -10793,7 +10833,7 @@ Com.globalCond = function(id){
 
     return true
 }
-/* twine-user-script #67: "Com_G1::Script" */
+/* twine-user-script #67: "Com_G1:Script" */
 /* 注册指令事件*/
 Com.set('G1')
     .Check(()=>{ 
@@ -10804,7 +10844,7 @@ Com.set('G1')
     })
 
 /* 事件文本，before执行前文本，after执行后文本，cancel执行取消时文本 */
-/* twine-user-script #68: "Com_G2::Script" */
+/* twine-user-script #68: "Com_G2:Script" */
 Com.set('G2')
     .Check(()=>{
         return random(1,100) <= target.mood + 10 && !target.state.contains('失声','失聪')
@@ -10812,12 +10852,12 @@ Com.set('G2')
     .Effect(()=>{
         Source[tc].favo += 10
     })
-/* twine-user-script #69: "Com_T4::Script" */
+/* twine-user-script #69: "Com_T4:Script" */
 Com.set('T4')
    .Filter(()=>{
         return target.gender !== 'female'
    })
-/* twine-user-script #70: "Com_T99::Script" */
+/* twine-user-script #70: "Com_T99:Script" */
 Com.set('T99')
    .Name(()=>{
         if(V.mode !== 'train'){
@@ -10861,7 +10901,7 @@ Com.set('T99')
             }
         }
    })
-/* twine-user-script #71: "Com_X1::Script" */
+/* twine-user-script #71: "Com_X1:Script" */
 Com.set('X1')
     .Check(()=>{
         //能跑进来时已经过滤掉的情况：非合意且对象具备抵抗能力
@@ -10878,13 +10918,13 @@ Com.set('X1')
     })
     .Effect(()=>{
         Source[tc].esB += 100
-        Source[tc].resist += Math.floor(1000 - p.exp(tc, '触手奸')/5)
+        Source[tc].resist += Math.floor(1000 - P.exp(tc, '触手')/5)
 
-        Chara.getexp(target, '触手奸', random(3));
+        Chara.getexp(target, '触手', random(3));
         Chara.getexp(target, 'B', random(2));
     })
     .ForceAble()
-/* twine-user-script #72: "Com_X2::Script" */
+/* twine-user-script #72: "Com_X2:Script" */
 Com.set('X2')
     .Check(()=>{
         //能跑进来时已经过滤掉的情况：非合意且对象具备抵抗能力
@@ -10901,9 +10941,9 @@ Com.set('X2')
     })
     .Effect(()=>{
         Source[tc].esB += 100
-        Source[tc].resist += Math.floor(1000 - p.exp(tc, '触手奸')/5)
+        Source[tc].resist += Math.floor(1000 - P.exp(tc, '触手')/5)
 
-        Chara.getexp(target, '触手奸', random(3));
+        Chara.getexp(target, '触手', random(3));
         Chara.getexp(target, 'B', random(2));
     })
 /* twine-user-script #73: "Kojo_Isil_Regist" */
@@ -11187,26 +11227,26 @@ $(&#39;action&#39;).on(&#39;reset&#39;, ()=&gt;{
 $(&#39;action&#39;).on(&#39;before&#39;, ()=&gt;{
     console.log(&#39;before event&#39;, T.actId)
     Action.hide()
-    Action.before(T.actId)    
+    Action.before(T.actId)
     Action.shownext()
-	 Action.next();
+	Action.next();
 })
 
 $(&#39;action&#39;).on(&#39;cancel&#39;, ()=&gt;{
    console.log(&#39;cancel action&#39;, T.actId)
     ui.delink()
-    F.actionCancel(T.actId)
+    Action.cancel(T.actId)
 })
 
 $(&#39;action&#39;).on(&#39;failed&#39;, ()=&gt;{
    console.log(&#39;failed action&#39;, T.actId)
    ui.delink()
-   F.actionFailed(T.actId)
+   Action.Failed(T.actId)
 })
 
 $(&#39;action&#39;).on(&#39;stop&#39;, ()=&gt;{
    //取消持续动作时。在持续动作一览中取消。
-    console.log(&#39;stop event&#39;)
+    console.log(&#39;stop event&#39;, T.actId)
     ui.delink()
 
 })
@@ -11215,26 +11255,26 @@ $(&#39;action&#39;).on(&#39;event&#39;, ()=&gt;{
    //玩家的动作事件。
     console.log(&#39;do event&#39;, T.actId)
     ui.delink()
-    F.doAction(T.actId)
+    Action.event(T.actId)
 })
 
 $(&#39;action&#39;).on(&#39;counter&#39;, ()=&gt;{
    //对象的攻势。如果是逆推状态，会先处理counter？
-    console.log(&#39;counter event&#39;)
+    console.log(&#39;counter event&#39;, T.actId)
     ui.delink()
     Action.phase(&#39;keep&#39;)
 })
 
 $(&#39;action&#39;).on(&#39;keep&#39;, ()=&gt;{
    //持续动作、装备影响的描述和预处理
-    console.log(&#39;keep event&#39;)
+    console.log(&#39;keep event&#39;, T.actId)
     ui.delink()
     Action.phase(&#39;result&#39;)
 })
 
 $(&#39;action&#39;).on(&#39;result&#39;, ()=&gt;{
    //数据处理和显示
-    console.log(&#39;result event&#39;)
+    console.log(&#39;result event&#39;, T.actId)
     ui.delink()
     F.passtime(T.passtime)
     Action.phase(&#39;after&#39;)
@@ -11244,7 +11284,8 @@ $(&#39;action&#39;).on(&#39;after&#39;, ()=&gt;{
    //数值变动事件（刻印获得素质获得等）和后续事件
     console.log(&#39;after event&#39;)
     ui.delink()
-    F.actionAfter(T.actId)
+    Action.after(T.actId)
+    //Action.phase(&#39;finish&#39;)
 })
 
 $(&#39;action&#39;).on(&#39;finish&#39;, ()=&gt;{
@@ -11252,7 +11293,7 @@ $(&#39;action&#39;).on(&#39;finish&#39;, ()=&gt;{
     console.log(&#39;finish event&#39;)
     ui.delink()
     Action.reset()
-    Action.phase(&#39;init&#39;)
+    Action.phase(&#39;reset&#39;)
 })
 
 &lt;/script&gt;</tw-passagedata><tw-passagedata pid="31" name="Msg_PCAction_t0" tags="" position="100,475" size="100,100">/* 接吻 */
@@ -11280,7 +11321,7 @@ $(&#39;action&#39;).on(&#39;finish&#39;, ()=&gt;{
 &lt;&lt;default&gt;&gt;
    轻咬在&lt;&lt;target&gt;&gt;的&lt;&lt;targetPart&gt;&gt;上，品味着对方的气息，不时轻啃慢咬试图留下自己的痕迹。&lt;br&gt;
 &lt;&lt;/switch&gt;&gt;
-&lt;&lt;=Kojo.put(T.actTg, T.counter ? &#39;ActionR&#39; : &#39;Action&#39;, &#39;t5&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="37" name="Msg_PCAction_t6" tags="" position="850,475" size="100,100">/* 逗弄 */
+&lt;&lt;=Kojo.put(T.target, T.counter ? &#39;ActionR&#39; : &#39;Action&#39;, &#39;t5&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="37" name="Msg_PCAction_t6" tags="" position="850,475" size="100,100">/* 逗弄 */
 &lt;&lt;actor&gt;&gt;
 &lt;&lt;switch T.selectPart&gt;&gt;
 &lt;&lt;case &#39;penis&#39;&gt;&gt;
@@ -11407,7 +11448,7 @@ $(&#39;action&#39;).on(&#39;finish&#39;, ()=&gt;{
    &lt;&lt;you&gt;&gt;让$target.name趴卧在床上，拿枕头垫高对方小腹后，以俯卧撑的姿势从后方贯穿了$target.name的阴道。&lt;br&gt;
 &lt;&lt;case &#39;anal&#39;&gt;&gt;
    &lt;&lt;you&gt;&gt;让$target.name趴卧在床上，拿枕头垫高对方小腹后，以俯卧撑的姿势从后方贯穿了$target.name的肛门。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="68" name="Basement" tags="" position="975,850" size="100,100">&lt;&lt;link &#39;苏醒&#39; &#39;MainLoop&#39;&gt;&gt;&lt;&lt;set $mode to &#39;normal&#39;&gt;&gt;&lt;&lt;set $date.time to 900&gt;&gt;&lt;&lt;run F.lostState(C[&#39;Isil&#39;], &#39;睡眠&#39;)&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;br&gt;
+&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="68" name="Basement" tags="" position="975,850" size="100,100">&lt;&lt;link &#39;苏醒&#39; &#39;MainLoop&#39;&gt;&gt;&lt;&lt;set $mode to &#39;normal&#39;&gt;&gt;&lt;&lt;set $date.time to 900&gt;&gt;&lt;&lt;run F.lostState(&#39;Isil&#39;, &#39;睡眠&#39;)&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;br&gt;
 
 &lt;&lt;link &#39;情报&#39;&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;br&gt;
 
@@ -11415,7 +11456,7 @@ $(&#39;action&#39;).on(&#39;finish&#39;, ()=&gt;{
 
 &lt;&lt;link &#39;道具&#39;&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;br&gt;
 
-&lt;&lt;link &#39;调教&#39; &#39;MainLoop&#39;&gt;&gt;&lt;&lt;set $mode to &#39;train&#39;&gt;&gt;&lt;&lt;set $flag.mode to 5&gt;&gt;&lt;&lt;set $date.time to 1350&gt;&gt;&lt;&lt;run F.getState(C[&#39;Isil&#39;], &#39;睡眠&#39;)&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;br&gt;
+&lt;&lt;link &#39;调教&#39; &#39;MainLoop&#39;&gt;&gt;&lt;&lt;set $mode to &#39;train&#39;&gt;&gt;&lt;&lt;set $flag.mode to 5&gt;&gt;&lt;&lt;set $date.time to 1350&gt;&gt;&lt;&lt;run F.getState(&#39;Isil&#39;, &#39;睡眠&#39;)&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;br&gt;
 
 &lt;&lt;link &#39;经典模式&#39; &#39;CommandLoop&#39;&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;br&gt;
 
@@ -11595,25 +11636,27 @@ X5       ,玩私穴(触)</tw-passagedata><tw-passagedata pid="73" name="Command:
 &lt;&lt;if $date.time &gt;= 1080 &amp;&amp; !_timeCheckNight&gt;&gt;
 &lt;&lt;set _timeCheckNight to true&gt;&gt;
 天开始暗下来了……&lt;br&gt;
-&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="74" name="Command::After" tags="" position="475,975" size="100,100">/* 指令执行完毕时的通用事件文本。*/</tw-passagedata><tw-passagedata pid="75" name="Command_G0" tags="" position="600,975" size="100,100">休息了下</tw-passagedata><tw-passagedata pid="76" name="Command_G0::Script" tags="" position="725,975" size="100,100">&lt;&lt;script&gt;&gt;
+&lt;&lt;else&gt;&gt;
+&lt;&lt;set _noMsg to 1&gt;&gt;
+&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="74" name="Command::After" tags="" position="475,975" size="100,100">/* 指令执行完毕时的通用事件文本。*/</tw-passagedata><tw-passagedata pid="75" name="Command_G0" tags="" position="600,975" size="100,100">休息了下</tw-passagedata><tw-passagedata pid="76" name="Command_G0:Script" tags="" position="725,975" size="100,100">&lt;&lt;script&gt;&gt;
 Com.set(&#39;G0&#39;)
     .Check(()=&gt;{})
     .Effect(()=&gt;{})
 
 &lt;&lt;/script&gt;&gt;</tw-passagedata><tw-passagedata pid="77" name="Com_G0" tags="" position="850,975" size="100,100">/* 迟些切换成overlay？ */
-&lt;&lt;goto &#39;Map&#39;&gt;&gt;</tw-passagedata><tw-passagedata pid="78" name="Com_G1::Cancel" tags="" position="975,975" size="100,100">暂时不用休息。&lt;br&gt;</tw-passagedata><tw-passagedata pid="79" name="Com_G1" tags="" position="1100,975" size="100,100">&lt;&lt;if $location.tags.includes(&#39;chair&#39;)&gt;&gt;
+&lt;&lt;goto &#39;Map&#39;&gt;&gt;</tw-passagedata><tw-passagedata pid="78" name="Com_G1:Cancel" tags="" position="975,975" size="100,100">暂时不用休息。&lt;br&gt;</tw-passagedata><tw-passagedata pid="79" name="Com_G1" tags="" position="1100,975" size="100,100">&lt;&lt;if $location.tags.includes(&#39;chair&#39;)&gt;&gt;
 坐在椅子上休息了下，
 &lt;&lt;elseif $location.tags.includes(&#39;bed&#39;)&gt;&gt;
 在床上躺下放松，
 &lt;&lt;else&gt;&gt;
 找了个合适的地方坐下休息了一会，
 &lt;&lt;/if&gt;&gt;
-恢复了 $player.sup.stamina 点体力。&lt;br&gt;</tw-passagedata><tw-passagedata pid="80" name="Com_G2::Cancel" tags="" position="1225,975" size="100,100">&lt;&lt;you&gt;&gt;试着跟对方搭话，
+恢复了 $player.sup.stamina 点体力。&lt;br&gt;</tw-passagedata><tw-passagedata pid="80" name="Com_G2:Cancel" tags="" position="1225,975" size="100,100">&lt;&lt;you&gt;&gt;试着跟对方搭话，
 &lt;&lt;if !cond.canSpeak($target)&gt;&gt;
 可惜$target.name没有能力回应&lt;&lt;you&gt;&gt;。
 &lt;&lt;else&gt;&gt;
 但$target.name并没有心情理会&lt;&lt;you&gt;&gt;。
-&lt;&lt;/if&gt;&gt;&lt;br&gt;</tw-passagedata><tw-passagedata pid="81" name="Com_G2" tags="" position="100,1100" size="100,100">&lt;&lt;you&gt;&gt;试着跟$target.name搭话。&lt;br&gt;</tw-passagedata><tw-passagedata pid="82" name="//Com_G2::Before" tags="" position="225,1100" size="100,100">/*取消前的文本sample */
+&lt;&lt;/if&gt;&gt;&lt;br&gt;</tw-passagedata><tw-passagedata pid="81" name="Com_G2" tags="" position="100,1100" size="100,100">&lt;&lt;you&gt;&gt;试着跟$target.name搭话。&lt;br&gt;</tw-passagedata><tw-passagedata pid="82" name="//Com_G2:Before" tags="" position="225,1100" size="100,100">/*取消前的文本sample */
 $player.name走近$target.name准备搭话。&lt;br&gt;
 &lt;&lt;linkreplace &#39;取消&#39;&gt;&gt;&lt;&lt;resetLink&gt;&gt;&lt;&lt;resetScene&gt;&gt;&lt;&lt;/linkreplace&gt;&gt;&lt;br&gt;</tw-passagedata><tw-passagedata pid="83" name="Com_G2::After" tags="" position="350,1100" size="100,100">/*指令结束时的文本sample */
 好感增加了一点。&lt;br&gt;</tw-passagedata><tw-passagedata pid="84" name="Com_T0" tags="" position="475,1100" size="100,100">&lt;&lt;you&gt;&gt;的手在$target.name的身上四处游走着。&lt;br&gt;</tw-passagedata><tw-passagedata pid="85" name="Com_T1" tags="" position="600,1100" size="100,100">&lt;&lt;you&gt;&gt;把手覆盖在$target.name的胸上开始抚摸。&lt;br&gt;</tw-passagedata><tw-passagedata pid="86" name="Com_T2" tags="" position="725,1100" size="100,100">&lt;&lt;you&gt;&gt;用手轻轻捏住了$target.name的乳头&lt;br&gt;</tw-passagedata><tw-passagedata pid="87" name="Com_T3" tags="" position="850,1100" size="100,100">&lt;&lt;you&gt;&gt;用嘴含住了$target.name的乳头，吮吸着。&lt;br&gt;</tw-passagedata><tw-passagedata pid="88" name="Com_T4" tags="" position="975,1100" size="100,100">&lt;&lt;you&gt;&gt;轻轻握住了$target.name的阴茎，缓缓地前后撸动。&lt;br&gt;</tw-passagedata><tw-passagedata pid="89" name="Com_T5" tags="" position="1100,1100" size="100,100">&lt;&lt;you&gt;&gt;将手指探入$target.name的&lt;&lt;=P.splitSex($target,&#39;菊穴&#39;,&#39;秘穴&#39;)&gt;&gt;在入口附近摩擦着。&lt;br&gt;</tw-passagedata><tw-passagedata pid="90" name="Com_T99" tags="" position="1225,1100" size="100,100">&lt;&lt;if $mode !== &#39;train&#39; &gt;&gt;
@@ -11630,7 +11673,10 @@ $player.name走近$target.name准备搭话。&lt;br&gt;
 &lt;br&gt;</tw-passagedata><tw-passagedata pid="92" name="//Com_X1:Fail" tags="" position="225,1225" size="100,100">因为对方不配合而取消时的文本。
 口上分支是 Kojo_Chara_Com_id:Failed</tw-passagedata><tw-passagedata pid="93" name="//Com_X1:Force" tags="" position="350,1225" size="100,100">整个事件脉络都不一样时。
 直接用:Force做分支。
-口上分支是 Kojo_Chara_Com_id:Force;</tw-passagedata><tw-passagedata pid="94" name="Com_X2" tags="" position="475,1225" size="100,100">触手&lt;&lt;=(T.force? `强行爬上${$target.name}的身躯，` : &#39;&#39; )&gt;&gt;沿着$target.name的肌肤往胸部游走，张开吸盘吸附在乳尖上，伸出触须吸舔乳尖。&lt;br&gt;</tw-passagedata><tw-passagedata pid="95" name="Com_X3" tags="" position="600,1225" size="100,100"></tw-passagedata><tw-passagedata pid="96" name="Com_X4" tags="" position="725,1225" size="100,100"></tw-passagedata><tw-passagedata pid="97" name="Com_X5" tags="" position="850,1225" size="100,100"></tw-passagedata><tw-passagedata pid="98" name="CommandLoop:Before" tags="" position="975,1225" size="100,100">/*纯代码区，最先处理 */</tw-passagedata><tw-passagedata pid="99" name="CommandLoop:After" tags="" position="1100,1225" size="100,100">/*纯代码区，最后处理 */</tw-passagedata><tw-passagedata pid="100" name="CommandLoop" tags="" position="1225,1225" size="100,100">&lt;div id=&#39;hidden&#39; class=&#39;hidden&#39;&gt;you can&#39;t see me.&lt;/div&gt;
+口上分支是 Kojo_Chara_Com_id:Force;</tw-passagedata><tw-passagedata pid="94" name="Com_X2" tags="" position="475,1225" size="100,100">触手&lt;&lt;=(T.force? `强行爬上${$target.name}的身躯，` : &#39;&#39; )&gt;&gt;沿着$target.name的肌肤往胸部游走，张开吸盘吸附在乳尖上，伸出触须吸舔乳尖。&lt;br&gt;</tw-passagedata><tw-passagedata pid="95" name="Com_X3" tags="" position="600,1225" size="100,100"></tw-passagedata><tw-passagedata pid="96" name="Com_X4" tags="" position="725,1225" size="100,100"></tw-passagedata><tw-passagedata pid="97" name="Com_X5" tags="" position="850,1225" size="100,100"></tw-passagedata><tw-passagedata pid="98" name="CommandLoop:Before" tags="" position="975,1225" size="100,100">/*纯代码区，最先处理 */
+&lt;&lt;if !$selectCom&gt;&gt;
+&lt;&lt;set $selectCom = &#39;&#39;&gt;&gt;
+&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="99" name="CommandLoop:After" tags="" position="1100,1225" size="100,100">/*纯代码区，最后处理 */</tw-passagedata><tw-passagedata pid="100" name="CommandLoop" tags="" position="1225,1225" size="100,100">&lt;div id=&#39;hidden&#39; class=&#39;hidden&#39;&gt;you can&#39;t see me.&lt;/div&gt;
 &lt;div id=&#39;location&#39;&gt;&lt;/div&gt;
 &lt;br&gt;
 &lt;div id=&#39;content&#39; class=&#39;content&#39; onClick=&#39;if(S.msg)Com.next();&#39;&gt;
@@ -11650,7 +11696,7 @@ $player.name走近$target.name准备搭话。&lt;br&gt;
 &lt;/div&gt;
 
 &lt;script&gt;
-F.initMainFlow()
+Com.updateMovement()
 Com.updateScene()
 Com.updateMenu()
 Com.initList()
@@ -11920,12 +11966,12 @@ $target.name敷衍地附和着你的话。&lt;br&gt;</tw-passagedata><tw-passage
 /* 如果要强制取消某个指令的执行，也可以在这里处理。 */
 &lt;&lt;script&gt;&gt;
 
-if($date.time &gt;= 1350)
+if(V.date.time &gt;= 1350)
     F.getState(&#39;Isil&#39;, &#39;睡眠&#39;);
-else if($date.time &gt;= 420)
+else if(V.date.time &gt;= 420)
     F.lostState(&#39;Isil&#39;, &#39;睡眠&#39;);
 
-if(!Cflag[&#39;Isil&#39;].fallen &amp;&amp; $selectCom == 30){
+if(!Cflag[&#39;Isil&#39;].fallen &amp;&amp; V.selectCom == 30){
     _comAble = false;
     _reason += &#39;【未陷落不可推倒】&#39;
 }
@@ -13278,7 +13324,7 @@ $target.name轻轻抚摸着&lt;&lt;you&gt;&gt;的脑袋，使其靠在自己的�
 
 &lt;&lt;link &#39;学校  0:05&#39; &#39;MainLoop&#39;&gt;&gt;&lt;&lt;set $location = { id:&#39;A1&#39;, name:&#39;魔法学院&#39;, chara:[], tags:[&#39;校园&#39;,&#39;活动&#39;,&#39;椅子&#39;,&#39;休息点&#39;,&#39;室外&#39;] }&gt;&gt;&lt;&lt;set $aftermovement to true&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;br&gt;
 
-&lt;&lt;link &#39;宿舍  0:05&#39; &#39;MainLoop&#39;&gt;&gt;&lt;&lt;set $location = { id:&#39;A0&#39;, name:&#39;学生宿舍S302&#39;, tags:[&#39;室内&#39;,&#39;私室&#39;,&#39;休息点&#39;,&#39;床&#39;,&#39;椅子&#39;,&#39;书桌&#39;,&#39;浴室&#39;,&#39;书柜&#39;], chara:[]}&gt;&gt;&lt;&lt;set $aftermovement to true&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;br&gt;
+&lt;&lt;link &#39;宿舍  0:05&#39; &#39;MainLoop&#39;&gt;&gt;&lt;&lt;set $location = { id:&#39;A0&#39;, name:&#39;学生宿舍&#39;, room:&#39;S302&#39; tags:[&#39;室内&#39;,&#39;私室&#39;,&#39;休息点&#39;,&#39;床&#39;,&#39;椅子&#39;,&#39;书桌&#39;,&#39;浴室&#39;,&#39;书柜&#39;], chara:[]}&gt;&gt;&lt;&lt;set $aftermovement to true&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;br&gt;
 
 &lt;&lt;link &#39;返回&#39; &#39;MainLoop&#39;&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;br&gt;
 
@@ -13447,14 +13493,14 @@ $target.fullname&lt;br&gt;
 
 无自觉经验：</tw-passagedata><tw-passagedata pid="303" name="PassageHeader" tags="" position="350,3850" size="100,100">&lt;&lt;run
     $passage = passage(); $tags = tags($passage);
-    //if($tags.has(&#39;title&#39;)){
-    //    UIBar.stow();
-    //    UIBar.hide();
-    //}
-    //else if(UIBar.isHidden()){
-    //    UIBar.unstow();
-    //    UIBar.show();
-    //}
+    if($tags.has(&#39;title&#39;)){
+        UIBar.stow();
+        UIBar.hide();
+    }
+    else if(UIBar.isHidden()){
+        UIBar.unstow();
+        UIBar.show();
+    }
 &gt;&gt;</tw-passagedata><tw-passagedata pid="304" name="StoryCaption" tags="" position="475,3850" size="100,100">&lt;&lt;if $passage == &#39;Start&#39; || $passage == &#39;Start1&#39; &gt;&gt;
 一个用于制作游戏的范本，稍微能玩的版本。&lt;br&gt;
  version 0.1.3&lt;br&gt;
@@ -13474,9 +13520,8 @@ $target.fullname&lt;br&gt;
       $lastsession = $passage;
 
     //复原角色的class
-    if(F.onLoad || F.onReload){
-        delete F.onReload
-        delete F.onLoad
+    if(typeof C.m0.bp !== &#39;function&#39;){
+        console.log(&#39;reload class&#39;)
         Chara.onLoad();
     };
 

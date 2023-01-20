@@ -1,6 +1,8 @@
 //全局过滤器
 Action.globalFilter = function (id) {
 	const data = Action.data[id];
+	//缩略一下
+	const s = T.select;
 
 	//不需要对象的单独指令id
 	const noTarget = [];
@@ -21,12 +23,9 @@ Action.globalFilter = function (id) {
 	//使用部位过滤器只会在接触以上模式出现
 	if (id.match(/^use\S+/) && Flag.mode < 3) return 0;
 
-	//占用中。解除倒是没问题。
-	if (T.selectActPart && Using[pc][T.selectActPart]?.act == id) return 1;
-	if (T.selectActPart && Using[pc][T.selectActPart]?.act !== "") return 0;
-
-	//选择过滤器中、
-	if (T.actPartFilter !== "all" && data.actPart && !data.actPart.has(T.actPartFilter)) return 0;
+	//占用中。解除不在这里。不过可以切换部位
+	if (s.tgPart && Using[pc][s.tgPart]?.action == id) return 1;
+	if (s.tgPart && Using[pc][s.tgPart]?.action !== "") return 0;
 
 	//角色侧的控制。
 	const kojo = Kojo.get(tc, "filter");
@@ -138,6 +137,9 @@ Action.globalPartAble = function (id, part, cid) {
 	const data = Action.data[id];
 	const chara = C[cid];
 
+	//初始化中
+	if (!Using[cid][part]) return 1;
+
 	switch (part) {
 		case "critoris":
 			if (chara.gender !== "female") return 0;
@@ -152,5 +154,5 @@ Action.globalPartAble = function (id, part, cid) {
 			if (Flag.mode < 3) return 0;
 	}
 
-	return Using[cid][part].act == "" || Using[cid][part].act == id;
+	return Using[cid][part].action == "" || Using[cid][part].action == id;
 };

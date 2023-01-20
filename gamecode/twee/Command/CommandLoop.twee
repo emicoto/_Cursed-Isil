@@ -1,5 +1,8 @@
 :: CommandLoop:Before
 /*纯代码区，最先处理 */
+<<if !$selectCom>>
+<<set $selectCom = ''>>
+<</if>>
 
 :: CommandLoop:After
 /*纯代码区，最后处理 */
@@ -25,7 +28,7 @@
 </div>
 
 <script>
-F.initMainFlow()
+Com.updateMovement()
 Com.updateScene()
 Com.updateMenu()
 Com.initList()

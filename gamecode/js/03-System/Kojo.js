@@ -38,9 +38,11 @@ class Kojo {
 		if (type == "custom") {
 			title = `Msg_${id}${dif ? `:${dif}` : ""}`;
 		}
+		//console.log(title);
 
 		if (check && !Story.has(title)) {
-			title = `Msg_${type}${id ? `_${id}` : ""}${dif ? `:${dif}` : ""}`;
+			title = `${type?.has("Action") ? "Msg_" : ""}${type}${id ? `_${id}` : ""}${dif ? `:${dif}` : ""}`;
+			//console.log(title);
 			return Story.has(title);
 		}
 		return Story.has(title);

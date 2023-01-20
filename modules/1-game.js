@@ -456,7 +456,7 @@
 	    return this.state.has("\u7761\u7720", "\u6655\u53A5");
 	  }
 	  unable() {
-	    return this.state.has("\u62D8\u675F", "\u77F3\u5316") || cond.isEnergetic(this, 30);
+	    return this.state.has("\u62D8\u675F", "\u77F3\u5316") || !cond.isEnergetic(this, 30);
 	  }
 	  active() {
 	    return !this.state.has("\u7761\u7720", "\u6655\u53A5", "\u62D8\u675F", "\u77F3\u5316", "\u7CBE\u795E\u5D29\u6E83") && !cond.baseLt(this, "health", 0.05) && !cond.baseLt(this, "sanity", 10) && !cond.baseLt(this, "stamina", 10);

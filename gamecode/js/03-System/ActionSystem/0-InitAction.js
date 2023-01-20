@@ -39,6 +39,7 @@ Action.clearCheck = function () {
 	T.orderGoal = 0;
 	T.phase = "";
 	T.forceOrder = 0;
+	T.orderResult = "";
 
 	P.resetMsg();
 };
@@ -53,6 +54,7 @@ Action.initFlag = function () {
 //清除所有动作flag
 Action.reset = function () {
 	T.phase = "reset";
+	T.actId = "";
 
 	if (T.cancel) {
 		Action.clearCheck();
@@ -68,12 +70,11 @@ Action.reset = function () {
 	if (T.action.id !== Tsv[pc].lastAction) {
 		Tsv[pc].lastAction = T.action.id;
 	}
-	if (T.counter.id !== Tsv[tc].lastAction) {
+	if (T?.counter?.id !== Tsv[tc].lastAction) {
 		Tsv[tc].lastAction = T.counter.id;
 	}
 
 	//清除当前动作。只保留T.select中的选择
-	T.actId = "";
 	T.action = {};
 	T.counter = {};
 

@@ -26,25 +26,25 @@ F.BP = function (chara) {
 	return s.STR[1] * 15 + s.CON[1] * 8 + s.DEX[1] * 8 + s.INT[1] * 8 + s.WIL[1] * 10 + s.PSY[1];
 };
 
-F.setFame = function (chara, key, val) {
-	chara.flag[`${key}fame`] = val;
+F.setFame = function (cid, key, val) {
+	C[cid].flag[`${key}fame`] = val;
 };
-F.fameUp = function (chara, key, val) {
-	chara.flag[`${key}fame`] += val;
+F.fameUp = function (cid, key, val) {
+	C[cid].flag[`${key}fame`] += val;
 };
-F.setFavo = function (chara, key, val) {
-	chara.flag[key] = val;
+F.setFavo = function (cid, key, val) {
+	C[cid].flag[key] = val;
 };
-F.favoUp = function (chara, key, val) {
-	chara.flag[key] += val;
-};
-
-F.getState = function (chara, key) {
-	chara.state.push(key);
+F.favoUp = function (cid, key, val) {
+	C[cid].flag[key] += val;
 };
 
-F.lostState = function (chara, key) {
-	chara.state.delete(key);
+F.getState = function (cid, key) {
+	C[cid].state.push(key);
+};
+
+F.lostState = function (cid, key) {
+	C[cid].state.delete(key);
 };
 
 F.liqUp = function (liq, key, val) {

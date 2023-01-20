@@ -3,8 +3,8 @@ const extendTags = function (raw) {
 };
 
 const extendsRaw = function (raw, key) {
-	if (key == "locationTags") return F.extendTags(raw);
-	if (key == "targetPart" || key == "actPart") return F.extendParts(raw);
+	if (key == "locationTags") return extendTags(raw);
+	if (key == "targetPart" || key == "actPart") return extendParts(raw);
 	return raw;
 };
 
@@ -206,7 +206,7 @@ class Action {
 	}
 	//从设置列表中初始化
 	static initdata() {
-		let arr = F.makeList("ActionList", F.extendsRaw);
+		let arr = F.makeList("ActionList", extendsRaw);
 		arr.forEach((obj) => {
 			Action.add(obj.id, obj);
 		});

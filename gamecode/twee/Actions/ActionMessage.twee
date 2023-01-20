@@ -43,7 +43,7 @@
 <<default>>
    轻咬在<<target>>的<<targetPart>>上，品味着对方的气息，不时轻啃慢咬试图留下自己的痕迹。<br>
 <</switch>>
-<<=Kojo.put(T.actTg, T.counter ? 'ActionR' : 'Action', 't5')>>
+<<=Kojo.put(T.target, T.counter ? 'ActionR' : 'Action', 't5')>>
 
 :: Msg_PCAction_t6
 /* 逗弄 */

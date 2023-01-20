@@ -91,6 +91,7 @@ Com.Check = function (id) {
 	T.orderGoal = Com.globalOrder(id) + com.order();
 	T.comAble = Com.globalCond(id) && com.cond();
 	T.msgId = 0;
+	console.log(T.comAble);
 
 	//如果对方无反抗之力，目标值强行变零。
 	if (cond.isUncons(target) || !cond.canMove(target)) T.orderGoal = 0;
@@ -116,7 +117,9 @@ Com.Check = function (id) {
 
 	//执行before事件。这些都是纯文本。只能有选项相关操作。
 	//先执行通用的 before事件。基本用在场景变化中。
-	P.msg(`${Story.get("Command::Before").text}<<run Com.next()>><<dashline>>`);
+	P.msg(
+		`${Story.get("Command::Before").text}<<run Com.next()>><<if _noMsg>><<unset _noMsg>><<else>><<dashline>><</if>>`
+	);
 
 	//指令专属的before事件
 	let type = "Com",
@@ -153,7 +156,7 @@ Com.Check = function (id) {
 //执行事件
 Com.Event = function (id, next) {
 	const com = comdata[id];
-	const resetHtml = `<<run Com.reset()>><<dashline>>`;
+	const resetHtml = `<<run Com.reset()>>`;
 	let txt = "",
 		type = "Com";
 	S.msg = [];
@@ -255,7 +258,7 @@ Com.After = function () {
 //事件结束时的处理
 Com.endEvent = function () {
 	T.comPhase = "end";
-	const resetHtml = `<<run Com.reset()>><<dashline>>`;
+	const resetHtml = `<<run Com.reset()>>`;
 
 	let text = "";
 

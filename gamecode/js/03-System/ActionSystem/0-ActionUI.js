@@ -1,14 +1,20 @@
 const selectedActionBtn = function (name) {
-	return `<div class='actioins selectAct'>[ ${name} ]</div>`;
+	return `<div class='actions selectAct'>[ ${name} ]</div>`;
 };
 
-const getBtnStyle = function (id, part) {
+const getBtnStyle = function (id, part, state) {
+	const data = Action.data[id];
 	const able = Action.able(id, part, 1);
 	const order = Action.order(id, part, 1);
 	let style = "gray";
-	if (able) {
+	if (able || groupmatch(data.type, "目录", "交流", "固有", "常规")) {
 		const select = new SelectCase();
-		select.case("succeed", "gold").case("luck succeed", "orange").case("force succeed", "blue").else("red");
+		select
+			.case("succeed", "gold")
+			.case("luck succeed", "orange")
+			.case("force succeed", "blue")
+			.case("failed", "red")
+			.else("");
 		style = select.has(order);
 	}
 	return style;
@@ -16,31 +22,30 @@ const getBtnStyle = function (id, part) {
 
 const createActionBtn = function (currentSelect, actionData, layer) {
 	const { id, alterName, type, onReady } = actionData;
-
 	//如果有自定义名称，就用自定义名称。
 	let name = actionData.name;
 	if (alterName) name = alterName();
+	let option = Action.SelectableParts(id);
 
 	//如果是当前选中的，就清除链接并加上选中标记。
-	if (currentSelect == id || (type == "目录" && T.actionTypeFilter == id)) {
+	if ((currentSelect == id && cond.hasSelectableParts(option)) || (type == "目录" && T.actionTypeFilter == id)) {
 		return selectedActionBtn(name);
 	}
 
 	const inputType = Action.getInputType(id);
 	const ready = onReady ? `<<run Action.data['${id}'].onReady() >>` : "";
-
 	const style = getBtnStyle(id);
 	const link = layer == 1 ? "link" : "button";
 
 	return `<div class='actions ${style}'><<${link} '${name}'>><<run Action.onInput('${id}', '${inputType}')>>${ready}<</${link}>></div>`;
 };
 
-const createOptionBtn = function (actionData, option, selectType) {
-	const { id } = actionData;
+const createOptionBtn = function (actionId, option, selectType) {
+	//console.log(actionId, option, selectType);
 
-	let name = option;
+	let name = D.bodyparts[option];
 	if (selectType == "actor") {
-		name = `用${option}`;
+		name = `用${name}`;
 	}
 
 	//如果是当前选中的，就清除链接并加上选中标记。
@@ -49,9 +54,9 @@ const createOptionBtn = function (actionData, option, selectType) {
 	}
 
 	const inputType = selectType == "actor" ? "partsOption-actor" : "partsOption-target";
-	const style = getBtnStyle(id, option);
+	const style = getBtnStyle(actionId, option);
 
-	return `<div class='actions ${style}'><<button '${name}'>><<run Action.onInput('${id}', '${inputType}', '${option}')>><</button>></div>`;
+	return `<div class='actions ${style}'><<button '${name}'>><<run Action.onInput('${actionId}', '${inputType}', '${option}')>><</button>></div>`;
 };
 
 const createSystemLinks = function (data) {
@@ -60,7 +65,7 @@ const createSystemLinks = function (data) {
 	if (option) option = `'${option}'`;
 	else option = "";
 
-	console.log(name, option);
+	//console.log(name, option);
 
 	return `<div class='actions'><<link '[ ${name} ]' ${option}>>${
 		event ? `<<run Action.data['${id}'].event(); Action.redraw();>>` : ""
@@ -99,25 +104,25 @@ ui.showhtml = function (tag, menu) {
 };
 
 Action.hide = function () {
-	const label = "#actionMenu_";
+	const label = "actionMenu_";
 
-	$(label + 1).addClass("hidden");
-	$(label + 2).addClass("hidden");
-	$(label + 3).addClass("hidden");
+	$(`#${label + 1}`).addClass("hidden");
+	$(`#${label + 2}`).addClass("hidden");
+	$(`#${label + 3}`).addClass("hidden");
 	$("#actionOption").addClass("hidden");
 
 	ui.replace(label + 1, " ");
 	ui.replace(label + 2, " ");
 	ui.replace(label + 3, " ");
-	ui.replace("#actionOpton", " ");
+	ui.replace("actionOption", " ");
 };
 
 Action.show = function () {
-	const label = "#actionMenu_";
+	const label = "actionMenu_";
 
-	$(label + 1).removeClass("hidden");
-	$(label + 2).removeClass("hidden");
-	$(label + 3).removeClass("hidden");
+	$(`#${label + 1}`).removeClass("hidden");
+	$(`#${label + 2}`).removeClass("hidden");
+	$(`#${label + 3}`).removeClass("hidden");
 	$("#actionOption").removeClass("hidden");
 };
 
@@ -126,9 +131,9 @@ Action.shownext = function (hide) {
 	new Wikifier("#next", `<<replace #next>>${html}<</replace>>`);
 };
 
-Action.updateMenu = function (selectId, option) {
+Action.updateMenu = function () {
 	//获取当前动作数据。
-	const data = Action.data[selectId];
+	const selectId = T.select.id;
 
 	//指令排序
 	const layer1 = ["交流", "常规", "目录"];
@@ -160,15 +165,15 @@ Action.updateMenu = function (selectId, option) {
 	});
 
 	//可选部位
-	if (actorOption?.length > 1) {
+	if (actorOption?.length > 1 && !cond.justHands(actorOption)) {
 		actorOption.forEach((part) => {
-			partsMenu.push(createPartsBtn(selectId, part, "actor"));
+			partsMenu.push(createOptionBtn(selectId, part, "actor"));
 		});
 	}
 
-	if (targetOption?.length > 1) {
+	if (targetOption?.length > 1 && !cond.justHands(targetOption)) {
 		targetOption.forEach((part) => {
-			partsMenu.push(createPartsBtn(selectId, part, "target"));
+			partsMenu.push(createOptionBtn(selectId, part, "target"));
 		});
 	}
 
@@ -181,6 +186,8 @@ Action.updateMenu = function (selectId, option) {
 	if (systemMenu.length) {
 		html += `<div class='actions'> | </div> ${systemMenu.join("")}`;
 	}
+
+	//console.log(selectId, partsMenu);
 
 	ui.replace("actionMenu_1", html);
 
@@ -221,14 +228,14 @@ Action.onGoing = function () {
 };
 
 //刷新界面和对象
-Action.redraw = function (id, option) {
+Action.redraw = function () {
 	V.target = C[tc];
 	V.player = C[pc];
 
 	ui.delink();
 	Action.updateScene();
 	Action.show();
-	Action.updateMenu(id, option);
+	Action.updateMenu();
 	Action.shownext(1);
 	Action.onGoing();
 	//ui.sidebar()

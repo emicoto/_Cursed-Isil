@@ -36,12 +36,12 @@
 /* 如果要强制取消某个指令的执行，也可以在这里处理。 */
 <<script>>
 
-if($date.time >= 1350)
+if(V.date.time >= 1350)
     F.getState('Isil', '睡眠');
-else if($date.time >= 420)
+else if(V.date.time >= 420)
     F.lostState('Isil', '睡眠');
 
-if(!Cflag['Isil'].fallen && $selectCom == 30){
+if(!Cflag['Isil'].fallen && V.selectCom == 30){
     _comAble = false;
     _reason += '【未陷落不可推倒】'
 }

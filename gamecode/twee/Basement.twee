@@ -1,6 +1,6 @@
 :: Basement
 
-<<link '苏醒' 'MainLoop'>><<set $mode to 'normal'>><<set $date.time to 900>><<run F.lostState(C['Isil'], '睡眠')>><</link>><br>
+<<link '苏醒' 'MainLoop'>><<set $mode to 'normal'>><<set $date.time to 900>><<run F.lostState('Isil', '睡眠')>><</link>><br>
 
 <<link '情报'>><</link>><br>
 
@@ -8,7 +8,7 @@
 
 <<link '道具'>><</link>><br>
 
-<<link '调教' 'MainLoop'>><<set $mode to 'train'>><<set $flag.mode to 5>><<set $date.time to 1350>><<run F.getState(C['Isil'], '睡眠')>><</link>><br>
+<<link '调教' 'MainLoop'>><<set $mode to 'train'>><<set $flag.mode to 5>><<set $date.time to 1350>><<run F.getState('Isil', '睡眠')>><</link>><br>
 
 <<link '经典模式' 'CommandLoop'>><</link>><br>
 

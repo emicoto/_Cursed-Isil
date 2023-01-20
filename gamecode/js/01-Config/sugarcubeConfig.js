@@ -7,10 +7,10 @@ Save.onLoad.add(function (save) {
 	window.onLoadUpdateCheck = true;
 });
 
-F.onReload = true;
+game.onReload = true;
 
 Save.onLoad.add(function (save) {
-	S.onLoad = true;
+	game.onLoad = true;
 	const data = sessionStorage.getItem("comFilter");
 	S.comFilter = JSON.parse(data);
 });

@@ -1,14 +1,14 @@
 :: PassageHeader
 <<run
     $passage = passage(); $tags = tags($passage);
-    //if($tags.has('title')){
-    //    UIBar.stow();
-    //    UIBar.hide();
-    //}
-    //else if(UIBar.isHidden()){
-    //    UIBar.unstow();
-    //    UIBar.show();
-    //}
+    if($tags.has('title')){
+        UIBar.stow();
+        UIBar.hide();
+    }
+    else if(UIBar.isHidden()){
+        UIBar.unstow();
+        UIBar.show();
+    }
 >>
 
 :: StoryCaption
@@ -38,9 +38,8 @@
       $lastsession = $passage;
 
     //复原角色的class
-    if(F.onLoad || F.onReload){
-        delete F.onReload
-        delete F.onLoad
+    if(typeof C.m0.bp !== 'function'){
+        console.log('reload class')
         Chara.onLoad();
     };
 

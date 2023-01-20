@@ -555,7 +555,7 @@ export class Chara {
 	}
 
 	unable() {
-		return this.state.has("拘束", "石化") || cond.isEnergetic(this, 30);
+		return this.state.has("拘束", "石化") || !cond.isEnergetic(this, 30);
 	}
 
 	active() {
