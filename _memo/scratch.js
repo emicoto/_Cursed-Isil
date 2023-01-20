@@ -72,7 +72,7 @@ createActionButton = function (currentAction, outPutData) {
 	}
 
 	if (optionalAction(data)) {
-		let _option = hasActionalPart(usePart);
+		let _option = hasActionalPart(actPart);
 		return readyActionBtn(name, id, _option);
 	}
 
@@ -131,7 +131,7 @@ createMenu = function (list, array, option) {
 //初始化以及更新整个动作选项栏
 updateActionMenu = function (currentAction, waitInput) {
 	const data = Action.data[currentAction];
-	const { usePart, targetPart } = data;
+	const { actPart, targetPart } = data;
 
 	//指令排序
 	const layer1 = ["交流", "常规", "目录"];
@@ -140,7 +140,7 @@ updateActionMenu = function (currentAction, waitInput) {
 	const systems = filterActions("固有");
 
 	//可选部位
-	const selectableParts1 = waitInput == 1 && usePart ? usePart : [];
+	const selectableParts1 = waitInput == 1 && actPart ? actPart : [];
 	const selectableParts2 = targetPart ? targetPart : [];
 
 	//初始化目录表
@@ -227,8 +227,8 @@ inputAction = function (id, phase, wait) {
 	//则根据check part自动填充
 	if (T.actPart) {
 		T.select.ap = T.actPart;
-	} else if (data?.usePart?.length) {
-		T.select.ap = data.usePart[0];
+	} else if (data?.actPart?.length) {
+		T.select.ap = data.actPart[0];
 	}
 
 	if (T.selectPart) {

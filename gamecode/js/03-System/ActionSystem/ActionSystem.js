@@ -93,7 +93,7 @@ F.checkAction = function (id, phase) {
 
 	T.actId = id;
 	//记录动作部位。
-	T.actPart = T.selectActPart ? T.selectActPart : data.usePart ? data.usePart[0] : "reset";
+	T.actPart = T.selectActPart ? T.selectActPart : data.actPart ? data.actPart[0] : "reset";
 
 	$("action").trigger("before");
 };

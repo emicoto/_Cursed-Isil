@@ -1,117 +1,124 @@
-F.actBtn = function (actid, data) {
-	const { id, script, event, alterName, option, type } = data;
-	let name = data.name;
+const selectedActionBtn = function (name) {
+	return `<div class='actioins selectAct'>[ ${name} ]</div>`;
+};
+
+const getBtnStyle = function (id, part) {
+	const able = Action.able(id, part, 1);
+	const order = Action.order(id, part, 1);
+	let style = "gray";
+	if (able) {
+		const select = new SelectCase();
+		select.case("succeed", "gold").case("luck succeed", "orange").case("force succeed", "blue").else("red");
+		style = select.has(order);
+	}
+	return style;
+};
+
+const createActionBtn = function (currentSelect, actionData, layer) {
+	const { id, alterName, type, onReady } = actionData;
+
+	//如果有自定义名称，就用自定义名称。
+	let name = outputData.name;
 	if (alterName) name = alterName();
 
-	if (actid == id || (data.type == "目录" && T.actPartFilter == id)) {
-		return `<div class='actions selectAct'>[ ${name} ]</div>`;
+	//如果是当前选中的，就清除链接并加上选中标记。
+	if (currentSelect == id || (type == "目录" && T.actionTypeFilter == id)) {
+		return selectedActionBtn(name);
 	}
 
-	if ((groupmatch(type, "接触", "触手", "逆位") && option !== "doStraight") || (type == "道具" && data.targetPart)) {
-		let use;
-		if (data.usePart && data.usePart.length > 1) {
-			if (!(cond.justHands(data.usePart) && V.mode !== "reverse")) {
-				use = 1;
-			}
-		}
+	const inputType = Action.getInputType(id);
+	const ready = onReady ? `<<run Action.data['${id}'].onReady() >>` : "";
 
-		return `<div class='actions'><<link '${data.name}'>>
-        <<run F.checkAction('${id}', 'ready'); F.initActMenu('${id}'${use ? ", 1" : ""});>>
-        <</link>></div>`;
-	}
+	const style = getBtnStyle(id);
+	const link = layer == 1 ? "link" : "button";
 
-	return `<div class='actions'><<link '${data.name}'>>
-            ${script ? script : ""}
-            ${event ? `<<run Action.data['${id}'].event(); F.resetUI()>>` : `<<run F.checkAction('${id}', 'do');>>`}
-            <</link>></div>`;
+	return `<div class='actions ${style}'><<${link} '${name}'>><<run Action.onInput('${id}', '${inputType}')>>${ready}<</${link}>></div>`;
 };
 
-F.partBtn = function (data, part, use) {
-	const { id, script } = data;
-	const state = data.name == "性交" ? "ready" : "do";
-	let setpart = `${script ? script : ""}<<set _selectPart to '${part}'>><<run F.checkAction('${id}', '${state}')>>`;
+const createOptionBtn = function (actionData, option, selectType) {
+	const { id } = actionData;
 
-	if (use) {
-		setpart = `<<set _selectActPart to '${part}'>>`;
-		if (data?.option == "noSelectPart") {
-			setpart += `<<run F.checkAction('${id}', 'do')>>`;
-		} else {
-			setpart += `<<run F.checkAction('${id}', 'ready'); F.initActMenu('${id}', 1)>>`;
-		}
+	let name = option;
+	if (selectType == "actor") {
+		name = `用${option}`;
 	}
 
-	if (use && T.selectActPart == part) {
-		return `<div class='actions selectAct'>[ 用${D.bodyparts[part]} ]</div>`;
+	//如果是当前选中的，就清除链接并加上选中标记。
+	if (selectType == "actor" && T.select.actPart == option) {
+		return selectedActionBtn(name);
 	}
 
-	return `<div class='actions parts'><<button '${use ? "用" : ""}${D.bodyparts[part]}'>>${setpart}<</button>></div>`;
+	const inputType = selectType == "actor" ? "partsOption-actor" : "partsOption-target";
+	const style = getBtnStyle(id, option);
+
+	return `<div class='actions ${style}'><<button '${name}'>><<run Action.onInput('${id}', '${inputType}', '${option}')>><</button>></div>`;
 };
 
-F.updateMap = function () {
-	const chara = [];
-	let html = "";
-	let change = F.switchChara();
+const createSystemLinks = function (data) {
+	let { name, option, event, id, alterName } = data;
+	if (alterName) name = alterName();
+	if (option) option = `'${option}'`;
+	else option = "''";
 
-	if (V.location.chara.length) {
-		V.location.chara.forEach((k) => {
-			let com = `<<set $tc to '${k}'>><<run F.charaEvent('${k}'); F.resetUI()>>`;
-
-			let t = `<u><<link '${C[k].name}'>>${com}<</link>></u>　`;
-
-			if (pc !== k) {
-				if (tc == k) t = `<span style='color:#76FAF4'><${C[k].name}></span>　`;
-				//console.log(k, C[k].name, t)
-			} else {
-				let name = C[k].name;
-				if (tc == k) name = `< ${C[k].name} >　`;
-				t = `<span style='color:#AAA'>${name}</span>　`;
-			}
-
-			chara.push(t);
-		});
-	}
-
-	html = `主控　<span style='color:#fff000'>${player.name}</span> ${change}　|　所在位置　${V.location.name}　|　`;
-	if (chara.length) html += "" + chara.join("") + "<br>";
-
-	//后面加场景描述。从Db读取场景数据。角色选项也会移到场景描述后。
-	//这里是……。 有 谁 、谁 、谁 在这里。
-	//选择角色后会有文字补充在信息流后。 “你将目光移向谁。“
-
-	new Wikifier(null, `<<replace #location>>${html}<</replace>>`);
+	return `<div class='actions'><<link '[ ${name} ]' ${option}>>${
+		event ? `<<run Action.data['${id}'].event(); Action.redraw();>>` : ""
+	}<</link>></div>`;
 };
 
-F.initActMenu = function (actid, usepart) {
-	//获取当前动作数据
-	const _data = Action.data[actid];
-
-	//创建系统链接
-	function createSystemLinks(data) {
-		const { option, event, id, alterName } = data;
-		let name = data.name;
-		if (alterName) name = alterName();
-		return `<div class='actions'><<link '[ ${name} ]' ${option ? `'${option}'` : ""}>>${
-			event ? `<<run Action.data['${id}'].event(); F.resetUI();>>` : ""
-		}<</link>></div>`;
-	}
-
-	//创建目录
-	const createMenu = function (list, array, option) {
-		list.forEach((type) => {
-			const _list = Action.typeFilter(type);
-			_list.forEach((data) => {
-				if (data.filter() && Action.globalFilter(data.id)) {
-					if (option && data.name == "交流") {
-						array[0] = F.actBtn(actid, data);
-					} else if (option && data.name == "接触") {
-						array[1] = F.actBtn(actid, data);
-					} else {
-						array.push(F.actBtn(actid, data));
-					}
+//创建目录
+const createMenu = function (typelist, outputArray, currentSelect, layer) {
+	typelist.forEach((type) => {
+		//获取当前类型的所有指令
+		const actions = Action.typeFilter(type);
+		//遍历指令
+		actions.forEach((data) => {
+			const { id } = data;
+			if (data.filter() && Action.globalFilter(id)) {
+				if (id == "Interaction") {
+					outputArray[0] = createActionBtn(currentSelect, data, layer);
+				} else if (id == "Touch") {
+					outputArray[1] = createActionBtn(currentSelect, data, layer);
+				} else {
+					outputArray.push(createActionBtn(currentSelect, data, layer));
 				}
-			});
+			}
 		});
-	};
+		//
+	});
+};
+
+Action.hide = function () {
+	const label = "#actionMenu_";
+
+	$(label + 1).addClass("hidden");
+	$(label + 2).addClass("hidden");
+	$(label + 3).addClass("hidden");
+	$("#actionOption").addClass("hidden");
+
+	ui.replace(label + 1, " ");
+	ui.replace(label + 2, " ");
+	ui.replace(label + 3, " ");
+	ui.replace("#actionOpton", " ");
+};
+
+Action.show = function () {
+	const label = "#actionMenu_";
+
+	$(label + 1).removeClass("hidden");
+	$(label + 2).removeClass("hidden");
+	$(label + 3).removeClass("hidden");
+	$("#actionOption").removeClass("hidden");
+};
+
+Action.shownext = function (hide) {
+	let html = hide ? "" : `<<link 'Next'>><<run F.ActNext()>><</link>>`;
+	new Wikifier("#next", `<<replace #next>>${html}<</replace>>`);
+};
+
+Action.updateMenu = function (selectId, option) {
+	//获取当前动作数据。
+	const data = Action.data[selectId];
+	const { actPart, targetPart, filter } = data;
 
 	//指令排序
 	const layer1 = ["交流", "常规", "目录"];
@@ -119,37 +126,43 @@ F.initActMenu = function (actid, usepart) {
 	const options = ["体位", "其他"];
 	const systems = Action.typeFilter("固有");
 
-	//动作可选部位
-	const useParts = usepart && _data?.usePart ? _data.usePart : [];
-	const targetParts = _data?.targetPart ? _data.targetPart : [];
+	//可选部位
+	const actorOption = option && actPart ? actPart : [];
+	const targetOption = targetPart ? targetPart : [];
 
-	//初始化
+	//目录一览
 	const mainActionMenu = ["", ""];
 	const subActionMenu = [];
 	const optionMenu = [];
 	const partsMenu = [];
 	const systemMenu = [];
 
-	createMenu(layer1, mainActionMenu, 1);
-	createMenu(layer2, subActionMenu);
-	createMenu(options, optionMenu);
+	//创建目录
+	createMenu(layer1, mainActionMenu, selectId, 1);
+	createMenu(layer2, subActionMenu, selectId, 2);
+	createMenu(options, optionMenu, selectId, 3);
 
+	//系统目录
 	systems.forEach((data) => {
 		if (data.filter()) {
 			systemMenu.push(createSystemLinks(data));
 		}
 	});
 
-	//有可选部位才生成
-	if (useParts.length) {
-		useParts.forEach((part) => {
-			if (Action.partAble(actid, part, pc) && _data.check(part)) partsMenu.push(F.partBtn(_data, part, 1));
+	//可选部位
+	if (actorOption.length) {
+		actorOption.forEach((part) => {
+			if (Action.globalPartAble(selectId, part, pc) && filter(part)) {
+				partsMenu.push(createPartsBtn(selectId, part, "actor"));
+			}
 		});
 	}
 
-	if (targetParts.length && _data?.option !== "noSelectPart") {
-		targetParts.forEach((part) => {
-			if (Action.partAble(actid, part, tc) && _data.check(part)) partsMenu.push(F.partBtn(_data, part));
+	if (targetOption.length) {
+		targetOption.forEach((part) => {
+			if (Action.globalPartAble(selectId, part, tc) && filter(part)) {
+				partsMenu.push(createPartsBtn(selectId, part, "target"));
+			}
 		});
 	}
 
@@ -160,15 +173,15 @@ F.initActMenu = function (actid, usepart) {
 	}
 
 	if (systemMenu.length) {
-		html += `<div class='actions'> | </div>${systemMenu.join("")}`;
+		html += `<div class='actions'> | </div> ${systemMenu.join("")}`;
 	}
 
-	new Wikifier(null, `<<replace #actionMenu_1>>${html}<</replace>>`);
+	ui.replace("actionMenu_1", html);
 
-	const showhtml = function (tag, menu, label = "") {
+	const showhtml = function (tag, menu) {
 		if (menu.length) {
 			$(`#${tag}`).removeClass("hidden");
-			new Wikifier(null, `<<replace #${tag}>>${menu.join("")}<</replace>>`);
+			ui.replace(tag, menu.join(""));
 		} else {
 			$(`#${tag}`).addClass("hidden");
 		}
@@ -177,4 +190,53 @@ F.initActMenu = function (actid, usepart) {
 	showhtml("actionMenu_2", subActionMenu);
 	showhtml("actionOption", optionMenu);
 	showhtml("actionMenu_3", partsMenu);
+};
+
+//刷新界面和对象
+Action.redraw = function () {
+	V.target = C[tc];
+	V.player = C[pc];
+
+	ui.delink();
+	Action.updateScene();
+	Action.show();
+	Action.updateMenu(id, option);
+	Action.shownext(1);
+	//Action.onGoing();
+	//ui.sidebar()
+
+	ui.replace("showtime", "<<showtime>><<showmoney>>");
+	return "";
+};
+
+const createKeepingLinks = function (cid, actId, part) {
+	const data = Action.data[actId];
+	const { name } = data;
+
+	const html = `<div class='actions keep'><<link '[ ${name} ]'>><<run Action.unset('${cid}', '${part}')>><</link>></div>`;
+	return html;
+};
+
+//检测并显示持续中的动作状态。点击对应动作可以取消。
+Action.onGoing = function () {
+	const charalist = V.location.chara;
+	const charaHtml = [];
+
+	charalist.forEach((cid) => {
+		const html = [
+			`<div class='namelabel'><span style='color:#${Kojo.get(cid, "color")}'>${C[cid].name}</span>  ：</div>`,
+		];
+		for (let part in Using[cid]) {
+			const info = Using[cid][part];
+			if (info.act) {
+				html.push(createKeepingLinks(cid, info.act, part));
+			}
+		}
+		if (html.length > 1) {
+			charaHtml.push(html.join(""));
+		}
+	});
+	if (charaHtml.length) {
+		ui.replace("keeping", charaHtml.join(""));
+	}
 };

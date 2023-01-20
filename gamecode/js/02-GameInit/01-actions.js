@@ -4,7 +4,7 @@ const extendTags = function (raw) {
 
 const extendsRaw = function (raw, key) {
 	if (key == "locationTags") return F.extendTags(raw);
-	if (key == "targetPart" || key == "usePart") return F.extendParts(raw);
+	if (key == "targetPart" || key == "actPart") return F.extendParts(raw);
 	return raw;
 };
 
@@ -59,7 +59,7 @@ class Action {
 		name,
 		time = 5,
 		mode = 0,
-		usePart,
+		actPart,
 		targetPart,
 		option,
 		defaultText,
@@ -74,11 +74,11 @@ class Action {
 		this.time = this.type == "固有" ? 0 : parseInt(time);
 		this.mode = parseInt(mode);
 
-		if (usePart) this.usePart = usePart;
+		if (actPart) this.actPart = actPart;
 		if (targetPart) this.targetPart = targetPart;
 		if (option) this.option = option;
 
-		if (this.type == "触手") this.usePart = ["tentacles"];
+		if (this.type == "触手") this.actPart = ["tentacles"];
 
 		this.filter = () => {
 			return 1;
@@ -113,8 +113,8 @@ class Action {
 	//从动作列表中获取动作
 	static get(arg, args) {
 		switch (arg) {
-			case "usePart":
-				return Object.values(Action.data).filter((action) => action.usePart && action.usePart.has(args));
+			case "actPart":
+				return Object.values(Action.data).filter((action) => action.actPart && action.actPart.has(args));
 			case "targetPart":
 				return Object.values(Action.data).filter((action) => action.targetPart && action.targetPart.has(args));
 			case "type":
@@ -130,7 +130,7 @@ class Action {
 
 	//创建动作文字模板
 	static create(data, mode) {
-		const { name, templet, targetPart, usePart, type } = data;
+		const { name, templet, targetPart, actPart, type } = data;
 
 		let groupTitle = `:: Action_${type}_Options[script]\n`;
 
@@ -153,7 +153,7 @@ class Action {
 			return parts
 				.map((tar) => {
 					const m2 = reverse ? D.bodyparts[use] : D.bodyparts[tar];
-					const m3 = reverse ? D.bodyparts[tar] : use ? D.bodyparts[use] : "{usePart}";
+					const m3 = reverse ? D.bodyparts[tar] : use ? D.bodyparts[use] : "{actPart}";
 
 					return `<<case '${tar}'>>\n${convertTemplet(templet, m2, m3)}<br>\n`;
 				})
@@ -183,7 +183,7 @@ class Action {
 		switch (type) {
 			case "接触":
 			case "触手":
-				txt += makeTxt(0, usePart[0], targetPart);
+				txt += makeTxt(0, actPart[0], targetPart);
 				break;
 			case "道具":
 				txt += makeTxt(0, "hands", targetPart);
@@ -192,7 +192,7 @@ class Action {
 				txt += makeTxt(0, "penis", targetPart);
 				break;
 			case "逆位":
-				txt += makeTxt(1, "penis", usePart, 1);
+				txt += makeTxt(1, "penis", actPart, 1);
 				break;
 			default:
 				if (templet) {

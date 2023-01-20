@@ -79,7 +79,7 @@ Gift, 送礼, 2
 
 /* 攻受通用 = 部分攻方 */
 /* mode: 1: normal, 1.5: between 1 and 2,  2: harassment/affection, 3: woohoo */
-#T, id, name, mode,  usePart, targetPart, autokeep, defaultText, option
+#T, id, name, mode,  actPart, targetPart, autokeep, defaultText, option
 reset, 复位, 0, , , , ,doStraight
 t0, 接吻, 1.5, m, m, y,{0}吻上了{1}的嘴唇。, doStraight
 t1, 亲吻, 2, m, --mvaur, n, {0}亲吻在了{1}的{2}上，轻吮吸舔，试图留下自己的印记。
@@ -90,7 +90,7 @@ t4, 吸舔, 2, m, --mub, n, {0}吸住了{1}的{2}，在上面用舌头反复舔�
 t5, 吸咬, 3, m, --mbvaud, n, {0}含住{1}的{2}，吸吮轻咬着。
 t6, 逗弄, 2, h, pcvaer, n, {0}反复逗弄着{1}的{2}。
 t7, 指交, 3, h, mvau, n, {0}的手指浅浅插入{1}的{2}，在入口附近摩擦着。
-t8, 性交, 2.5, p, va, y, {0}以{4}的姿势用{3}插入了{1}的{2}。
+t8, 性交, 2.5, p, va, n
 t9, 抽插, 3, p, mva, y, {0}活动腰身，在{1}的{2}反复出入着。,doStraight
 t10, 撸动, 3, h, p, y, {0}握住{1}的{2}，前后撸动着。
 t11, 拳交, 3, h, va, n, {0}的拳头粗暴地捅进了{1}的{2}里面，反复抽插着。
@@ -98,9 +98,9 @@ t12, 深入, 3, p, va, n, {0}深深插入了{1}的{2}。
 t13, 口交, 3, 9, m, y,{0}让{1}含住了自己的阴茎。
 
 /* 大概是受方主控专用动作？ */
-#R, id, name, mode, usePart, targetPart, autokeep, defaultText, option
+#R, id, name, mode, actPart, targetPart, autokeep, defaultText, option
 r0, 逆口交, 1, m, hp, y, {0}用{3}含住了{1}的{2}，用舌头反复舔动。
-r1, 逆性交, 3, va, p, y, {0}让{1}插入了自己的的{3}。, noSelectPart
+r1, 逆性交, 3, va, p, n
 r2, 收紧, 3, va, ph, n, {0}控制自身{3}，紧紧夹住了{1}的{2}。, doStraight
 
 /* 体位切换 */
@@ -112,9 +112,9 @@ pose3, 背座位, va, {0}让{1}背对自己跨坐到身上，从背后搂住对�
 pose4, 骑乘位, va, {0}让{1}骑在自己身上，一手扶着对方腰身让其以舒适的角度把{0}的阴茎收入{2}中。
 pose5, 侧卧位, va, {0}让{1}侧卧躺在自己身边，一手穿过对方腰身，从后面缓缓插入{1}的{2}。
 pose6, 趴卧位, va, {0}让{1}趴卧在床上，拿枕头垫高对方小腹后，以俯卧撑的姿势从后方贯穿了{1}的{2}。
-pose7, 站立位, va,
-pose8, 背后立位, va,
-pose9, 抱立位, va,
+pose7, 站立位, va, {0}让{1}站立在自己身前，用手臂支撑对方，从正面把阴茎插入{1}的{2}。
+pose8, 背后立位, va, 
+pose9, 抱立位, va, 
 pose10, 反抱立位, va,
 pose11, 屈曲位, va,
 

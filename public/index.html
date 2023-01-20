@@ -18073,7 +18073,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 				F.extendsRaw = function (raw, key) {
 					if (key == "locationTags") return F.extendTags(raw);
-					if (key == "targetPart" || key == "usePart") return F.extendParts(raw);
+					if (key == "targetPart" || key == "actPart") return F.extendParts(raw);
 					return raw;
 				};
 
@@ -18126,7 +18126,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 						name,
 						time = 5,
 						mode = 0,
-						usePart,
+						actPart,
 						targetPart,
 						option,
 						defaultText,
@@ -18141,11 +18141,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 						this.time = this.type == "固有" ? 0 : parseInt(time);
 						this.mode = parseInt(mode);
 
-						if (usePart) this.usePart = usePart;
+						if (actPart) this.actPart = actPart;
 						if (targetPart) this.targetPart = targetPart;
 						if (option) this.option = option;
 
-						if (this.type == "触手") this.usePart = ["tentacles"];
+						if (this.type == "触手") this.actPart = ["tentacles"];
 
 						this.filter = () => {
 							return 1;
@@ -18178,8 +18178,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					}
 					static get(arg, args) {
 						switch (arg) {
-							case "usePart":
-								return Object.values(Action.data).filter((action) => action.usePart && action.usePart.has(args));
+							case "actPart":
+								return Object.values(Action.data).filter((action) => action.actPart && action.actPart.has(args));
 							case "targetPart":
 								return Object.values(Action.data).filter((action) => action.targetPart && action.targetPart.has(args));
 							case "type":
@@ -18194,7 +18194,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					}
 
 					static create(data, mode) {
-						const { name, templet, targetPart, usePart, type } = data;
+						const { name, templet, targetPart, actPart, type } = data;
 
 						let groupTitle = `:: Action_${type}_Options[script]\n`;
 
@@ -18217,7 +18217,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 							return parts
 								.map((tar) => {
 									const m2 = reverse ? D.bodyparts[use] : D.bodyparts[tar];
-									const m3 = reverse ? D.bodyparts[tar] : use ? D.bodyparts[use] : "{usePart}";
+									const m3 = reverse ? D.bodyparts[tar] : use ? D.bodyparts[use] : "{actPart}";
 
 									return `<<case '${tar}'>>\n${convertTemplet(templet, m2, m3)}<br>\n`;
 								})
@@ -18247,7 +18247,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 						switch (type) {
 							case "接触":
 							case "触手":
-								txt += makeTxt(0, usePart[0], targetPart);
+								txt += makeTxt(0, actPart[0], targetPart);
 								break;
 							case "道具":
 								txt += makeTxt(0, "hands", targetPart);
@@ -18256,7 +18256,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 								txt += makeTxt(0, "penis", targetPart);
 								break;
 							case "逆位":
-								txt += makeTxt(1, "penis", usePart, 1);
+								txt += makeTxt(1, "penis", actPart, 1);
 								break;
 							default:
 								if (templet) {
@@ -19174,7 +19174,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					if (T.selectActPart && Using[pc][T.selectActPart]?.act !== "") return 0;
 
 					//选择过滤器中、
-					if (T.actPartFilter !== "all" && data.usePart && !data.usePart.has(T.actPartFilter)) return 0;
+					if (T.actPartFilter !== "all" && data.actPart && !data.actPart.has(T.actPartFilter)) return 0;
 
 					//角色侧的控制。
 					const kojo = Kojo.get(tc, "filter");
@@ -19282,8 +19282,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 					if ((groupmatch(type, "接触", "触手", "逆位") && option !== "doStraight") || (type == "道具" && data.targetPart)) {
 						let use;
-						if (data.usePart && data.usePart.length > 1) {
-							if (!(cond.justHands(data.usePart) && V.mode !== "reverse")) {
+						if (data.actPart && data.actPart.length > 1) {
+							if (!(cond.justHands(data.actPart) && V.mode !== "reverse")) {
 								use = 1;
 							}
 						}
@@ -19354,7 +19354,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					new Wikifier(null, `<<replace #location>>${html}<</replace>>`);
 				};
 
-				F.initActMenu = function (actid, usepart) {
+				F.initActMenu = function (actid, actPart) {
 					//获取当前动作数据
 					const _data = Action.data[actid];
 
@@ -19393,7 +19393,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					const systems = Action.typeFilter("固有");
 
 					//动作可选部位
-					const useParts = usepart && _data?.usePart ? _data.usePart : [];
+					const actParts = actPart && _data?.actPart ? _data.actPart : [];
 					const targetParts = _data?.targetPart ? _data.targetPart : [];
 
 					//初始化
@@ -19414,8 +19414,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					});
 
 					//有可选部位才生成
-					if (useParts.length) {
-						useParts.forEach((part) => {
+					if (actParts.length) {
+						actParts.forEach((part) => {
 							if (Action.partAble(actid, part, pc) && _data.check(part)) partsMenu.push(F.partBtn(_data, part, 1));
 						});
 					}
@@ -19737,7 +19737,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 					T.actId = id;
 					//记录动作部位。
-					T.actPart = T.selectActPart ? T.selectActPart : data.usePart ? data.usePart[0] : "reset";
+					T.actPart = T.selectActPart ? T.selectActPart : data.actPart ? data.actPart[0] : "reset";
 
 					$("action").trigger("before");
 				};
@@ -22173,8 +22173,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					return C[cid].gender !== "male";
 				};
 
-				cond.justHands = function (useParts) {
-					return useParts.length == 2 && useParts.containsAll("handR", "handL");
+				cond.justHands = function (actParts) {
+					return actParts.length == 2 && actParts.containsAll("handR", "handL");
 				};
 				/* twine-user-script #53: "Common.js" */
 				/* 放松 */
@@ -23692,7 +23692,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				战斗, alterName Magic, 魔法 Items, 道具 Tentacles, 触手 Order, 命令 Self, 自慰 Other, 其他 /* 交流模式，
 				常规交流 */ #C, id, name, time, option Talk, 闲聊, 5, canTrain Look, 观察, 2, canTrain Talk2, 近况, 5
 				Interest, 兴趣, 5 PetHead, 摸头, 2 Firm, 调情, 3 Gift, 送礼, 2 /* 攻受通用 = 部分攻方 */ /* mode: 1: normal,
-				1.5: between 1 and 2, 2: harassment/affection, 3: woohoo */ #T, id, name, mode, usePart, targetPart,
+				1.5: between 1 and 2, 2: harassment/affection, 3: woohoo */ #T, id, name, mode, actPart, targetPart,
 				autokeep, defaultText, option reset, 复位, 0, , , , ,doStraight t0, 接吻, 1.5, m, m, y,{0}吻上了{1}的嘴唇。,
 				doStraight t1, 亲吻, 2, m, --mvaur, n, {0}亲吻在了{1}的{2}上，轻吮吸舔，试图留下自己的印记。 t2, 抚摸, 1, h,
 				--ur, n, {0}的手轻抚着{1}的{2}。 t3, 按摩, 1, h, bpvahnsg, n, {0}给按摩着{1}的{2}。 t3, 揉捏, 1.5, h, bpces,
@@ -23702,7 +23702,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				{0}以{4}的姿势用{3}插入了{1}的{2}。 t9, 抽插, 3, p, mva, y, {0}活动腰身，在{1}的{2}反复出入着。,doStraight
 				t10, 撸动, 3, h, p, y, {0}握住{1}的{2}，前后撸动着。 t11, 拳交, 3, h, va, n,
 				{0}的拳头粗暴地捅进了{1}的{2}里面，反复抽插着。 t12, 深入, 3, p, va, n, {0}深深插入了{1}的{2}。 t13, 口交,
-				3, 9, m, y,{0}让{1}含住了自己的阴茎。 /* 大概是受方主控专用动作？ */ #R, id, name, mode, usePart,
+				3, 9, m, y,{0}让{1}含住了自己的阴茎。 /* 大概是受方主控专用动作？ */ #R, id, name, mode, actPart,
 				targetPart, autokeep, defaultText, option r0, 逆口交, 1, m, hp, y, {0}用{3}含住了{1}的{2}，用舌头反复舔动。
 				r1, 逆性交, 3, va, p, y, {0}让{1}插入了自己的的{3}。, noSelectPart r2, 收紧, 3, va, ph, n,
 				{0}控制自身{3}，紧紧夹住了{1}的{2}。, doStraight /* 体位切换 */ #P, id, name, targetPart, defaultText pose0,
