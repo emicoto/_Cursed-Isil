@@ -42,8 +42,8 @@ sugarcube-2:
          name: resetLink
       resetScene:
          name: resetScene
-      actChara:
-         name: actChara
+      actor:
+         name: actor
       targetChara:
          name: targetChara
       targetPart:

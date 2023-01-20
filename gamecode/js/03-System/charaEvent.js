@@ -16,32 +16,42 @@ F.summonChara = function () {
 
 //切换主控角色
 F.switchChara = function () {
-	let change = "";
+	//确认当前地点中是否存在可切换的角色。
+	if (!V.location.chara.containsAll("Ayres", "Isil")) return "";
+	//如果其中一人处于不可用状态，则不显示切换按钮。
+	if (!Flag.Ayres || !Flag.Isil) return "";
 
-	if (V.location.chara.containsAll("Ayres", "Isil")) {
-		let p, t;
-		if (V.pc === "Isil" || V.pc === "m0") {
-			p = "Ayres";
-			t = "Isil";
-		} else if (V.pc == "Ayres" && F.uncons(C["Isil"])) {
-			p = "m0";
-			t = "Isil";
-		} else {
-			p = "Isil";
-			t = "Ayres";
-		}
+	//如果当前地点中存在可切换的角色，则根据当前角色的状态和当前地点的情况，生成切换按钮。
+	let charaA = pc,
+		charaB;
 
-		let reflesh = "F.resetUI()";
-		if (V.passage == "CommandLoop") reflesh = "F.resetScene()";
-
-		change = `<<link '[ 切换角色 ]'>><<set $pc to '${p}'>><<set $tc to '${t}'>><<run ${reflesh};>><</link>>`;
+	//如果当前角色时Ayres，且Isil处于可活动状态，则切换到Isil。反之亦然。
+	if (pc == "Ayres" && C.Isil.active()) {
+		charaB = "Isil";
+	} else if (pc == "Isil" && C.Ayres.active()) {
+		charaB = "Ayres";
 	}
 
-	if (Config.debug) console.log(change);
+	let com = `<<set $pc to '${charaB}'>>`;
 
-	return change;
+	let event = `if (
+      Kojo.has('${charaB}', 'Daily', 'onSwitch')
+      ){
+      P.flow(
+         Kojo.put('${charaB}', { type: 'Event', id: 'onSwitch'})
+      )
+   }`;
+
+	if (pc !== tc && tc == charaB) {
+		com += `<<set $tc to '${charaA}'>>`;
+	}
+
+	let html = `<<link '[ 切换角色 ]'>> ${com}<<run Action.redraw(); ${event}>><</link>`;
+
+	if (Config.debug) console.log(html);
+
+	return html;
 };
-
 //----->> 角色处理 <<---------------------------//
 
 //角色事件处理。
@@ -50,6 +60,7 @@ F.charaEvent = function (cid) {
 
 	const chara = C[cid];
 
+	//检测是否首次见面
 	if (cid == tc && !Cflag[cid][`firstMet${pc}`]) {
 		Cflag[cid][`firstMet${pc}`] = 1;
 
@@ -69,18 +80,18 @@ F.charaEvent = function (cid) {
 		}
 
 		if (Kojo.has(cid, { type: "Daily", id: "First" })) {
-			return F.txtFlow(`${Kojo.put(cid, { type: "Daily", id: "First" })}${setter}`);
+			return P.flow(`${Kojo.put(cid, { type: "Daily", id: "First" })}${setter}`);
 		}
 	}
 
+	//检测是否有角色事件
 	const cevent = Kojo.get(cid, "event");
 	if (!cevent) return;
 
 	cevent.forEach((obj) => {
-		const title = `Kojo_${cid}_Event_${obj.name}`;
-
-		if (Story.has(title) && obj.cond() && V.location.chara.includes(cid)) {
-			F.setEvent("Kojo", `Event_${obj.name}`, cid);
+		const { id, cond } = obj;
+		if (Kojo.has(cid, { type: "Event", id }) && cond()) {
+			F.setEvent("Kojo", `Event_${id}`, cid);
 			return new Wikifier(null, "<<goto EventStart>>");
 		}
 	});

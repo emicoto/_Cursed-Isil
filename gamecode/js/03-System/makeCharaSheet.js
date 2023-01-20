@@ -1,4 +1,4 @@
-window.initCSV = function (cid) {
+const initCSV = function (cid) {
 	const _raw = Story.get(`CharaSheet_${cid}`).text.replace(/\n/g, "#L#").replace(/\s/, "");
 	const raw = _raw.split("#L#");
 
@@ -25,7 +25,7 @@ window.initCSV = function (cid) {
 	return chara;
 };
 
-window.clearCommentFromArray = function (arr) {
+const clearCommentFromArray = function (arr) {
 	for (let i = 0; i < arr.length; i++) {
 		if (arr[i].includes("/*") || arr[i][0] == ";") {
 			arr.deleteAt(i);
@@ -62,7 +62,7 @@ window.definePropertyFromPath = function (path, obj, value, type) {
 	return obj;
 };
 
-F.initCharaFromCSV = function (cid) {
+Chara.initCSV = function (cid) {
 	const raw = initCSV(cid);
 	const chara = new Chara(raw.id, raw.name, raw.gender, raw.race);
 	if (raw.position) {

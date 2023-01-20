@@ -11,7 +11,7 @@
 :: FallToDeep
 <<you>>的意识下沉到了深渊……<br>
 <br>
-<div><<linkreplace "放任诅咒">><<set $flag.master to 1 >><<run F.resetUI()>><</linkreplace>></div>
+<div><<linkreplace "放任诅咒">><<set $flag.master to 1 >><<run Action.redraw()>><</linkreplace>></div>
 <div><<link '查看深渊' 'Basement'>><</link>></div>
 <div><<linkreplace "什么也不做">><<resetLink>><</linkreplace>></div>
 
@@ -39,7 +39,7 @@
 
 :: Msg_PCAction_Talk:Cancel
 <<you>>试着跟对方搭话，
-<<if !F.canSpeak($target)>>
+<<if !cond.canSpeak($target)>>
 可惜$target.name没有能力回应<<you>>。
 <<else>>
 但$target.name并没有心情理会<<you>>。

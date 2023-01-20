@@ -11,14 +11,16 @@ window.findConflic = function (source, conflicGroup) {
 		return source;
 	}
 };
-
+//特征class
 class Trait {
+	//获取特征数据
 	static get(name, key = null, event) {
 		if (!key) return Trait.data[name];
 		if (event) return Trait.data[name][key](event);
 		else if (key && Trait.data[name][key]) return Trait.data[name][key];
 		else return;
 	}
+	//通过关键词获取特征列表
 	static list(type) {
 		const grouplist = [];
 
@@ -34,14 +36,14 @@ class Trait {
 	static set(name) {
 		return Trait.data[name];
 	}
-
+	//初始化
 	static init() {
 		D.traits.forEach((obj) => {
 			Trait.data[obj.name] = new Trait(obj);
 		});
 		console.log(Trait.data);
 	}
-
+	//构造
 	constructor({ name, des = "", order = 0, sourceEffect = [], group = "全部" } = {}) {
 		this.name = name;
 		this.des = des;
@@ -142,7 +144,7 @@ Trait.set("理智")
 		const list = ["fear", "mortify", "humilate", "depress", "resist", "uncomfort", "angry"];
 	})
 	.setOrder((cid, ...args) => {
-		if (F.weaker(target, player)) return 10;
-		else if (F.baseCheck(target, "health", 0.3) || F.baseCheck(target, "stamina", 0.1)) return 15;
+		if (cond.isWeaker(target, player)) return 10;
+		else if (cond.baseLt(target, "health", 0.3) || cond.baseLt(target, "stamina", 0.1)) return 15;
 		else return 2;
 	});

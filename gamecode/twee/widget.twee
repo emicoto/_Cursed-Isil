@@ -12,7 +12,7 @@
 <</widget>>
 
 <<widget "showtime">>
-<div class='headbar-li'><<=F.showtime()>></div>
+<div class='headbar-li'><<=P.time()>></div>
 <</widget>>
 
 <<widget "meterbar">>
@@ -146,7 +146,7 @@
 <</widget>>
 
 <<widget "showgametime">>
-<<run F.gametime()>>
+<<run F.playtime()>>
 <<print `${$gametime.d}D.${$gametime.h}:${$gametime.m}:${$gametime.s}`>>
 <</widget>>
 

@@ -1,5 +1,5 @@
 // 信息流控制
-F.txtFlow = function (txt, time, dashline) {
+P.flow = function (txt, time, dashline) {
 	if (!time) time = 60;
 
 	new Wikifier(
@@ -15,44 +15,58 @@ F.txtFlow = function (txt, time, dashline) {
 };
 
 //下一步按钮
-F.nextLink = function () {
+ui.next = function () {
 	let next = V.event.next;
-	console.log(V.event.next);
 	if (!next) next = "Next";
-	return `<<link '${next}'>><<run F.nextDialog()>><</link>>`;
+	return `<<link '${next}'>><<run Dlog.next()>><</link>>`;
 };
-DefineMacroS("eventnext", F.nextLink);
+DefineMacroS("eventnext", ui.next);
 
-//获取事件完整文本，并进行解析转化
-F.initText = function (title) {
-	const input = Story.get(title).text.split("\n");
+//-----------------事件系统-----------------
 
-	S.dialog[title] = [];
-	let text = [];
-	let config = {};
+class Dlog {
+	logs = [];
+	option = {};
+	constructor(title) {
+		//获取事件完整文本，并进行解析转化
+		const raw = Story.get(title).text.split("\n");
+		this.logs = [];
+		this.option = {
+			title,
+			phase: 0,
+			next: "Next",
+			end: "End",
+		};
+		this.init(raw);
 
-	input.forEach((t) => {
-		if (t.includes("#:{")) {
-			t = t.replace("#:", "");
-			config = JSON.parse(t);
-		} else if (t.match(/^\/\*(.+)\*\/$/)) {
-			//注释要扣掉
-		} else {
-			text.push(t);
-		}
-
-		if (t === "<fr>" || input[input.length - 1] === t) {
-			S.dialog[title].push({ text, config });
-			config = {};
+		if (Config.debug) console.log(this.logs);
+	}
+	init(raw) {
+		let config,
 			text = [];
-		}
-	});
+		//解析事件文本，并清除注释
+		raw.forEach((line) => {
+			if (line[0] === "#") {
+				config = JSON.parse(line.replace("#:", "")) || {};
+			} else if (line.match(/^\/\*(.+)\*\/$/)) {
+				//注释要扣掉
+			} else {
+				text.push(line);
+			}
 
-	if (Config.debug) console.log("dialog", title, S.dialog[title]);
-};
+			if (line === "<fr>" || raw[raw.length - 1] === line) {
+				this.logs.push({ text, config });
+				config = {};
+				text = [];
+			}
+		});
+	}
+}
 
-//事件进程初始化
-F.initEvent = function () {
+window.Dlog = Dlog;
+
+//初始化事件标题
+Dlog.initTitle = function () {
 	const e = V.event;
 	let title = `${e.type}_${e.name}`;
 
@@ -76,116 +90,152 @@ F.initEvent = function () {
 };
 
 //当前dialog内容的初始化，同时记录回想节点。
-F.initDialog = function () {
+Dlog.init = function () {
 	const e = V.event;
 	let title = e.fullname;
 
 	if (e.ep) {
 		title += `_ep${e.ep}`;
-		F.recEventPoint("ep");
+		Dlog.record("ep");
 	}
 
 	if (e.sp) {
 		title += `:sp${e.sp}`;
-		F.recEventPoint("sp");
+		Dlog.record("sp");
 	}
 
-	F.initText(title);
+	S.dialog = new Dlog(title);
 	T.eventTitle = title;
-	const p = S.dialog[title][0];
-
+	const p = S.dialog.logs[0];
 	if (!p) return "";
 
-	const txt = txtp(p.text);
+	const txt = P.txt(p.text);
 	e.config = p.config;
 	e.next = "Next";
 
 	setTimeout(() => {
-		F.dialogFlow(txt);
+		P.flow(txt);
 		e.phase = 0;
 	}, 80);
 };
 
+//记录回想节点
+Dlog.record = function (c) {
+	const { type, id } = V.event;
+	const p = V.event[c];
+	let point;
+
+	if (c == "sp" && V.event.ep) {
+		point = `ep${V.event.ep}:sp${p}`;
+	} else {
+		point = `${c}${p}`;
+	}
+
+	if (!V.memory[type][id][c].includes(point)) {
+		V.memory[type][id][c].push(point);
+	}
+};
+
 //显示文本，并进行控制处理。
-F.dialogFlow = function () {
+Dlog.flow = function () {
 	const e = V.event;
-	const p = S.dialog[T.eventTitle][e.phase];
+	const pa = S.dialog.logs[e.phase];
+	console.log(e, pa);
 
-	if (!p) return "";
+	if (!pa) return "";
 
-	const txt = txtp(p.text);
+	const txt = P.txt(pa.text);
 	S.history.push(txt);
 
-	F.txtFlow(txt);
+	P.flow(txt);
 
 	e.config = {};
-	e.config = p.config;
+	e.config = pa.config;
 
-	const exit = p.config?.exitlink ? p.config.exitlink : "End";
+	const exit = pa.config?.exitlink ? pa.config.exitlink : "End";
 	const select = new SelectCase();
 
 	select.else("Next").case("return", "Back").case("endEvent", exit).case("end", "Continue");
 
-	if (!p.config?.type) p.config.type = "";
+	if (!pa.config?.type) pa.config.type = "";
 
-	e.next = select.has(p.config.type);
+	e.next = select.has(pa.config.type);
 
-	if (p.config.type == "onselect") {
+	if (pa.config.type == "onselect") {
 		e.selectwait = true;
 	}
 };
 
+Dlog.return = function () {
+	const e = V.event;
+	let { phase, com } = V.event.config;
+	if (!com) com = "";
+
+	if (phase) {
+		e.phase = phase;
+	}
+
+	e.sp = 0;
+	e.lastId = V.selectId;
+	V.selectId = 0;
+	if (com) new Wikifier("#hidden", com);
+	Dlog.init();
+};
+
+Dlog.endPhase = function () {
+	const e = V.event;
+	const c = e.config;
+	const com = c?.com ? c.com : "";
+	const list = ["name", "eid", "ch", "ep", "sp"];
+	list.forEach((key) => {
+		if (c?.[key]) e[key] = c[key];
+	});
+	e.phase = 0;
+	e.lastId = V.selectId;
+	V.selectId = 0;
+	e.sp = 0;
+
+	if (com) new Wikifier("#hidden", com);
+	Dlog.init();
+};
+
+Dlog.selectEnd = function () {
+	e.sp = V.selectId;
+	e.lastId = V.selectId;
+	if (com) new Wikifier(null, com);
+	Dlog.init();
+};
+
 //按下一步按钮或点击文本框时所进行的处理。
-F.nextDialog = function () {
+Dlog.next = function () {
 	const e = V.event;
 	const c = V.event.config;
 	const com = c?.com ? c.com : "";
 	const ch = T.eventTitle;
 
-	if (!e.selectwait && e.phase < S.dialog[ch].length) {
+	if (!e.selectwait && e.phase < S.dialog.logs.length) {
 		e.phase++;
-		F.dialogFlow(ch);
+		Dlog.flow();
 	}
 
-	if (e.selectwait) new Wikifier(null, "<<replace #next>> <</replace>>");
-	else new Wikifier(null, `<<replace #next>><<eventnext>><</replace>>`);
+	if (e.selectwait) ui.replace("next", "");
+	else ui.replace("next", "<<eventnext>>");
 
-	if (e.phase === S.dialog[ch].length) {
+	if (e.phase === S.dialog.logs.length) {
 		if (e.config.type == "return") {
-			if (c?.phase) e.phase = c.phase;
-			e.sp = 0;
-			e.lastId = V.selectId;
-			V.selectId = 0;
-
-			if (com) new Wikifier(null, com);
-			F.initDialog();
+			Dlog.return();
 		} else if (e.config.type == "endPhase") {
-			if (c?.name) e.name = c.name;
-			if (c?.eid) e.eid = c.eid;
-			if (c?.ch) e.ch = c.ch;
-			if (c?.ep) e.ep = c.ep;
-			if (c?.sp) e.sp = c.sp;
-
-			e.phase = 0;
-			e.lastId = V.selectId;
-			V.selectId = 0;
-			e.sp = 0;
-
-			if (com) new Wikifier(null, com);
-			F.initDialog();
+			Dlog.endPhase();
 		} else if (e.config.type == "jump") {
 			new Wikifier(null, `${com}<<timed 80ms>><<goto 'EventStart'>><</timed>>`);
 		} else if (e.config.type == "selectEnd") {
-			e.sp = V.selectId;
-			S.dialog = {};
-
-			if (com) new Wikifier(null, com);
-			F.initDialog();
+			Dlog.selectEnd();
 		} else {
 			if (!e.config?.exit) {
 				e.config.exit = S.defaultExit;
 				e.config.exitlink = "Continue";
 			}
+
 			V.mode = "normal";
 			new Wikifier(null, `${com}<<goto 'EventEnd'>>`);
 		}

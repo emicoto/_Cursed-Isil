@@ -9,12 +9,15 @@
 <div id='hidden' class='hidden'>you can't see me.</div>
 <div id='location'></div>
 <br>
-<div id='content' class='content' onClick='if(S.msg)F.ActNext();'>
+<div id='content' class='content' onClick='if(S.msg)Action.next();'>
     <div id='contentMsg'>
     </div>
 <div id="msg_end" style="height:0px; overflow:hidden"></div>
 </div>
+/* 持续中动作 */
+<div id='keeping'>
 
+</div>
 /* 主目录 */
 <div id='actionMenu_1'>
 
@@ -37,85 +40,85 @@
 </div>
 
 <script>
-F.initActionMode()
-F.initMainFlow()
-F.resetUI()
+Action.initMode()
+Action.updateMovement()
+Action.redraw()
 
-$('action').on('init', ()=>{
-   console.log('init action')
-    F.resetUI()
+$('action').on('reset', ()=>{
+   console.log('reset action')
+    Action.redraw()
     $('action').trigger('loop')
 })
 
 $('action').on('before', ()=>{
     console.log('before event', T.actId)
-    F.hideActions()
-    F.beforeAction(T.actId)    
-    F.showNext()
-	 F.ActNext();
+    Action.hide()
+    Action.before(T.actId)    
+    Action.shownext()
+	 Action.next();
 })
 
 $('action').on('cancel', ()=>{
    console.log('cancel action', T.actId)
-    F.resetLink()
+    ui.delink()
     F.actionCancel(T.actId)
 })
 
 $('action').on('failed', ()=>{
    console.log('failed action', T.actId)
-   F.resetLink()
+   ui.delink()
    F.actionFailed(T.actId)
 })
 
 $('action').on('stop', ()=>{
    //取消持续动作时。在持续动作一览中取消。
     console.log('stop event')
-    F.resetLink()
+    ui.delink()
 
 })
 
 $('action').on('event', ()=>{
    //玩家的动作事件。
     console.log('do event', T.actId)
-    F.resetLink()
+    ui.delink()
     F.doAction(T.actId)
 })
 
 $('action').on('counter', ()=>{
    //对象的攻势。如果是逆推状态，会先处理counter？
     console.log('counter event')
-    F.resetLink()
-    F.setPhase('keep')
+    ui.delink()
+    Action.phase('keep')
 })
 
 $('action').on('keep', ()=>{
    //持续动作、装备影响的描述和预处理
     console.log('keep event')
-    F.resetLink()
-    F.setPhase('result')
+    ui.delink()
+    Action.phase('result')
 })
 
 $('action').on('result', ()=>{
    //数据处理和显示
     console.log('result event')
-    F.resetLink()
+    ui.delink()
     F.passtime(T.passtime)
-    F.setPhase('after')
+    Action.phase('after')
 })
 
 $('action').on('after', ()=>{
    //数值变动事件（刻印获得素质获得等）和后续事件
     console.log('after event')
-    F.resetLink()
+    ui.delink()
     F.actionAfter(T.actId)
 })
 
 $('action').on('finish', ()=>{
    //一套流程结束时的处理
     console.log('finish event')
-    F.resetLink()
-    F.resetAction()
-    F.setPhase('init')
+    ui.delink()
+    Action.reset()
+    Action.phase('init')
 })
 
 </script>

@@ -69,7 +69,7 @@ F.sourceUp = function (chara) {
 		if (msg) retext.push(msg);
 	}
 
-	if (retext.length > 1) F.Msg(retext.join("<br>") + "<<dashline>>");
+	if (retext.length > 1) P.msg(retext.join("<br>") + "<<dashline>>");
 };
 
 F.trackCheck = function (chara, cid) {};

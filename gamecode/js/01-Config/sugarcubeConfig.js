@@ -7,10 +7,10 @@ Save.onLoad.add(function (save) {
 	window.onLoadUpdateCheck = true;
 });
 
-G.onReload = true;
+F.onReload = true;
 
 Save.onLoad.add(function (save) {
-	G.onLoad = true;
+	S.onLoad = true;
 	const data = sessionStorage.getItem("comFilter");
 	S.comFilter = JSON.parse(data);
 });

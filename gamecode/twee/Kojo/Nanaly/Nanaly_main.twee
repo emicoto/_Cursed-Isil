@@ -11,14 +11,7 @@ Kojo.set('Nanaly', '#66CCFF') //角色id与 名牌颜色
     .Schedule() //日程表
     //日程表填写顺序, 日程id(从0开始), [ '地点', [ 星期几 ], 起始时间,  结束时间,  滞留时长,  出现概率 ]
 
-    .Event({
-        name:'Test', //事件id, 英文名
-        title:'事件标题',
-        config:{},  // 设置项目, 暂时还没想好有啥可以设置
-        cond:()=>{
-            return V.system.debug  // 事件的执行条件. 根据flag,或其他参数进行设置
-        }
-    })
+    .Event()
 
 
 :: Kojo_Nanaly[widget]

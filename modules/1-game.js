@@ -1,21 +1,21 @@
 ;(function () {
 	'use strict';
 
-	function lan(txt, DEF) {
+	function lan(txt, ...txts) {
 	  let CN, EN;
 	  if (Array.isArray(txt)) {
 	    CN = txt[0];
 	    EN = txt[1] ? txt[1] : CN;
 	  }
-	  if (typeof txt === "string" && DEF) {
+	  if (typeof txt === "string") {
 	    CN = txt;
-	    EN = DEF;
+	    EN = txts[0] ? txts[0] : txt;
 	  }
-	  if (lang == "CN" && isValid(CN))
+	  if (lang == "CN" && CN)
 	    return CN;
-	  if (lang == "EN" && isValid(EN))
+	  if (lang == "EN" && EN)
 	    return EN;
-	  return DEF;
+	  return txt;
 	}
 	var language = "CN";
 	Object.defineProperties(window, {
@@ -28,6 +28,33 @@
 	      language = v;
 	    }
 	  }
+	});
+	String.prototype.has = function(...str) {
+	  if (Array.isArray(str[0]))
+	    str = str[0];
+	  for (let i = 0; i < str.length; i++)
+	    if (this.indexOf(str[i]) != -1)
+	      return true;
+	  return false;
+	};
+	Array.prototype.has = function(...str) {
+	  if (Array.isArray(str[0]))
+	    str = str[0];
+	  for (let i = 0; i < str.length; i++)
+	    if (this.indexOf(str[i]) != -1)
+	      return true;
+	  return false;
+	};
+	function percent(...num) {
+	  let min = num[0], max = num[1];
+	  if (num.length == 3) {
+	    min = num[1];
+	    max = num[2];
+	  }
+	  return Math.clamp(Math.trunc(min / max * 100), 1, 100);
+	}
+	Object.defineProperties(window, {
+	  percent: { value: percent }
 	});
 
 	class Item {
@@ -48,11 +75,15 @@
 	  Item: { value: Item }
 	});
 
-	class Chara {
+	const _Chara = class {
 	  static load(chara) {
 	    const { cid, name, gender, race: race2, kojo } = chara;
-	    const init = new Chara(cid, name, gender, race2, kojo, chara);
+	    const init = new _Chara(cid, name, gender, race2, kojo, chara);
 	    return init;
+	  }
+	  static new(cid, name, gender, race2, kojo) {
+	    _Chara.data[cid] = new _Chara(cid, name, gender, race2, kojo);
+	    return _Chara.data[cid];
 	  }
 	  constructor(id, name, gender, race2, kojo, chara) {
 	    if (chara) {
@@ -178,8 +209,6 @@
 	    if (groupmatch(part, "p", "a", "v")) {
 	      this.sexstats[part].wet = 0;
 	      this.sexstats[part].cum = 0;
-	      if (part == "p")
-	        this.sexstats[part].maxcum = this.sexstats[part].size * 50 + 50;
 	    }
 	    if (part == "p")
 	      this.setPenis(adj);
@@ -197,25 +226,21 @@
 	      this.setMouth();
 	    return this;
 	  }
+	  maxcum() {
+	    const p = this.sexstats.p;
+	    return (p.size * 50 + 50) * (p.trait.includes("\u6D53\u539A") ? 10 : 1);
+	  }
 	  setPenis(adj) {
-	    const Psize = [
-	      [60, 15],
-	      [90, 22],
-	      [120, 32],
-	      [140, 42],
-	      [160, 52],
-	      [180, 62],
-	      [210, 74],
-	      [250, 86]
-	    ];
+	    var _a, _b, _c, _d;
+	    let type = (_a = adj == null ? void 0 : adj.type) != null ? _a : "\u9634\u830E", trait = (_b = adj == null ? void 0 : adj.trait) != null ? _b : [], d = (_c = adj == null ? void 0 : adj.d) != null ? _c : 0, l = (_d = adj == null ? void 0 : adj.l) != null ? _d : 0;
+	    const Psize = _Chara.Psize;
 	    const P2 = this.sexstats.p;
 	    const size = Psize[P2.size];
-	    P2.type = (adj == null ? void 0 : adj.type) ? adj.type : "\u9634\u830E";
-	    P2.trait = (adj == null ? void 0 : adj.trait) ? adj.trait : [];
-	    P2.d = (adj == null ? void 0 : adj.d) ? adj.d : size[1] + random(-8, 8);
-	    P2.l = (adj == null ? void 0 : adj.l) ? adj.l : size[0] + random(-8, 8);
-	    if (P2.trait.includes("\u6D53\u539A"))
-	      P2.maxcum *= 10;
+	    P2.type = type;
+	    P2.trait = trait;
+	    P2.d = d ? d : size[1] + random(-8, 8);
+	    P2.l = l ? l : size[0] + random(-8, 8);
+	    P2.maxcum = this.maxcum();
 	    return this;
 	  }
 	  setCrit() {
@@ -223,18 +248,31 @@
 	    return this;
 	  }
 	  setVagi() {
-	    const bodysize = this.appearance.bodysize ? this.appearance.bodysize : 1;
-	    const max = bodysize * 2 - 2.4;
-	    this.sexstats.v.d = this.sexstats.v.size * max + 14 + random(-4, 4);
-	    this.sexstats.v.l = bodysize * 21 + 80 + random(-2, 8);
+	    this.sexstats.v.d = this.fixVagiDiameter();
+	    this.sexstats.v.l = this.GenerateVagiDepth();
 	    return this;
 	  }
+	  maxHoleSize() {
+	    return this.bodysize() * 2 - 2.4;
+	  }
+	  fixVagiDiameter() {
+	    const max = this.maxHoleSize();
+	    return this.sexstats.v.size * max + 14 + random(-2, 4);
+	  }
+	  GenerateVagiDepth() {
+	    return this.bodysize() * 21 + 80 + random(-4, 8);
+	  }
 	  setAnal() {
-	    const bodysize = this.appearance.bodysize ? this.appearance.bodysize : 1;
-	    const max = bodysize * 2 - 2.4;
-	    this.sexstats.a.d = this.sexstats.a.size * max + 12 + random(-4, 4);
-	    this.sexstats.a.l = bodysize * 32 + 140 + random(-2, 8);
+	    this.sexstats.a.d = this.fixAnalDiameter();
+	    this.sexstats.a.l = this.GenerateAnalDepth();
 	    return this;
+	  }
+	  fixAnalDiameter() {
+	    const max = this.maxHoleSize();
+	    return this.sexstats.a.size * max + 12 + random(-2, 4);
+	  }
+	  GenerateAnalDepth() {
+	    return this.bodysize() * 32 + 140 + random(-4, 8);
 	  }
 	  setBreast(adj) {
 	    this.sexstats.b.maxmilk = (adj == null ? void 0 : adj.maxmilk) ? adj.maxmilk : 0;
@@ -242,19 +280,39 @@
 	    return this;
 	  }
 	  setUrin() {
-	    var _a, _b;
-	    const size = this.sexstats.u.size;
-	    const bodysize = this.appearance.bodysize ? this.appearance.bodysize : 1;
-	    let up = bodysize / 2 + 0.5;
-	    if (this.gender == "male")
-	      up = 1;
-	    this.sexstats.u.d = size * up + 0.5 + random(-2, 4) / 10;
-	    this.sexstats.u.l = ((_b = (_a = this.sexstats) == null ? void 0 : _a.p) == null ? void 0 : _b.l) ? this.sexstats.p.l + random(24, 40) : 42 + random(1, 20) + bodysize * 6;
+	    this.sexstats.u.size;
+	    this.sexstats.u.d = this.fixUrinDiameter();
+	    this.sexstats.u.l = this.GenerateUrinDepth();
 	    if (this.gender === "female") {
 	      this.sexstats.u.wet = 0;
 	      this.sexstats.u.cum = 0;
 	    }
 	    return this;
+	  }
+	  bodysize() {
+	    if (this.appearance.bodysize === void 0)
+	      this.appearance.bodysize = 2;
+	    const { bodysize } = this.appearance;
+	    return bodysize ? bodysize : 1;
+	  }
+	  MaxUrinhole() {
+	    const bodysize = this.bodysize();
+	    let max = bodysize / 2 + 0.5;
+	    if (this.gender !== "female")
+	      max = 1;
+	    return max;
+	  }
+	  fixUrinDiameter() {
+	    const max = this.MaxUrinhole();
+	    const size = this.sexstats.u.size;
+	    return size * max + 0.5 + random(-2, 4) / 10;
+	  }
+	  GenerateUrinDepth() {
+	    var _a, _b;
+	    const penis = (_b = (_a = this.sexstats) == null ? void 0 : _a.p) == null ? void 0 : _b.l;
+	    if (penis)
+	      return penis + random(24, 40);
+	    return 42 + random(1, 20) + this.bodysize() * 6;
 	  }
 	  setMouth() {
 	    const size = [30, 40, 50, 60, 70, 80];
@@ -297,7 +355,7 @@
 	  }
 	  initVirginity() {
 	    this.virginity = {};
-	    const list = ["kiss", "oral", "penis", "anal", "analsex", "vigina", "viginasex", "handholding", "footjob"];
+	    const list = clone(D.virginity);
 	    if (this.gender === "male")
 	      list.splice(5, 2);
 	    if (this.gender === "female")
@@ -308,15 +366,15 @@
 	    return this;
 	  }
 	  setNames(names) {
-	    if (names.v)
+	    if (names == null ? void 0 : names.v)
 	      this.name = names.v;
-	    if (names.m)
+	    if (names == null ? void 0 : names.m)
 	      this.middlename = names.m;
-	    if (names.s)
+	    if (names == null ? void 0 : names.s)
 	      this.surname = names.s;
-	    if (names.n)
+	    if (names == null ? void 0 : names.n)
 	      this.nickame = names.n;
-	    if (names.c)
+	    if (names == null ? void 0 : names.c)
 	      this.callname = names.c;
 	    this.fullname = `${this.name}${this.middlename ? "\u30FB" + this.middlename : ""}${this.surname ? "\u30FB" + this.surname : ""}`;
 	    return this;
@@ -349,19 +407,19 @@
 	    this.skill = arr;
 	    return this;
 	  }
-	  setStats(arr) {
+	  setStats(obj) {
 	    D.stats.forEach((k) => {
-	      if (arr[k])
-	        this.stats[k] = [arr[k], arr[k]];
+	      if (obj[k])
+	        this.stats[k] = [obj[k], obj[k]];
 	      else if (!this.stats[k])
 	        this.stats[k] = [10, 10];
 	      this.flag[`base${k}`] = this.stats[k][0];
 	    });
 	    return this;
 	  }
-	  setAbility(arr) {
-	    for (let i in arr) {
-	      this.abl[i].lv = arr[i];
+	  setAbility(obj) {
+	    for (let i in obj) {
+	      this.abl[i].lv = obj[i];
 	    }
 	    return this;
 	  }
@@ -378,25 +436,73 @@
 	    }
 	    return this;
 	  }
-	  setAppearance(set) {
+	  getExp(exp, value) {
+	    this.exp[exp].total += value;
+	    if (!this.uncons()) {
+	      this.exp[exp].aware += value;
+	    }
+	    this.expUp[exp] = value;
+	    return this;
+	  }
+	  getBase(key, value) {
+	    this.base[key][0] += value;
+	    return this;
+	  }
+	  getPalam(key, value) {
+	    this.palam[key][1] += value;
+	    return this;
+	  }
+	  uncons() {
+	    return this.state.has("\u7761\u7720", "\u6655\u53A5");
+	  }
+	  unable() {
+	    return this.state.has("\u62D8\u675F", "\u77F3\u5316") || cond.isEnergetic(this, 30);
+	  }
+	  active() {
+	    return !this.state.has("\u7761\u7720", "\u6655\u53A5", "\u62D8\u675F", "\u77F3\u5316", "\u7CBE\u795E\u5D29\u6E83") && !cond.baseLt(this, "health", 0.05) && !cond.baseLt(this, "sanity", 10) && !cond.baseLt(this, "stamina", 10);
+	  }
+	  bp() {
+	    const s = this.stats;
+	    return s.STR[1] * 15 + s.CON[1] * 8 + s.DEX[1] * 8 + s.INT[1] * 8 + s.WIL[1] * 10 + s.PSY[1];
+	  }
+	  setAppearance({
+	    eyecolor = "\u84DD\u8272",
+	    haircolor = "\u91D1\u8272",
+	    hairstyle = "\u6563\u53D1",
+	    skincolor = "\u5065\u5EB7",
+	    bodysize,
+	    tall,
+	    weight = 0
+	  }) {
 	    const appearance = {
-	      eyecolor: set["eyecolr"] ? set["eyecolr"] : "\u84DD\u8272",
-	      haircolor: set["haircolor"] ? set["haircolor"] : "\u91D1\u8272",
-	      hairstyle: set["hairstyle"] ? set["hairstyle"] : "\u6563\u53D1",
-	      skincolor: set["skincolor"] ? set["skincolor"] : "\u5065\u5EB7",
-	      beauty: F.setBeauty(this),
-	      bodysize: set["bodysize"] ? set["bodysize"] : set["tall"] ? Math.floor((set["tall"] - 1350) / 150) : 2,
-	      tall: set["tall"] ? set["tall"] : set["bodysize"] ? set["bodysize"] * 150 + 1300 + random(1, 148) : 1704,
-	      weight: set["weight"] ? set["weight"] : 0
+	      eyecolor,
+	      haircolor,
+	      hairstyle,
+	      skincolor,
+	      beauty: fix.beauty(this),
+	      bodysize: bodysize !== void 0 ? bodysize : tall ? this.GenerateBodysize(tall) : 2,
+	      tall: tall ? tall : bodysize ? this.GenerateTall() : 1704,
+	      weight
 	    };
 	    if (!appearance.weight) {
-	      let tall = appearance.tall / 1e3;
-	      appearance.weight = Math.floor(tall * tall * 19 + 0.5) + random(1, 20) / 10;
+	      appearance.weight = this.GenerateWeight(appearance.tall);
 	    }
 	    for (let i in appearance) {
 	      this.appearance[i] = appearance[i];
 	    }
 	    return this;
+	  }
+	  GenerateTall(size) {
+	    const bodysize = size !== void 0 ? size : this.appearance.bodysize;
+	    return bodysize * 150 + 1300 + random(1, 148);
+	  }
+	  GenerateBodysize(_tall) {
+	    const tall = _tall ? _tall : this.appearance.tall;
+	    return Math.floor((tall - 1350) / 150);
+	  }
+	  GenerateWeight(_tall) {
+	    const tall = _tall / 1e3;
+	    return Math.floor(tall * tall * 19 + 0.5) + random(1, 20) / 10;
 	  }
 	  setVirginity(part, target, time, situation) {
 	    this.virginity[part] = [target, time, situation];
@@ -451,21 +557,34 @@
 	    }
 	    return this;
 	  }
-	}
+	};
+	let Chara = _Chara;
+	Chara.data = {};
+	Chara.Psize = [
+	  [60, 15],
+	  [90, 22],
+	  [120, 32],
+	  [140, 42],
+	  [160, 52],
+	  [180, 62],
+	  [210, 74],
+	  [250, 86]
+	];
 	Object.defineProperties(window, {
-	  Chara: { value: Object.freeze(Chara) }
+	  Chara: { value: Chara }
 	});
 
 	window.database = {};
-	window.gameutils = {};
+	window.gameutils = {
+	  condition: {},
+	  UI: {},
+	  printer: {},
+	  utils: {},
+	  fix: {}
+	};
 	window.gamedata = {};
 	window.languagedata = {};
 	Object.defineProperties(window, {
-	  G: {
-	    get: function() {
-	      return window.game;
-	    }
-	  },
 	  D: {
 	    get: function() {
 	      return window.gamedata;
@@ -483,7 +602,27 @@
 	  },
 	  F: {
 	    get: function() {
-	      return window.gameutils;
+	      return window.gameutils.utils;
+	    }
+	  },
+	  ui: {
+	    get: function() {
+	      return window.gameutils.UI;
+	    }
+	  },
+	  P: {
+	    get: function() {
+	      return window.gameutils.printer;
+	    }
+	  },
+	  cond: {
+	    get: function() {
+	      return window.gameutils.condition;
+	    }
+	  },
+	  fix: {
+	    get: function() {
+	      return window.gameutils.fix;
 	    }
 	  }
 	});

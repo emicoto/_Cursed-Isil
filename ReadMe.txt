@@ -122,7 +122,7 @@ Command.twee
         .Check(()=>{
              这个方法中可以写执行条件的检测。
              如果只有一个条件。可以直接return条件式
-             如：return F.baseCheck(player, 'stamina', 'max')
+             如：return cond.baseLt(player, 'stamina', 'max')
 
              F.bascCheck是一个检测base数值的快捷方式。代入参数顺序为：player或target， 需要检测的变量名称， 百分比数值。
              数值输入 max 的话，会自动解析为 上限值的 100%
@@ -202,7 +202,7 @@ CommandLoop.twee
   指令主界面的设计文件。
   <div id='location'> 这里会显示地点信息. </div>
   <div id='content class='content' onClick='if(S.
-  msg) F.ComNext()'> 
+  msg) Com.next()'> 
      <div id='contentMsg'> 这里会显示主要文本. 点击文本面板会自动刷新下一段文本.方便连打跳过. </div>
      <div id='msg_end' style='height:0px ;overflow:hidden'> 这里是文本底部, 用于自动滚动.不要动.</div>
   </div>
@@ -247,7 +247,7 @@ CommandLoop.js
   timeprocess.js
 
   F.timezone 获取时间带名称
-  F.showtime 根据设置显示当前游戏内日期和时间
+  p.time 根据设置显示当前游戏内日期和时间
 
   F.passtime 时间经过处理总控制。 代入参数是经过的时间
 

@@ -9,7 +9,7 @@ Action.set("Interaction")
 
 		if (Flag.mode < 1) Flag.mode = 1;
 
-		new Wikifier(null, `<<run F.txtFlow(F.playerName()+'<<you>>和$target.name打了个招呼并走近对方。',30,1)>>`);
+		new Wikifier(null, `<<run P.flow(p.playerName()+'<<you>>和$target.name打了个招呼并走近对方。',30,1)>>`);
 	});
 
 /* 接触 */
@@ -27,14 +27,14 @@ Action.set("Touch")
 Action.set("TrySex")
 	.Filter(() => {
 		if (pc === tc) return 0;
-		return Flag.mode < 3;
+		return 1;
 	})
 	.Check(() => {
 		//debug模式以及推倒中随时可点。
 		if (V.system.debug || V.mode == "train") return 1;
 
 		//对方失去意识+没有其他人
-		if (F.uncons(target) && V.location.chara.length <= 2) return 1;
+		if (cond.isUncons(target) && V.location.chara.length <= 2) return 1;
 
 		//暂且这样……之后导入TW的理性之壁和好感之壁进行判断(￣▽￣")
 		if (Cflag[tc].favo < 1000) {
@@ -51,13 +51,13 @@ Action.set("TrySex")
 		if (V.mode == "train") {
 			return "结束";
 		}
-		if (F.uncons(target)) {
+		if (cond.isUncons(target)) {
 			return "眠奸";
 		}
 		return "推倒";
 	})
 	.Effect(() => {
-		if (Flag.mode < 4) Flag.mode = 4;
+		if (Flag.mode < 3) Flag.mode = 3;
 
 		if (V.mode !== "train") {
 			V.mode = "train";
@@ -164,7 +164,7 @@ Action.set("Combat").Filter(() => {
 
 /* 魔法 */
 Action.set("Magic").Filter(() => {
-	return F.canSpeak(player);
+	return cond.canSpeak(player);
 });
 
 /* 道具 */

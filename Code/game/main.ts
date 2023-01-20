@@ -18,21 +18,26 @@ declare global {
 		F;
 		lan;
 		lang;
+		Act;
+		Using;
+		ui; // ui control
+		P; // text/ img/ buttons printer
+		cond; //condition short cut
 	}
 }
 
 window.database = {};
-window.gameutils = {};
-window.gamedata = {};
+window.gameutils = {
+	condition: {},
+	UI: {},
+	printer: {},
+	utils: {},
+	fix: {},
+};
+window.gamedata = {}; //游戏资料
 window.languagedata = {};
 
 Object.defineProperties(window, {
-	G: {
-		get: function () {
-			return window.game;
-		},
-	},
-
 	D: {
 		get: function () {
 			return window.gamedata;
@@ -53,7 +58,27 @@ Object.defineProperties(window, {
 
 	F: {
 		get: function () {
-			return window.gameutils;
+			return window.gameutils.utils;
+		},
+	},
+	ui: {
+		get: function () {
+			return window.gameutils.UI;
+		},
+	},
+	P: {
+		get: function () {
+			return window.gameutils.printer;
+		},
+	},
+	cond: {
+		get: function () {
+			return window.gameutils.condition;
+		},
+	},
+	fix: {
+		get: function () {
+			return window.gameutils.fix;
 		},
 	},
 });

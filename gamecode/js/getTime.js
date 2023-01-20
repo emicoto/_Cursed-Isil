@@ -1,7 +1,7 @@
 const weeks = ["暗", "光", "火", "水", "木", "雷", "土"];
 const weekcolor = ["C770FF", "F9FEA8", "FF7447", "8FE1F9", "BFE83F", "E4FCFE", "E1C57A"];
 
-F.timeZone = function (h) {
+P.timeZone = function (h) {
 	const select = new SelectCase();
 
 	select
@@ -17,7 +17,7 @@ F.timeZone = function (h) {
 	return select.has(h);
 };
 
-F.season = function () {
+P.season = function () {
 	const select = new SelectCase();
 	select.case([3, 5], '<span style="color:#FF84AF">春</span>');
 	select.case([6, 8], '<span style="color:#84E7FF">夏</span>');
@@ -26,15 +26,17 @@ F.season = function () {
 	return select.has(V.date.month);
 };
 
-F.showtime = function () {
+P.week = function () {
+	return `<span style='color:#${weekcolor[V.date.week]}'>${weeks[V.date.week]}</span>`;
+};
+
+P.time = function () {
 	const date = V.date;
 
-	let timeString = `${F.season()} · ${date.month}/${date.day} (<span style='color:#${weekcolor[date.week]}'>${
-		weeks[date.week]
-	}</span>)`;
+	let timeString = `${P.season()} · ${date.month}/${date.day} (${P.week()})`;
 	let hours = Math.floor(date.time / 60);
 	let minutes = date.time % 60;
-	let timezone = F.timeZone(hours);
+	let timezone = P.timeZone(hours);
 
 	if (V.timemode === 12) {
 		let ampm = "AM";

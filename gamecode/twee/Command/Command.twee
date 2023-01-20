@@ -30,7 +30,7 @@ Com.set('G0')
 /* 注册指令事件*/
 Com.set('G1')
     .Check(()=>{ 
-        return F.baseCheck(player, 'stamina', 'max')
+        return cond.baseLt(player, 'stamina', 'max')
     })
     .Effect(()=>{ 
         Source[pc].stamina += 30 
@@ -63,7 +63,7 @@ Com.set('G2')
 
 :: Com_G2::Cancel
 <<you>>试着跟对方搭话，
-<<if !F.canSpeak($target)>>
+<<if !cond.canSpeak($target)>>
 可惜$target.name没有能力回应<<you>>。
 <<else>>
 但$target.name并没有心情理会<<you>>。
@@ -106,14 +106,14 @@ Com.set('T4')
 <<you>>轻轻握住了$target.name的阴茎，缓缓地前后撸动。<br>
 
 :: Com_T5
-<<you>>将手指探入$target.name的<<=F.splitSex($target,'菊穴','秘穴')>>在入口附近摩擦着。<br>
+<<you>>将手指探入$target.name的<<=P.splitSex($target,'菊穴','秘穴')>>在入口附近摩擦着。<br>
 
 
 :: Com_T99::Script[script]
 Com.set('T99')
    .Name(()=>{
         if(V.mode !== 'train'){
-            if(F.uncons(target)){
+            if(cond.isUncons(target)){
                 return '眠奸';                
             }           
             return '推倒';
@@ -126,7 +126,7 @@ Com.set('T99')
         if(V.debug)
             return true;
 
-        if(F.uncons(target)){
+        if(cond.isUncons(target)){
             return true;
         }
         
@@ -182,10 +182,10 @@ Com.set('X1')
     })
     .Effect(()=>{
         Source[tc].esB += 100
-        Source[tc].resist += Math.floor(1000 - F.Exp(tc, '触手奸')/5)
+        Source[tc].resist += Math.floor(1000 - p.exp(tc, '触手奸')/5)
 
-        F.getExp(target, '触手奸', random(3));
-        F.getExp(target, 'B', random(2));
+        Chara.getexp(target, '触手奸', random(3));
+        Chara.getexp(target, 'B', random(2));
     })
     .ForceAble()
 
@@ -223,10 +223,10 @@ Com.set('X2')
     })
     .Effect(()=>{
         Source[tc].esB += 100
-        Source[tc].resist += Math.floor(1000 - F.Exp(tc, '触手奸')/5)
+        Source[tc].resist += Math.floor(1000 - p.exp(tc, '触手奸')/5)
 
-        F.getExp(target, '触手奸', random(3));
-        F.getExp(target, 'B', random(2));
+        Chara.getexp(target, '触手奸', random(3));
+        Chara.getexp(target, 'B', random(2));
     })
 
 

@@ -1,4 +1,4 @@
-F.initGame = function () {
+game.init = function () {
 	//-------->> 记录类变量 <<-----------//
 	S.dialog = {};
 	S.history = [];
@@ -82,9 +82,9 @@ F.initGame = function () {
 	};
 };
 
-F.gameStart = function (skip) {
-	player.fullname = `${player.name}·${player.surname}`;
-	target.fullname = `${target.name}·${target.middlename}·${target.surname}`;
+game.start = function (skip) {
+	player.setNames();
+	target.setNames();
 
 	if (!skip) {
 		F.setEvent("Story", "Opening");

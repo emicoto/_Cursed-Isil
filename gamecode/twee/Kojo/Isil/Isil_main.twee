@@ -1,18 +1,31 @@
 :: Kojo_Isil_Regist[script]
 /* 代码区，用于注册角色颜色、额外的设定、flag信息等 */
+
 Kojo.set('Isil','#F9F570')
-    .Intro('光属性的高等精灵。') //角色简介。
+    //角色介绍
+    .Intro('光属性的高等精灵。') 
+    //起始点
     .Home('学生宿舍S302')
-    .Relation('Ayres', '亦敌亦友', 110) // id, 关系描述, 相性值
-    .Schedule(0,['魔法研究室',[1,3,5], 8, 12, 3, 80]) //日程表, 场所, 星期几， 起始时间, 结束时间, 在该地点成功召唤后滞留时长, 召唤概率 
-    .Schedule(0, ['宿舍S303', 'allday', 20, 8, 12, 100]) //日程表
-    .Event({ 
-        name:'Test',
-        config:{  }, //一些额外处理？暂时没想到……
-        cond:()=>{ //事件执行条件。
-            return V.system.debug
-        }
-    })
+
+    //关系性
+    .Relation('Ayres', '亦敌亦友', 110) 
+
+    //日程表
+    .Schedule(0,['魔法研究室',[1,3,5], 8, 12, 3, 80]) 
+    .Schedule(0, ['宿舍S303', 'allday', 20, 8, 12, 100])
+
+    //事件表
+    .Event(0, 
+    { id:'CookTry' , 
+      title:' 伊希露的烹饪尝试', 
+      config:{
+         onEnd:{ cookTry:[1]  }
+      },
+      cond:()=>{
+         return !Cflag.Isil.cookTry && Tsv.Isil.lastAction === 'Cook' && tc === 'Isil'
+    } }) 
+
+    //自定义动作
     .Action(0,{id:'Isil_Research',name:'研究进展',type:'C'})
 
 :: Kojo_Isil_Actions_Option[script]

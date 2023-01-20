@@ -14,23 +14,21 @@ Action.set("t0")
 
 /* 亲吻 */
 Action.set("t1")
-	.Filter(() => {
-		return 1;
-	})
-	.Check((part) => {
-		if (!part) return 1;
-
+	//过滤器自带可选部位的判断
+	.Filter((part) => {
 		switch (part) {
 			case "breast":
 			case "foot":
 			case "butts":
 			case "thighs":
 			case "abdomen":
-				//if(!target.flag.nude)
-				return 0;
+				if (!Tsv[tc].nude) return 0;
 			default:
 				return 1;
 		}
+	})
+	.Check(() => {
+		return 1;
 	})
 	.Order(() => {
 		return 0;
@@ -118,13 +116,12 @@ Action.set("t8")
 	})
 	.Order(() => {
 		return 0;
-	})
-	.Script("<<set _inside to 1>>");
+	});
 
 /* 抽插 */
 Action.set("t9")
 	.Filter(() => {
-		return 1;
+		return T.inside;
 	})
 	.Check(() => {
 		return 1;
@@ -160,7 +157,7 @@ Action.set("t11")
 /* 深入 */
 Action.set("t12")
 	.Filter(() => {
-		return 1;
+		return T.inside;
 	})
 	.Check(() => {
 		return 1;

@@ -46,3 +46,11 @@ S.defaultMode = "event";
 
 //物品价格倍率
 S.defaultPriceFactor = 2;
+
+//动作模式下各分类的基础配合值。
+S.orderConfig = {
+	touch: 20,
+	sextoy: 30,
+	tentacles: 50,
+	pose: 50,
+};

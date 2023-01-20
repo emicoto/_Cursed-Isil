@@ -36,6 +36,6 @@ Era the Cursed
 准备好了吗？ 准备好就开始吧。<br>
 
 <br>
-<<link '开始游戏' 'EventStart'>><<run F.gameStart()>><</link>><br>
-<<link '跳过片头直接开始' 'MainLoop'>><<run F.gameStart(1)>><</link>>
+<<link '开始游戏' 'EventStart'>><<run game.start()>><</link>><br>
+<<link '跳过片头直接开始' 'MainLoop'>><<run game.start(1)>><</link>>
 <br><br> 

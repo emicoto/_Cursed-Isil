@@ -40,11 +40,11 @@ Action.set("fall")
 		return !Flag.master;
 	})
 	.Event(() => {
-		new Wikifier(null, `<<run F.txtFlow(Story.get('FallToDeep').text, 60, 1)>>`);
+		new Wikifier(null, `<<run P.flow(Story.get('FallToDeep').text, 60, 1)>>`);
 	});
 
 Action.set("sleep").Filter(() => {
-	return V.location.id == "A0" && (V.date.time >= 1200 || F.baseCheck(player, "stamina", 0.5)) && pc !== "m0";
+	return V.location.id == "A0" && (V.date.time >= 1200 || cond.baseLt(player, "stamina", 0.5)) && pc !== "m0";
 });
 
 Action.set("rise")
@@ -53,7 +53,7 @@ Action.set("rise")
 	})
 	.Event(() => {
 		Flag.master = 0;
-		new Wikifier(null, `<<run F.txtFlow(Story.get('RiseToSurface').text, 60, 1)>>`);
+		new Wikifier(null, `<<run P.flow(Story.get('RiseToSurface').text, 60, 1)>>`);
 	});
 
 Action.set("resetMode")
@@ -63,7 +63,7 @@ Action.set("resetMode")
 	.Event(() => {
 		Flag.mode = 0;
 		V.mode = "normal";
-		new Wikifier(null, `<<run F.txtFlow(F.playerName()+'<<you>>从$target.name身边走开了。',30,1)>>`);
+		new Wikifier(null, `<<run P.flow(p.playerName()+'<<you>>从$target.name身边走开了。',30,1)>>`);
 	});
 
 Action.set("stopTouch")
@@ -72,5 +72,5 @@ Action.set("stopTouch")
 	})
 	.Event(() => {
 		Flag.mode = 1;
-		//new Wikifier(null, `<<run F.txtFlow(F.playerName()+'<<you>>把手从$target.name身上挪开了。',30,1)>>`)
+		//new Wikifier(null, `<<run P.flow(p.playerName()+'<<you>>把手从$target.name身上挪开了。',30,1)>>`)
 	});
