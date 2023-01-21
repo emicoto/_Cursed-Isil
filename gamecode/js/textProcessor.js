@@ -32,7 +32,7 @@ P.convertSelection = function (text) {
 	if (replace) {
 		html = `<br><<selection replace>>${selection}<</selection>>`;
 	} else {
-		html = `<br><<selection>>${selection}<</selection>>`;
+		html = `<br><<selection event>>${selection}<</selection>>`;
 	}
 	return text.replace(txt[0], html);
 };

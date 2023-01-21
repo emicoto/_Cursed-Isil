@@ -4,30 +4,7 @@
 /* 地点一览：学院广场，教学栋，宿舍，研究所，图书馆，博物馆，城镇街道，水族馆，植物园，动物园 */
 
 
-:: Kojo_Isil[widget]
-/* macro定义区 */
 
-:: Kojo_Isil_Event_First::Before
-<<set $event.id = 'CE_1'>>
-<<run F.setMemory('CE_1',`${C['Isil'].name} - 初遇`,'Isil')>>
-
-:: Kojo_Isil_Event_Test
-一个测试。
-
-
-:: Kojo_Isil_Event_First
-/* 首次登场 */
-当<<you>>回到宿舍时，就发现伊希露已经早早回到了宿舍中。
-
-回想着昨天的画面，不禁多看了伊希露几眼，却惨遭对方嫌弃。
-“……我脸上有什么吗？”
-<fr>
-“看你好看啊。” <<you>>轻松地避开了对方白眼，浅笑道，“魔力增长的感觉到底是怎样的？”
-“也就这样。”伊希露摇了摇头，“就多了两三点。”
-
-:: Kojo_Isil_Daily_First
-/* 每日第一次接触时 */
-“……早。”伊希露冷冷地打个招呼就去洗漱了。<br>
 
 
 :: Kojo_Isil_Com

@@ -17,23 +17,28 @@
 
 :: MainType_EventName_ChapterName_ep1
 事件章节的分段1
-#:select:无视,event|抗议,event:# /* 选项。#:select: 选项A | 选项B :#  选项A 加逗号后可增加设置tag。输入数字可指定选项的id，输入event可自动设置s1,s2,sp1,sp2的处理*/
+#:select:无视|抗议:# 
+/* 选项 #:select: 选项A | 选项B :# */
+会对选项进行自动分配。选择后就会跳到sp1,sp2，并执行s1,s2内的处理。
+用这个方法处理分支的话，在回想模式下就不会因为选项的结果处理，而影响现有的flag和数据了。
 
 //选项处理
 :: MainType_EventName_ChapterName_ep1:s1
-<<set $temp to 1>>
-/* 这里塞flag操作跟数据处理 */
+<<set Cflag['cid'].temp to 1>>
+/* 这里塞flag操作跟数据处理. Cflag就是角色个人的flag设置。cid替换为角色id。
+temp可以替换为任意英文变量命名。 */
 
 :: MainType_EventName_ChapterName_ep1:s2
-<<set $temp to 2>>
+<<set Cflag['cid'].temp to 2>>
 /* 这里塞flag操作跟数据处理 */
 
 :: MainType_EventName_ChapterName_ep1:sp1
-#:{ "type":"end", ep:2 }
+#:{ "type":"endPhase", ep:2 }
 选项1结果文本。事件模式才需要。
 
 :: MainType_EventName_ChapterName_ep1:sp2
-#:{ "type":"end", ep:2 } /* 分段第一行可以加JSON进行设置。结束时需要，进行判断文本录入结束。 如果不指定出口，就会回到事件开头。 */
+#:{ "type":"endPhase", ep:2 } 
+/* 分段第一行可以加JSON进行设置。结束时需要，用来设置下一个分支段落。 */
 选项2结果文本。事件模式才需要。
 
 

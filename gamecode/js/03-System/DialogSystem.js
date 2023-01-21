@@ -152,10 +152,10 @@ Dlog.flow = function () {
 	e.config = {};
 	e.config = pa.config;
 
-	const exit = pa.config?.exitlink ? pa.config.exitlink : "End";
+	const exit = pa.config?.exitlink ? pa.config.exitlink : "Next";
 	const select = new SelectCase();
 
-	select.else("Next").case("return", "Back").case("endEvent", exit).case("end", "Continue");
+	select.else(exit).case("return", "Back").case("jump", "End").case("endEvent", "Continue");
 
 	if (!pa.config?.type) pa.config.type = "";
 
@@ -168,7 +168,7 @@ Dlog.flow = function () {
 
 Dlog.return = function () {
 	const e = V.event;
-	let { phase, com } = V.event.config;
+	let { phase, com, ep } = V.event.config;
 	if (!com) com = "";
 
 	if (phase) {
@@ -186,17 +186,37 @@ Dlog.endPhase = function () {
 	const e = V.event;
 	const c = e.config;
 	const com = c?.com ? c.com : "";
+	const list = ["name", "eid", "ch", "ep"];
+	let set;
+	list.forEach((key) => {
+		if (c?.[key]) {
+			e[key] = c[key];
+			set = 1;
+		}
+	});
+
+	if (!set) e.ep++;
+
+	e.phase = 0;
+	e.lastId = V.selectId;
+	V.selectId = 0;
+
+	if (!c.sp) e.sp = 0;
+
+	if (com) new Wikifier("#hidden", com);
+	Dlog.init();
+};
+
+Dlog.jump = function () {
+	const e = V.event;
+	const c = e.config;
+	const com = c?.com ? c.com : "";
 	const list = ["name", "eid", "ch", "ep", "sp"];
 	list.forEach((key) => {
 		if (c?.[key]) e[key] = c[key];
 	});
-	e.phase = 0;
-	e.lastId = V.selectId;
-	V.selectId = 0;
-	e.sp = 0;
 
-	if (com) new Wikifier("#hidden", com);
-	Dlog.init();
+	new Wikifier(null, `${com}<<timed 80ms>><<goto 'EventStart'>><</timed>>`);
 };
 
 Dlog.selectEnd = function () {
@@ -211,7 +231,6 @@ Dlog.next = function () {
 	const e = V.event;
 	const c = V.event.config;
 	const com = c?.com ? c.com : "";
-	const ch = T.eventTitle;
 
 	if (!e.selectwait && e.phase < S.dialog.logs.length) {
 		e.phase++;
@@ -227,7 +246,7 @@ Dlog.next = function () {
 		} else if (e.config.type == "endPhase") {
 			Dlog.endPhase();
 		} else if (e.config.type == "jump") {
-			new Wikifier(null, `${com}<<timed 80ms>><<goto 'EventStart'>><</timed>>`);
+			Dlog.jump();
 		} else if (e.config.type == "selectEnd") {
 			Dlog.selectEnd();
 		} else {
