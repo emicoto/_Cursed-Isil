@@ -45,7 +45,7 @@ export interface appearance {
 export interface Chara {
 	cid: string;
 	name: string;
-	middlename?: string;
+	midname?: string;
 	surname?: string;
 	fullname?: string;
 	nickame?: string;
@@ -130,7 +130,7 @@ export class Chara {
 		} else {
 			this.cid = id;
 			this.name = name;
-			this.middlename = "";
+			this.midname = "";
 			this.surname = "";
 			this.fullname = "";
 
@@ -454,11 +454,11 @@ export class Chara {
 
 	setNames(names?: iName) {
 		if (names?.v) this.name = names.v;
-		if (names?.m) this.middlename = names.m;
+		if (names?.m) this.midname = names.m;
 		if (names?.s) this.surname = names.s;
 		if (names?.n) this.nickame = names.n;
 		if (names?.c) this.callname = names.c;
-		this.fullname = `${this.name}${this.middlename ? "・" + this.middlename : ""}${
+		this.fullname = `${this.name}${this.midname ? "・" + this.midname : ""}${
 			this.surname ? "・" + this.surname : ""
 		}`;
 		return this;

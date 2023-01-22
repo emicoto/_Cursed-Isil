@@ -1587,7 +1587,7 @@ Object.defineProperty(String.prototype, "readBracketedList", {
 	    } else {
 	      this.cid = id;
 	      this.name = name;
-	      this.middlename = "";
+	      this.midname = "";
 	      this.surname = "";
 	      this.fullname = "";
 	      this.gender = gender;
@@ -1863,14 +1863,14 @@ Object.defineProperty(String.prototype, "readBracketedList", {
 	    if (names == null ? void 0 : names.v)
 	      this.name = names.v;
 	    if (names == null ? void 0 : names.m)
-	      this.middlename = names.m;
+	      this.midname = names.m;
 	    if (names == null ? void 0 : names.s)
 	      this.surname = names.s;
 	    if (names == null ? void 0 : names.n)
 	      this.nickame = names.n;
 	    if (names == null ? void 0 : names.c)
 	      this.callname = names.c;
-	    this.fullname = `${this.name}${this.middlename ? "\u30FB" + this.middlename : ""}${this.surname ? "\u30FB" + this.surname : ""}`;
+	    this.fullname = `${this.name}${this.midname ? "\u30FB" + this.midname : ""}${this.surname ? "\u30FB" + this.surname : ""}`;
 	    return this;
 	  }
 	  setTitle(str) {
@@ -11808,7 +11808,7 @@ Era the Cursed
 &lt;br&gt;
 &lt;&lt;tips &#39;执行者&#39; &#39;ayres&#39;&gt;&gt;：&lt;&lt;textbox &quot;$player.name&quot; $player.name&gt;&gt; · $player.surname&lt;br&gt;
 &lt;br&gt;
-&lt;&lt;tips &#39;伴侣&#39; &#39;isil&#39;&gt;&gt;：&lt;&lt;textbox &quot;$target.name&quot; $target.name&gt;&gt; · $target.middlename · $target.surname&lt;br&gt;
+&lt;&lt;tips &#39;伴侣&#39; &#39;isil&#39;&gt;&gt;：&lt;&lt;textbox &quot;$target.name&quot; $target.name&gt;&gt; · $target.midname · $target.surname&lt;br&gt;
 &lt;br&gt;
 全员扶她化？ &lt;&lt;checkbox &quot;_futa&quot; _futa autocheck&gt;&gt;&lt;br&gt;
 全员清除默认经验？ &lt;&lt;checkbox &quot;_newbie&quot; _newbie 1 autocheck&gt;&gt;&lt;br&gt;

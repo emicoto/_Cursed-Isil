@@ -26,7 +26,7 @@ Era the Cursed
 <br>
 <<tips '执行者' 'ayres'>>：<<textbox "$player.name" $player.name>> · $player.surname<br>
 <br>
-<<tips '伴侣' 'isil'>>：<<textbox "$target.name" $target.name>> · $target.middlename · $target.surname<br>
+<<tips '伴侣' 'isil'>>：<<textbox "$target.name" $target.name>> · $target.midname · $target.surname<br>
 <br>
 全员扶她化？ <<checkbox "_futa" _futa autocheck>><br>
 全员清除默认经验？ <<checkbox "_newbie" _newbie 1 autocheck>><br>

@@ -1,0 +1,185 @@
+//chara.base， 角色的基础变量，都是通过stats进行计算的。不需要设置。
+	health: "健康",
+	stamina: "体力",
+	sanity: "理智",
+	mana: "魔力",
+
+	hydration: "水分",
+	nutrient: "营养",
+	dirty: "污迹",
+
+	drug: "药物",
+	alcohol: "酒精",
+	stress: "压力",
+
+//chara.palam，角色的状态变量，都是通过素质进行计算的。不需要设置。
+	ecstacy: "快感", //判定射精（有丁）or潮吹（无丁）。
+
+	//受方palam
+	arousal: "欲情", //转换为欲情珠，升级欲望lv, 角色进入休息状态时就会进行转换。
+	surrend: "屈从", //转换为服从珠，升级顺从。屈从lv累计到一定值时获得刻印。指令执行成功时获得服从度
+	fear: "恐惧", //恐惧刻印
+	mortify: "羞耻", //羞耻刻印。露出类指令。
+	humiliate: "受辱", //耻辱刻印。 羞辱类指令
+	pain: "疼痛", //痛苦刻印
+	depress: "抑郁", //压力值
+	resist: "抵触", //反抗刻印
+	favo: "好意", //好感转换
+	uncomfort: "不适", //减少mood，根据情况转换为疼痛、抵触、压抑。影响体力与健康的消耗。可能触发生病flag
+
+	//攻方palam
+	eager: "渴望", //行为时间拉长，动作变急切。依存up
+	angry: "愤怒", //mood down，动作会变粗暴。
+	satisfy: "满意", //评价up 好感up
+	superior: "优越", // 支配度up
+
+	//部位palam。各种高潮判定主要看这边。高潮时获得性依存度，快乐刻印
+	esM: "快M",
+	esB: "快B", //同时也是喷乳判定条
+	esC: "快C",
+	esU: "快U",
+	esV: "快V",
+	esA: "快A",
+
+	//各部位疼痛值。抖M会转化为部位快感。否则抵消部分快感。总值算入pain中。
+	paM: "痛M",
+	paB: "痛B",
+	paC: "痛C",
+	paU: "痛U",
+	paV: "痛V",
+	paA: "痛A",
+
+//chara.mark, 刻印类。 其实都有中英文资料。耻辱和羞耻是不一样的。耻辱是反人性的，人格侮辱严刑拷打公开处刑之类的才会获得。羞耻只是普通的身体暴露这种可爱的情趣。
+	hypno: ["催眠刻印", "Hypnosis Mark"],
+	ecstacy: ["快乐刻印", "Ecstacy Mark"], 
+	surrend: ["屈服刻印", "Surrender Mark"],
+	pain: ["痛苦刻印", "Pain Mark"],
+	fear: ["恐惧刻印", "Fear Mark"],
+	humiliate: ["耻辱刻印", "Humiliated Mark"],
+	mortify: ["羞耻刻印", "Mortify Mark"],
+	resist: ["反抗刻印", "Resistance Mark"],
+
+
+//chara.abl。普通技能类 满级16
+/* 光lumen 暗ark 火flare 水ions 木 vitae 土 terra 雷 electron */
+/* ewa体系下的魔法理解得更加深入，不是一个模糊的概念，而是深入到了物理现象本质。 */
+//magica是魔法等级，决定一个人的魔法构筑能力。决定所有魔法技能的上限。
+
+	magica: "魔法等级", 
+	lumen: "光魔法",
+	ark: "暗魔法",
+	flare: "火魔法",
+	ions: "水魔法",
+	vitae: "木魔法",
+	terra: "土魔法",
+	electron: "电魔法",
+	//-----
+	sword: "剑术",
+	wrestle: "格斗",
+	//-----
+	cooking: "料理",
+	plant: "种植",
+	medicine: "药物",
+	craft: "制作",
+	fishing: "钓鱼",
+	gathering: "采集",
+
+//chara.sbl 性能力和心理方面。 满级12
+	knowledge: "性知识",
+	technique: "性技巧",
+	endurance: "性耐性", //影响高潮的阈值
+	submissive: "顺从",
+	refuse: "抗拒", //影响指令执行与心理数值、素质的获得
+	hypnosis: "催眠",
+	desire: "欲望",
+	service: "侍奉",
+	exhibition: "露出",
+	promscuity: "滥交",
+	sexaddic: "性瘾",
+	drugaddic: "药瘾",
+	masochist: "受虐",
+	semenaddic: "饮精中毒",
+	vagiejac: "内射中毒",
+	analejac: "肛射中毒",
+	deviancy: "兽奸中毒",
+	gangbang: "轮奸中毒",
+	tentacles: "触手中毒",
+
+//chara.exp
+//经验记录。除了MBCUVA局部经验，都是按一个完整的体验经过算一次经验。
+//就算接吻、抽插连打，只要处于同一个行为过程中，也是只算一次经验的。
+	"M",
+	"B",
+	"C",
+	"U",
+	"V",
+	"A",
+	"M高潮",
+	"B高潮",
+	"C高潮",
+	"U高潮",
+	"V高潮",
+	"A高潮",
+	"高潮",
+	"强烈高潮",
+	"深度强烈高潮",
+	"多重高潮",
+	"接吻",
+	"射精",
+	"喷乳",
+	"放尿",
+	"饮精",
+	"肛交",
+	"性交",
+	"乳交",
+	"口交",
+	"内射",
+	"肛射",
+	"乳头开发",
+	"后穴开发",
+	"尿道开发",
+	"子宫开发",
+	"触手",
+
+	"插入",
+	"道具",
+	"受虐",
+	"露出",
+	"被拍摄",
+	"怀孕",
+	"产卵",
+	"轮奸",
+	"兽奸",
+
+	"眠奸",
+	"强奸",
+	"迷奸",
+	"性转",
+	"同性",
+	"爱情",
+	"侍奉",
+	"自慰",
+	"嗑药",
+	"服从",
+	"催眠",
+	"调教",
+	"施虐",
+
+//chara.equip
+//可以装备的部位。 装备系统还没弄好，因为物品系统还没好。暂时不用管。
+	weapon: "武器",
+	shield: "护盾",
+
+	head: "头饰",
+	cover: "外套",
+	outfitUp: "上衣",
+	outfitBt: "下衣",
+	innerUp: "内衣",
+	innerBt: "内裤",
+	hands: "手套",
+	legs: "袜子",
+
+	face: "面具",
+	ears: "耳饰",
+	chest: "乳饰", //乳环、跳弹
+	bottom: "插件", //跳弹、肛塞、震动棒

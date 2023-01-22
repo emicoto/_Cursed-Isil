@@ -1,5 +1,5 @@
 /* 把 NPCID 替换成自己角色的id。包括NPCIDName这个 */
-:: Kojo_Nanaly_BeforeAction
+:: Kojo_NPCID_BeforeAction
 <<script>>
 //纯代码区。在这里设置变量，调用函数等等。
 //这里的代码会在每个动作开始前执行。

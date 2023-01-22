@@ -1,0 +1,56 @@
+:: CharaSheet_NPCID[csv]
+id, Rena
+name, 蕾娜
+surname, 菲尼斯
+fullname, 蕾娜·菲尼斯
+
+gender, female,/* 性别，后面加注释时不要忘记加个逗号 */
+race, human,; 也可以用分号注释。
+position, both
+title, 治愈师
+job, mage
+birthday, 4048, 2, 11
+
+traits, 耐疼
+traits, 胆大
+traits, 乐观
+traits, 性开放
+traits, 厚脸皮
+traits, 不服输
+
+talent, 木属性
+talent, 土属性
+
+skill, healing_aura
+skill, clear_aura
+skill, stone_wall
+skill, falling_rocks
+
+appearance.eyecolor, 蓝色
+appearance.haircolor, 棕色
+appearance.hairstyle, 及肩卷发
+appearance.tall, 1740
+appearance.skincolor, 小麦
+
+stats.STR, 12
+stats.CON, 13
+stats.DEX, 10
+stats.INT, 15
+stats.WIL, 16
+stats.PSY, 9
+stats.ALR, 14
+
+abl.magica, 8
+
+sbl.knowledge, 5
+
+exp.自慰, 30+random(100)
+exp.同性, 30+random(100)
+
+organ.v.size, 1
+
+flag.jobfame, 120
+flag.schoolfame, 20
+
+virginity.kiss, 初恋对象, 不明, 告白后一个冲动吻上了对方
+virginity.vagina, 自己的手指, 不明, 对初恋对象进行性幻想时用手指破了自己处

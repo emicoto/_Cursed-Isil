@@ -1,0 +1,152 @@
+:: Title[title]   //这是一个页面标题。你可以把 ::理解为 era的@Title，又或者某个函数的注册符号。 []不是必须的，但可以用来定义功能。 sugarcube中把这样宣言后的内容/脚本成为 Passage。 你可以把每一个passage都理解为一个网页页面。
+
+[]内可以添加标签来对passage的功能进行定义。
+nosave 是 sugarcube固有的标签，表示这个页面不会被自动储存。
+widget 是 sugarcube固有的标签，表示这个页面不会被作为文本读取，而是作为功能脚本定义。
+所有的小功能都必须在定义为widget的passage中书写。
+
+下面是我所添加的功能。
+title 表示这是游戏的主界面，不会出现侧边栏。
+system 表示这是游戏的系统处理脚本，又或者系统设定界面，不会自动保存也不会占用历史回退资源等。
+csv 表示这属于csv资料。会在游戏初始化的阶段读取。
+list 表示着属于exel表格资料。会在游戏初始化的阶段读取。
+
+
+:: Title::Before
+
+
+:: Title::After
+
+
+::Before 和 ::After
+是我在sugarcube中新添加的分支功能。
+before和after中并不会进行文本的渲染与显示。只能进行数据处理。
+
+sugarcube本身就存在 PassageBefore 和 PassageAfter这两个特殊的passage。
+允许制作者在这里添加代码脚本，正式进入passage前或渲染完毕后对数据flag进行处理和操作。
+但，这是全局共同的……
+
+如果有多个需要循环处理的页面（例如shop, event, train, combat），
+这两个处理区就变得十分昂长且复杂。
+所以添加了这么一个功能，方便制作复杂度较高的游戏。
+
+在标题中添加 Before分支的话，就能让这部分在刚读取passage的时候就进行处理。
+添加 After分支的话，就能让这部分在整个页面渲染完毕后进行处理。
+
+
+下面是一些常用功能的简单说明：
+
+<<link '链接显示文字' '目标标题'>>数据操作区<</link>>
+<<button '按钮显示文字' '目标标题'>>数据操作区<</button>>
+
+link 用于创建一个链接。 如果设置了目标标题，在点击后就会跳转到目标页面。
+button 用于创建一个按钮。如果设置了目标标题，在点击后就会跳转到目标页面。
+
+link还有多种功能
+<<linkappend '链接显示文字'>>点选后会出现的内容。<</link>>
+
+append就是追加。点击后框住的内容会追加显示到前面的文本后面。
+
+<<linkreplace '链接显示文字'>>点选后会出现的内容。<</linkreplace>>
+
+replace就是替换。点击后框住的内容会替换链接本身所在的位置。
+
+两个的效果其实大差不差。只是append会有一点额外的演出效果。
+具体自己操作看看就明白了。
+
+数据的操作：
+<<set $value = 1>>
+
+数值不需要宣言。在你set的同时就会创建一个 $value的变量了。
+但要注意的是，对于一个不存在的数值进行 += 1宣言的话，
+结果就是变成字符串 'undefined1'这样奇怪的东西……
+
+value可以替换为任意你想设置的变量名。
+要注意不要跟已存在的变量重名。
+
+如果是文字串， 则需要用 引号框住。
+<<set $string = 'abc'>>
+这样子。
+
+游戏框架自带系统变量：
+archivement - 成就
+chara - 角色列表
+currentFilter - 当前选择的过滤器
+devOptions - 开发者选项
+event - 事件设置flag
+exit - 事件出口
+flag - 系统flag
+gametime - 游戏时长
+lastAction - 最后一次选择的动作
+lastCom - 最后一次选择的指令
+location - 当前场景信息
+master - 玩家id
+memory - 回想记录
+mode - 游戏模式
+passage - 当前页面标题
+tags - 当前页面的标签
+system - 系统设置
+
+pc - 玩家角色id
+tc - 选择中对象角色的id
+player - 玩家角色数据暂存位
+target - 对象角色数据暂存位
+pricefactor - 物价影响倍率
+record - 游戏记录
+selectCom - 当前选择的指令id
+selectId - 选择的选项id
+
+date - 游戏内日期、时间
+time - 游戏内经历时间
+
+tips - 小提示的记录
+
+ui - UI控制用flag
+
+wallet - 玩家口袋资金
+weather - 天气
+
+所有的 $value 变量都可以写作 V.value。
+$的写法用在文本中。 V的写法用在js脚本中。
+
+<<script>> <</script>>
+因为script内属于js脚本区域的关系，并不会被sugarcube渲染。所以被框住的代码区也需要用V.value这种写法。
+
+但是，<<run >> <<= >>这种快捷写法倒是可以用$value这种写法。
+因为这两种写法主要运用在文本区中。
+用于快速显示某个运算结果或函数调用，所以是会被sugarcube渲染的。所以可以用 $value这种写法。
+要注意的是，这种写法其实并不支持分行……
+说是这么说，实际上是可以分行，但仅限独立页面中。嵌套页面内会出问题。
+
+关于Dialog系统
+（也就是Chapter.twee那种接近零代码的事件文件）
+
+Dialog系统是将passage作为 txt文档录入并进行转译为游戏文本，并以串流文本的方式进行演出的系统。
+
+文本会被逐行解析，并进行转译。
+因为解析方式并没有那么高级，只是分析有无特殊的语法或等待符号之类的
+也因为这个原因……
+Dialog系统下的文本是不支持多行脚本的嵌入的!
+如果需要嵌入脚本，则需要额外定义一个widget再插入。
+
+例如, 我先在widget区中定义一个脚本，用来显示玩家角色的属性。
+:: Widget[widget]
+<<widget 'playerStats'>>
+<<script>>
+  T.printText = []
+  for(let i in player.stats){
+    T.printText.push(`${i}, ${player.stats[i][1]}`)
+  }
+<</script>>
+<<print T.printText.join('<br>')>>
+<</widget>>
+
+然后在自己的chapter文本中这么插入。
+
+:: Event_ChapterX1
+
+艾丽娅发现自己的身体有所变化。
+于是她打开了Magicom，看了看自己的属性。
+<<playerStats>>
+
+这样，就能在Dialog文本中，插入需要脚本处理的文本显示了。
