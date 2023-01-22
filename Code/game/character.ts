@@ -101,6 +101,8 @@ export interface Chara {
 	virginity?: any;
 
 	flag: any; //好感、信赖， 学籍情报， 诅咒进展， 诅咒魔力效率等
+	wallet?: number;
+	invetory?: any;
 }
 
 interface iName {
@@ -182,6 +184,8 @@ export class Chara {
 		this.initDaily();
 		this.initScars();
 		this.initFlag();
+		this.wallet = 1000;
+		this.invetory = [];
 
 		return this;
 	}
