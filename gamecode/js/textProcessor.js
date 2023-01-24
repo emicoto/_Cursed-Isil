@@ -42,6 +42,87 @@ P.convertTips = function (text) {
 	return text.replace(txt[0], `<<tips '${txt[1]}' '${txt[2]}'>>`);
 };
 
+P.clearComment = function (text) {
+	return text.replace(/\s/g, "").replace(/\/\*(.+)\*\//g, "");
+};
+
+//清理掉注释和条件式等内容，计算有效文字长度
+P.countText = function (text) {
+	const regExpList = [
+		/<<if(.+)>>/g,
+		/<<else(.+)>>/g,
+		/<<\/(.+)>>/g,
+		/<<switch(.+)>>/g,
+		/<<case(.+)>>/g,
+		/<<select(.+)>>/g,
+		/<<replace(.+)>>/g,
+		/<<set(.+)>>/g,
+		/<br>/g,
+		/<<pick(.+)>>/g,
+		/<<else>>/g,
+		/<<default>>/g,
+		/<fr>/g,
+	];
+
+	for (let i = 0; i < regExpList.length; i++) {
+		text = text.replace(regExpList[i], "");
+	}
+	text = text.replace(/\s/g, "").replace(/\/\*(.+)\*\//g, "");
+
+	return text;
+};
+
+//将sugarcube的条件式转换为js后，再根据条件检查有效文本长度
+P.checkTxtWithCode = function (text) {
+	//清理注释并按行分割
+	const raw = text.replace(/\/\*(.+)\*\//g, "").split(/\n/);
+	const cond = [];
+	const retext = [];
+	let count = 0;
+
+	raw.forEach((txt) => {
+		if (txt.match(/<<if(.+)>>/) || txt.match(/<<else(.+)>>/) || txt.match(/<<case(.+)>>/) || txt.match(/switch/)) {
+			let code = txt.match(/<<(.+)>>/)[1];
+			cond[count] = code;
+			count++;
+		} else {
+			if (retext[count] === undefined) retext[count] = "";
+			retext[count] += txt;
+		}
+	});
+
+	if (cond.length === 0) return P.countText(text);
+
+	let isSwitch,
+		switchcond,
+		code,
+		result = "";
+
+	cond.forEach((cond, i) => {
+		if (cond.includes("switch")) {
+			isSwitch = true;
+			switchcond = `${cond.replace(/switch/g, "")} ===`;
+		}
+		if (cond.includes("if")) isSwitch = false;
+
+		if (isSwitch && cond.includes("case")) {
+			code = `${switchcond} ${cond.replace(/case/g, "")}`;
+			if (eval(code)) {
+				result += P.countText(retext[i + 1]);
+				console.log(result);
+			}
+		} else if (!isSwitch && cond.includes("if")) {
+			code = cond.replace(/elseif/g, "").replace(/if/g, "");
+			if (eval(code)) {
+				result += P.countText(retext[i + 1]);
+				console.log(result);
+			}
+		}
+	});
+
+	return result;
+};
+
 /**
  *
  * @param {string | string[]} text
@@ -56,6 +137,10 @@ P.txt = function (text) {
 			t = t.replace("<fr>", "<br>");
 		} else if (t.includes("/* */")) {
 			t = t.replace("/* */", "");
+		}
+		//清理注释
+		else if (t.match(/\/\*(.+)\*\//)) {
+			t = t.replace(/\/\*(.+)\*\//, "");
 		} else {
 			if (
 				t.has(
@@ -126,4 +211,12 @@ P.resetMsg = function () {
 	S.msg = [];
 	T.msgId = 0;
 	T.noMsg = 0;
+};
+
+//根据数组中0位值的条件，返回对应的文本。
+window.condP = function (array) {
+	for (let i = 0; i < array.length; i++) {
+		if (array[i][0] === true) return array[i][1];
+		if (array[i][0] === "else") return array[i][1];
+	}
 };

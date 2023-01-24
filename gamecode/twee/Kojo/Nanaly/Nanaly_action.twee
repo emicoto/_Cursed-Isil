@@ -1,3 +1,7 @@
+/* 
+  跟在标题后的[noMsg]表示这份口上还没填充，没有信息。
+  填充完毕后请删除[noMsg]。
+*/
 :: Kojo_Nanaly_BeforeAction
 <<script>>
 //纯代码区。在这里设置变量，调用函数等等。
@@ -34,36 +38,36 @@
 啊……好香。<<NanalyName>>流着口水等着吃美餐<br>
 <</if>>
 
-:: Kojo_Nanaly_Action_Dance
+:: Kojo_Nanaly_Action_Dance[noMsg]
 /* 看你跳舞或一起跳舞的情景 */
 
-:: Kojo_Nanaly_Action_PlayMusic
+:: Kojo_Nanaly_Action_PlayMusic[noMsg]
 /* 听你演奏或一起演奏的情景 */
 
-:: Kojo_Nanaly_Action_Walk
+:: Kojo_Nanaly_Action_Walk[noMsg]
 /* 一起散步的情景 */
 
-:: Kojo_Nanaly_Action_Plant
+:: Kojo_Nanaly_Action_Plant[noMsg]
 /* 一起种菜的情景 */
 
-:: Kojo_Nanaly_Action_Read
+:: Kojo_Nanaly_Action_Read[noMsg]
 /* 一起读书的情景 */
 
-:: Kojo_Nanaly_Action_HomeWork
+:: Kojo_Nanaly_Action_HomeWork[noMsg]
 /* 一起做作业或写论文的情景 */
 
-:: Kojo_Nanaly_Action_Fish
+:: Kojo_Nanaly_Action_Fish[noMsg]
 /* 钓鱼*/
 
-:: Kojo_Nanaly_Action_Gather
+:: Kojo_Nanaly_Action_Gather[noMsg]
 /* 采集 */
 
-:: Kojo_Nanaly_Action_Mine
+:: Kojo_Nanaly_Action_Mine[noMsg]
 /* 挖矿 */
 
 
 
-:: Kojo_Nanaly_Action_Talk
+:: Kojo_Nanaly_Action_Talk[noMsg]
 /* 随意的闲聊 */
 “嗯？想聊天吗？人家很乐意哟~”<br>
 听到<<you>>的请求，娜娜莉露出了无邪的微笑，坐在<<you>>的身边<br>
@@ -76,7 +80,7 @@
 <<case '套装名'>>
 <</switch>>
 
-:: Kojo_Nanaly_Action_Talk2
+:: Kojo_Nanaly_Action_Talk2[noMsg]
 谈论近况的内容。可以根据角色事件flag进行分支。<br>
 flagname替换成对应的变量名<br>
 <<if $chara.Nanaly.flag.flagname >>
@@ -136,7 +140,7 @@ flagname替换成对应的变量名<br>
    <<you>>吻上了<<NanalyName>>的嘴唇。<br>
 <</switch>>
 
-:: Kojo_Nanaly_Action_t1
+:: Kojo_Nanaly_Action_t1[noMsg]
 /* 亲吻 */
 <<switch T.selectPart>>
 <<case 'breast'>>
@@ -199,7 +203,7 @@ flagname替换成对应的变量名<br>
    /*<<you>>的手轻抚着<<NanalyName>>的腹部。<br>*/
 <</switch>>
 
-:: Kojo_Nanaly_Action_t3
+:: Kojo_Nanaly_Action_t3[noMsg]
 /* 揉捏 */
 <<switch T.selectPart>>
 <<case 'breast'>>
@@ -215,14 +219,14 @@ flagname替换成对应的变量名<br>
 <</switch>>
 
 
-:: Kojo_Nanaly_Action_t4
+:: Kojo_Nanaly_Action_t4[noMsg]
 /* 吸舔 */
 <<switch T.selectPart>>
 <<case 'penis'>>
    /*<<you>>吸住了<<NanalyName>>的阴茎，在上面用舌头反复舔舐着。<br>*/
 <<case 'critoris'>>
-   /*<<you>>吸住了<<NanalyName>>的阴蒂，在上面用舌头反复舔舐着。<br>
-<*/<case 'vagina'>>
+   /*<<you>>吸住了<<NanalyName>>的阴蒂，在上面用舌头反复舔舐着。<br>*/
+<<case 'vagina'>>
    /*<<you>>吸住了<<NanalyName>>的阴道，在上面用舌头反复舔舐着。<br>*/
 <<case 'anal'>>
    /*<<you>>吸住了<<NanalyName>>的肛门，在上面用舌头反复舔舐着。<br*/>
@@ -251,7 +255,7 @@ flagname替换成对应的变量名<br>
    /*<<you>>吸住了<<NanalyName>>的腹部，在上面用舌头反复舔舐着。<br>*/
 <</switch>>
 
-:: Kojo_Nanaly_Action_t5
+:: Kojo_Nanaly_Action_t5[noMsg]
 /* 吸咬 */
 <<switch T.selectPart>>
 <<case 'penis'>>
@@ -276,7 +280,7 @@ flagname替换成对应的变量名<br>
    /*<<you>>含住<<NanalyName>>的大腿，吸吮轻咬着。<br>*/
 <</switch>>
 
-:: Kojo_Nanaly_Action_t6
+:: Kojo_Nanaly_Action_t6[noMsg]
 /* 逗弄 */
 <<switch T.selectPart>>
 <<case 'penis'>>
@@ -297,9 +301,19 @@ flagname替换成对应的变量名<br>
    随着小巧的肉粒被<<you>>捏住，少女几乎立刻发出了惊呼，身体仿佛有电流流过般地微微一颤<br>
    “呜呜♥嗯♥……乳头、被责弄着……”<br>
    随着<<you>>指尖的力量，少女仿佛成为了最悦耳的乐器，在<<you>>手中婉转啼吟<br>
+<<default>>
+    content
 <</switch>>
-
-:: Kojo_Nanaly_Action_t7
+<br>
+<<if Cflag.Nanaly.favo <= 100 >>
+好感低于100
+<<elseif Cflag.Nanaly.trust <= 100>>
+信赖低于100
+<<else>>
+其他
+<</if>>
+<br>
+:: Kojo_Nanaly_Action_t7[noMsg]
 /* 指交 */
 <<switch T.selectPart>>
 <<case 'mouth'>>
@@ -313,7 +327,7 @@ flagname替换成对应的变量名<br>
 <</switch>>
 
 
-:: Kojo_Nanaly_Action_t9
+:: Kojo_Nanaly_Action_t9[noMsg]
 /* 抽插 */
 <<switch T.selectPart>>
 <<case 'mouth'>>
@@ -324,7 +338,7 @@ flagname替换成对应的变量名<br>
    /*<<you>>活动腰身，在<<NanalyName>>的肛门反复出入着。<br>*/
 <</switch>>
 
-:: Kojo_Nanaly_Action_t10
+:: Kojo_Nanaly_Action_t10[noMsg]
 /* 撸动 */
 <<switch T.selectPart0>>
 <<case 'penis'>>
@@ -332,7 +346,7 @@ flagname替换成对应的变量名<br>
 <</switch>>
 
 
-:: Kojo_Nanaly_Action_t11
+:: Kojo_Nanaly_Action_t11[noMsg]
 /* 拳交 */
 <<switch T.selectPart1>>
 <<case 'vagina'>>
@@ -341,7 +355,7 @@ flagname替换成对应的变量名<br>
    /*<<you>>的拳头粗暴地捅进了<<NanalyName>>的肛门里面，反复抽插着。<br>*/
 <</switch>>
 
-:: Kojo_Nanaly_Action_t12
+:: Kojo_Nanaly_Action_t12[noMsg]
 /* 深入 */
 <<switch T.selectPart>>
 <<case 'vagina'>>
@@ -351,7 +365,7 @@ flagname替换成对应的变量名<br>
 <</switch>>
 
 
-:: Kojo_Nanaly_Action_t13
+:: Kojo_Nanaly_Action_t13[noMsg]
 /* 口交 */
 <<switch T.selectPart>>
 <<case 'mouth'>>
@@ -359,7 +373,7 @@ flagname替换成对应的变量名<br>
 <</switch>>
 
 
-:: Kojo_Nanaly_Action_r0
+:: Kojo_Nanaly_Action_r0[noMsg]
 /* 逆口交 */
 <<switch T.actPart>>
 <<case 'mouth'>>
@@ -367,7 +381,7 @@ flagname替换成对应的变量名<br>
 <</switch>>
 
 
-:: Kojo_Nanaly_Action_r2
+:: Kojo_Nanaly_Action_r2[noMsg]
 /* 收紧 */
 <<switch T.actPart>>
 <<case 'vagina'>>
@@ -377,7 +391,7 @@ flagname替换成对应的变量名<br>
 <</switch>>
 
 
-:: Kojo_Nanaly_Action_pose0
+:: Kojo_Nanaly_Action_pose0[noMsg]
 /* 正常位 */
 <<switch T.selectPart>>
 <<case 'vagina'>>
@@ -401,7 +415,7 @@ flagname替换成对应的变量名<br>
 <</switch>>
 
 
-:: Kojo_Nanaly_Action_pose1
+:: Kojo_Nanaly_Action_pose1[noMsg]
 /* 背后位 */
 <<switch T.selectPart>>
 <<case 'vagina'>>
@@ -425,7 +439,7 @@ flagname替换成对应的变量名<br>
 <</switch>>
 
 
-:: Kojo_Nanaly_Action_pose2
+:: Kojo_Nanaly_Action_pose2[noMsg]
 /* 正座位 */
 <<switch T.selectPart>>
 <<case 'vagina'>>
@@ -448,7 +462,7 @@ flagname替换成对应的变量名<br>
 
 <</switch>>
 
-:: Kojo_Nanaly_Action_pose3
+:: Kojo_Nanaly_Action_pose3[noMsg]
 /* 背座位 */
 <<switch T.selectPart>>
 <<case 'vagina'>>
@@ -472,7 +486,7 @@ flagname替换成对应的变量名<br>
 <</switch>>
 
 
-:: Kojo_Nanaly_Action_pose4
+:: Kojo_Nanaly_Action_pose4[noMsg]
 /* 骑乘位 */
 <<switch T.selectPart>>
 <<case 'vagina'>>
@@ -495,7 +509,7 @@ flagname替换成对应的变量名<br>
 
 <</switch>>
 
-:: Kojo_Nanaly_Action_pose5
+:: Kojo_Nanaly_Action_pose5[noMsg]
 /* 侧卧位 */
 <<switch T.selectPart>>
 <<case 'vagina'>>
@@ -519,7 +533,7 @@ flagname替换成对应的变量名<br>
 <</switch>>
 
 
-:: Kojo_Nanaly_Action_pose6
+:: Kojo_Nanaly_Action_pose6[noMsg]
 /* 趴卧位 */
 <<switch T.selectPart>>
 <<case 'vagina'>>
@@ -543,40 +557,40 @@ flagname替换成对应的变量名<br>
 <</switch>>
 
 
-:: Kojo_Nanaly_Action_pose7
+:: Kojo_Nanaly_Action_pose7[noMsg]
 /* 站立位 */
 <<switch T.selectPart>>
 <</switch>>
 
 
-:: Kojo_Nanaly_Action_pose8
+:: Kojo_Nanaly_Action_pose8[noMsg]
 /* 背后立位 */
 <<switch T.selectPart>>
 <</switch>>
 
 
-:: Kojo_Nanaly_Action_pose9
+:: Kojo_Nanaly_Action_pose9[noMsg]
 /* 抱立位 */
 <<switch T.selectPart>>
 <</switch>>
 
 
-:: Kojo_Nanaly_Action_pose10
+:: Kojo_Nanaly_Action_pose10[noMsg]
 /* 反抱立位 */
 <<switch T.selectPart>>
 <</switch>>
 
 
-:: Kojo_Nanaly_Action_pose11
+:: Kojo_Nanaly_Action_pose11[noMsg]
 /* 屈曲位 */
 <<switch T.selectPart>>
 <</switch>>
 
 
 
-:: Kojo_Nanaly_Action_Rotor
+:: Kojo_Nanaly_Action_Rotor[noMsg]
 /* 跳蛋 */
-<<switch T.selectParttor>>
+<<switch T.selectPart>>
 <<case 'vagina'>>
    /*<<you>>将跳蛋贴在<<NanalyName>>的阴道，刺激着。<br>*/
 <<case 'anal'>>
@@ -589,16 +603,16 @@ flagname替换成对应的变量名<br>
    /*<<you>>将跳蛋贴在<<NanalyName>>的阴蒂，刺激着。<br>*/
 <</switch>>
 
-:: Kojo_Nanaly_Action_Vibrator
+:: Kojo_Nanaly_Action_Vibrator[noMsg]
 /* 震动棒 */
-<<switch T.selectPartbrator>>
+<<switch T.selectPart>>
 <<case 'vagina'>>
    /*<<you>>将震动棒放进了<<NanalyName>>的阴道。<br>*/
 <<case 'anal'>>
    /*<<you>>将震动棒放进了<<NanalyName>>的肛门。<br>*/
 <</switch>>
 
-:: Kojo_Nanaly_Action_x0
+:: Kojo_Nanaly_Action_x0[noMsg]
 /* 揉捏 */
 <<switch T.selectPart>>
 <<case 'breast'>>
@@ -611,7 +625,7 @@ flagname替换成对应的变量名<br>
    /*触手缠绕在<<NanalyName>>的乳头上，巧妙地反复揉捏给予刺激。<br>*/
 <</switch>>
 
-:: Kojo_Nanaly_Action_x1
+:: Kojo_Nanaly_Action_x1[noMsg]
 /* 逗弄 */
 <<switch T.selectPart>>
 <<case 'mouth'>>
@@ -632,7 +646,7 @@ flagname替换成对应的变量名<br>
    /*蠕动、摩擦、按捏。触手反复逗弄着<<NanalyName>>的乳头，给予极大的刺激。<br>*/
 <</switch>>
 
-:: Kojo_Nanaly_Action_x2
+:: Kojo_Nanaly_Action_x2[noMsg]
 /* 吸舔 */
 <<switch T.selectPart>>
 <<case 'nipple'>>
@@ -643,7 +657,7 @@ flagname替换成对应的变量名<br>
    /*吸盘触手吸附在<<NanalyName>>的阴蒂上，反复吸舔着。<br>*/
 <</switch>>
 
-:: Kojo_Nanaly_Action_x3
+:: Kojo_Nanaly_Action_x3[noMsg]
 /* 吸咬 */
 <<switch T.selectPart>>
 <<case 'nipple'>>
@@ -654,14 +668,14 @@ flagname替换成对应的变量名<br>
    /*口器触手含住<<NanalyName>>的阴蒂，吸吮轻咬着。<br>*/
 <</switch>>
 
-:: Kojo_Nanaly_Action_x4
+:: Kojo_Nanaly_Action_x4[noMsg]
 /* 撸动 */
 <<switch T.selectPart>>
 <<case 'penis'>>
    /*触手缠绕住<<NanalyName>>的阴茎，反复撸动着。<br>*/
 <</switch>>
 
-:: Kojo_Nanaly_Action_x5
+:: Kojo_Nanaly_Action_x5[noMsg]
 /* 插入 */
 <<switch T.selectPart>>
 <<case 'mouth'>>
@@ -676,7 +690,7 @@ flagname替换成对应的变量名<br>
    /*触手钻进了<<NanalyName>>敞开的耳朵，缓缓往内深入。<br>*/
 <</switch>>
 
-:: Kojo_Nanaly_Action_x6
+:: Kojo_Nanaly_Action_x6[noMsg]
 /* 蠕动 */
 <<switch T.selectPart>>
 <<case 'mouth'>>
@@ -705,7 +719,7 @@ flagname替换成对应的变量名<br>
    /*触手在<<NanalyName>>的大腿慢慢蠕动着。<br>*/
 <</switch>>
 
-:: Kojo_Nanaly_Action_x7
+:: Kojo_Nanaly_Action_x7[noMsg]
 /* 抽插 */
 <<switch T.selectPart>>
 <<case 'mouth'>>
@@ -720,7 +734,7 @@ flagname替换成对应的变量名<br>
    /*触手不停在<<NanalyName>>的耳朵进出，抽插蠕动着。<br>*/
 <</switch>>
 
-:: Kojo_Nanaly_Action_x8
+:: Kojo_Nanaly_Action_x8[noMsg]
 /* 深入 */
 <<switch T.selectPart>>
 <<case 'mouth'>>
@@ -733,7 +747,7 @@ flagname替换成对应的变量名<br>
    /*触手往<<NanalyName>>的尿道内部发出了进攻，往更深处蠕进。<br>*/
 <</switch>>
 
-:: Kojo_Nanaly_Action_x9
+:: Kojo_Nanaly_Action_x9[noMsg]
 /* 抽送 */
 <<switch T.selectPart>>
 <<case 'mouth'>>
@@ -746,7 +760,7 @@ flagname替换成对应的变量名<br>
    /*触手激烈地在<<NanalyName>>的尿道进出着，反复抽送着触身给予莫大的刺激。<br>*/
 <</switch>>
 
-:: Kojo_Nanaly_Action_x10
+:: Kojo_Nanaly_Action_x10[noMsg]
 /* 鞭打 */
 <<switch T.selectPart>>
 <<case 'breast'>>
@@ -765,7 +779,7 @@ flagname替换成对应的变量名<br>
    /*触手甩动触鞭，用巧妙的力度鞭打在<<NanalyName>>的大腿上。<br>*/
 <</switch>>
 
-:: Kojo_Nanaly_Action_x11
+:: Kojo_Nanaly_Action_x11[noMsg]
 /* 刺入 */
 <<switch T.selectPart>>
 <<case 'penis'>>
@@ -784,7 +798,7 @@ flagname替换成对应的变量名<br>
    /*触手伸出尖锐的细针，狠狠地刺入了<<NanalyName>>的屁股。<br>*/
 <</switch>>
 
-:: Kojo_Nanaly_Action_x12
+:: Kojo_Nanaly_Action_x12[noMsg]
 /* 灌入 */
 <<switch T.selectPart>>
 <<case 'mouth'>>
@@ -795,7 +809,7 @@ flagname替换成对应的变量名<br>
    /*触手往<<NanalyName>>的肛门灌入大量的药液。<br>*/
 <</switch>>
 
-:: Kojo_Nanaly_Action_x13
+:: Kojo_Nanaly_Action_x13[noMsg]
 /* 注射 */
 <<switch T.selectPart>>
 <<case 'breast'>>
@@ -820,9 +834,9 @@ flagname替换成对应的变量名<br>
    /*触手伸出尖锐的针头，刺入<<NanalyName>>的腹部并注入药液。<br>*/
 <</switch>>
 
-:: Kojo_Nanaly_Action_Stream
+:: Kojo_Nanaly_Action_Stream[noMsg]
 /* 直播 */
 直播时的反应
 
-:: Kojo_Nanaly_Action_Behavior
+:: Kojo_Nanaly_Action_Behavior[noMsg]
 /* 被海王命令对npc行为进行管理的时候。主要是被命令不穿内衣或塞着玩具过日子之类的。 */

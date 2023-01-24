@@ -40,7 +40,7 @@
 
 :: Profile
 <div id='profile'>
-$target.fullname  好感：<<print Cflag[tc].favo>>  信赖：<<print Cflag[tc].trust>>  支配：<<print Cflag[tc].sub>>  依存：<<print Cflag[tc].depend>>
+$target.fullname  好感：<<print Cflag[tc].favo>>  信赖：<<print Cflag[tc].trust>>  支配：<<print Cflag[tc].dom>>  依存：<<print Cflag[tc].depend>>
 <br><hr>
 
 基础：<br>

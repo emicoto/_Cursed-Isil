@@ -40,6 +40,7 @@ Action.clearCheck = function () {
 	T.phase = "";
 	T.forceOrder = 0;
 	T.orderResult = "";
+	T.noNameTag = 0;
 
 	P.resetMsg();
 };

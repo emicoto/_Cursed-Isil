@@ -3,7 +3,6 @@
 
 id, Amia
 name, 阿米娅
-surname, 
 fullname, 阿米娅
 
 gender, female,/* 性别，后面加注释时不要忘记加个逗号 */

@@ -39,7 +39,7 @@
 
 :: Msg_PCAction_Talk:Cancel
 <<you>>试着跟对方搭话，
-<<if !cond.canSpeak($target)>>
+<<if !cond.canSpeak(tc)>>
 可惜$target.name没有能力回应<<you>>。
 <<else>>
 但$target.name并没有心情理会<<you>>。

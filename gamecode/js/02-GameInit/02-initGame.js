@@ -80,6 +80,53 @@ game.init = function () {
 		passed: 0,
 		total: D.time,
 	};
+
+	V.home = {
+		groupId: "Academy",
+		mapId: "Dormitory",
+		roomId: "S303",
+		name: ["宿舍S303"],
+		tags: ["私室", "宿舍", "沐浴", "厨房", "厕所"],
+		placement: [
+			["床", "单人床"],
+			["床", "单人床"],
+			["衣柜", "小的木衣柜"],
+			["衣柜", "小的木衣柜"],
+			["桌子", "木书桌"],
+			["桌子", "木书桌"],
+			["椅子", "木椅"],
+			["椅子", "木椅"],
+			["书柜", "木书柜"],
+			["镜子", "全身镜"],
+			["衣架", "木衣架"],
+			["植物", "小型盆栽"],
+		],
+		storage: {},
+		maxslot: 12,
+	};
+
+	//当前地点详情
+	V.location = {
+		groupId: "Academy",
+		mapId: "Dormitory",
+		roomId: "S303",
+
+		id: "Academy_Dormitory_S303",
+		entry: "Dormitory",
+
+		name: "宿舍S303",
+		tags: ["私室", "宿舍", "沐浴", "厨房", "厕所"],
+		placement: ["床", "衣柜", "桌子", "椅子", "书柜", "镜子", "衣架", "植物"],
+		chara: ["Isil", "Ayres"],
+
+		yourHome: true,
+		portal: {
+			exist: false,
+			points: [],
+		},
+
+		pos: { x: 0, y: 0 },
+	};
 };
 
 game.start = function (skip) {

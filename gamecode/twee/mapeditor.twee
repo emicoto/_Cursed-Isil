@@ -1,0 +1,23 @@
+:: MapEditor[system, tool]
+
+<div id='editor_menu'>
+    <div><<set _mapoptions = Object.keys(worldMap)>>
+    选择地图：
+    <<listbox "_selectMap">>
+        <<optionsfrom _mapoptions>>
+    <</listbox>>
+    </div>
+    <div style='width:20px'>  </div>
+    <div>
+    保存地图：
+    <<button 'save'>><<run console.log(T.mapdata)>><</button>>
+    </div>
+</div>
+<div id="mapfield"></div>
+
+<script>
+//监控地图选择框，选择地图后，更新地图数据
+var _selectMap = document.getElementById('_selectMap');
+
+
+</script>

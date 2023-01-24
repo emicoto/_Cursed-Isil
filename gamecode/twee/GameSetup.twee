@@ -13,7 +13,8 @@ Era the Cursed
 
 :: StoryInit
 <<run 
-    game.init(); Chara.init(); 
+    game.init();
+    Chara.init(); 
 >>
 
 <<set $debt to 0>>

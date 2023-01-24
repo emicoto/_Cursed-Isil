@@ -38,13 +38,11 @@ F.sourceUp = function (chara) {
 	let retext = [chara.name + "数值变动："];
 
 	for (let i in chara.source) {
-		chara.sup[i] = chara.source[i]; //处理结果暂存到sup中用作显示
-
 		let msg = "";
 
-		if (chara.sup[i] !== 0) {
+		if (chara.source[i] !== 0) {
 			//将变动记录作为文本记录到 S.msg ?
-			const v = chara.sup[i];
+			const v = chara.source[i];
 			const lv = chara.palam[i][0] + 1;
 			msg = `>> ${D.palam[i]}${v > 0 ? " + " : " - "}${v} = ${chara.palam[i][1] + v} / ${D.palamLv[lv]}`;
 		}
@@ -68,6 +66,8 @@ F.sourceUp = function (chara) {
 		}
 
 		if (msg) retext.push(msg);
+		//清空数值
+		chara.source[i] = 0;
 	}
 
 	if (retext.length > 1) P.msg(retext.join("<br>") + "<<dashline>>");

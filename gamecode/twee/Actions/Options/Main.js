@@ -34,7 +34,7 @@ Action.set("TrySex")
 		if (V.system.debug || V.mode == "train") return 1;
 
 		//对方失去意识+没有其他人
-		if (cond.isUncons(target) && V.location.chara.length <= 2) return 1;
+		if (cond.isUncons(tc) && V.location.chara.length <= 2) return 1;
 
 		//暂且这样……之后导入TW的理性之壁和好感之壁进行判断(￣▽￣")
 		if (Cflag[tc].favo < 1000) {
@@ -51,7 +51,7 @@ Action.set("TrySex")
 		if (V.mode == "train") {
 			return "结束";
 		}
-		if (cond.isUncons(target)) {
+		if (cond.isUncons(tc)) {
 			return "眠奸";
 		}
 		return "推倒";
@@ -164,7 +164,7 @@ Action.set("Combat").Filter(() => {
 
 /* 魔法 */
 Action.set("Magic").Filter(() => {
-	return cond.canSpeak(player);
+	return cond.canSpeak(pc);
 });
 
 /* 道具 */

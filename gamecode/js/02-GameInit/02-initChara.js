@@ -12,7 +12,7 @@ Chara.data.Ayres = function () {
 		.setSkill(["lightning", "fire_sword", "dark_cage"])
 		.setStats({ STR: 16, CON: 15, DEX: 17, INT: 15, WIL: 17, PSY: 17, ALR: 15 })
 		.setAppearance({
-			eyecolr: "琥珀色",
+			eyecolor: "琥珀色",
 			haircolor: "白色",
 			hairstyle: "短发",
 			skincolor: "灰色",
@@ -26,9 +26,10 @@ Chara.data.Ayres = function () {
 			electron: 4,
 			sword: 14,
 			wrestle: 12,
-			cooking: 3,
+			cooking: 10,
 			craft: 8,
 			gathering: 9,
+			dance: 10,
 		})
 		.setSexAbl({ knowledge: 10, technique: 10, endurance: 8, desire: 8 })
 		.setOrgan("p", { type: "魔鬼阴茎", trait: ["隆起", "浓厚"], size: 4, d: 48, l: 182 })
@@ -53,6 +54,8 @@ Chara.data.Ayres = function () {
 	};
 
 	chara.resetVirginity();
+	chara.flag.sleeptime = 1400;
+	chara.flag.wakeuptime = 420;
 
 	return chara;
 };
@@ -93,7 +96,7 @@ Chara.data.Isil = function () {
 			"object_control",
 		])
 		.setStats({ STR: 7, CON: 8, DEX: 14, INT: 19, WIL: 18, PSY: 16, ALR: 20 })
-		.setAppearance({ eyecolr: "柠檬绿", haircolor: "浅金", hairstyle: "精灵长发", skincolor: "白皙", tall: 1704 })
+		.setAppearance({ eyecolor: "柠檬绿", haircolor: "浅金", hairstyle: "精灵长发", skincolor: "白皙", tall: 1704 })
 		.setAbility({
 			magica: 8,
 			lumen: 6,
@@ -106,6 +109,7 @@ Chara.data.Isil = function () {
 			medicine: 14,
 			craft: 8,
 			gathering: 12,
+			sing: 10,
 		})
 		.setSexAbl({ knowledge: 1, endurance: 2, refuse: 8 })
 		.setOrgan("p", { size: 2, d: 28, l: 136 })
@@ -113,109 +117,6 @@ Chara.data.Isil = function () {
 		.setFame("job", 120)
 		.setFame("school", 200)
 		.setFame("public", 80);
-
-	return chara;
-};
-
-Chara.data.Besta = function () {
-	const chara = new Chara("Besta", "贝斯特", "male", "wolves")
-		.initChara("both")
-		.setNames({ s: "巴尔顿" })
-		.setTitle("魔战士")
-		.setJob("warrior")
-		.setBirth([4028, 10, 29])
-		.setTraits(["强壮", "胆大", "厚脸皮", "冲动", "不服输", "忠诚", "乐观"])
-		.setTalent(["毛茸茸", "恢复快", "雷属性", "火属性"])
-		.setSkill(["lightning"])
-		.setStats({ STR: 20, CON: 18, DEX: 18, INT: 8, WIL: 12, PSY: 8, ALR: 10 })
-		.setAppearance({
-			eyecolr: "蓝色",
-			haircolor: "灰蓝色",
-			hairstyle: "短发马尾",
-			skincolor: "麦色",
-			tall: 1873,
-			weight: 76.8,
-		})
-		.setAbility({
-			magica: 4,
-			flare: 2,
-			electron: 4,
-			sword: 12,
-			wrestle: 16,
-			cooking: 10,
-			craft: 12,
-			fishing: 12,
-			gathering: 12,
-		})
-		.setSexAbl({ knowledge: 5, endurance: 2, desire: 6 })
-		.setOrgan("p", { type: "狼阴茎", trait: ["结", "茎骨"], size: 4, d: 42, l: 174 })
-		.setOrgan("m", { size: 4 })
-		.setFame("job", 40);
-
-	const scar = ["face", "back", "back", "waistback", "abdomen", "breast", "arms"];
-	scar.forEach((p) => {
-		Chara.getScar(chara, p, "scar", "never");
-	});
-
-	Chara.skinCounter(chara, 0);
-
-	chara.resetVirginity = function () {
-		this.setVirginity("kiss", "姐姐", "不明", "在姐姐的引导下学会了接吻");
-
-		this.setVirginity("anal", "不明", "不明", "在一次酒吧派对上，醉酒后与伙伴发生了关系");
-		this.setVirginity("analsex", "不明", "不明", "在一次酒吧派对上，醉酒后与伙伴发生了关系");
-
-		if (this.gender !== "female") {
-			this.setVirginity("penis", "不明", "不明", "在一次酒吧派对上，醉酒后与伙伴发生了关系");
-		}
-		if (this.gender !== "male") {
-			this.setVirginity("vagina", "不明", "不明", "在一次酒吧派对上，醉酒后与伙伴发生了关系");
-			this.setVirginity("vaginasex", "不明", "不明", "在一次酒吧派对上，醉酒后与伙伴发生了关系");
-		}
-	};
-
-	chara.resetVirginity();
-
-	return chara;
-};
-
-Chara.data.Nanaly = function () {
-	const chara = new Chara("Nanaly", "娜娜莉", "female", "dracon")
-		.initChara("both")
-		.setNames({ s: "艾索斯" })
-		.setTitle("研究生")
-		.setJob("scholar")
-		.setBirth([4016, 5, 28])
-		.setTraits(["性开放", "M倾向", "胆大", "乐观", "忠诚"])
-		.setTalent(["水属性", "发光", "天才", "探究心", "谜之知识"])
-		.setSkill(["water_bubble", "clear_mind"])
-		.setStats({ STR: 8, CON: 10, DEX: 14, INT: 16, WIL: 12, PSY: 14, ALR: 14 })
-		.setAppearance({
-			eyecolr: "水色",
-			haircolor: "金色",
-			hairstyle: "披肩中长发",
-			skincolor: "白皙",
-			tall: 1620,
-			weight: 45.5,
-		})
-		.setAbility({
-			magica: 6,
-			craft: 10,
-			medicine: 12,
-			ions: 6,
-		})
-		.setSexAbl({
-			knowledge: 6,
-			technique: 6,
-			endurance: 2,
-			desire: 2,
-		});
-
-	chara.resetVirginity = function () {
-		if (this.gender !== "male") this.setVirginity(["anal", "不明", "以某人为幻想对象，用震动棒自行破处"]);
-	};
-
-	chara.resetVirginity();
 
 	return chara;
 };

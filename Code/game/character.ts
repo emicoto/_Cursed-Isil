@@ -30,30 +30,54 @@ export interface sexStats {
 }
 
 export interface appearance {
-	eyecolor: string;
+	eyecolor?: string;
 
-	haircolor: string;
-	hairstlye: string;
+	haircolor?: string;
+	hairstlye?: string;
 
-	skincolor: string;
-	beauty: number;
-	bodysize: number; //0=tiny 137~147, 1=small 147~164, 2=normal 164~174, 3=tall 174~184, 4=huge 184~200, 5=giant 200+
-	tall: number; //mm
-	weight: number; //kg
+	skincolor?: string;
+	beauty?: number;
+	bodysize?: number; //0=tiny 137~147, 1=small 147~164, 2=normal 164~174, 3=tall 174~184, 4=huge 184~200, 5=giant 200+
+	tall?: number; //mm
+	weight?: number; //kg
 }
 
-export interface Chara {
+export interface Creature {
+	type: creaturetype;
+	id?: string;
 	cid: string;
+	name: string;
+	gender: genderFull;
+	position: "neko" | "tachi" | "both";
+	race: race;
+	traits: string[];
+	talent: string[];
+	skill: string[];
+
+	stats: Dict<P, statskey>;
+	appearance?: appearance;
+	base: Dict<P, basekey>;
+	palam: Dict<P, palamkey>;
+
+	source: Dict<number>;
+	state: string[];
+	mood: number;
+
+	tsv: any;
+	abl: Dict<{ lv: number; exp: number }, ablkey>;
+	sbl: Dict<number, sblkey>;
+	sexstats: Dict<sexStats>;
+
+	equip?: any;
+}
+
+export interface Chara extends Creature {
 	name: string;
 	midname?: string;
 	surname?: string;
 	fullname?: string;
 	nickame?: string;
 	callname?: string;
-
-	gender: genderFull;
-	type: "neko" | "tachi" | "both";
-	race: race;
 
 	title?: string;
 	class?: jobclass;
@@ -63,39 +87,18 @@ export interface Chara {
 	birthday?: [number, number, number];
 	intro?: [string?, string?];
 
-	traits?: string[];
-	talent?: string[];
-
-	skill?: string[];
-
-	stats: Dict<P, statskey>;
-	appearance?: any;
-	base: Dict<P, basekey>;
-	palam: Dict<P, palamkey>;
 	mark?: Dict<number, markkey>;
-	state?: string[];
-	mood?: number;
 
-	source: Dict<number>;
-	sup: Dict<number>;
-	juel: Dict<number>;
 	expUp: Dict<number>;
-	tsv: any;
 
 	daily?: any;
 	exp?: Dict<{ aware: number; total: number }, expkey>;
-
-	abl: Dict<{ lv: number; exp: number }, ablkey>;
-	sbl: Dict<number, sblkey>;
-
-	sexstats: Dict<sexStats>;
 
 	pregnancy?: any;
 	parasite?: any;
 	scars?: any;
 
 	wear?: any;
-	equip?: any;
 
 	reveals?: any;
 	virginity?: any;
@@ -103,6 +106,7 @@ export interface Chara {
 	flag: any; //好感、信赖， 学籍情报， 诅咒进展， 诅咒魔力效率等
 	wallet?: number;
 	invetory?: any;
+	tempture?: { low: number; high: number; best: number; current: number };
 }
 
 interface iName {
@@ -113,84 +117,48 @@ interface iName {
 	c?: string; //call master
 }
 
-export class Chara {
-	static data: Dict<Chara> = {};
-	static load(chara: Chara) {
-		const { cid, name, gender, race, kojo } = chara;
-		const init = new Chara(cid, name, gender, race, kojo, chara);
-		return init;
-	}
-	static new(cid: string, name: string, gender: genderFull, race: race, kojo?) {
-		Chara.data[cid] = new Chara(cid, name, gender, race, kojo);
-		return Chara.data[cid];
-	}
-	constructor(id: string, name: string, gender: genderFull, race: race, kojo?: string, chara?) {
-		if (chara) {
-			for (let i in chara) {
-				this[i] = clone(chara[i]);
-			}
-		} else {
-			this.cid = id;
-			this.name = name;
-			this.midname = "";
-			this.surname = "";
-			this.fullname = "";
+export type creaturetype = "chara" | "nnpc" | "monster";
 
-			this.gender = gender;
-			this.race = race;
-
-			this.mood = 30;
-			this.title = "";
-			this.class = "";
-			this.guildRank = 0;
-
-			this.kojo = kojo ? kojo : id;
-
-			this.appearance = {};
-			this.traits = [];
-			this.talent = [];
-			this.skill = [];
-
-			this.stats = {};
-			this.base = {};
-			this.palam = {};
-
-			this.state = [];
-			this.source = {};
-			this.juel = {};
-			this.sup = {};
-			this.tsv = {};
-			this.abl = {};
-			this.sbl = {};
-			this.mark = {};
-			this.sexstats = {};
-			this.exp = {};
-			this.expUp = {};
-			this.flag = {};
-		}
-	}
-
-	initChara(type: "neko" | "tachi" | "both") {
+export class Creature {
+	static data: Dict<Creature> = {};
+	constructor(type: creaturetype, name: string, gender: genderFull, race: race) {
 		this.type = type;
-		this.initBase(type);
+		this.cid = type + "_" + Object.values(Creature.data).length;
+
+		this.name = name;
+		this.gender = gender;
+		this.race = race;
+
+		this.appearance = {};
+
+		this.traits = [];
+		this.talent = [];
+		this.skill = [];
+
+		this.stats = {};
+		this.base = {};
+		this.palam = {};
+		this.state = [];
+		this.source = {};
+
+		this.tsv = {};
+		this.abl = {};
+		this.sbl = {};
+		this.sexstats = {};
+
+		this.mood = 30;
+	}
+
+	init(pos) {
+		this.position = pos;
+		this.initBase();
 		this.initStats();
 		this.initAbility();
 		this.initSexAbl();
-		this.initExp();
 		this.initSexStats();
-		this.initEquipment();
-		this.initRevealDetail();
-		this.initVirginity();
-		this.initDaily();
-		this.initScars();
-		this.initFlag();
-		this.wallet = 1000;
-		this.invetory = [];
-
-		return this;
 	}
 
-	initBase(type) {
+	initBase() {
 		Object.keys(D.base).forEach((k) => {
 			this.base[k] = [0, 1000];
 		});
@@ -198,16 +166,10 @@ export class Chara {
 		Object.keys(D.palam).forEach((k) => {
 			this.palam[k] = [0, 0, 1200];
 			this.source[k] = 0;
-			this.sup[k] = 0;
-			this.juel[k] = 0;
 		});
 
 		D.tsv.forEach((k) => {
 			this.tsv[k] = 0;
-		});
-
-		Object.keys(D.mark).forEach((k) => {
-			this.mark[k] = 0;
 		});
 
 		return this;
@@ -235,13 +197,6 @@ export class Chara {
 			this.sbl[k] = 0;
 		});
 
-		return this;
-	}
-
-	initExp() {
-		D.exp.forEach((k) => {
-			this.exp[k] = { aware: 0, total: 0 };
-		});
 		return this;
 	}
 
@@ -288,16 +243,6 @@ export class Chara {
 		const p = this.sexstats.p;
 		return (p.size * 50 + 50) * (p.trait.includes("浓厚") ? 10 : 1);
 	}
-	static Psize = [
-		[60, 15], //0，微型
-		[90, 22], //1, 迷你
-		[120, 32], //2, 短小
-		[140, 42], //3, 普通
-		[160, 52], //4, 大
-		[180, 62], //5, 巨大
-		[210, 74], //6, 马屌
-		[250, 86], //7, 深渊
-	];
 
 	setPenis(adj?) {
 		let type = adj?.type ?? "阴茎",
@@ -306,7 +251,7 @@ export class Chara {
 			l = adj?.l ?? 0;
 
 		//P标准Size表. 具体会在长度与宽度 +-8/+-6
-		const Psize = Chara.Psize;
+		const Psize = D.Psize;
 		const P = this.sexstats.p;
 		const size = Psize[P.size];
 		P.type = type;
@@ -397,6 +342,118 @@ export class Chara {
 		return this;
 	}
 
+	GenerateTall(size?) {
+		const bodysize = size !== undefined ? size : this.appearance.bodysize;
+		return bodysize * 150 + 1300 + random(1, 148);
+	}
+
+	GenerateBodysize(_tall?) {
+		const tall = _tall ? _tall : this.appearance.tall;
+		return Math.floor((tall - 1350) / 150);
+	}
+
+	GenerateWeight(_tall) {
+		const tall = _tall / 1000;
+		return Math.floor(tall * tall * 19 + 0.5) + random(1, 20) / 10;
+	}
+
+	initEquipment() {
+		this.equip = {};
+		Object.keys(D.equip).forEach((k) => {
+			this.equip[k] = {};
+		});
+		return this;
+	}
+
+	initAppearance(bodysize) {
+		this.appearance.bodysize = bodysize;
+		this.appearance.tall = this.GenerateTall();
+		this.appearance.weight = this.GenerateWeight(this.appearance.tall);
+		return this;
+	}
+
+	bp() {
+		const s = this.stats;
+		return s.STR[1] * 15 + s.CON[1] * 8 + s.DEX[1] * 8 + s.INT[1] * 8 + s.WIL[1] * 10 + s.PSY[1];
+	}
+}
+
+export class Chara extends Creature {
+	static data: Dict<Chara> = {};
+	static load(chara: Chara) {
+		const { cid, name, gender, race, kojo } = chara;
+		const init = new Chara(cid, name, gender, race, kojo, chara);
+		return init;
+	}
+	static new(cid: string, name: string, gender: genderFull, race: race, kojo?) {
+		Chara.data[cid] = new Chara(cid, name, gender, race, kojo);
+		return Chara.data[cid];
+	}
+	constructor(id: string, name: string, gender: genderFull, race: race, kojo?: string, chara?) {
+		super("chara", name, gender, race);
+		if (chara) {
+			for (let i in chara) {
+				this[i] = clone(chara[i]);
+			}
+		} else {
+			this.cid = id;
+			this.name = name;
+			this.midname = "";
+			this.surname = "";
+			this.fullname = "";
+
+			this.mood = 30;
+			this.title = "";
+			this.class = "";
+			this.guildRank = 0;
+
+			this.kojo = kojo ? kojo : id;
+
+			this.mark = {};
+			this.exp = {};
+			this.expUp = {};
+			this.flag = {};
+		}
+	}
+
+	initChara(pos) {
+		this.init(pos);
+
+		this.initMark();
+		this.initExp();
+		this.initAppearance(2);
+		this.initEquipment();
+		this.initRevealDetail();
+		this.initVirginity();
+		this.initDaily();
+		this.initScars();
+		this.initFlag();
+		this.wallet = 1000;
+		this.invetory = [];
+		this.tempture = {
+			low: 16,
+			high: 28,
+			best: 23,
+			current: 36,
+		}; //最低适应温度， 最高适应温度, 最佳适应温度， 当前体温. 单位摄氏度
+
+		return this;
+	}
+
+	initMark() {
+		Object.keys(D.mark).forEach((k) => {
+			this.mark[k] = 0;
+		});
+		return this;
+	}
+
+	initExp() {
+		D.exp.forEach((k) => {
+			this.exp[k] = { aware: 0, total: 0 };
+		});
+		return this;
+	}
+
 	initScars() {
 		this.scars = {};
 
@@ -409,14 +466,6 @@ export class Chara {
 
 		this.scars.total = {};
 
-		return this;
-	}
-
-	initEquipment() {
-		this.equip = {};
-		Object.keys(D.equip).forEach((k) => {
-			this.equip[k] = {};
-		});
 		return this;
 	}
 
@@ -559,21 +608,16 @@ export class Chara {
 	}
 
 	unable() {
-		return this.state.has("拘束", "石化") || !cond.isEnergetic(this, 30);
+		return this.state.has("拘束", "石化") || !cond.isEnergetic(this.cid, 30);
 	}
 
 	active() {
 		return (
 			!this.state.has("睡眠", "晕厥", "拘束", "石化", "精神崩溃") &&
-			!cond.baseLt(this, "health", 0.05) &&
-			!cond.baseLt(this, "sanity", 10) &&
-			!cond.baseLt(this, "stamina", 10)
+			!cond.baseLt(this.cid, "health", 0.05) &&
+			!cond.baseLt(this.cid, "sanity", 10) &&
+			!cond.baseLt(this.cid, "stamina", 10)
 		);
-	}
-
-	bp() {
-		const s = this.stats;
-		return s.STR[1] * 15 + s.CON[1] * 8 + s.DEX[1] * 8 + s.INT[1] * 8 + s.WIL[1] * 10 + s.PSY[1];
 	}
 
 	setAppearance({
@@ -591,7 +635,7 @@ export class Chara {
 			hairstyle: hairstyle,
 			skincolor: skincolor,
 			beauty: fix.beauty(this),
-			bodysize: bodysize !== undefined ? bodysize : tall ? this.GenerateBodysize(tall) : 2,
+			bodysize: bodysize !== undefined ? bodysize : tall ? this.GenerateBodysize(tall) : this.appearance.bodysize,
 			tall: tall ? tall : bodysize ? this.GenerateTall() : 1704,
 			weight: weight,
 		};
@@ -605,21 +649,6 @@ export class Chara {
 		}
 
 		return this;
-	}
-
-	GenerateTall(size?) {
-		const bodysize = size !== undefined ? size : this.appearance.bodysize;
-		return bodysize * 150 + 1300 + random(1, 148);
-	}
-
-	GenerateBodysize(_tall?) {
-		const tall = _tall ? _tall : this.appearance.tall;
-		return Math.floor((tall - 1350) / 150);
-	}
-
-	GenerateWeight(_tall) {
-		const tall = _tall / 1000;
-		return Math.floor(tall * tall * 19 + 0.5) + random(1, 20) / 10;
 	}
 
 	setVirginity(part, target, time, situation) {
@@ -682,5 +711,6 @@ export class Chara {
 }
 
 Object.defineProperties(window, {
+	Creature: { value: Creature },
 	Chara: { value: Chara },
 });

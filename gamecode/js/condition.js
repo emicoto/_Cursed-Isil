@@ -18,6 +18,10 @@ cond.baseLt = function (cid, key, val) {
 	}
 };
 
+cond.baseIs = function (cid, key) {
+	return C[cid].base[key][0] / C[cid].base[key][1];
+};
+
 cond.palamLt = function (cid, key, val) {
 	if (val === "max") return C[cid].palam[key][1] < C[cid].palam[key][2];
 	else {
@@ -87,7 +91,7 @@ cond.isRape = function (cid) {
 };
 
 cond.candResist = function (cid) {
-	return !cond.isUncons(C[cid]) && cond.canMove(C[cid]);
+	return !cond.isUncons(cid) && cond.canMove(cid);
 };
 
 cond.isWeaker = function (a, b) {
@@ -141,6 +145,18 @@ cond.OnlyU2 = function () {
 	return V.location.chara.length === 2 && pc !== tc;
 };
 
+cond.hasTarget = function () {
+	return pc !== tc;
+};
+
+cond.bothIs = function (cid) {
+	return cid === pc && cid === tc;
+};
+
+cond.pcIs = function (cid) {
+	return cid === pc;
+};
+
 cond.hasPenis = function (cid) {
 	return C[cid].gender !== "female";
 };
@@ -151,4 +167,46 @@ cond.hasVagina = function (cid) {
 
 cond.justHands = function (part) {
 	return (part.containsAll("handL", "handR") && part.length == 2) || (part.has("handL", "handR") && part.length == 1);
+};
+
+cond.cursedLvGt = function (abl, value) {
+	return V.cursedLord.abl[abl] > value;
+};
+
+cond.betweenTime = function (start, end) {
+	return V.date.time >= start * 60 && V.date.time < end * 60;
+};
+
+//是否处于某个不健康状态，并返回健康值的影响值
+cond.healthWarn = function (cid) {
+	const { flag } = C[cid];
+
+	let multip = 0;
+	let cond = ["stamina", "sanity", "mana", "hydration", "nutrient"];
+	let evalcond = "";
+	cond.forEach((key) => {
+		evalcond += `cond.baseLt(cid, "${key}", 0.05) && `;
+	});
+
+	if (eval(evalcond)) {
+		multip += 0.1;
+	}
+
+	if (!cond.baseLt(cid, "drug", 0.9) || !cond.baseLt(cid, "alcohol", 0.9)) {
+		multip += 0.1;
+	}
+
+	const list = {
+		tired: [5, 0.01],
+		nutrient: [3, 0.1],
+		stressful: [7, 0.05],
+		sleepless: [3, 0.02],
+		losingmana: [5, 0.02],
+	};
+
+	for (const [key, [max, value]] of Object.entries(list)) {
+		if (flag[key] > max) multip += value;
+	}
+
+	return multip;
 };

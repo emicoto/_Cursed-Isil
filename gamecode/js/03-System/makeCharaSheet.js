@@ -1,5 +1,5 @@
 const initCSV = function (cid) {
-	const _raw = Story.get(`CharaSheet_${cid}`).text.replace(/\n/g, "#L#").replace(/\s/, "");
+	const _raw = Story.get(`CharaSheet_${cid}`).text.replace(/\n/g, "#L#").replace(/\s/g, "");
 	const raw = _raw.split("#L#");
 
 	const chara = {};
@@ -115,7 +115,7 @@ Chara.initCSV = function (cid) {
          ${code.join("")}
       }`);
 
-	const ignore = ["appearance", "stats", "abl", "sbl", "skill", "organ", "exp", "virginity"];
+	const ignore = ["appearance", "stats", "abl", "sbl", "skill", "organ", "exp", "virginity", "scar"];
 	for (let i in raw) {
 		if (ignore.includes(i)) continue;
 
@@ -127,6 +127,23 @@ Chara.initCSV = function (cid) {
 		} else {
 			chara[i] = raw[i];
 		}
+	}
+
+	if (raw.scar) {
+		const scar = Object.keys(raw.scar);
+		scar.forEach((key) => {
+			if (Array.isArray(raw.scar[key])) {
+				raw.scar[key].forEach((type) => {
+					const time = type == "scar" ? "never" : 1440;
+					Chara.getScar(chara, key, type, time);
+				});
+			} else {
+				const time = raw.scar[key] == "scar" ? "never" : 1440;
+				Chara.getScar(chara, key, raw.scar[key], time);
+			}
+		});
+
+		Chara.skinCounter(chara, 0);
 	}
 
 	chara.resetVirginity();

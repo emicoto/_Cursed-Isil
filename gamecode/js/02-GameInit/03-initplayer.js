@@ -129,8 +129,11 @@ Chara.init = function () {
 		V.chara[i] = Chara.data[i]();
 	}
 
-	S.charasheet.forEach((cid) => {
-		V.chara[cid] = Chara.initCSV(cid);
+	Story.lookup("tags", "csv").forEach((data) => {
+		if (data.title.includes("CharaSheet")) {
+			let cid = data.title.replace("CharaSheet_", "");
+			V.chara[cid] = Chara.initCSV(cid);
+		}
 	});
 
 	Chara.initGlobal();
@@ -144,6 +147,19 @@ Chara.init = function () {
 	Action.initKojo();
 	for (let chara in Action.kojo) {
 		Action.kojo[chara]();
+	}
+
+	//通过Kojo的设定补充角色各变量设定
+	for (const [cid, data] of Object.entries(Kojo.data)) {
+		if (data.sleeptime) {
+			V.chara[cid].flag.sleeptime = data.sleeptime;
+		}
+		if (data.wakeuptime) {
+			V.chara[cid].flag.wakeuptime = data.wakeuptime;
+		}
+		if (data.home) {
+			V.chara[cid].flag.startplace = data.home.split(",");
+		}
 	}
 
 	V.master = "m0";

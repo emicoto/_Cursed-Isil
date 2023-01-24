@@ -107,7 +107,7 @@ D.traits = [
 		des: "没有世俗的欲望。",
 		order: 0,
 		sourceEffect: [
-			["arousal", 0.8],
+			["arousal", 0.75],
 			["eager", 0.8],
 			["satisfy", 1.2],
 		],
@@ -118,7 +118,7 @@ D.traits = [
 		des: "小孩才做选择，我全都要！",
 		order: 0,
 		sourceEffect: [
-			["arousal", 1.2],
+			["arousal", 1.25],
 			["eager", 1.2],
 			["satisfy", 0.8],
 		],

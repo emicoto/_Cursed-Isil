@@ -42,6 +42,7 @@ D.cflag = [
 	//关系性
 	"favo",
 	"trust",
+	"dom",
 	"sub",
 	"depend",
 	"desire",

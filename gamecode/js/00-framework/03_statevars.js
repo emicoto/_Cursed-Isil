@@ -11,6 +11,11 @@ const using = {};
 const flag = {};
 
 Object.defineProperties(window, {
+	Story: {
+		get: function () {
+			return Story;
+		},
+	},
 	V: {
 		get: function () {
 			return State.variables;

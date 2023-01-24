@@ -1,9 +1,10 @@
 const extendTags = function (raw) {
+	if (!raw) return [];
 	return raw.split("|");
 };
 
 const extendsRaw = function (raw, key) {
-	if (key == "locationTags") return extendTags(raw);
+	if (key == "locationTags" || key == "placement") return extendTags(raw);
 	if (key == "targetPart" || key == "actPart") return extendParts(raw);
 	return raw;
 };
@@ -66,6 +67,7 @@ class Action {
 		type,
 		autokeep = "n",
 		locationTags,
+		placement,
 	} = {}) {
 		const typeMap = new Map(D.ActionTypes);
 		this.id = id;
@@ -99,6 +101,7 @@ class Action {
 		};
 
 		if (locationTags) this.tags = locationTags;
+		if (placement) this.placement = placement;
 
 		if (defaultText) this.templet = defaultText;
 

@@ -28,8 +28,10 @@ Action.globalFilter = function (id) {
 	if (s.tgPart && Using[pc][s.tgPart]?.action !== "") return 0;
 
 	//角色侧的控制。
-	const kojo = Kojo.get(tc, "filter");
-	if (kojo && !kojo()) return 0;
+	let kojoFilter = Kojo.get(pc, "filter");
+	if (kojoFilter && !kojoFilter(data)) return 0;
+	kojoFilter = Kojo.get(tc, "filter");
+	if (kojoFilter && !kojoFilter(data)) return 0;
 
 	//特定分类批处理
 	switch (data.type) {
@@ -46,17 +48,20 @@ Action.globalFilter = function (id) {
 			if (Flag.mode < 2) return 0;
 
 			//对象npc清醒，同时解禁等级不足
-			if (!cond.isUncons(target) && data.mode > Cflag[tc].touchLv + 0.5) return 0;
+			if (!cond.isUncons(tc) && data.mode > Cflag[tc].touchLv + 0.5) return 0;
 			break;
 
 		case "逆位":
 			//不是逆位模式，或者pc不是受
-			if (V.mode !== "reverse" && player.type == "tachi") return 0;
+			if (V.mode !== "reverse" && player.position == "tachi") return 0;
 			break;
 
 		case "常规":
 			//当前地点不符合
-			if (!V.location.tags.has(data.tags)) return 0;
+			if (V.location.placement && V.location.placement.has(data.placement)) {
+				//条件符合跳过这部分检测
+			} else if (V.location.tags.has(data.tags) == false) return 0;
+
 			//不是常规模式，同时指令不允许在train模式下使用
 			if (Flag.mode > 0 && !data?.option?.has("canTrain")) return 0;
 			break;

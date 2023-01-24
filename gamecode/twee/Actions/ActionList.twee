@@ -27,15 +27,15 @@ noSelectPart，没有目标部位，只需选择动作部位。
 /* 常规动作 */
 /* time：花费时间，locationTags：需求的地点标签，option：额外设置 */
 /* 上课属于互动事件类型？上课期间可以对别人涩涩或作为伊希露被涩涩什么的！ */
-#G ,id   ,name ,time ,locationTags  ,option
-Relax, 放松, 15, 床|椅子|休息点, canTrain
+#G ,id   ,name ,time ,locationTags, placement, option
+Relax, 放松, 15, 休息点, 沙发|椅子, canTrain
 Walk, 散步, 15, 室外
-Plant, 种植, 30, 菜园
-Bath, 洗澡, 30, 浴室
-Read, 读书, 60, 书|书柜
-Learn, 学习, 60, 书桌
-Class, 听课, 15, 教室, canTrain
-HomeWork, 做作业, 120, 书桌
+Plant, 种植, 30, 种植点
+Bath, 洗澡, 30, 沐浴|澡堂, 浴室
+Read, 读书, 60, 阅读区, 书架
+Learn, 学习, 60, 教室, 书桌
+Class, 听课, 15, 教室, , canTrain
+HomeWork, 做作业, 120, ,书桌
 Shop, 购物, 20, 商店
 Cook, 煮饭, 15, 厨房
 Sing, 唱歌, 5, ,canTrain

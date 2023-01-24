@@ -32,7 +32,7 @@ Com.set('G0')
 /* 注册指令事件*/
 Com.set('G1')
     .Check(()=>{ 
-        return cond.baseLt(player, 'stamina', 'max')
+        return cond.baseLt(pc, 'stamina', 'max')
     })
     .Effect(()=>{ 
         Source[pc].stamina += 30 
@@ -65,7 +65,7 @@ Com.set('G2')
 
 :: Com_G2:Cancel
 <<you>>试着跟对方搭话，
-<<if !cond.canSpeak($target)>>
+<<if !cond.canSpeak(tc)>>
 可惜$target.name没有能力回应<<you>>。
 <<else>>
 但$target.name并没有心情理会<<you>>。
@@ -115,7 +115,7 @@ Com.set('T4')
 Com.set('T99')
    .Name(()=>{
         if(V.mode !== 'train'){
-            if(cond.isUncons(target)){
+            if(cond.isUncons(tc)){
                 return '眠奸';                
             }           
             return '推倒';
@@ -128,7 +128,7 @@ Com.set('T99')
         if(V.debug)
             return true;
 
-        if(cond.isUncons(target)){
+        if(cond.isUncons(tc)){
             return true;
         }
         

@@ -67,7 +67,7 @@ class Kojo {
 		T.noMsg = 0;
 
 		if (Story.has(title)) {
-			retext = Story.get(title).text;
+			retext = Story.get(title);
 		}
 
 		if (cid == pc && type == "PCAction" && !V.system.showPCKojo) {
@@ -77,19 +77,33 @@ class Kojo {
 		if (!retext) {
 			title = `${type?.has("Action") ? "Msg_" : ""}${type}${id ? `_${id}` : ""}${dif ? `:${dif}` : ""}`;
 			if (Story.has(title)) {
-				retext = Story.get(title).text;
+				retext = Story.get(title);
 			}
 		}
-		if (Config.debug) console.log(title, retext);
 
-		if (retext) {
+		//如果是空模板，直接返回无内容
+		if (retext.tags.includes("noMsg")) {
+			T.noMsg = 1;
+			return "";
+		}
+
+		//计算有效文本长度
+		let txt = P.checkTxtWithCode(retext.text);
+		console.log(title, cleartxt, cleartxt.length);
+
+		//有内容的话长度怎么也不会少于4字吧
+		if (txt.length > 4) {
+			retext = retext.text;
+
 			let matcher = [`<<nameTag '${cid}'>>`, `<<nameTag "${cid}">>`];
-			if (!retext.has(matcher) && !tag) {
-				retext = `<<nameTag '${cid}'>>` + retext;
 
-				if (cid == pc) T.noNameTag = 1;
-				else T.noNameTag = 0;
+			if (!retext.has(matcher)) {
+				retext = `<<nameTag '${cid}'>>` + retext;
 			}
+
+			if (cid == pc) T.noNameTag = 1;
+			else T.noNameTag = 0;
+
 			retext += "<<dashline>>";
 
 			return retext;
@@ -150,6 +164,14 @@ class Kojo {
 	Counter(id, obj) {
 		if (id) this.counter[id] = obj;
 		else this.counter.push(obj);
+		return this;
+	}
+	SleepTime(time) {
+		this.sleeptime = time * 60;
+		return this;
+	}
+	WakeupTime(time) {
+		this.wakeuptime = time * 60;
 		return this;
 	}
 }

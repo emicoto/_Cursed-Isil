@@ -5,7 +5,7 @@
 
 <</script>>
 
-:: Kojo_Isil_Action_Relax
+:: Kojo_Isil_Action_Relax[noMsg]
 /* 与pc一起放松 */
 
 
@@ -22,14 +22,14 @@
 “嗯……这个术式是……”<br>
 $target.name敷衍地附和着你的话。<br>
 
-:: Kojo_Isil_Action_Look
+:: Kojo_Isil_Action_Look[noMsg]
 /*角色外观描述+穿着打扮.<br>
 打扮可以根据现在套装分支.<br>
 <<switch $chara.Isil.outfitset >>
 <<case '套装名'>>
 <</switch>>*/
 
-:: Kojo_Isil_Action_Talk2
+:: Kojo_Isil_Action_Talk2[noMsg]
 /*谈论近况的内容。可以根据角色事件flag进行分支。<br>
 flagname替换成对应的变量名<br>
 <<if $chara.Isil.flag.flagname >>
@@ -40,7 +40,7 @@ flagname替换成对应的变量名<br>
 <fr>
 最后一页了. 指令模式下, 可不要忘记换行符哦!<br>*/
 
-:: Kojo_Isil_Action_Interest
+:: Kojo_Isil_Action_Interest[noMsg]
 /* 这里写谈论角色自己感兴趣话题的内容。 */
 /*<<selection replace>>
 <<pick '自定义话题A'>>
@@ -49,18 +49,18 @@ flagname替换成对应的变量名<br>
 谈论话题时的文本。
 <</selection>>*/
 
-:: Kojo_Isil_Action_PetHead
+:: Kojo_Isil_Action_PetHead[noMsg]
 /* 摸头杀时的文本 */
 /*摸头时的内容<br>*/
 
-:: Kojo_Isil_Action_Firm
+:: Kojo_Isil_Action_Firm[noMsg]
 /* 被海王勾搭调情时的文本 */
 /*玩家角色(艾瑞斯)对攻略角色进行调情时的内容<br>
 调情就是只口花花跑火车啦. 没有肢体接触.<br>
 伊希露没堕落的话是不会主动调情的. 基本都是艾瑞斯这个海王在到处勾搭.<br>*/
 
 
-:: Kojo_Isil_Action_Gift
+:: Kojo_Isil_Action_Gift[noMsg]
 /*收到礼物时.<br>
 <<switch Tsv[tc].present>>
 <<case '钢笔'>>
