@@ -50,7 +50,7 @@ F.Evole = function (type) {
 		link = `　<span style='color:#EE3131'>${p[type][1] ? p[type][1] : "升级"}  ${mp}P</span>`;
 	}
 
-	if (Config.debug) console.log(link);
+	if (game.debug) console.log(link);
 	return link;
 };
 

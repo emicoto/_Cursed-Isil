@@ -126,7 +126,7 @@ cond.isEnergetic = function (cid, compareValue) {
 	//理想情况下，总值低于160时，角色无法进行有效的抵抗。
 	if (!compareValue) compareValue = 160;
 
-	if (Config.debug) console.log(hp, stamina, sanity, mana);
+	if (game.debug) console.log(hp, stamina, sanity, mana);
 
 	return stamina + sanity + mana > compareValue;
 };

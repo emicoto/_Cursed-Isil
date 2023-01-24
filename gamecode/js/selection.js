@@ -19,7 +19,7 @@ Macro.add("selection", {
 		}
 
 		const debugView = this.debugView;
-		if (Config.debug) {
+		if (game.debug) {
 			debugView.modes({
 				nonvoid: false,
 				hidden: true,
@@ -29,7 +29,7 @@ Macro.add("selection", {
 		let output = "";
 
 		for (let i = 1; i < len; i++) {
-			if (Config.debug) {
+			if (game.debug) {
 				this.createDebugView(this.payload[i].name, this.payload[i].source).modes({ nonvoid: false });
 				console.log(this.payload[i]);
 			}
@@ -77,7 +77,7 @@ Macro.add("selection", {
         ${output}
         </div>`;
 
-		if (Config.debug) console.log(output);
+		if (game.debug) console.log(output);
 
 		jQuery(this.output).wiki(html);
 	},
@@ -149,7 +149,7 @@ Macro.add("eventSelect", {
 		}
 
 		const debugView = this.debugView;
-		if (Config.debug) {
+		if (game.debug) {
 			debugView.modes({
 				nonvoid: false,
 				hidden: true,
@@ -162,7 +162,7 @@ Macro.add("eventSelect", {
 		T.selectcount++;
 
 		for (let i = 1; i < len; i++) {
-			if (Config.debug) {
+			if (game.debug) {
 				this.createDebugView(this.payload[i].name, this.payload[i].source).modes({ nonvoid: false });
 				console.log(this.payload[i]);
 			}
@@ -179,7 +179,7 @@ Macro.add("eventSelect", {
 
 		let html = `<div id='selectzone_${T.selectcount}'>${output}</div>`;
 
-		if (Config.debug) console.log(output);
+		if (game.debug) console.log(output);
 
 		jQuery(this.output).wiki(html);
 	},

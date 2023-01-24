@@ -40,7 +40,7 @@ Dlog.initTitle();
 
 :: EventLoop:After
 <<run
-    if(Config.debug)
+    if(game.debug)
         console.log('postEventLoop');
 >>
 

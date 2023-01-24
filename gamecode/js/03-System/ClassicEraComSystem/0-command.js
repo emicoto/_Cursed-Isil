@@ -20,7 +20,7 @@ Macro.add("com", {
         <</button>>
         </div>`;
 
-		if (Config.debug) console.log(output);
+		if (game.debug) console.log(output);
 
 		jQuery(this.output).wiki(output);
 	},

@@ -39,7 +39,7 @@ class Dlog {
 		};
 		this.init(raw);
 
-		if (Config.debug) console.log(this.logs);
+		if (game.debug) console.log(this.logs);
 	}
 	init(raw) {
 		let config,
@@ -84,7 +84,7 @@ Dlog.initTitle = function () {
 		T.beforecheck = title + "::Before";
 	}
 
-	if (Config.debug) {
+	if (game.debug) {
 		console.log("check", e, title, T.beforecheck);
 	}
 };

@@ -20,7 +20,7 @@
 :: StoryCaption
 
 一个用于制作游戏的范本，稍微能玩的版本。<br>
- version 0.1.5<br>
+ version <<print game.version>><br>
  author: 狐千月<br>
 
 /* 这里显示目前操作角色的信息 */

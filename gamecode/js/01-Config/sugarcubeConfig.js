@@ -28,7 +28,6 @@ Config.saves.id = "Game";
 /*debug will enable or disable the feature only for new games*/
 window.StartConfig = {
 	debug: false,
-	version: "0.1.5",
 };
 
 Config.saves.autosave = ["autosave", "eventend"];
@@ -40,8 +39,8 @@ Config.saves.isAllowed = function () {
 	return true;
 };
 
-console.log("Game Version:", StartConfig.version);
-l10nStrings.errorTitle = StartConfig.version + " Error";
+console.log("Game Version:", game.version);
+l10nStrings.errorTitle = game.version + " Error";
 
 // delete parser that adds unneeded line breaks -ng
 Wikifier.Parser.delete("lineBreak");

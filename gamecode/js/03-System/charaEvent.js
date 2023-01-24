@@ -48,7 +48,7 @@ F.switchChara = function () {
 
 	let html = `<<link '[ 切换角色 ]'>> ${com}<<run Action.redraw(); ${event}>><</link>`;
 
-	if (Config.debug) console.log(html);
+	if (game.debug) console.log(html);
 
 	return html;
 };

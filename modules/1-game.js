@@ -629,6 +629,11 @@
 	    this.portal.points.push(...points);
 	    return this;
 	  }
+	  Gerenate() {
+	    const rawdata = GenerateMap(this);
+	    this.mapdata = compressMapData(rawdata);
+	    return this;
+	  }
 	}
 	Maps.data = {};
 	class townMap extends Maps {
@@ -855,6 +860,10 @@
 	  }
 	  console.log(printmap.join("\n"));
 	}
+	function printMapFromData(map) {
+	  const mapdata = mapToMapData(map.mapdata, map.mapsize.x, map.mapsize.y);
+	  printMap(mapdata);
+	}
 	function Distance(pos1, pos2) {
 	  return Math.abs(pos1.x - pos2.x) + Math.abs(pos1.y - pos2.y);
 	}
@@ -909,7 +918,8 @@
 	  DistanceByMap: { value: DistanceByMap },
 	  printMap: { value: printMap },
 	  compressMapData: { value: compressMapData },
-	  mapToMapData: { value: mapToMapData }
+	  mapToMapData: { value: mapToMapData },
+	  printMapFromData: { value: printMapFromData }
 	});
 
 	const worldMap = {

@@ -105,6 +105,11 @@ export class Maps {
 		this.portal.points.push(...points);
 		return this;
 	}
+	Gerenate() {
+		const rawdata = GenerateMap(this);
+		this.mapdata = compressMapData(rawdata);
+		return this;
+	}
 }
 
 // 城镇地图
@@ -367,6 +372,11 @@ export function printMap(map: string[][]) {
 	console.log(printmap.join("\n"));
 }
 
+export function printMapFromData(map) {
+	const mapdata = mapToMapData(map.mapdata, map.mapsize.x, map.mapsize.y);
+	printMap(mapdata);
+}
+
 //计算两个地点之间的移动距离
 export function Distance(pos1: iPos, pos2: iPos) {
 	return Math.abs(pos1.x - pos2.x) + Math.abs(pos1.y - pos2.y);
@@ -429,4 +439,5 @@ Object.defineProperties(window, {
 	printMap: { value: printMap },
 	compressMapData: { value: compressMapData },
 	mapToMapData: { value: mapToMapData },
+	printMapFromData: { value: printMapFromData },
 });

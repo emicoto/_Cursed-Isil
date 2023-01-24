@@ -142,7 +142,7 @@ Action.globalPartAble = function (id, part, cid) {
 	const data = Action.data[id];
 	const chara = C[cid];
 
-	//初始化中
+	//初始化中，或者是非占用性部位
 	if (!Using[cid][part]) return 1;
 
 	switch (part) {
@@ -159,5 +159,5 @@ Action.globalPartAble = function (id, part, cid) {
 			if (Flag.mode < 3) return 0;
 	}
 
-	return Using[cid][part].action == "" || Using[cid][part].action == id;
+	return Using[cid][part]?.action == "" || Using[cid][part]?.action == id;
 };
