@@ -107,12 +107,12 @@ game.init = function () {
 
 	//当前地点详情
 	V.location = {
-		groupId: "Academy",
-		mapId: "Dormitory",
-		roomId: "S303",
+		groupId: "Academy", //上级地图id
+		mapId: "Dormitory", //当前地图
+		roomId: "S303", //地图内房间id
 
-		id: "Academy_Dormitory_S303",
-		entry: "Dormitory",
+		id: "Academy_Dormitory_S303", //当前地点的绝对id
+		entry: "Dormitory", //地点出入口
 
 		name: "宿舍S303",
 		tags: ["私室", "宿舍", "沐浴", "厨房", "厕所"],

@@ -28,6 +28,7 @@ window.game = {
 	/** Patch to make javascript execution more consistent (see comment below) */
 	Wikifier: Wikifier,
 	version: "0.0.0",
+	debug: false,
 };
 /* Make each of these namespaces available at the top level as well */
 window.defineGlobalNamespaces = (namespaces) => {

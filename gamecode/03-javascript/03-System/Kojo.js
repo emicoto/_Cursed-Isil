@@ -89,7 +89,7 @@ class Kojo {
 
 		//计算有效文本长度
 		let txt = P.checkTxtWithCode(retext.text);
-		console.log(title, cleartxt, cleartxt.length);
+		console.log(title, txt, txt.length);
 
 		//有内容的话长度怎么也不会少于4字吧
 		if (txt.length > 4) {

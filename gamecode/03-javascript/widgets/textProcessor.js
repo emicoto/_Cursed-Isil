@@ -76,51 +76,63 @@ P.countText = function (text) {
 P.checkTxtWithCode = function (text) {
 	//清理注释并按行分割
 	const raw = text.replace(/\/\*(.+)\*\//g, "").split(/\n/);
-	const cond = [];
+	const condition = [];
 	const retext = [];
 	let count = 0;
 
 	raw.forEach((txt) => {
-		if (txt.match(/<<if(.+)>>/) || txt.match(/<<else(.+)>>/) || txt.match(/<<case(.+)>>/) || txt.match(/switch/)) {
+		if (
+			txt.match(/<<if(.+)>>/) ||
+			txt.match(/<<else(.+)>>/) ||
+			txt.match(/<<case(.+)>>/) ||
+			txt.match(/switch/) ||
+			txt.match(/<<else>>/) ||
+			txt.match(/<<default>>/)
+		) {
 			let code = txt.match(/<<(.+)>>/)[1];
-			cond[count] = code;
 			count++;
+			condition[count] = code;
+		} else if (!count) {
+			retext[1000] += txt;
 		} else {
 			if (retext[count] === undefined) retext[count] = "";
 			retext[count] += txt;
 		}
 	});
 
-	if (cond.length === 0) return P.countText(text);
+	if (condition.length === 0) return P.countText(text);
 
 	let isSwitch,
 		switchcond,
 		code,
 		result = "";
 
-	cond.forEach((cond, i) => {
-		if (cond.includes("switch")) {
-			isSwitch = true;
-			switchcond = `${cond.replace(/switch/g, "")} ===`;
-		}
-		if (cond.includes("if")) isSwitch = false;
+	//console.log(condition, retext);
 
-		if (isSwitch && cond.includes("case")) {
-			code = `${switchcond} ${cond.replace(/case/g, "")}`;
+	condition.forEach((con, i) => {
+		if (con.includes("switch")) {
+			isSwitch = true;
+			switchcond = `${con.replace(/switch/g, "")} ===`;
+		}
+		if (con.includes("if")) isSwitch = false;
+
+		if (isSwitch && con.includes("case")) {
+			code = `${switchcond} ${con.replace(/case/g, "")}`;
 			if (eval(code)) {
 				result += P.countText(retext[i + 1]);
-				console.log(result);
+				retext.deleteAt(i + 1);
 			}
-		} else if (!isSwitch && cond.includes("if")) {
-			code = cond.replace(/elseif/g, "").replace(/if/g, "");
+		} else if (!isSwitch && con.includes("if")) {
+			code = con.replace(/elseif/g, "").replace(/if/g, "");
 			if (eval(code)) {
 				result += P.countText(retext[i + 1]);
-				console.log(result);
+				retext.deleteAt(i + 1);
 			}
 		}
 	});
 
-	return result;
+	let txt = P.countText(retext.join(""));
+	return result + txt;
 };
 
 /**
@@ -184,14 +196,6 @@ P.splitSex = function (chara, male, female, inter) {
 		}
 		return female;
 	}
-};
-
-P.mutants = function (level) {
-	let txt = "";
-	for (let i = 0; i < level; i++) {
-		txt += `【${D.mutant[i]}】`;
-	}
-	return txt;
 };
 
 P.msg = function (msg, add) {

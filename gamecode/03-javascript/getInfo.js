@@ -134,29 +134,10 @@ P.actpart = function () {
 DefineMacroS("targetPart", P.targetPart);
 DefineMacroS("actPart", P.actpart);
 
-//检测各个部位中的占用状态 。 如果为空或与当前id一致则返回true，否则返回false
-cond.partIsEmpty = function (cid, id, part) {
-	return Using[cid][part].action == id || !Using[cid][part].action;
-};
-
-//检查触手有无空余，有返回空余部位id，没有返回 -1
-cond.hasUnuseTentacle = function () {
-	const tentacle = Using.m0.tentacles;
-	for (let i = 0; i < tentacle.length; i++) {
-		const info = tentacle[i];
-		if (!info.action) return i;
+P.mutants = function (level) {
+	let txt = "";
+	for (let i = 0; i < level; i++) {
+		txt += `【${D.mutant[i]}】`;
 	}
-	return -1;
+	return txt;
 };
-
-//事件中进行设置时
-F.setActor = function (cid, tid, ...parts) {
-	T.actor = cid;
-	T.target = tid;
-
-	if (parts[0]) T.selectPart = parts[0];
-	else T.selectPart = "body";
-	if (parts[1]) T.actPart = parts[1];
-	else T.actPart = "hands";
-};
-DefineMacroS("setActor", F.setActor);

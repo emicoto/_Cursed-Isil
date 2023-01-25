@@ -105,6 +105,7 @@ export interface Chara extends Creature {
 
 	flag: any; //好感、信赖， 学籍情报， 诅咒进展， 诅咒魔力效率等
 	wallet?: number;
+	debt?: number;
 	invetory?: any;
 	tempture?: { low: number; high: number; best: number; current: number };
 }

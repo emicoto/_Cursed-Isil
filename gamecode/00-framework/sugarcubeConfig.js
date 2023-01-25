@@ -26,9 +26,6 @@ Config.saves.id = "Game";
 
 /*LinkNumberify and images will enable or disable the feature completely*/
 /*debug will enable or disable the feature only for new games*/
-window.StartConfig = {
-	debug: false,
-};
 
 Config.saves.autosave = ["autosave", "eventend"];
 
@@ -38,9 +35,6 @@ Config.saves.isAllowed = function () {
 	}
 	return true;
 };
-
-console.log("Game Version:", game.version);
-l10nStrings.errorTitle = game.version + " Error";
 
 // delete parser that adds unneeded line breaks -ng
 Wikifier.Parser.delete("lineBreak");

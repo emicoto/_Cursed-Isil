@@ -123,6 +123,16 @@ flagname替换成对应的变量名<br>
 <<case '魔晶耳环'>>
 <</switch>>
 
+
+:: Kojo_NPCID_Action_AskMoney[noMsg]
+/* 借钱 */
+/*<<you>>厚着脸皮向<<target>>借钱。<br>*/
+
+:: Kojo_NPCID_Action_PayBack[noMsg]
+/* 还钱 */
+/*<<you>>向<<target>>还了钱。<br>*/
+
+
 :: Kojo_NPCID_Action_TrySex[noMsg]
 <<if Tsv[tc].oksign>>
 合意时的内容

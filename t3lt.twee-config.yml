@@ -48,3 +48,5 @@ sugarcube-2:
          name: targetChara
       targetPart:
          name: targetPart
+      target:
+         name: target

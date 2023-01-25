@@ -75,3 +75,21 @@ Action.set("Gift")
 	.Order(() => {
 		return 0;
 	});
+
+/* 借钱 */
+Action.set("AskMoney")
+	.Filter(() => {
+		return pc == "Ayres" && player.wallet < 100 && target.flag.debt < 100;
+	})
+	.Check(() => {
+		if (Cflag[tc].trust < 200) {
+			T.reason += "【信任度不足】";
+			return 0;
+		}
+		return 1;
+	});
+
+/* 还钱 */
+Action.set("Payback").Filter(() => {
+	return pc == "Ayres" && player.wallet > target.flag.debt;
+});

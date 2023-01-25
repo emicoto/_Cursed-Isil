@@ -3,7 +3,7 @@ F.summonChara = function () {
 
 	//根据时间和地点召唤可能存在的角色。
 	//暂时只有两场景，迟些再整。
-	if (local.id == "A0") {
+	if (local.id == "Academy_Dormitory_S303") {
 		local.chara = ["Ayres", "Isil"];
 	} else {
 		const charalist = Object.keys(V.chara);

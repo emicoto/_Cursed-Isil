@@ -18,67 +18,64 @@
 :: RiseToSurface
 <<you>>的意识从深渊回来了……<br>
 
-:: Msg_PCAction_Interaction:Before
-<<you>>看到了$target.name<br>
-<<selection replace>>
-<<pick '上前打招呼'>>
-<<pick '返回'>>
-  <<set _cancel to 1>>
-<</selection>>
-
-:: Msg_PCAction_Interaction:Cancel 
-执行失败了。
-
-:: Msg_PCAction_Interaction:Failed
-对方不配合失败了。
 
 :: Msg_PCAction_Interaction
 /* 交流 */
-<<you>>与$target.name打了个招呼。<br>
+<<you>>与<<target>>打了个招呼。<br>
 /* 进入交流模式， 并出现交流指令 */
 
 :: Msg_PCAction_Talk:Cancel
 <<you>>试着跟对方搭话，
-<<if !cond.canSpeak(tc)>>
-可惜$target.name没有能力回应<<you>>。
+<<if Cflag[tc].trust <= 100 >>
+但是对方并没有回应。<br>
+<</if>>
+<<if !cond.canSpeak(tc) >>
+可惜<<target>>没有能力回应<<you>>。
 <<else>>
-但$target.name并没有心情理会<<you>>。
+但<<target>>并没有心情理会<<you>>。
 <</if>><br>
 
 :: Msg_PCAction_Talk
-<<you>>试着跟$target.name搭话。<br>
+<<you>>试着跟<<target>>搭话。<br>
 
 :: Msg_PCAction_Look
-<<you>>观察着$target.name的模样。<br>
+<<you>>观察着<<target>>的模样。<br>
 
 :: Msg_PCAction_Talk2
-<<you>>问$target.name最近过得如何。<br>
+<<you>>问<<target>>最近过得如何。<br>
 
 :: Msg_PCAction_Interest
 <<=Kojo.put(tc, { type:'Action', id:'Interest'} )>>
 <<if T.noMsg>>
-<<you>>对$target.name感兴趣的话题发表了些见解。<br>
+<<you>>对<<target>>感兴趣的话题发表了些见解。<br>
 <</if>>
 
 :: Msg_PCAction_PetHead
-<<you>>摸了摸$target.name的脑袋。<br>
+<<you>>摸了摸<<target>>的脑袋。<br>
 
 :: Msg_PCAction_Firm
-<<you>>对$target.name跑了个媚眼。<br>
+<<you>>对<<target>>抛了个媚眼。<br>
 
 :: Msg_PCAction_Gift
 /* 送礼 */
 <<you>>在$location.name开始送礼。<br>
 
+:: Msg_PCAction_AskMoney
+/* 借钱 */
+<<you>>厚着脸皮向<<target>>借钱。<br>
+
+:: Msg_PCAction_PayBack
+/* 还钱 */
+<<you>>向<<target>>还了钱。<br>
 
 :: Msg_PCAction_TrySex
 /* 推倒 */
 <<if $mode !== 'train' >>
-<<you>>将$target.name带到没人注意到的角落。<br>
+<<you>>将<<target>>带到没人注意到的角落。<br>
 <<=Kojo.put(tc, { type: 'Action', id:'TrySex', dif: 'start' })>>
 
 <<else>>
-<<you>>帮$target.name整理好衣服。<br>
+<<you>>帮<<target>>整理好衣服。<br>
 <<=Kojo.put(tc, { type: 'Action', id:'TrySex', dif:'finish' })>>
 <</if>>
 

@@ -177,36 +177,17 @@ cond.betweenTime = function (start, end) {
 	return V.date.time >= start * 60 && V.date.time < end * 60;
 };
 
-//是否处于某个不健康状态，并返回健康值的影响值
-cond.healthWarn = function (cid) {
-	const { flag } = C[cid];
+//检测各个部位中的占用状态 。 如果为空或与当前id一致则返回true，否则返回false
+cond.partIsEmpty = function (cid, id, part) {
+	return Using[cid][part].action == id || !Using[cid][part].action;
+};
 
-	let multip = 0;
-	let cond = ["stamina", "sanity", "mana", "hydration", "nutrient"];
-	let evalcond = "";
-	cond.forEach((key) => {
-		evalcond += `cond.baseLt(cid, "${key}", 0.05) && `;
-	});
-
-	if (eval(evalcond)) {
-		multip += 0.1;
+//检查触手有无空余，有返回空余部位id，没有返回 -1
+cond.hasUnuseTentacle = function () {
+	const tentacle = Using.m0.tentacles;
+	for (let i = 0; i < tentacle.length; i++) {
+		const info = tentacle[i];
+		if (!info.action) return i;
 	}
-
-	if (!cond.baseLt(cid, "drug", 0.9) || !cond.baseLt(cid, "alcohol", 0.9)) {
-		multip += 0.1;
-	}
-
-	const list = {
-		tired: [5, 0.01],
-		nutrient: [3, 0.1],
-		stressful: [7, 0.05],
-		sleepless: [3, 0.02],
-		losingmana: [5, 0.02],
-	};
-
-	for (const [key, [max, value]] of Object.entries(list)) {
-		if (flag[key] > max) multip += value;
-	}
-
-	return multip;
+	return -1;
 };

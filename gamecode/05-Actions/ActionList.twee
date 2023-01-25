@@ -76,6 +76,8 @@ Interest, 兴趣, 5
 PetHead, 摸头, 2
 Firm, 调情, 3
 Gift, 送礼, 2
+AskMoney, 借钱, 3
+Payback, 还钱, 3
 
 /* 攻受通用 = 部分攻方 */
 /* mode: 1: normal, 1.5: between 1 and 2,  2: harassment/affection, 3: woohoo */
