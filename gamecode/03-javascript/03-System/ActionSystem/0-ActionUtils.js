@@ -51,7 +51,7 @@ Action.order = function (id, part, btn) {
 Action.getInputType = function (actionId, selection) {
 	//判定指令属于什么类型，以便后续处理。
 	if (!actionId) return;
-	const { type, actPart, targetPart, option, event } = Action.data[actionId];
+	const { type, actPart, targetPart, setting, event } = Action.data[actionId];
 
 	if (event) return "event";
 
@@ -61,15 +61,15 @@ Action.getInputType = function (actionId, selection) {
 		case "接触":
 		case "触手":
 		case "逆位":
-			if (option?.has("doStraight")) return "oneAction";
+			if (setting?.has("doStraight")) return "oneAction";
 			else return "touchAction";
 		case "道具":
 			if (actPart || targetPart) return "useEquipItem";
 			else return "useOneTimeItem";
 		default:
-			if ((actPart || targetPart) && !option?.has("doStraight")) return "OptionalAction";
+			if ((actPart || targetPart) && !setting?.has("doStraight")) return "OptionalAction";
 
-			if (groupmatch(type, "常规", "交流") || option?.has("doStraight")) return "oneAction";
+			if (groupmatch(type, "常规", "交流") || setting?.has("doStraight")) return "oneAction";
 	}
 
 	return "command";

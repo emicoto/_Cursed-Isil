@@ -63,14 +63,14 @@ Action.globalFilter = function (id) {
 			} else if (V.location.tags.has(data.tags) == false) return 0;
 
 			//不是常规模式，同时指令不允许在train模式下使用
-			if (Flag.mode > 0 && !data?.option?.has("canTrain")) return 0;
+			if (Flag.mode > 0 && !data?.setting?.has("canTrain")) return 0;
 			break;
 
 		case "交流":
 			//模式不对
 			if (Flag.mode < 1) return 0;
 			//不是交流模式，同时指令不允许在train模式下使用
-			if (Flag.mode > 1 && !data?.option?.has("canTrain")) return 0;
+			if (Flag.mode > 1 && !data?.setting?.has("canTrain")) return 0;
 			break;
 
 		case "体位":
@@ -118,7 +118,7 @@ Action.globalOrder = function (id) {
 			order = S.orderConfig.pose;
 			break;
 		case "道具":
-			if (data?.option?.has("toy")) {
+			if (data?.setting?.has("toy")) {
 				order = S.orderConfig.sextoy;
 			}
 			break;

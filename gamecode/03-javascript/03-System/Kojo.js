@@ -55,7 +55,7 @@ class Kojo {
 	 * @param {string} branch
 	 * @returns
 	 */
-	static put(cid, { type, id, dif, tag } = {}) {
+	static put(cid, { type, id, dif, noTag } = {}) {
 		let title = Kojo.title(cid, type, id, dif);
 
 		if (type == "custom") {
@@ -98,14 +98,14 @@ class Kojo {
 
 			let matcher = [`<<nameTag '${cid}'>>`, `<<nameTag "${cid}">>`];
 
-			if (!retext.has(matcher)) {
+			if (!retext.has(matcher) && !noTag) {
 				retext = `<<nameTag '${cid}'>>` + retext;
 			}
 
 			if (cid == pc) T.noNameTag = 1;
 			else T.noNameTag = 0;
 
-			retext += "<<dashline>>";
+			if (!noTag) retext += "<<dashline>>";
 
 			return retext;
 		}
@@ -192,17 +192,12 @@ F.convertKojo = function (txt) {
 	const match = txt.match(/<<=Kojo.put(.+?)>>/g);
 	match.forEach((p) => {
 		const t = p.match(/<<=Kojo.put\((.+?)\)>>/);
-		const args = t[1].replace(/\s+/g, "").replace(/'|"/g, "").split(",");
+		const code = t[0].replace("<<=", "").replace(">>", "");
 
-		//cid的转换。还是直接eval吧。
-		if (args[0].includes("$")) {
-			args[0] = args[0].replace("$", "V.");
-		}
-		let cid = eval(args[0]);
+		//然后直接eval
+		console.log(code);
 
-		if (Config.debug) console.log("args", args, "cid", cid);
-
-		txt = txt.replace(p, Kojo.put(cid, args[1], args[2], args[3]));
+		txt = txt.replace(p, eval(code));
 	});
 
 	return txt;

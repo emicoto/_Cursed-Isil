@@ -5,7 +5,7 @@ cond.hasSelectableParts = function (parts) {
 };
 
 Action.onInput = function (actionId, inputType, selection) {
-	const { event, type, option, name } = Action.data[actionId];
+	const { event, type, setting, name } = Action.data[actionId];
 
 	//先记录玩家的输入。如果id或对象不同，就重置记录。
 	//type 是体位时则无视id的变化。
@@ -114,7 +114,7 @@ ui.createCharaBtn = function (charalist) {
 
 //更新场景
 Action.updateScene = function () {
-	const { name, id, chara, tags, option, des } = V.location;
+	const { name, id, chara, tags, setting, des } = V.location;
 	const charalist = ui.createCharaBtn(chara);
 	let charaSwitch = F.switchChara();
 
@@ -203,10 +203,6 @@ Action.check = function (id) {
 	T.target = tc;
 	T.actId = T.select.id;
 
-	if (T.select.pose) T.actId = T.select.pose;
-
-	T.selectPart = T.select.tgPart;
-	T.actPart = T.select.actPart;
 	if (reText) P.flow(reText);
 
 	//确认无法执行的话，就在这个地方打断。
@@ -252,7 +248,7 @@ Action.before = function (id) {
 	}
 
 	//角色自定指令的情况。因为格式不一样，前面结果肯定为空(￣▽￣")
-	if (data?.option?.has("Kojo") && Kojo.has(pc, { type: "custom", id, dif })) {
+	if (data?.setting?.has("Kojo") && Kojo.has(pc, { type: "custom", id, dif })) {
 		P.msg(Kojo.put(pc, { type: "custom", id, dif }));
 	}
 
@@ -264,7 +260,7 @@ Action.before = function (id) {
 	//检测是否存在特殊的before处理，存在就在这执行。
 	//if(Action.data[id]?.before) Action.data[id].before();
 
-	if (!Story.has(`Msg_PCAction_${id}`) && !data?.option?.has("Kojo")) {
+	if (!Story.has(`Msg_PCAction_${id}`) && !data?.setting?.has("Kojo")) {
 		P.flow("缺乏事件文本", 30, 1);
 		Action.phase("init");
 	}
@@ -307,20 +303,23 @@ Action.event = function (id) {
 	}
 
 	//角色自定指令的情况。因为格式不一样，前面结果肯定为空(￣▽￣")
-	if (data?.option?.has("Kojo") && Kojo.has(pc, { type: "custom", id })) {
+	if (data?.setting?.has("Kojo") && Kojo.has(pc, { type: "custom", id })) {
 		reText = Kojo.put(pc, { type: "custom", id });
 	}
 
 	//检测角色口上。如果系统文中就包含了口上的调用，就跳过。
 	type = "Action";
-	if (reText.includes("Kojo.put") === false) {
+	if (reText.includes("Kojo.put(tc") === false) {
 		if (T.force && Kojo.has(tc, { type, id, dif })) {
 			reText += Kojo.put(tc, { type, id, dif });
 		}
 		if (!T.force && Kojo.has(tc, { type, id })) {
 			reText += Kojo.put(tc, { type, id });
 		}
-	} else if (reText.includes("Kojo.put")) {
+	}
+
+	if (reText.includes("Kojo.put")) {
+		//console.log(T.action);
 		reText = F.convertKojo(reText);
 	}
 
@@ -356,7 +355,7 @@ Action.after = function (id) {
 	}
 
 	//角色自定指令的情况。因为格式不一样，前面结果肯定为空(￣▽￣")
-	if (data?.option?.has("Kojo") && Kojo.has(pc, { type: "custom", id, dif })) {
+	if (data?.setting?.has("Kojo") && Kojo.has(pc, { type: "custom", id, dif })) {
 		P.msg(Kojo.put(pc, { type: "custom", id, dif }));
 	}
 

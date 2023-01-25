@@ -60,14 +60,14 @@ const createOptionBtn = function (actionId, option, selectType) {
 };
 
 const createSystemLinks = function (data) {
-	let { name, option, event, id, alterName } = data;
+	let { name, setting, event, id, alterName } = data;
 	if (alterName) name = alterName();
-	if (option) option = `'${option}'`;
-	else option = "";
+	if (setting) setting = `'${setting}'`;
+	else setting = "";
 
 	//console.log(name, option);
 
-	return `<div class='actions'><<link '[ ${name} ]' ${option}>>${
+	return `<div class='actions'><<link '[ ${name} ]' ${setting}>>${
 		event ? `<<run Action.data['${id}'].event(); Action.redraw();>>` : ""
 	}<</link>></div>`;
 };
@@ -134,6 +134,7 @@ Action.shownext = function (hide) {
 Action.updateMenu = function () {
 	//获取当前动作数据。
 	const selectId = T.select.id;
+	const actionData = Action.data[selectId];
 
 	//指令排序
 	const layer1 = ["交流", "常规", "目录"];
@@ -144,6 +145,7 @@ Action.updateMenu = function () {
 	//可选部位
 	const actorOption = Action.SelectableParts(selectId, 1);
 	const targetOption = Action.SelectableParts(selectId, 2);
+	//const otherOptions = actionData.options ? actionData.options : [];
 
 	//目录一览
 	const mainActionMenu = ["", ""];

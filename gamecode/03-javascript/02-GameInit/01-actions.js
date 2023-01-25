@@ -62,7 +62,7 @@ class Action {
 		mode = 0,
 		actPart,
 		targetPart,
-		option,
+		setting,
 		defaultText,
 		type,
 		autokeep = "n",
@@ -78,7 +78,7 @@ class Action {
 
 		if (actPart) this.actPart = actPart;
 		if (targetPart) this.targetPart = targetPart;
-		if (option) this.option = option;
+		if (setting) this.setting = setting;
 
 		if (this.type == "触手") this.actPart = ["tentacles"];
 
@@ -237,8 +237,8 @@ class Action {
 		data.forEach((kojo) => {
 			kojo.action.forEach((obj) => {
 				if (!obj?.type) obj.type = "C";
-				if (!obj?.option) obj.option = "Kojo";
-				else obj.option += "/Kojo";
+				if (!obj?.setting) obj.setting = "Kojo";
+				else obj.setting += "/Kojo";
 				Action.add(obj.id, obj);
 			});
 		});
@@ -297,6 +297,14 @@ class Action {
 	}
 	Ready(callback) {
 		this.onReady = callback;
+		return this;
+	}
+	DefaultText(str) {
+		this.defaultText = str;
+		return this;
+	}
+	Options(str) {
+		this.options = str;
 		return this;
 	}
 }
