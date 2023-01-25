@@ -75,7 +75,7 @@ Action.globalFilter = function (id) {
 
 		case "体位":
 			//只会在选择插入的时候出现
-			if (groupmatch(T.selectAct, "t8", "r1") === false) return 0;
+			if (groupmatch(s.id, "t8", "r1") === false) return 0;
 			break;
 
 		//要有对应道具才行
@@ -149,9 +149,9 @@ Action.globalPartAble = function (id, part, cid) {
 		case "critoris":
 			if (chara.gender !== "female") return 0;
 		case "penis":
-			if (chara.gender == "female") return 0;
+			if (part == "penis" && chara.gender == "female") return 0;
 		case "vagina":
-			if (chara.gender == "male") return 0;
+			if (part == "vagina" && chara.gender == "male") return 0;
 		case "anal":
 		case "urin":
 		case "nipple":

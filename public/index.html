@@ -7136,7 +7136,7 @@ Action.globalFilter = function (id) {
 
 		case "体位":
 			//只会在选择插入的时候出现
-			if (groupmatch(T.selectAct, "t8", "r1") === false) return 0;
+			if (groupmatch(s.id, "t8", "r1") === false) return 0;
 			break;
 
 		//要有对应道具才行
@@ -7210,9 +7210,9 @@ Action.globalPartAble = function (id, part, cid) {
 		case "critoris":
 			if (chara.gender !== "female") return 0;
 		case "penis":
-			if (chara.gender == "female") return 0;
+			if (part == "penis" && chara.gender == "female") return 0;
 		case "vagina":
-			if (chara.gender == "male") return 0;
+			if (part == "vagina" && chara.gender == "male") return 0;
 		case "anal":
 		case "urin":
 		case "nipple":
@@ -7703,15 +7703,18 @@ Action.onInput = function (actionId, inputType, selection) {
 
 			return cond.hasSelectableParts(able1) || cond.hasSelectableParts(able2);
 		};
+
+		//如果没有可选项，就自动选择部位，并准备执行。
+		if (!hasOption() || groupmatch(actionId, "t8", "r1")) {
+			T.select.actPart = able1[0];
+			T.select.tgPart = able2[0];
+		}
+
 		//如果有可选项就先返回，并刷新界面。
-		if (hasOption()) {
+		if (hasOption() || groupmatch(actionId, "t8", "r1")) {
 			Action.redraw();
 			return;
 		}
-
-		//如果没有可选项，就自动选择部位，并准备执行。
-		T.select.actPart = able1[0];
-		T.select.tgPart = able2[0];
 	}
 
 	//选择动作部位。如果存在可选的目标部位就等待玩家选择，否则自动选择。
@@ -7750,7 +7753,7 @@ Action.onInput = function (actionId, inputType, selection) {
 	console.log("执行动作：" + name, "\n", T.select, T.action);
 
 	//进入执行检测阶段。
-	Action.check(actionId);
+	Action.check(T.select.id);
 };
 
 //创建角色交互按钮
@@ -7864,6 +7867,11 @@ Action.check = function (id) {
 	T.actor = pc;
 	T.target = tc;
 	T.actId = T.select.id;
+
+	if (T.select.pose) T.actId = T.select.pose;
+
+	T.selectPart = T.select.tgPart;
+	T.actPart = T.select.actPart;
 	if (reText) P.flow(reText);
 
 	//确认无法执行的话，就在这个地方打断。
@@ -8918,14 +8926,15 @@ class Kojo {
 		}
 
 		//如果是空模板，直接返回无内容
-		if (retext.tags.includes("noMsg")) {
+		if (!retext || retext.tags.has("noMsg")) {
 			T.noMsg = 1;
 			return "";
 		}
 
-		//计算有效文本长度
+		//计算有效文本长度;
+		//console.log(title, retext.text);
 		let txt = P.checkTxtWithCode(retext.text);
-		console.log(title, txt, txt.length);
+		//console.log(title, txt, txt.length);
 
 		//有内容的话长度怎么也不会少于4字吧
 		if (txt.length > 4) {
@@ -10552,15 +10561,15 @@ P.checkTxtWithCode = function (text) {
 		if (isSwitch && con.includes("case")) {
 			code = `${switchcond} ${con.replace(/case/g, "")}`;
 			if (eval(code)) {
-				result += P.countText(retext[i + 1]);
-				retext.deleteAt(i + 1);
+				result += P.countText(retext[i]);
 			}
+			retext[i] = "";
 		} else if (!isSwitch && con.includes("if")) {
 			code = con.replace(/elseif/g, "").replace(/if/g, "");
 			if (eval(code)) {
-				result += P.countText(retext[i + 1]);
-				retext.deleteAt(i + 1);
+				result += P.countText(retext[i]);
 			}
+			retext[i] = "";
 		}
 	});
 
@@ -12111,7 +12120,7 @@ Kojo.set('Isil','#F9F570')
     .Filter((actiondata)=>{
         const {type, id} = actiondata
 
-        if(cond.isUncons('Isil') || V.system.debug ) return 1
+        //if(cond.isUncons('Isil') || V.system.debug ) return 1
         
         if(cond.pcIs('Isil') && groupmatch(id,'Firm','Touch','TrySex','Self') && !cond.isFallen('Isil'))
             return 0
@@ -12127,9 +12136,8 @@ Kojo.set('Isil','#F9F570')
                 if(cond.pcIs('Isil') && cond.hasTarget() && !cond.isFallen('Isil'))
                     return 0
                 break
-            default:
-                return 1
         }
+        return 1
     })
 
     //事件表
@@ -13354,8 +13362,7 @@ $(&#39;action&#39;).on(&#39;finish&#39;, ()=&gt;{
    含住&lt;&lt;target&gt;&gt;的&lt;&lt;targetPart&gt;&gt;，吸吮轻咬着。&lt;br&gt;
 &lt;&lt;default&gt;&gt;
    轻咬在&lt;&lt;target&gt;&gt;的&lt;&lt;targetPart&gt;&gt;上，品味着对方的气息，不时轻啃慢咬试图留下自己的痕迹。&lt;br&gt;
-&lt;&lt;/switch&gt;&gt;
-&lt;&lt;=Kojo.put(T.target, T.counter ? &#39;ActionR&#39; : &#39;Action&#39;, &#39;t5&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="76" name="Msg_PCAction_t6" tags="" position="725,975" size="100,100">/* 逗弄 */
+&lt;&lt;/switch&gt;&gt;</tw-passagedata><tw-passagedata pid="76" name="Msg_PCAction_t6" tags="" position="725,975" size="100,100">/* 逗弄 */
 &lt;&lt;actor&gt;&gt;
 &lt;&lt;switch T.selectPart&gt;&gt;
 &lt;&lt;case &#39;penis&#39;&gt;&gt;

@@ -38,15 +38,18 @@ Action.onInput = function (actionId, inputType, selection) {
 
 			return cond.hasSelectableParts(able1) || cond.hasSelectableParts(able2);
 		};
+
+		//如果没有可选项，就自动选择部位，并准备执行。
+		if (!hasOption() || groupmatch(actionId, "t8", "r1")) {
+			T.select.actPart = able1[0];
+			T.select.tgPart = able2[0];
+		}
+
 		//如果有可选项就先返回，并刷新界面。
-		if (hasOption()) {
+		if (hasOption() || groupmatch(actionId, "t8", "r1")) {
 			Action.redraw();
 			return;
 		}
-
-		//如果没有可选项，就自动选择部位，并准备执行。
-		T.select.actPart = able1[0];
-		T.select.tgPart = able2[0];
 	}
 
 	//选择动作部位。如果存在可选的目标部位就等待玩家选择，否则自动选择。
@@ -85,7 +88,7 @@ Action.onInput = function (actionId, inputType, selection) {
 	console.log("执行动作：" + name, "\n", T.select, T.action);
 
 	//进入执行检测阶段。
-	Action.check(actionId);
+	Action.check(T.select.id);
 };
 
 //创建角色交互按钮
@@ -199,6 +202,11 @@ Action.check = function (id) {
 	T.actor = pc;
 	T.target = tc;
 	T.actId = T.select.id;
+
+	if (T.select.pose) T.actId = T.select.pose;
+
+	T.selectPart = T.select.tgPart;
+	T.actPart = T.select.actPart;
 	if (reText) P.flow(reText);
 
 	//确认无法执行的话，就在这个地方打断。

@@ -21,7 +21,7 @@ Kojo.set('Isil','#F9F570')
     .Filter((actiondata)=>{
         const {type, id} = actiondata
 
-        if(cond.isUncons('Isil') || V.system.debug ) return 1
+        //if(cond.isUncons('Isil') || V.system.debug ) return 1
         
         if(cond.pcIs('Isil') && groupmatch(id,'Firm','Touch','TrySex','Self') && !cond.isFallen('Isil'))
             return 0
@@ -37,9 +37,8 @@ Kojo.set('Isil','#F9F570')
                 if(cond.pcIs('Isil') && cond.hasTarget() && !cond.isFallen('Isil'))
                     return 0
                 break
-            default:
-                return 1
         }
+        return 1
     })
 
     //事件表

@@ -82,14 +82,15 @@ class Kojo {
 		}
 
 		//如果是空模板，直接返回无内容
-		if (retext.tags.includes("noMsg")) {
+		if (!retext || retext.tags.has("noMsg")) {
 			T.noMsg = 1;
 			return "";
 		}
 
-		//计算有效文本长度
+		//计算有效文本长度;
+		//console.log(title, retext.text);
 		let txt = P.checkTxtWithCode(retext.text);
-		console.log(title, txt, txt.length);
+		//console.log(title, txt, txt.length);
 
 		//有内容的话长度怎么也不会少于4字吧
 		if (txt.length > 4) {

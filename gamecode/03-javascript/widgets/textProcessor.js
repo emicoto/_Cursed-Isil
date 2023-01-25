@@ -119,15 +119,15 @@ P.checkTxtWithCode = function (text) {
 		if (isSwitch && con.includes("case")) {
 			code = `${switchcond} ${con.replace(/case/g, "")}`;
 			if (eval(code)) {
-				result += P.countText(retext[i + 1]);
-				retext.deleteAt(i + 1);
+				result += P.countText(retext[i]);
 			}
+			retext[i] = "";
 		} else if (!isSwitch && con.includes("if")) {
 			code = con.replace(/elseif/g, "").replace(/if/g, "");
 			if (eval(code)) {
-				result += P.countText(retext[i + 1]);
-				retext.deleteAt(i + 1);
+				result += P.countText(retext[i]);
 			}
+			retext[i] = "";
 		}
 	});
 
