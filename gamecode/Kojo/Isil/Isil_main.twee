@@ -20,6 +20,8 @@ Kojo.set('Isil','#F9F570')
     //过滤器
     .Filter((actiondata)=>{
         const {type, id} = actiondata
+
+        if(cond.isUncons('Isil') || V.system.debug ) return 1
         
         if(cond.pcIs('Isil') && groupmatch(id,'Firm','Touch','TrySex','Self') && !cond.isFallen('Isil'))
             return 0
