@@ -135,18 +135,29 @@ class Action {
 	static create(data, mode) {
 		const { name, templet, targetPart, actPart, type } = data;
 
+		let isCounter = mode.includes("counter");
+		let isKojo = mode.includes("kojo");
+
 		let groupTitle = `:: Action_${type}_Options[script]\n`;
 
 		let txt = `/* ${name} */\nAction.set('${data.id}')\n     .Filter(()=>{\n         return 1\n      })\n     .Check(()=>{\n         return 1\n      })\n     .Order(()=>{\n         return 0\n      })\n\n`;
 
-		if (groupmatch(mode, "kojo", "msg")) txt = "";
+		if (groupmatch(mode, "kojo", "msg") || isKojo) txt = "";
 
 		const convertTemplet = (templet, ...args) => {
+			if (!args[0]) args[0] = "{0}";
+			if (!args[1]) args[1] = "{1}";
+
+			const charaA = isCounter ? "<<target>>" : "<<you>>";
+			const charaB = isCounter ? "<<you>>" : "<<target>>";
+			const replace2 = isCounter ? args[1] : args[0];
+			const replace3 = isCounter ? args[0] : args[1];
+
 			return templet
-				.replace(/\{0}/g, "<<you>>")
-				.replace(/\{1}/g, "$target.name")
-				.replace(/\{2}/g, args[0] ? args[0] : "{0}")
-				.replace(/\{3}/g, args[1] ? args[1] : "{1}");
+				.replace(/\{0}/g, charaA)
+				.replace(/\{1}/g, charaB)
+				.replace(/\{2}/g, replace2)
+				.replace(/\{3}/g, replace3);
 		};
 
 		const ctx = (use, parts, reverse) => {
@@ -158,12 +169,17 @@ class Action {
 					const m2 = reverse ? D.bodyparts[use] : D.bodyparts[tar];
 					const m3 = reverse ? D.bodyparts[tar] : use ? D.bodyparts[use] : "{actPart}";
 
-					return `<<case '${tar}'>>\n${convertTemplet(templet, m2, m3)}<br>\n`;
+					return `<<case '${tar}'>>\n${isKojo ? "/* " : ""}${convertTemplet(templet, m2, m3)}<br>${
+						isKojo ? " */" : ""
+					}\n`;
 				})
 				.join("");
 		};
 
-		let title = `:: ${mode == "kojo" ? "Kojo_cid_" : ""}Action_${data.id}`;
+		let titlehead = isKojo ? "Kojo_NPCID_" : "";
+		let titleend = isKojo ? "[noMsg]" : "";
+		let titlemain = isCounter ? "Counter" : "Action";
+		let title = `:: ${titlehead}${titlemain}_${data.id}${titleend}`;
 
 		if (mode == "script") {
 			if (Action.makeGroup !== type) {
@@ -172,7 +188,7 @@ class Action {
 			} else {
 				return txt;
 			}
-		} else if (!groupmatch(mode, "kojo", "msg")) {
+		} else if (!groupmatch(mode, "kojo", "msg") && !isKojo) {
 			txt = `:: Action_${data.id}_Options[script]\n` + txt;
 		}
 
@@ -201,7 +217,7 @@ class Action {
 				if (templet) {
 					txt += convertTemplet(templet);
 				} else {
-					txt += `${head}<<you>>在$location.name开始${name}。<br>\n\n\n`;
+					txt += `${head}<<you>>在$location.name${name}。<br>\n\n\n`;
 				}
 		}
 
@@ -229,6 +245,12 @@ class Action {
 	}
 	//打印模板
 	static output(mode, type) {
+		//如果存在具体id，直接返回指定id的模板。
+		if (mode.has("id")) {
+			mode.replace("-id", "");
+			const data = Action.data[type];
+			return Action.create(data, mode);
+		}
 		const txt = Object.values(Action.data)
 			.filter(
 				(action) =>

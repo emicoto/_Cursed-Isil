@@ -191,3 +191,18 @@ cond.hasUnuseTentacle = function () {
 	}
 	return -1;
 };
+
+cond.markLv = function (cid, key) {
+	return C[cid].mark[key];
+};
+
+cond.markIs = function (cid, key, val) {
+	const markkey = F.getKeyByValue(D.mark, key);
+	return C[cid].mark[markkey] === val;
+};
+
+F.getKeyByValue = function (object, value) {
+	return Object.keys(object).find(
+		(key) => object[key] === value || object[key].includes(value) || object[key][0].includes(value)
+	);
+};

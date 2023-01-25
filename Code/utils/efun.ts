@@ -188,7 +188,6 @@ export function download(content, fileName, contentType) {
 export function countArray(arr, element) {
 	return arr.reduce((count, subarr) => count + (subarr.includes(element) ? 1 : 0), 0);
 }
-
 Object.defineProperties(window, {
 	isObject: { value: isObject },
 	inrange: { value: inrange },

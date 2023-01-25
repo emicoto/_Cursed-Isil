@@ -47,7 +47,7 @@ export const configs: RollupOptions[] = [
 		plugins,
 		output: {
 			format: "iife",
-			file: "gamecode/js/Lib.js",
+			file: "gamecode/03-javascript/Lib.js",
 			//sourcemap: "inline",
 		},
 	},

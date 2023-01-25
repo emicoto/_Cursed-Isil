@@ -194,3 +194,13 @@
     color: rgb(124, 196, 218);
     z-index: 1000;
 }
+
+#footer{
+    width: 100%;
+    font-size: 16px;
+    font-family: "Times New Roman", "NotoSerifL";
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    text-align: center;
+}

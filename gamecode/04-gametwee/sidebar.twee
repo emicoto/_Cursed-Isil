@@ -1,7 +1,7 @@
 :: PassageHeader
 <<run
     $passage = passage(); $tags = tags($passage);
-    if($tags.has('title')){
+    if($tags.has('title','nobar')){
         UIBar.stow();
         UIBar.hide();
     }
@@ -9,7 +9,7 @@
         UIBar.unstow();
         UIBar.show();
     }
-    if(groupmatch($passage, 'Start', 'Start1')){
+    if($tags.has('title','nobar')){
         $('#story-header').addClass('hidden')
     }
     else{

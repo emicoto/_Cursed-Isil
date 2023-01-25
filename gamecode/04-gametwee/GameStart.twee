@@ -11,6 +11,11 @@ Era the Cursed
 <<link '游戏设置' 'Option'>><</link>><br>
 </div>
 
+<div id='footer'>
+开发者工具：<<link '地图编辑器' 'MapEditor'>><</link>>　<<link '口上编辑器' 'KojoEditor'>><</link>>　<<link '获取口上模板'>><<run Action.output('kojo'); Action.output('kojocounter')>><</link>>　<<link '获取系统文模板'>><<run Action.output('msg')>><</link>>　<<link '获取指令设置模板'>><<run Action.output('script')>><</link>><br>
+</div>
+
+
 :: Option[nosave, system]
 <li>总是显示主控角色名称 <<checkbox '$system.alwaysShowPCName' 0 1 autocheck>></li>
 <li>总是显示配合度检测  <<checkbox '$system.showOrder' 0 1 autocheck>></li>
@@ -18,7 +23,7 @@ Era the Cursed
 
 <<link 'Back' $lastsession>><</link>>
 
-:: Start1[nosave]
+:: Start1[nosave, nobar]
 游戏初始设定<br>
 <<dashline>>
 

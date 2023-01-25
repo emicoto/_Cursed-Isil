@@ -1,23 +1,82 @@
-:: MapEditor[system, tool]
+:: MapEditor[nobar]
+<<set _mapsizeX = 12>>
+<<set _mapsizeY = 32>>
+<<set _placemode = 0>>
+<<set _destroymode = 0>>
+
+<span style='color:gray;font-size:16px'>
+建筑物输入'.'表示空地。输入任意名称打上勾即可放置。清除模式打勾时，可清除已放置的建筑。<br>
+</span>
+<<dashline>>
 
 <div id='editor_menu'>
-    <div><<set _mapoptions = Object.keys(worldMap)>>
+    <div id='currentpos'>
+    </div>
+    <div><<set _mapoptions = [''].concat(Object.keys(worldMap))>>
     选择地图：
     <<listbox "_selectMap">>
         <<optionsfrom _mapoptions>>
     <</listbox>>
     </div>
-    <div style='width:20px'>  </div>
+    <div>
+    新建地图：
+    <<textbox "_mapsizeX" 12>> x <<textbox '_mapsizeY' 32>> 
+    <<button 'confirm'>>
+    <<run confirmNewmap()>>
+    <</button>>
+    </div>
+    <div>
+    放置建筑：
+    <<textbox '_building' '.'>>
+    <<checkbox "_placemode" 0 1 autocheck>>
+    清除模式：
+    <<checkbox '_destroymode' 0 1 autocheck>>
+    </div>
     <div>
     保存地图：
-    <<button 'save'>><<run console.log(T.mapdata)>><</button>>
+    <<button 'save'>>
+    <<run
+        let mapdata = compresMapData(T.mapdata)
+        download(JSON.stringify(mapdata), T.selectMap, 'txt')
+    >>
+    <</button>>
+    </div>
+    <div>
+    <<button '返回标题'>><<run Engine.restart()>><</button>>
     </div>
 </div>
+<br>
+<div id='mapzone'>
 <div id="mapfield"></div>
+</div>
 
-<script>
-//监控地图选择框，选择地图后，更新地图数据
-var _selectMap = document.getElementById('_selectMap');
+<<done>>
+<<script>>
+
+$('#listbox--selectmap').on('change',()=>{
+    console.log(T.selectMap)
+    T.mapdata = GenerateMap(worldMap[T.selectMap])
+    T.mapsizeX = T.mapdata.length
+    T.mapsizeY = T.mapdata[0].length
+    generateMapField(T.mapdata)
+})
+
+$('#checkbox--destroymode').on('change',()=>{
+    if(T.placemode){
+        $('#checkbox--placemode').prop('checked',false)
+        T.placemode = 0
+        console.log('toggle destroy mode',T.placemode)
+    }
+})
+
+$('#checkbox--placemode').on('change',()=>{
+    if(T.destroymode){
+        $('#checkbox--destroymode').prop('checked',false)
+        T.destroymode = 0
+        console.log('toggle place mode',T.placemode)
+    }
+})
 
 
-</script>
+<</script>>
+<</done>>

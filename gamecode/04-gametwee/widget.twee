@@ -4,9 +4,9 @@
 <</widget>>
 
 <<widget "showmoney">>
-<div class='headbar-li'>资金　<<print $wallet>><span style='color: #E3C118'>G</span></div>
+<div class='headbar-li'>资金　<<print $player.wallet>><span style='color: #E3C118'>G</span></div>
 <<if $debt > 0>>
-<div class='headbar-li'>债务 <<print $debt>><span style='color: #E3C118'>G</span></div>
+<div class='headbar-li'>债务 <<print $player.debt>><span style='color: #E3C118'>G</span></div>
 <</if>>
 <div class='headbar-li'>魔力  <<print $cursedLord.MP>><span style='color: #E31EF3'>P</span></div>
 <</widget>>

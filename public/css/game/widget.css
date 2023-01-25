@@ -88,26 +88,71 @@
 	content:'>'
 }
 
-#mapfield {
-    background-color: #111;
+#mapzone {
     width:100%;
     height:100%;
+    max-height: 800px;
+    max-width: 1800px;
     display: block;
+    background-color: #111;
     border: 1px solid black;
     color: brown;
+    overflow: scroll;
+}
+
+#mapfield {
+    width:1600px;
+    height:100%;
 }
 
 .mapcell {
     border: solid 1px #888;
-    width: 40px;
-    height: 32px;
+    width: 32px;
+    height: 28px;
     border-radius: 6px;
     margin: 1px;
     display: inline-flex;
     position:relative;
     text-align:center;
+    font-size: 0.5em;
 }
 
 .fillcell {
     background-color: beige;
+}
+
+#editor_menu{
+    font-size: 16px;
+    line-height: 18px;
+}
+
+#editor_menu input, #editor_menu select, #editor_menu button, #kojoEditor input, #kojoEditor select, #kojoEditor button {
+    max-height: 24px;
+    padding: 1px 4px;
+    margin: 2px;
+}
+
+#editor_menu .macro-listbox, #kojoEditor .macro-listbox{
+    max-width: 200px;
+    font-size: 14px;
+}
+
+#editor_menu .macro-textbox, #kojoEditor .macro-textbox{
+    width: 60px;
+    max-width: 80px;
+    max-height: 20px;
+    font-size: 14px;
+}
+
+#kojoEditor{
+    font-size: 16px;
+}
+
+#kojoEditor textarea{
+    width: 80%;
+    height: 60%;
+    min-width: 400px;
+    min-height: 300px;
+    max-height: 600px;
+    font-size: 16px;
 }

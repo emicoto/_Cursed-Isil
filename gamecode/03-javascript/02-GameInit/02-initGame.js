@@ -70,8 +70,9 @@ game.init = function () {
 	V.date = {
 		year: S.date[0],
 		month: S.date[1],
-		day: S.date[3],
+		day: S.date[2],
 		time: S.time,
+		week: 1,
 	};
 
 	/* total=以4062-3-14 0:00为基准的绝对时间, 与Date()同理, 每月固定30天。*/
