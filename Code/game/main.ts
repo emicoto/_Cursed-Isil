@@ -3,7 +3,6 @@ import { lan } from "./function";
 import "./Items";
 import "./character";
 import "./map";
-import "./mapdata";
 declare global {
 	interface Window {
 		gameutils;

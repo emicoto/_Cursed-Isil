@@ -1,6 +1,5 @@
 import { GenerateMap } from "./MapPath";
 import { Dict, maptype, maptags, rarity, locationside } from "./types";
-
 export interface iPos {
 	x: number;
 	y: number;
@@ -27,10 +26,10 @@ export interface Maps {
 
 export interface townMap extends Maps {
 	entry: string[];
-	locations?: Dict<number>;
+	locations?: Dict<Locations>;
 }
 
-export interface location extends Maps {
+export interface Locations extends Maps {
 	roomId?: string;
 	rooms?: string[];
 	business?: {
@@ -38,13 +37,15 @@ export interface location extends Maps {
 		open: number;
 		close: number;
 	};
-	side?: locationside;
+	side?: "室内" | "室外" | "户外";
 	yourHome?: boolean;
 	hasParking?: boolean;
 	hasRailcar?: boolean;
 	hasAirship?: boolean;
 	loot?: Dict<string[], rarity>;
 	placement?: string[];
+	maxslot?: number;
+	[key: string]: any;
 }
 
 export interface fieldMap extends Maps {
@@ -110,13 +111,31 @@ export class Maps {
 		this.description = callback;
 		return this;
 	}
+
 	Events(callback) {
 		this.events = callback;
 		return this;
 	}
 	Tags(...tags: maptags[]) {
 		this.tags = tags;
+		if (tags.includes("户外")) {
+			this.tags.push("开阔");
+		}
+		if (tags.has("室外", "户外") && !tags.includes("遮顶")) {
+			this.tags.push("露天");
+		}
 		return this;
+	}
+	CheckParent() {
+		if (!this.groupId) return false;
+		const path = this.groupId.split(".");
+		let parent = worldMap;
+		for (let i = 0; i < path.length; i++) {
+			parent = parent[path[i]];
+		}
+		if (parent) return parent;
+
+		return false;
 	}
 	setPortal(...points: Array<string | iPos>) {
 		this.portal = {
@@ -169,12 +188,14 @@ export class townMap extends Maps {
 }
 
 // 具体地点
-export class location extends Maps {
-	constructor(mapid, name: string[], group: string, side: "室内" | "室外") {
+export class Locations extends Maps {
+	constructor(mapid, name: string[], group: string, side: "室内" | "室外" | "户外") {
 		super(name, "location");
 		this.mapId = mapid; //地点的id
 		this.groupId = group; //上级地图的id
+		this.side = side;
 		this.tags.push(side);
+		this.placement = [];
 	}
 	Rooms(...rooms: string[]) {
 		this.rooms = rooms;
@@ -212,6 +233,19 @@ export class location extends Maps {
 		this.placement = placement;
 		return this;
 	}
+	AdoptParent() {
+		const parent = this.CheckParent();
+		if (parent) {
+			this.tags = this.tags.concat(parent.tags);
+			this.placement = this.placement.concat(parent.placement);
+		}
+		return this;
+	}
+	MaxSlots(number: number) {
+		this.maxSlots = number;
+		return this;
+	}
+
 	static countPlacement(placement: Array<string[]>) {
 		const objects = [];
 		placement.forEach((object) => {
@@ -282,14 +316,14 @@ Object.defineProperties(window, {
 			return Maps;
 		},
 	},
-	TownMap: {
+	townMap: {
 		get() {
 			return townMap;
 		},
 	},
 	Locations: {
 		get() {
-			return Location;
+			return Locations;
 		},
 	},
 });

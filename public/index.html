@@ -2406,7 +2406,25 @@ Object.defineProperty(String.prototype, "readBracketedList", {
 	  }
 	  Tags(...tags) {
 	    this.tags = tags;
+	    if (tags.includes("\u6237\u5916")) {
+	      this.tags.push("\u5F00\u9614");
+	    }
+	    if (tags.has("\u5BA4\u5916", "\u6237\u5916") && !tags.includes("\u906E\u9876")) {
+	      this.tags.push("\u9732\u5929");
+	    }
 	    return this;
+	  }
+	  CheckParent() {
+	    if (!this.groupId)
+	      return false;
+	    const path = this.groupId.split(".");
+	    let parent = worldMap;
+	    for (let i = 0; i < path.length; i++) {
+	      parent = parent[path[i]];
+	    }
+	    if (parent)
+	      return parent;
+	    return false;
 	  }
 	  setPortal(...points) {
 	    this.portal = {
@@ -2446,12 +2464,14 @@ Object.defineProperty(String.prototype, "readBracketedList", {
 	    return this;
 	  }
 	}
-	class location extends Maps {
+	class Locations extends Maps {
 	  constructor(mapid, name, group, side) {
 	    super(name, "location");
 	    this.mapId = mapid;
 	    this.groupId = group;
+	    this.side = side;
 	    this.tags.push(side);
+	    this.placement = [];
 	  }
 	  Rooms(...rooms) {
 	    this.rooms = rooms;
@@ -2487,6 +2507,18 @@ Object.defineProperty(String.prototype, "readBracketedList", {
 	  }
 	  Placement(...placement) {
 	    this.placement = placement;
+	    return this;
+	  }
+	  AdoptParent() {
+	    const parent = this.CheckParent();
+	    if (parent) {
+	      this.tags = this.tags.concat(parent.tags);
+	      this.placement = this.placement.concat(parent.placement);
+	    }
+	    return this;
+	  }
+	  MaxSlots(number) {
+	    this.maxSlots = number;
 	    return this;
 	  }
 	  static countPlacement(placement) {
@@ -2552,338 +2584,17 @@ Object.defineProperty(String.prototype, "readBracketedList", {
 	      return Maps;
 	    }
 	  },
-	  TownMap: {
+	  townMap: {
 	    get() {
 	      return townMap;
 	    }
 	  },
 	  Locations: {
 	    get() {
-	      return Location;
+	      return Locations;
 	    }
 	  }
 	});
-
-	const worldMap$1 = {
-	  Orlania: new townMap("Orlania", "", ["\u5965\u5170\u5C3C\u4E9A"], ["GateNorth", "GateSouth", "GateWest", "GateEast"], 35, 35),
-	  MagicaAcademy: new townMap("MagicaAcademy", "Orlania", ["\u7B2C\u4E00\u9B54\u6CD5\u5B66\u9662"], ["SchoolGate"], 7, 25)
-	};
-	worldMap$1.Orlania.Spots(
-	  ["OutskirtsNorth|field", -17, 0, "S"],
-	  ["OutskirtsSouth|field", 17, 0, "N"],
-	  ["OutskirtsWest|field", 0, -17, "E"],
-	  ["OutskirtsEast|field", 0, 17, "W"],
-	  ["GateNorth|passable", -15, 0, "S"],
-	  ["GateSouth|passable", 15, 0, "N"],
-	  ["GateWest|passable", 0, -15, "E"],
-	  ["GateEast|passable", 0, 15, "W"],
-	  ["TownCenter|passable", 0, 0, "SNWE"],
-	  ["CenterSquare|passable", 2, 0, "SN"],
-	  ["MagicaAcademy", -11, 8, "SW"],
-	  ["Hospital", -9, 3, "W"],
-	  ["ShopAlley|passable", 11, -4, "E"],
-	  ["BathHouse", 9, -4, "EN"],
-	  ["Aquarium", 12, 13, "N"],
-	  ["ArtGallery", -8, 8, "WNS"],
-	  ["Church", -12, 4, "E"],
-	  ["BlackCat", -10, 8, "W"],
-	  ["OperaHouse", -6, 11, "S"],
-	  ["BairdTrading|passable", -4, -11, "SN"],
-	  ["SliverChimes", -4, -8, "N"],
-	  ["CentaurBar", -6, -8, "N"]
-	);
-	worldMap$1.MagicaAcademy.Spots(
-	  ["MageTower", -3, -12, "S"],
-	  ["SchoolEntrance|passable", 0, -12, "EN"],
-	  ["ActivitySquare|passable", 0, -10, "SNWE"],
-	  ["ClassBuildingR1|passable", 3, -8, "N"],
-	  ["ClassBuildingR2|passable", -3, -8, "S"],
-	  ["ResearchLabA", 2, -5, "WSN"],
-	  ["ResearchLabB", -2, -5, "WSN"],
-	  ["Library|passable", 2, -2, "SN"],
-	  ["Arena|passable", -2, 1, "SNWE"],
-	  ["HistoryMuseum", 2, 2, "N"],
-	  ["DiningHall", 2, 10, "N"],
-	  ["GreenGarden|passable", -2, -2, "SN"],
-	  ["StudentCenter", -2, 7, "S"],
-	  ["Dormitory", 0, 12, "W"]
-	);
-	Object.defineProperties(window, {
-	  worldMap: { get: () => worldMap$1 }
-	});
-	worldMap$1.Orlania.mapdata = {
-	  OutskirtsNorth: [[0, 17]],
-	  road: [
-	    [1, 17],
-	    [3, 17],
-	    [4, 17],
-	    [5, 17],
-	    [5, 22],
-	    [6, 17],
-	    [6, 18],
-	    [6, 19],
-	    [6, 20],
-	    [6, 21],
-	    [6, 22],
-	    [6, 23],
-	    [6, 24],
-	    [7, 17],
-	    [7, 24],
-	    [8, 17],
-	    [8, 24],
-	    [8, 25],
-	    [9, 17],
-	    [9, 20],
-	    [9, 21],
-	    [9, 22],
-	    [9, 23],
-	    [9, 24],
-	    [10, 10],
-	    [10, 11],
-	    [10, 12],
-	    [10, 13],
-	    [10, 14],
-	    [10, 15],
-	    [10, 16],
-	    [10, 17],
-	    [10, 18],
-	    [10, 19],
-	    [10, 20],
-	    [10, 21],
-	    [10, 24],
-	    [10, 25],
-	    [11, 10],
-	    [11, 17],
-	    [11, 25],
-	    [12, 5],
-	    [12, 6],
-	    [12, 7],
-	    [12, 9],
-	    [12, 10],
-	    [12, 17],
-	    [12, 18],
-	    [12, 19],
-	    [12, 20],
-	    [12, 21],
-	    [12, 22],
-	    [12, 23],
-	    [12, 24],
-	    [12, 25],
-	    [12, 26],
-	    [12, 27],
-	    [12, 28],
-	    [13, 5],
-	    [13, 7],
-	    [13, 10],
-	    [13, 17],
-	    [14, 5],
-	    [14, 6],
-	    [14, 7],
-	    [14, 8],
-	    [14, 9],
-	    [14, 10],
-	    [14, 11],
-	    [14, 12],
-	    [14, 13],
-	    [14, 14],
-	    [14, 15],
-	    [14, 16],
-	    [14, 17],
-	    [15, 8],
-	    [15, 17],
-	    [16, 8],
-	    [16, 16],
-	    [16, 17],
-	    [16, 18],
-	    [17, 1],
-	    [17, 3],
-	    [17, 4],
-	    [17, 5],
-	    [17, 6],
-	    [17, 7],
-	    [17, 8],
-	    [17, 9],
-	    [17, 10],
-	    [17, 11],
-	    [17, 12],
-	    [17, 13],
-	    [17, 14],
-	    [17, 15],
-	    [17, 16],
-	    [17, 18],
-	    [17, 19],
-	    [17, 20],
-	    [17, 21],
-	    [17, 22],
-	    [17, 23],
-	    [17, 24],
-	    [17, 25],
-	    [17, 26],
-	    [17, 27],
-	    [17, 28],
-	    [17, 29],
-	    [17, 30],
-	    [17, 31],
-	    [17, 33],
-	    [18, 12],
-	    [18, 16],
-	    [18, 17],
-	    [18, 18],
-	    [18, 30],
-	    [19, 12],
-	    [19, 16],
-	    [19, 18],
-	    [19, 30],
-	    [20, 12],
-	    [20, 16],
-	    [20, 17],
-	    [20, 18],
-	    [20, 30],
-	    [21, 12],
-	    [21, 17],
-	    [21, 30],
-	    [22, 12],
-	    [22, 17],
-	    [22, 30],
-	    [23, 12],
-	    [23, 17],
-	    [23, 30],
-	    [24, 12],
-	    [24, 17],
-	    [24, 30],
-	    [25, 12],
-	    [25, 17],
-	    [25, 30],
-	    [26, 12],
-	    [26, 14],
-	    [26, 17],
-	    [26, 30],
-	    [27, 12],
-	    [27, 13],
-	    [27, 14],
-	    [27, 17],
-	    [27, 30],
-	    [28, 12],
-	    [28, 14],
-	    [28, 15],
-	    [28, 16],
-	    [28, 17],
-	    [28, 18],
-	    [28, 19],
-	    [28, 20],
-	    [28, 21],
-	    [28, 22],
-	    [28, 23],
-	    [28, 24],
-	    [28, 25],
-	    [28, 26],
-	    [28, 27],
-	    [28, 28],
-	    [28, 29],
-	    [28, 30],
-	    [29, 17],
-	    [30, 17],
-	    [31, 17],
-	    [33, 17]
-	  ],
-	  GateNorth: [[2, 17]],
-	  Church: [[5, 21]],
-	  MagicaAcademy: [[6, 25]],
-	  BlackCat: [[7, 25]],
-	  Hospital: [[8, 20]],
-	  ArtGallery: [[9, 25]],
-	  CentaurBar: [[11, 9]],
-	  OperaHouse: [[11, 28]],
-	  BairdTrading: [[13, 6]],
-	  SliverChimes: [[13, 9]],
-	  OutskirtsWest: [[17, 0]],
-	  GateWest: [[17, 2]],
-	  TownCenter: [[17, 17]],
-	  GateEast: [[17, 32]],
-	  OutskirtsEast: [[17, 34]],
-	  CenterSquare: [[19, 17]],
-	  BathHouse: [[26, 13]],
-	  ShopAlley: [[28, 13]],
-	  Aquarium: [[29, 30]],
-	  GateSouth: [[32, 17]],
-	  OutskirtsSouth: [[34, 17]]
-	};
-	worldMap$1.MagicaAcademy.mapdata = {
-	  MageTower: [[0, 0]],
-	  "ClassBuildingR2|passable": [[0, 4]],
-	  road: [
-	    [0, 7],
-	    [0, 8],
-	    [0, 9],
-	    [0, 10],
-	    [0, 12],
-	    [0, 13],
-	    [0, 14],
-	    [1, 0],
-	    [1, 4],
-	    [1, 5],
-	    [1, 6],
-	    [1, 12],
-	    [1, 14],
-	    [2, 0],
-	    [2, 2],
-	    [2, 3],
-	    [2, 6],
-	    [2, 7],
-	    [2, 10],
-	    [2, 12],
-	    [2, 13],
-	    [2, 14],
-	    [2, 19],
-	    [3, 1],
-	    [3, 3],
-	    [3, 4],
-	    [3, 5],
-	    [3, 6],
-	    [3, 10],
-	    [3, 13],
-	    [3, 18],
-	    [3, 19],
-	    [3, 20],
-	    [3, 21],
-	    [3, 22],
-	    [3, 23],
-	    [4, 2],
-	    [4, 3],
-	    [4, 6],
-	    [4, 7],
-	    [4, 10],
-	    [4, 11],
-	    [4, 12],
-	    [4, 13],
-	    [4, 14],
-	    [4, 15],
-	    [4, 16],
-	    [4, 17],
-	    [4, 18],
-	    [4, 22],
-	    [5, 4],
-	    [5, 5],
-	    [5, 6],
-	    [6, 7],
-	    [6, 8],
-	    [6, 9],
-	    [6, 10]
-	  ],
-	  ResearchLabB: [[1, 7]],
-	  "GreenGarden|passable": [[1, 10]],
-	  "Arena|passable": [[1, 13]],
-	  StudentCenter: [[1, 19]],
-	  "SchoolEntrance|passable": [[3, 0]],
-	  "ActivitySquare|passable": [[3, 2]],
-	  Dormitory: [[3, 24]],
-	  ResearchLabA: [[5, 7]],
-	  "Library|passable": [[5, 10]],
-	  HistoryMuseum: [[5, 14]],
-	  DiningHall: [[5, 22]],
-	  "ClassBuildingR1|passable": [[6, 4]]
-	};
-	new location("SchoolEntrance", ["\u5B66\u9662\u5165\u53E3"], "MagicaAcademy", "\u5BA4\u5916").Railcar().Tags("\u516C\u5171\u573A\u6240", "\u4EA4\u901A", "\u5149\u4EAE\u5904", "\u5F00\u9614").Placement("\u79FB\u52A8\u644A\u4F4D");
 
 	window.database = {};
 	window.gameutils = {
@@ -4360,7 +4071,502 @@ D.tflag = [
 	"comcount",
 	"comCancel",
 ];
-/* twine-user-script #13: "clothesTemplet.js" */
+/* twine-user-script #13: "00-maps.js" */
+const worldMap = {
+	Orlania: new townMap("Orlania", "", ["奥兰尼亚"], ["GateNorth", "GateSouth", "GateWest", "GateEast"], 35, 35),
+	Academy: new townMap("Academy", "Orlania", ["第一魔法学院"], ["SchoolGate"], 7, 25),
+	CommonSpots: {},
+};
+
+// x,y坐标，可通过的方向
+//     北 x-
+// y-西 东 y+
+//  南 x+
+//  例如：["GateSouth", 16, 0, "NWE"] 表示南门的坐标为(16,0)，可通过的方向为北、西、东
+//用Spots登记目录。地点id后可以用|添加属性，例如passable表示可通过，invisible表示不可见
+worldMap.Orlania.Spots(
+	//城郊
+	["OutskirtsNorth|field", -17, 0, "S"],
+	["OutskirtsSouth|field", 17, 0, "N"],
+	["OutskirtsWest|field", 0, -17, "E"],
+	["OutskirtsEast|field", 0, 17, "W"],
+
+	//城镇出入口，东南西北门
+	["GateNorth|passable", -15, 0, "S"],
+	["GateSouth|passable", 15, 0, "N"],
+	["GateWest|passable", 0, -15, "E"],
+	["GateEast|passable", 0, 15, "W"],
+
+	//中心区域，城镇中心，中心广场
+	["TownCenter|passable", 0, 0, "SNWE"],
+	["CenterSquare|passable", 2, 0, "SN"],
+
+	//魔法学院，位于城镇东北方
+	["Academy", -11, 8, "SW"],
+	["Hospital", -9, 3, "W"],
+
+	//城南的商业街、大浴场、水族馆
+	["ShopAlley|passable", 11, -4, "E"],
+	["BathHouse", 9, -4, "EN"],
+	["Aquarium", 12, 13, "N"],
+
+	//城北的美术馆、元灵教会、黑猫咖啡馆，距离魔法学院较近
+	["ArtGallery", -8, 8, "WNS"],
+	["Church", -12, 4, "E"],
+	["BlackCat", -10, 8, "W"],
+	["OperaHouse", -6, 11, "S"],
+
+	//城西一带
+	["BairdTrading|passable", -4, -11, "SN"],
+	["SliverChimes", -4, -8, "N"],
+	["CentaurBar", -6, -8, "N"]
+);
+
+worldMap.Academy.Spots(
+	["MageTower", -3, -12, "S"],
+	["SchoolEntrance|passable", 0, -12, "EN"],
+	["ActivitySquare|passable", 0, -10, "SNWE"],
+
+	["ClassBuildingR1|passable", 3, -8, "N"],
+	["ClassBuildingR2|passable", -3, -8, "S"],
+	["ResearchLabA", 2, -5, "WSN"],
+	["ResearchLabB", -2, -5, "WSN"],
+	["Library|passable", 2, -2, "SN"],
+	["Arena|passable", -2, 1, "SNWE"],
+	["HistoryMuseum", 2, 2, "N"],
+	["DiningHall", 2, 10, "N"],
+	["GreenGarden|passable", -2, -2, "SN"],
+	["StudentCenter", -2, 7, "S"],
+	["Dormitory", 0, 12, "W"],
+
+	["SecretTrianingGround|invisible", 3, 12, ""]
+);
+
+Object.defineProperties(window, {
+	worldMap: { get: () => worldMap },
+});
+/* twine-user-script #14: "01-locations.js" */
+//没有个人、私人tag的地点，都是公共的，可以随意进入
+//个人指个人所有，但是可以让其他人进入的地点。私人指只有主人可以进入的地点
+//上锁的地方无法正常进入，但是可以通过其他方式进入
+//室外地点默认都是光亮处
+//户外与室外相等，但户外纯露天周围没有墙或大型建造物，自带开阔属性。
+//室外则指建筑物外部活动空间（花园广场什么的）， 室内指建筑物内
+
+//const { Locations } = require("Code/game/map");
+
+const CM = worldMap.CommonSpots;
+CM.PublicToilet = new Locations("PublicToilet", ["公共厕所"], "CommonSpots", "室内").Tags("厕所", "隐蔽", "无窗");
+CM.Storage = new Locations("Storage", ["储物间"], "ComonSpots", "室内")
+	.Tags("狭窄", "隐蔽", "无窗", "上锁")
+	.Placement("储物柜", "工具箱");
+CM.Bathroom = new Locations("Bathroom", ["浴室"], "CommonSpots", "室内").Tags("沐浴", "厕所", "无窗");
+
+const FMA = worldMap.Academy;
+FMA.SchoolEntrance = new Locations("SchoolEntrance", ["魔法学院|入口"], "Academy", "户外")
+	.Parking()
+	.Railcar()
+	.Tags("交通")
+	.Placement("移动摊位");
+
+FMA.MageTower = new Locations("MageTower", ["法师塔"], "Academy", "室外")
+	.Rooms("Inside", "Observatory")
+	.Tags("高台", "悬浮", "防御")
+	.Placement("魔网", "防御炮台");
+
+FMA.MageTower.Inside = new Locations("Inside", ["法师塔|内部"], "Academy.MageTower", "室内")
+	.Tags("上锁", "无窗")
+	.Placement("书架", "桌子", "沙发", "传送门")
+	.setPortal("Orlania.OutskirtsEast", "Academy.SecrectTrainingGround");
+
+FMA.SecretTrainingGround = new Locations("SecrectTrainingGround", ["秘密训练场"], "Academy", "室内")
+	.Tags("隐蔽", "封闭", "异空间")
+	.Placement("传送门", "训练器材")
+	.setPortal("Academy.MageTower.Inside");
+
+FMA.MageTower.Observatory = new Locations("Observatory", ["观测台"], "Academy.MageTower", "室外").Tags(
+	"高台",
+	"悬浮",
+	"狭窄",
+	"隐蔽",
+	"遮顶"
+);
+
+FMA.ActivitySquare = new Locations("ActivitySquare", ["魔法学院"], "Academy", "户外")
+	.Rooms("PublicToilet", "Storage")
+	.Tags("活动", "舞台", "休息区")
+	.Placement("旗帜", "长椅");
+
+FMA.ActivitySquare.PublicToilet = CM.PublicToilet;
+
+FMA.ActivitySquare;
+FMA.ClassBuildingR1 = new Locations("ClassBuildingR1", ["教学楼|R1"], "Academy", "室内")
+	.Tags("教室", "宽敞")
+	.Placement("魔网", "书架", "桌子", "椅子", "储物柜");
+
+FMA.ClassBuildingR2 = new Locations("ClassBuildingR2", ["教学楼|R2"], "Academy", "室内")
+	.Tags("教室", "宽敞")
+	.Placement("魔网", "书架", "桌子", "椅子", "储物柜");
+
+FMA.ResearchLabA = new Locations("ResearchLabA", ["研究所|A"], "Academy", "室内")
+	.Rooms("MagiPysics", "Analyzing")
+	.Tags("研究", "宽敞")
+	.Placement("魔网", "书架", "桌子", "椅子", "储物柜", "研究台", "电脑", "傀儡充能器");
+
+//室内外无变动的话，会自动继承上一级的tag和placement
+FMA.ResearchLabA.MagiPysics = new Locations("MagiPysics", ["物理实验室"], "Academy.ResearchLabA", "室内")
+	.Tags("个人")
+	.Placement("大型魔法阵", "记录水晶", "观测设备", "沙发")
+	.AdoptParent();
+
+FMA.ResearchLabA.Analyzing = new Locations("Analyzing", ["魔法分析室"], "Academy.ResearchLabA", "室内")
+	.Tags("个人")
+	.Placement("分析水晶", "分解设备", "魔力探测仪", "沙发", "床")
+	.AdoptParent();
+
+FMA.ResearchLabB = new Locations("ResearchLabB", ["研究所|B"], "Academy", "室内")
+	.Rooms("Alchemy", "Biologic")
+	.Tags("研究", "宽敞")
+	.Placement("魔网", "书架", "桌子", "椅子", "储物柜", "研究台", "电脑", "傀儡充能器");
+
+FMA.ResearchLabB.Alchemy = new Locations("Alchemy", ["炼金实验室"], "Academy.ResearchLabB", "室内")
+	.Tags("个人")
+	.Placement("炼金设备", "熔炉", "药物储存柜", "冰箱")
+	.AdoptParent();
+
+FMA.ResearchLabB.Biologic = new Locations("Biologic", ["生物实验室"], "Academy.ResearchLabB", "室内")
+	.Tags("个人")
+	.Placement("生物设备", "冰箱", "药物储存柜")
+	.AdoptParent();
+
+FMA.Library = new Locations("Library", ["图书馆"], "Academy", "室内")
+	.Tags("宽敞", "阅读区", "休息区")
+	.Placement("书架", "桌子", "椅子", "魔网", "电脑");
+
+FMA.Arena = new Locations("Arena", ["对决台"], "Academy", "室外")
+	.Tags("战斗区", "活动", "开阔", "悬浮", "景点")
+	.Placement("旗帜", "长椅");
+
+FMA.HistoryMeuseum = new Locations("HistoryMeuseum", ["博物馆"], "Academy", "室内")
+	.Tags("休息区", "景点")
+	.Placement("展示柜", "长椅");
+
+FMA.DiningHall = new Locations("DiningHall", ["学生饭堂"], "Academy", "室内")
+	.Tags("休息区", "餐厅", "宽敞")
+	.Placement("椅子", "桌子", "自动贩售机", "魔法柜台", "魔网", "傀儡充能器");
+
+FMA.GreenGarden = new Locations("GreenGarden", ["植物园"], "Academy", "室外")
+	.Rooms("GreenHouse", "Storage")
+	.Tags("休息区", "景点", "种植区", "宽敞")
+	.Placement("绿植", "长椅", "农务设备");
+
+FMA.StudentCenter = new Locations("StudentCenter", ["学生中心"], "Academy", "室内").Placement(
+	"椅子",
+	"沙发",
+	"魔网",
+	"智能水晶",
+	"魔偶"
+);
+
+FMA.Dormitory = new Locations("Dormitory", ["宿舍大厅"], "Academy", "室内")
+	.Rooms("Kitchen", "Storage", "A101", "A102", "A103", "S303", "A201", "A202", "A203")
+	.Tags("休息区", "宽敞")
+	.Placement("沙发", "桌子", "椅子", "盆栽", "魔网", "傀儡充能器", "冰箱");
+
+FMA.Dormitory.Kitchen = new Locations("Kitchen", ["厨房"], "Academy.Dormitory", "室内")
+	.Tags("厨房")
+	.Placement("烤炉", "冰箱", "炉灶", "储物柜");
+
+FMA.Dormitory.Storage = CM.Storage;
+
+FMA.Dormitory.rooms.forEach(function (room) {
+	if (groupmatch(room, "Kitchen", "Storage")) {
+	} else {
+		FMA.Dormitory[room] = new Locations(room, ["宿舍", room], "Academy.Dormitory", "室内")
+			.Rooms("Bathroom")
+			.Tags("私人", "睡房")
+			.Placement("床", "书桌", "椅子", "衣柜", "书架");
+		FMA.Dormitory[room].Bathroom = CM.Bathroom;
+	}
+});
+
+FMA.GreenGarden.GreenHouse = new Locations("GreenHouse", ["温室"], "Academy.GreenGarden", "室内").AdoptParent();
+FMA.GreenGarden.Storage = CM.Storage;
+/* twine-user-script #15: "02-mapdata.js" */
+worldMap.Orlania.mapdata = {
+	OutskirtsNorth: [[0, 17]],
+	road: [
+		[1, 17],
+		[3, 17],
+		[4, 17],
+		[5, 17],
+		[5, 22],
+		[6, 17],
+		[6, 18],
+		[6, 19],
+		[6, 20],
+		[6, 21],
+		[6, 22],
+		[6, 23],
+		[6, 24],
+		[7, 17],
+		[7, 24],
+		[8, 17],
+		[8, 24],
+		[8, 25],
+		[9, 17],
+		[9, 20],
+		[9, 21],
+		[9, 22],
+		[9, 23],
+		[9, 24],
+		[10, 10],
+		[10, 11],
+		[10, 12],
+		[10, 13],
+		[10, 14],
+		[10, 15],
+		[10, 16],
+		[10, 17],
+		[10, 18],
+		[10, 19],
+		[10, 20],
+		[10, 21],
+		[10, 24],
+		[10, 25],
+		[11, 10],
+		[11, 17],
+		[11, 25],
+		[12, 5],
+		[12, 6],
+		[12, 7],
+		[12, 9],
+		[12, 10],
+		[12, 17],
+		[12, 18],
+		[12, 19],
+		[12, 20],
+		[12, 21],
+		[12, 22],
+		[12, 23],
+		[12, 24],
+		[12, 25],
+		[12, 26],
+		[12, 27],
+		[12, 28],
+		[13, 5],
+		[13, 7],
+		[13, 10],
+		[13, 17],
+		[14, 5],
+		[14, 6],
+		[14, 7],
+		[14, 8],
+		[14, 9],
+		[14, 10],
+		[14, 11],
+		[14, 12],
+		[14, 13],
+		[14, 14],
+		[14, 15],
+		[14, 16],
+		[14, 17],
+		[15, 8],
+		[15, 17],
+		[16, 8],
+		[16, 16],
+		[16, 17],
+		[16, 18],
+		[17, 1],
+		[17, 3],
+		[17, 4],
+		[17, 5],
+		[17, 6],
+		[17, 7],
+		[17, 8],
+		[17, 9],
+		[17, 10],
+		[17, 11],
+		[17, 12],
+		[17, 13],
+		[17, 14],
+		[17, 15],
+		[17, 16],
+		[17, 18],
+		[17, 19],
+		[17, 20],
+		[17, 21],
+		[17, 22],
+		[17, 23],
+		[17, 24],
+		[17, 25],
+		[17, 26],
+		[17, 27],
+		[17, 28],
+		[17, 29],
+		[17, 30],
+		[17, 31],
+		[17, 33],
+		[18, 12],
+		[18, 16],
+		[18, 17],
+		[18, 18],
+		[18, 30],
+		[19, 12],
+		[19, 16],
+		[19, 18],
+		[19, 30],
+		[20, 12],
+		[20, 16],
+		[20, 17],
+		[20, 18],
+		[20, 30],
+		[21, 12],
+		[21, 17],
+		[21, 30],
+		[22, 12],
+		[22, 17],
+		[22, 30],
+		[23, 12],
+		[23, 17],
+		[23, 30],
+		[24, 12],
+		[24, 17],
+		[24, 30],
+		[25, 12],
+		[25, 17],
+		[25, 30],
+		[26, 12],
+		[26, 14],
+		[26, 17],
+		[26, 30],
+		[27, 12],
+		[27, 13],
+		[27, 14],
+		[27, 17],
+		[27, 30],
+		[28, 12],
+		[28, 14],
+		[28, 15],
+		[28, 16],
+		[28, 17],
+		[28, 18],
+		[28, 19],
+		[28, 20],
+		[28, 21],
+		[28, 22],
+		[28, 23],
+		[28, 24],
+		[28, 25],
+		[28, 26],
+		[28, 27],
+		[28, 28],
+		[28, 29],
+		[28, 30],
+		[29, 17],
+		[30, 17],
+		[31, 17],
+		[33, 17],
+	],
+	GateNorth: [[2, 17]],
+	Church: [[5, 21]],
+	MagicaAcademy: [[6, 25]],
+	BlackCat: [[7, 25]],
+	Hospital: [[8, 20]],
+	ArtGallery: [[9, 25]],
+	CentaurBar: [[11, 9]],
+	OperaHouse: [[11, 28]],
+	BairdTrading: [[13, 6]],
+	SliverChimes: [[13, 9]],
+	OutskirtsWest: [[17, 0]],
+	GateWest: [[17, 2]],
+	TownCenter: [[17, 17]],
+	GateEast: [[17, 32]],
+	OutskirtsEast: [[17, 34]],
+	CenterSquare: [[19, 17]],
+	BathHouse: [[26, 13]],
+	ShopAlley: [[28, 13]],
+	Aquarium: [[29, 30]],
+	GateSouth: [[32, 17]],
+	OutskirtsSouth: [[34, 17]],
+};
+
+worldMap.Academy.mapdata = {
+	MageTower: [[0, 0]],
+	"ClassBuildingR2|passable": [[0, 4]],
+	road: [
+		[0, 7],
+		[0, 8],
+		[0, 9],
+		[0, 10],
+		[0, 12],
+		[0, 13],
+		[0, 14],
+		[1, 0],
+		[1, 4],
+		[1, 5],
+		[1, 6],
+		[1, 12],
+		[1, 14],
+		[2, 0],
+		[2, 2],
+		[2, 3],
+		[2, 6],
+		[2, 7],
+		[2, 10],
+		[2, 12],
+		[2, 13],
+		[2, 14],
+		[2, 19],
+		[3, 1],
+		[3, 3],
+		[3, 4],
+		[3, 5],
+		[3, 6],
+		[3, 10],
+		[3, 13],
+		[3, 18],
+		[3, 19],
+		[3, 20],
+		[3, 21],
+		[3, 22],
+		[3, 23],
+		[4, 2],
+		[4, 3],
+		[4, 6],
+		[4, 7],
+		[4, 10],
+		[4, 11],
+		[4, 12],
+		[4, 13],
+		[4, 14],
+		[4, 15],
+		[4, 16],
+		[4, 17],
+		[4, 18],
+		[4, 22],
+		[5, 4],
+		[5, 5],
+		[5, 6],
+		[6, 7],
+		[6, 8],
+		[6, 9],
+		[6, 10],
+	],
+	ResearchLabB: [[1, 7]],
+	"GreenGarden|passable": [[1, 10]],
+	"Arena|passable": [[1, 13]],
+	StudentCenter: [[1, 19]],
+	"SchoolEntrance|passable": [[3, 0]],
+	"ActivitySquare|passable": [[3, 2]],
+	Dormitory: [[3, 24]],
+	ResearchLabA: [[5, 7]],
+	"Library|passable": [[5, 10]],
+	HistoryMuseum: [[5, 14]],
+	DiningHall: [[5, 22]],
+	"ClassBuildingR1|passable": [[6, 4]],
+};
+/* twine-user-script #16: "clothesTemplet.js" */
 
 
 D.category = {
@@ -4450,7 +4656,7 @@ D.clothesheet = {
     cursed:0, //是否诅咒物品。如果是则无法脱下
     effect:[],//衣服特殊效果。functionname, source
 }
-/* twine-user-script #14: "gamedata.js" */
+/* twine-user-script #17: "gamedata.js" */
 D.race = ["human", "elvin", "deamon", "wolves", "drawf", "goblin", "catvinx", "centaur", "orc", "titan", "dracon"];
 
 D.base = {
@@ -4746,7 +4952,7 @@ D.actAbleParts = ["handR", "handL", "mouth", "penis", "vagina", "anal", "foot"];
 D.selectAbleParts = ["breast", "critoris", "urin", "ears", "neck", "butts", "nipple", "thighs", "abdomen"].concat(
 	D.actAbleParts
 );
-/* twine-user-script #15: "raceTemplet.js" */
+/* twine-user-script #18: "raceTemplet.js" */
 const racesheet = {
     name:'high-elf',
 
@@ -4865,7 +5071,7 @@ const PlayerSpecies = [
 const NPCSpecies = [
     'human','elvins','high-elf','drawf','goblin','orc','wolves','deamon','centra','titan','kijin'//'slimen','jellish','dracon','linlog','lepios
 ]
-/* twine-user-script #16: "tips.js" */
+/* twine-user-script #19: "tips.js" */
 D.tips = {
 	mage: { title: ["法师"], content: ["对魔法有所了解，能灵活运用各种攻击魔法进行战斗的职业。"] },
 	scholar: { title: ["学者"], content: ["了解魔法理论，对各种魔法术式与魔法物品进行研究，擅长分析的职业。"] },
@@ -4892,7 +5098,7 @@ D.tips = {
 		],
 	},
 };
-/* twine-user-script #17: "traitList.js" */
+/* twine-user-script #20: "traitList.js" */
 D.traits = [
 	//体质类
 	{
@@ -5432,10 +5638,10 @@ D.traitConflicGroup = [
 	["贞洁", "放荡"],
 	["忠诚", "善嫉"],
 ];
-/* twine-user-script #18: "audioloopto-macro-set.min.js" */
+/* twine-user-script #21: "audioloopto-macro-set.min.js" */
 /*! <<audioloopto>> macro set for SugarCube 2.x */
 !function(){"use strict";if("undefined"==typeof version||void 0===version.title||"SugarCube"!==version.title||void 0===version.major||version.major<2||void 0===version.minor||version.minor<28)throw new Error("<<audioloopto>> macro set requires SugarCube 2.28.0 or greater, aborting load");if(Has.audio){var _transitions=new Map;Macro.add("audioloopto",{handler:function(){if(this.args.length<3){var errors=[];return this.args.length<1&&errors.push("loop track ID"),this.args.length<2&&errors.push("passage name"),this.args.length<3&&errors.push("next track ID"),this.error("no "+errors.join(" or ")+" specified")}var loopId=this.args[0],passage=this.args[1],nextId=this.args[2],loopTrack=SimpleAudio.tracks.get(loopId),nextTrack=SimpleAudio.tracks.get(nextId);if(!loopTrack)return this.error('loop track "'+loopId+'" does not exist');if(!Story.has(passage))return this.error('passage "'+passage+'" does not exist');if(!nextTrack)return this.error('next track "'+nextId+'" does not exist');loopTrack.loop(!1),nextTrack.play(),nextTrack.pause();var loopMap=void 0;_transitions.has(loopId)?loopMap=_transitions.get(loopId):(loopMap=new Map,_transitions.set(loopId,loopMap),loopTrack.on("ended.macro-audioloopto",function(){loopMap.has(State.passage)?loopMap.get(State.passage).play():loopTrack.play()})),loopMap.set(passage,nextTrack)}}),Macro.add("audiounloopto",{handler:function(){if(0===this.args.length)return this.error("no loop track ID specified");var loopId=this.args[0],passage=this.args[1],loopTrack=SimpleAudio.tracks.get(loopId);if(!loopTrack)return this.error('loop track "'+loopId+'" does not exist');if(passage&&!Story.has(passage))return this.error('passage "'+passage+'" does not exist');if(passage){var loopMap=_transitions.get(loopId);loopMap&&loopMap.delete(passage)}else _transitions.delete(loopId),loopTrack.off("ended.macro-audioloopto")}})}else Macro.add(["audioloopto","audiounloopto"],{handler:function(){}})}();
-/* twine-user-script #19: "eventpool.js" */
+/* twine-user-script #22: "eventpool.js" */
 /*
  * Usage:
  *
@@ -5564,7 +5770,7 @@ Macro.add("runeventpool", {
 		jQuery(this.output).wiki(pick.content);
 	},
 });
-/* twine-user-script #20: "keyboardbinder.js" */
+/* twine-user-script #23: "keyboardbinder.js" */
 /* 允许键盘操作 */
 (function (window, define, exports) {
 
@@ -5671,7 +5877,7 @@ function numberify(selector) {
 }
 DefineMacroS("numberify", numberify);
 
-/* twine-user-script #21: "numberpool-sugarcube-addon.js" */
+/* twine-user-script #24: "numberpool-sugarcube-addon.js" */
 if ("undefined" == typeof version || "undefined" == typeof version.title || "SugarCube" !== version.title || "undefined" == typeof version.major || version.major < 2 || "undefined" == typeof version.minor || version.minor < 5)
   throw new Error("<<numberpool>> macro set requires SugarCube 2.5.0 or greater, aborting load");
 if (version.major <= 2 && version.minor < 33) {
@@ -5922,13 +6128,13 @@ Macro.add("numberslider", {
 		}));
   },
 });
-/* twine-user-script #22: "replacelink-macro-set.min.js" */
+/* twine-user-script #25: "replacelink-macro-set.min.js" */
 /*! <<replacelink>> macro set for SugarCube 2.x */
 !function(){"use strict";function showVer(n,notrans){n&&(n.innerHTML="",new Wikifier(n,n.tweecode),n.setAttribute("data-enabled","true"),n.style.display="inline",n.classList.remove("revision-span-out"),notrans||(n.classList.add("revision-span-in"),n.timeout&&clearTimeout(n.timeout),n.timeout=setTimeout(function(){n.classList.remove("revision-span-in"),n=null},20)))}function hideVer(n,notrans){n&&(n.setAttribute("data-enabled","false"),n.classList.remove("revision-span-in"),n.timeout&&clearTimeout(n.timeout),notrans?(n.style.display="none",n.innerHTML="",n=null):(n.classList.add("revision-span-out"),n.timeout=setTimeout(function(){"false"===n.getAttribute("data-enabled")&&(n.classList.remove("revision-span-out"),n.style.display="none",n.innerHTML=""),n=null},1e3)))}function tagcontents(b,starttags,desttags,endtags,k){function tagfound(i,e,endtag){for(var j=0;j<e.length;j++)if(a.indexOf("<<"+e[j]+(endtag?">>":""),i)===i)return e[j]}for(var tg,l=0,c="",a=b.source.slice(k),i=0;i<a.length;i++){if(tg=tagfound(i,starttags))l++;else{if((tg=tagfound(i,desttags,!0))&&0===l)return b.nextMatch=k+i+tg.length+4,[c,tg];if((tg=tagfound(i,endtags,!0))&&(l--,l<0))return null}c+=a.charAt(i)}return null}function revisionSpanHandler(g,e,f,b){function mkspan(vtype){return h=insertElement(m,"span",null,"revision-span "+vtype),h.setAttribute("data-enabled",!1),h.style.display="none",h.tweecode="",h}var becomes,c,cn,m,h,vsn,k=b.source.indexOf(">>",b.matchStart)+2,vsns=[],vtype=e,flen=f.length;if(this.shorthand&&flen)for(;f.length>0;)vsns.push([f.shift(),"insert"===this.flavour?"gains":"becomes"]);else("insert"===this.flavour||"continue"===this.flavour&&"time"===this.trigger)&&vsns.push(["","becomes"]);if("continue"===this.flavour&&flen)b.nextMatch=k+b.source.slice(k).length,vsns.push([b.source.slice(k),vtype]);else{if(becomes=["becomes","gains"],c=tagcontents(b,begintags,becomes.concat(endtags),endtags,k),c&&endtags.indexOf(c[1])===-1){for(;c;)vsns.push(c),c=tagcontents(b,begintags,becomes,endtags,b.nextMatch);c=tagcontents(b,begintags,["/"+e,"end"+e],endtags,b.nextMatch)}if(!c)return void throwError(g,"<<"+e+">>: cannot find a matching close tag");vsns.push(c),"continue"===this.flavour&&(k=b.nextMatch,b.nextMatch=k+b.source.slice(k).length,vsns.push([b.source.slice(k),""]))}for("remove"===this.flavour&&vsns.push(["","becomes"]),cn=0,m=insertElement(g,"span",null,e),m.setAttribute("data-flavour",this.flavour),h=mkspan("initial"),vsn=vsns.shift(),h.tweecode=vsn[0],showVer(h,!0);vsns.length>0;)vsn&&(vtype=vsn[1]),vsn=vsns.shift(),h=mkspan(vtype),h.tweecode=vsn[0];"function"==typeof this.setup&&this.setup(m,g,e,f)}function revisionSetup(m,g,e,f){m.className+=" "+f[0].replace(" ","_")}function keySetup(m,g,e,f){f[0];m.setEventListener("keydown",function l(e){var done=!revise("revise",m);done&&m.removeEventListener("keydown",l)})}function timeSetup(m,g,e,f){function cssTimeUnit(s){if("string"==typeof s){if("ms"===s.slice(-2).toLowerCase())return Number(s.slice(0,-2))||0;if("s"===s.slice(-1).toLowerCase())return 1e3*Number(s.slice(0,-1))||0}return throwError(g,"<<"+e+'>>: "'+s+'" is not a valid CSS time unit'),0}var tm=cssTimeUnit(f[0]),s=passage();setTimeout(function timefn(){if(passage()===s){var done=!revise("revise",m);done||setTimeout(timefn,tm)}},tm)}function hoverSetup(m){var fn,noMouseEnter=null!==document.head.onmouseenter,m1=m.children[0],m2=m.children[1],gains=m2.className.indexOf("gains")>-1;m1&&m2&&(m1.onmouseenter=function(e){for(var efp=document.elementFromPoint(e.clientX,e.clientY);efp&&efp!==this;)efp=efp.parentNode;efp&&"false"!==this.getAttribute("data-enabled")&&revise("revise",this.parentNode)},m2.onmouseleave=function(e){for(var efp=document.elementFromPoint(e.clientX,e.clientY);efp&&efp!==this;)efp=efp.parentNode;efp||"false"!==this.getAttribute("data-enabled")&&revise("revert",this.parentNode)},gains&&(m1.onmouseleave=m2.onmouseleave),noMouseEnter&&(fn=function(n){return function(e){event.relatedTarget&&(event.relatedTarget===this||this.compareDocumentPosition(event.relatedTarget)&Node.DOCUMENT_POSITION_CONTAINED_BY)||this[n]()}},m1.onmouseover=fn("onmouseenter"),m2.onmouseout=fn("onmouseleave"),gains&&(m1.onmouseout=m2.onmouseout)),m=null)}function mouseSetup(m){var evt=null===document.head.onmouseenter?"onmouseenter":"onmouseover";m[evt]=function(){var done=!revise("revise",this);done&&(this[evt]=null)},m=null}function linkSetup(m,g,e,f){var l=document.createElement("a"),p=m.parentNode;l.className="link-internal replaceLink",p.insertBefore(l,m),l.insertBefore(m,null),jQuery(l).ariaClick(function(){var done=!1;m&&m.parentNode===this&&(done=!revise("revise",m),scrollWindowTo(m)),done&&(this.parentNode.insertBefore(m,this),this.parentNode.removeChild(this))}),l=null}function visitedSetup(m,g,e,f){var done,sav=State.variables,os="once seen",d=m.firstChild&&("insert"===this.flavour?m.firstChild.nextSibling:m.firstChild).tweecode;if(sav[os]=sav[os]||{},d&&!sav[os].hasOwnProperty(d))sav[os][d]=1;else{for(var i=sav[os][d];i>0&&!done;i--)done=!revise("revise",m,!0);sav[os].hasOwnProperty(d)&&(sav[os][d]+=1)}}function insideDepartingSpan(elem){for(var r=elem.parentNode;!r.classList.contains("passage");){if(r.classList.contains("revision-span-out"))return!0;r=r.parentNode}}function reviseAll(rt,rname){for(var rall=document.querySelectorAll(".passage [data-flavour]."+rname),ret=!1,i=0;i<rall.length;i++)insideDepartingSpan(rall[i])||(ret=revise(rt,rall[i])||ret);return ret}function revise(rt,r,notrans){function doToGainerSpans(n,fn){for(var k=n-1;k>=0&&rc[k+1].classList.contains("gains");k--)fn(rc[k],notrans)}for(var ind2,curr,next,ind=-1,rev="revert"===rt,rnd=rt.indexOf("random")>-1,fl=r.getAttribute("data-flavour"),rc=r.childNodes,cyc="cycle"===fl,rcl=rc.length-1,k=0;k<=rcl;k++)"true"===rc[k].getAttribute("data-enabled")&&(ind=k);rev&&(ind-=1),curr=ind>=0?rc[ind]:cyc?rc[rcl]:null,ind2=ind,rnd&&(ind2=(ind+Math.floor(Math.random()*rcl))%rcl),next=ind2<rcl?rc[ind2+1]:cyc?rc[0]:null;var docurr=rev?showVer:hideVer,donext=rev?hideVer:showVer,currfn=function(){next&&next.classList.contains("gains")&&!rnd||(docurr(curr,notrans),doToGainerSpans(ind,docurr,notrans))},nextfn=function(){donext(next,notrans),rnd&&doToGainerSpans(ind2+1,donext,notrans)};return rev?(nextfn(),currfn()):(currfn(),nextfn()),!!cyc||(rev?ind>0:ind2<rcl-1)}if("undefined"==typeof version||"undefined"==typeof version.title||"SugarCube"!==version.title||"undefined"==typeof version.major||version.major<2)throw new Error("<<replacelink>> macro set requires SugarCube 2.0.0 or greater, aborting load");version.extensions.replacelinkMacroSet={major:1,minor:1,revision:7};var begintags=[],endtags=[];[{name:"insertlink",flavour:"insert",trigger:"link",setup:linkSetup},{name:"timedinsert",flavour:"insert",trigger:"time",setup:timeSetup},{name:"insertion",flavour:"insert",trigger:"revisemacro",setup:revisionSetup},{name:"later",flavour:"insert",trigger:"visited",setup:visitedSetup},{name:"keyinsert",flavour:"insert",trigger:"key",setup:keySetup},{name:"replacelink",flavour:"replace",trigger:"link",setup:linkSetup},{name:"timedreplace",flavour:"replace",trigger:"time",setup:timeSetup},{name:"mousereplace",flavour:"replace",trigger:"mouse",setup:mouseSetup},{name:"hoverreplace",flavour:"replace",trigger:"hover",setup:hoverSetup},{name:"revision",flavour:"replace",trigger:"revisemacro",setup:revisionSetup},{name:"keyreplace",flavour:"replace",trigger:"key",setup:keySetup},{name:"timedremove",flavour:"remove",trigger:"time",setup:timeSetup},{name:"mouseremove",flavour:"remove",trigger:"mouse",setup:mouseSetup},{name:"hoverremove",flavour:"remove",trigger:"hover",setup:hoverSetup},{name:"removal",flavour:"remove",trigger:"revisemacro",setup:revisionSetup},{name:"once",flavour:"remove",trigger:"visited",setup:visitedSetup},{name:"keyremove",flavour:"remove",trigger:"key",setup:keySetup},{name:"continuelink",flavour:"continue",trigger:"link",setup:linkSetup},{name:"timedcontinue",flavour:"continue",trigger:"time",setup:timeSetup},{name:"mousecontinue",flavour:"continue",trigger:"mouse",setup:mouseSetup},{name:"keycontinue",flavour:"continue",trigger:"key",setup:keySetup},{name:"cycle",flavour:"cycle",trigger:"revisemacro",setup:revisionSetup},{name:"mousecycle",flavour:"cycle",trigger:"mouse",setup:mouseSetup},{name:"timedcycle",flavour:"cycle",trigger:"time",setup:timeSetup},{name:"keycycle",flavour:"replace",trigger:"key",setup:keySetup}].forEach(function(e){e.handler=revisionSpanHandler,e.shorthand=["link","mouse","hover"].indexOf(e.trigger)>-1,macros[e.name]=e,Macro.tags.register(e.name),begintags.push(e.name),endtags.push("/"+e.name,"end"+e.name)}),macros.revertlink=macros.reviselink=macros.randomiselink=macros.randomizelink={handler:function(a,b,c){function disableLink(l){l.style.display="none"}function enableLink(l){l.style.display="inline"}function updateLink(l){if(l.className.indexOf("random")>-1)return void enableLink(l);for(var cannext,canprev,r,fl,rall=document.querySelectorAll(".passage [data-flavour]."+rname),i=0;i<rall.length;i++)r=rall[i],fl=r.getAttribute("data-flavour"),insideDepartingSpan(r)||("cycle"===fl?cannext=canprev=!0:("false"===r.firstChild.getAttribute("data-enabled")&&(canprev=!0),"false"===r.lastChild.getAttribute("data-enabled")&&(cannext=!0)));var can=l.classList.contains("revert")?canprev:cannext;(can?enableLink:disableLink)(l)}function toggleText(w){w.classList.toggle(rl+"Enabled"),w.classList.toggle(rl+"Disabled"),w.style.display="none"===w.style.display?"inline":"none"}if(c.length<2)return void throwError(a,"<<"+b+">>: insufficient arguments (requires at least 2)");var l,rname,actName=b.slice(0,-4),rl="reviseLink",v="",end=!1,out=!1;switch(rname=c.shift().replace(" ","_"),l=insertElement(a,"a"),l.className="link-internal "+rl+" "+rl+"_"+rname+" "+actName,c.length>1&&"$"===c[0][0]&&(v=c[0].slice(1),c.shift()),c[c.length-1]){case"end":end=!0,c.pop();break;case"out":out=!0,c.pop()}for(var h=State.variables,i=0;i<c.length;i++){var on=i===Math.max(c.indexOf(h[v]),0),d=insertElement(null,"span",null,rl+(on?"En":"Dis")+"abled");on?(h[v]=c[i],l.setAttribute("data-cycle",i)):d.style.display="none",insertText(d,c[i]),l.appendChild(d)}jQuery(l).ariaClick(function(){reviseAll(actName,rname);var lall,t=this.childNodes,u=this.getAttribute("data-cycle")-0,m=t.length;if((end||out)&&u>=m-(end?2:1)){if(!end)return void this.parentNode.removeChild(this);var n=this.removeChild(t[u+1]||t[u]);n.className=rl+"End",n.style.display="inline",this.parentNode.replaceChild(n,this)}else toggleText(t[u]),u=(u+1)%m,v&&(h[v]=c[u]),toggleText(t[u]),this.setAttribute("data-cycle",u);lall=document.getElementsByClassName(rl+"_"+rname);for(var i=0;i<lall.length;i++)updateLink(lall[i])}),disableLink(l),setTimeout(function(l){return function(){updateLink(l)}}(l),1),l=null}},macros.mouserevise=macros.hoverrevise={handler:function(a,b,c,d){var endtags=["/"+b,"end"+b],evt=null===window.onmouseenter?"onmouseenter":"onmouseover",t=tagcontents(d,[b],endtags,endtags,d.source.indexOf(">>",d.matchStart)+2);if(t){var rname=c[0].replace(" ","_"),h=insertElement(a,"span",null,"hoverrevise hoverrevise_"+rname),f=function(){var done=!reviseAll("revise",rname);"hoverrevise"!=b&&done&&(this[evt]=null)};new Wikifier(h,t[0]),"hoverrevise"===b?(h.onmouseover=f,h.onmouseout=function(){reviseAll("revert",rname)}):h[evt]=f,h=null}}},Macro.tags.register("mouserevise"),Macro.tags.register("hoverrevise"),macros.instantrevise={handler:function(a,b,c,d){reviseAll("revise",c[0].replace(" ","_"))}}}();
-/* twine-user-script #23: "shake-macro-set.min.js" */
+/* twine-user-script #26: "shake-macro-set.min.js" */
 /*! <<shake>> macro set for SugarCube 2.x */
 !function(){"use strict";if("undefined"==typeof version||"undefined"==typeof version.title||"SugarCube"!==version.title||"undefined"==typeof version.major||version.major<2||"undefined"==typeof version.minor||version.minor<5)throw new Error("<<shake>> macro requires SugarCube 2.5.0 or greater, aborting load");Macro.add("shake",{tags:null,handler:function(){var duration=this.args.length>0?this.args[0]:1/0,shakeClass="shake";if(1/0!==duration)try{duration=Math.max(Engine.minDomActionDelay,Util.fromCssTime(duration))}catch(e){return this.error(e.message)}Config.debug&&this.debugView.modes({block:!0});var $wrapper=jQuery(document.createElement("span"));$wrapper.addClass("macro-"+this.name+" "+shakeClass).wiki(this.payload[0].contents).appendTo(this.output),1/0!==duration&&setTimeout(function(){$wrapper.removeClass(shakeClass)},Engine.minDomActionDelay+duration)}}),Macro.add(["shakescreen","shaketarget"],{handler:function(){var $targets,duration,shakeClass;if("shakescreen"===this.name)$targets=jQuery("#passages"),duration=this.args.length>0?this.args[0]:1/0,shakeClass="shake-block";else{if(0===this.args.length)return this.error("no selector specified");if($targets=jQuery(this.args[0]),0===$targets.length)return this.error('no elements matched the selector "'+this.args[0]+'"');duration=this.args.length>1?this.args[1]:1/0,shakeClass="block"===jQuery($targets[0]).css("display")?"shake-block":"shake"}if("stop"===duration)return void $targets.removeClass(shakeClass);if(1/0!==duration)try{duration=Math.max(Engine.minDomActionDelay,Util.fromCssTime(duration))}catch(e){return this.error(e.message)}$targets.addClass(shakeClass),1/0!==duration&&setTimeout(function(){$targets.removeClass(shakeClass)},Engine.minDomActionDelay+duration)}})}();
-/* twine-user-script #24: "00-initUlts.js" */
+/* twine-user-script #27: "00-initUlts.js" */
 F.makeList = function (path, option) {
 	const rawtxt = Story.get(path).text.split("\n");
 
@@ -6100,7 +6306,7 @@ fix.reveals = function (reveal, equip) {
 
 	return reveal;
 };
-/* twine-user-script #25: "01-actions.js" */
+/* twine-user-script #28: "01-actions.js" */
 const extendTags = function (raw) {
 	if (!raw) return [];
 	return raw.split("|");
@@ -6417,7 +6623,7 @@ Action.data = actList;
 Action.kojo = {};
 
 Action.initdata();
-/* twine-user-script #26: "01-trait.js" */
+/* twine-user-script #29: "01-trait.js" */
 const traitdata = {};
 
 window.findConflic = function (source, conflicGroup) {
@@ -6568,7 +6774,7 @@ Trait.set("理智")
 		else if (cond.baseLt(tc, "health", 0.3) || cond.baseLt(tc, "stamina", 0.1)) return 15;
 		else return 2;
 	});
-/* twine-user-script #27: "02-initChara.js" */
+/* twine-user-script #30: "02-initChara.js" */
 Chara.data = {};
 
 Chara.data.Ayres = function () {
@@ -6700,7 +6906,7 @@ Chara.data.m0 = function () {
 
 	return chara;
 };
-/* twine-user-script #28: "02-initGame.js" */
+/* twine-user-script #31: "02-initGame.js" */
 game.init = function () {
 	//-------->> 记录类变量 <<-----------//
 	S.dialog = {};
@@ -6790,7 +6996,7 @@ game.init = function () {
 		mapId: "Dormitory",
 		roomId: "S303",
 		name: ["宿舍S303"],
-		tags: ["私室", "宿舍", "沐浴", "厨房", "厕所"],
+		tags: ["私室", "宿舍", "沐浴", "厕所"],
 		placement: [
 			["床", "单人床"],
 			["床", "单人床"],
@@ -6815,7 +7021,7 @@ game.init = function () {
 		mapId: "Dormitory", //当前地图
 		roomId: "S303", //地图内房间id
 
-		id: "Academy_Dormitory_S303", //当前地点的绝对id
+		id: "Academy-Dormitory-S303", //当前地点的绝对id
 		entry: "Dormitory", //地点出入口
 
 		name: "宿舍S303",
@@ -6869,7 +7075,7 @@ game.start = function (skip) {
 		}
 	}
 };
-/* twine-user-script #29: "03-initplayer.js" */
+/* twine-user-script #32: "03-initplayer.js" */
 //beauty=ALR*100+wearbuff+traitbuff
 Chara.onLoad = function () {
 	for (let i in V.chara) {
@@ -7150,7 +7356,7 @@ Chara.initGlobal = function () {
 		});
 	}
 };
-/* twine-user-script #30: "makeCharaSheet.js" */
+/* twine-user-script #33: "makeCharaSheet.js" */
 const initCSV = function (cid) {
 	const _raw = Story.get(`CharaSheet_${cid}`).text.replace(/\n/g, "#L#").replace(/\s/g, "");
 	const raw = _raw.split("#L#");
@@ -7303,7 +7509,7 @@ Chara.initCSV = function (cid) {
 
 	return chara;
 };
-/* twine-user-script #31: "0-ActionGlobalFilter.js" */
+/* twine-user-script #34: "0-ActionGlobalFilter.js" */
 //全局过滤器
 Action.globalFilter = function (id) {
 	const data = Action.data[id];
@@ -7467,7 +7673,7 @@ Action.globalPartAble = function (id, part, cid) {
 
 	return Using[cid][part]?.action == "" || Using[cid][part]?.action == id;
 };
-/* twine-user-script #32: "0-ActionUI.js" */
+/* twine-user-script #35: "0-ActionUI.js" */
 const selectedActionBtn = function (name) {
 	return `<div class='actions selectAct'>[ ${name} ]</div>`;
 };
@@ -7715,7 +7921,7 @@ Action.redraw = function () {
 	ui.replace("showtime", "<<showtime>><<showmoney>>");
 	return "";
 };
-/* twine-user-script #33: "0-ActionUtils.js" */
+/* twine-user-script #36: "0-ActionUtils.js" */
 Action.typeFilter = function (...types) {
 	return Object.values(Action.data).filter((action) => types.includes(action.type));
 };
@@ -7814,7 +8020,7 @@ Action.SelectableParts = function (actionId, filterMode) {
 	}
 	return selectAbleParts;
 };
-/* twine-user-script #34: "0-InitAction.js" */
+/* twine-user-script #37: "0-InitAction.js" */
 Action.initMode = function () {
 	T.actionTypeFilter = "all";
 	T.select = {};
@@ -7909,7 +8115,7 @@ Action.unset = function (cid, part, id) {
 
 	Using[cid][part] = { action: "", target: "", onPart: "", actor: "" };
 };
-/* twine-user-script #35: "ActionSystem.js" */
+/* twine-user-script #38: "ActionSystem.js" */
 cond.hasSelectableParts = function (parts) {
 	let arr = Array.from(new Set(parts));
 	if (!parts || parts.length <= 1) return false;
@@ -8311,7 +8517,7 @@ Action.Failed = function (id) {
 };
 
 //---------->> 设置finish事件 <<----------//
-/* twine-user-script #36: "0-command.js" */
+/* twine-user-script #39: "0-command.js" */
 //添加macro com
 Macro.add("com", {
 	tags: null,
@@ -8510,7 +8716,7 @@ Com.updateMovement = function () {
 
 	return "";
 };
-/* twine-user-script #37: "1-commandEvent.js" */
+/* twine-user-script #40: "1-commandEvent.js" */
 //----->> 初始化 <<---------------------------//
 
 //刷新指令目录
@@ -8778,7 +8984,7 @@ Com.endEvent = function () {
 	P.msg(resetHtml);
 	Com.next();
 };
-/* twine-user-script #38: "utils.js" */
+/* twine-user-script #41: "utils.js" */
 //----->> 小功能 <<---------------------------//
 
 Com.shownext = function () {
@@ -8822,7 +9028,7 @@ Com.reset = function () {
 	//刷新画面
 	Com.resetScene();
 };
-/* twine-user-script #39: "DialogSystem.js" */
+/* twine-user-script #42: "DialogSystem.js" */
 // 信息流控制
 P.flow = function (txt, time, dashline) {
 	if (!time) time = 60;
@@ -9087,7 +9293,7 @@ Dlog.next = function () {
 		if (e.afterselect) delete e.afterselect;
 	}
 };
-/* twine-user-script #40: "Kojo.js" */
+/* twine-user-script #43: "Kojo.js" */
 class Kojo {
 	static data = {};
 	static set(id, color) {
@@ -9292,7 +9498,7 @@ F.convertKojo = function (txt) {
 
 	return txt;
 };
-/* twine-user-script #41: "charaEvent.js" */
+/* twine-user-script #44: "charaEvent.js" */
 F.summonChara = function () {
 	const local = V.location;
 
@@ -9391,7 +9597,7 @@ F.charaEvent = function (cid) {
 		}
 	});
 };
-/* twine-user-script #42: "setEvent.js" */
+/* twine-user-script #45: "setEvent.js" */
 
 F.resetEvent = function () {
 	V.event = {
@@ -9442,7 +9648,7 @@ F.setMemory = function (id, title, chara) {
 		};
 	}
 };
-/* twine-user-script #43: "sourceTrack.js" */
+/* twine-user-script #46: "sourceTrack.js" */
 F.sourceCheck = function (chara, cid) {
 	//source的处理。根据条件对source的获得值进行加减。
 
@@ -9519,7 +9725,7 @@ F.sourceUp = function (chara) {
 };
 
 F.trackCheck = function (chara, cid) {};
-/* twine-user-script #44: "timeprocess.js" */
+/* twine-user-script #47: "timeprocess.js" */
 F.timeProcess = function (t) {
 	const date = V.date;
 
@@ -9580,14 +9786,14 @@ F.timeEffects = function (t, mode) {
 	//对不在场的角色进行时间经过处理。
 	//charas = F.getNoActiveChara()
 };
-/* twine-user-script #45: "Lib.js" */
+/* twine-user-script #48: "Lib.js" */
 ;(function () {
 	'use strict';
 
 	console.log("lib");
 
 })();
-/* twine-user-script #46: "UI.js" */
+/* twine-user-script #49: "UI.js" */
 ui.replace = function (label, html) {
 	new Wikifier(null, `<<replace #${label}>>${html}<</replace>>`);
 };
@@ -9598,7 +9804,7 @@ ui.delink = function () {
 	return "";
 };
 DefineMacroS("resetLink", ui.delink);
-/* twine-user-script #47: "condition.js" */
+/* twine-user-script #50: "condition.js" */
 cond.isClasstime = function () {
 	const date = V.date;
 	if (inrange(date.week, 1, 5)) {
@@ -9807,7 +10013,7 @@ F.getKeyByValue = function (object, value) {
 		(key) => object[key] === value || object[key].includes(value) || object[key][0].includes(value)
 	);
 };
-/* twine-user-script #48: "getInfo.js" */
+/* twine-user-script #51: "getInfo.js" */
 function statsRank(v) {
 	const select = new SelectCase();
 	select
@@ -9951,7 +10157,7 @@ P.mutants = function (level) {
 	}
 	return txt;
 };
-/* twine-user-script #49: "getTime.js" */
+/* twine-user-script #52: "getTime.js" */
 const weeks = ["暗", "光", "火", "水", "木", "雷", "土"];
 const weekcolor = ["C770FF", "F9FEA8", "FF7447", "8FE1F9", "BFE83F", "E4FCFE", "E1C57A"];
 
@@ -10017,7 +10223,7 @@ F.timePhase = function () {
 
 	return select.has(h);
 };
-/* twine-user-script #50: "newutil.js" */
+/* twine-user-script #53: "newutil.js" */
 F.playtime = function () {
 	let time = V.gametime;
 
@@ -10103,7 +10309,7 @@ F.setActor = function (cid, tid, ...parts) {
 	else T.actPart = "hands";
 };
 DefineMacroS("setActor", F.setActor);
-/* twine-user-script #51: "palamChange.js" */
+/* twine-user-script #54: "palamChange.js" */
 //根据温度变化，调整水分消耗速度。
 //设人体最佳适应温度为24℃，当温度高于最佳适应温度时，每3℃ 增加10%的水分消耗速度。
 F.hydrationLoseMult = function (currentTemp, bestTemp) {
@@ -10287,7 +10493,7 @@ F.levelMp = function (lv) {
 	let a = lv * lv * 10 + Math.pow(lv, 3);
 	return Math.floor(a / 10 + 0.5) * 10;
 };
-/* twine-user-script #52: "selection.js" */
+/* twine-user-script #55: "selection.js" */
 Macro.add("selection", {
 	tags: ["pick"],
 	handler: function () {
@@ -10474,7 +10680,7 @@ Macro.add("eventSelect", {
 		jQuery(this.output).wiki(html);
 	},
 });
-/* twine-user-script #53: "shortcut.js" */
+/* twine-user-script #56: "shortcut.js" */
 F.baseUp = function (chara, key, val) {
 	chara.base[key][0] += val;
 };
@@ -10550,7 +10756,7 @@ F.metToday = function (cid) {
 F.tentaclesNum = function () {
 	return V.cursedLord.abl.num + 2;
 };
-/* twine-user-script #54: "hover.js" */
+/* twine-user-script #57: "hover.js" */
 /* HoverTxt - Start */
 var HTIntervalID = 0;
 $(document).on(":passagerender", function (ev) {
@@ -10601,7 +10807,7 @@ function UpdateHoverTxt(Container) {
 	}
 }
 /* HoverTxt - End */
-/* twine-user-script #55: "mapeditor.js" */
+/* twine-user-script #58: "mapeditor.js" */
 window.confirmNewmap = function () {
 	T.mapsizeX = parseInt(T.mapsizeX);
 	T.mapsizeY = parseInt(T.mapsizeY);
@@ -10752,7 +10958,7 @@ window.saveMapConfig = function () {
 
 	download(data, T.selectMap, "txt");
 };
-/* twine-user-script #56: "textProcessor.js" */
+/* twine-user-script #59: "textProcessor.js" */
 /**
  *
  * @param {string} text
@@ -10979,7 +11185,7 @@ window.condP = function (array) {
 		if (array[i][0] === "else") return array[i][1];
 	}
 };
-/* twine-user-script #57: "Common.js" */
+/* twine-user-script #60: "Common.js" */
 /* 放松 */
 Action.set("Relax")
 	.Filter(() => {
@@ -11171,7 +11377,7 @@ Action.set("Mine")
 	.Order(() => {
 		return 0;
 	});
-/* twine-user-script #58: "Interaction.js" */
+/* twine-user-script #61: "Interaction.js" */
 /* 闲聊 */
 Action.set("Talk").Check(() => {
 	let rate = random(1, 100);
@@ -11267,7 +11473,7 @@ Action.set("AskMoney")
 Action.set("Payback").Filter(() => {
 	return pc == "Ayres" && player.wallet > target.flag.debt;
 });
-/* twine-user-script #59: "Items.js" */
+/* twine-user-script #62: "Items.js" */
 
 /* 跳蛋 */
 Action.set('Rotor')
@@ -11292,7 +11498,7 @@ Action.set('Vibrator')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #60: "Magic.js" */
+/* twine-user-script #63: "Magic.js" */
 /* 静心咒 */
 Action.set("m0")
 	.Filter(() => {
@@ -11316,7 +11522,7 @@ Action.set("m1")
 	.Order(() => {
 		return 0;
 	});
-/* twine-user-script #61: "Main.js" */
+/* twine-user-script #64: "Main.js" */
 /* 交流 */
 Action.set("Interaction")
 	.Filter(() => {
@@ -11529,7 +11735,7 @@ Action.set("Other")
 	.Event(() => {
 		T.actionTypeFilter = "其他";
 	});
-/* twine-user-script #62: "Other.js" */
+/* twine-user-script #65: "Other.js" */
 //:: Action_Command_Option[script]
 /* 直播 */
 Action.set("Stream")
@@ -11591,7 +11797,7 @@ Action.set("GetNude")
 	.Order(() => {
 		return 0;
 	});
-/* twine-user-script #63: "Pose.js" */
+/* twine-user-script #66: "Pose.js" */
 //根据角色的动作状态，判断能否执行某些动作。
 //例如对方被捆绑中时，可选体位根据捆绑姿势受限。
 //:: Action_Pose_Option[script]
@@ -11663,7 +11869,7 @@ Action.set("pose11").Filter(() => {
 
 	return 1;
 });
-/* twine-user-script #64: "Reverse.js" */
+/* twine-user-script #67: "Reverse.js" */
 //:: Action_Reverse_Option[script]
 /* 口交 */
 Action.set("r0")
@@ -11700,7 +11906,7 @@ Action.set("r2")
 	.Order(() => {
 		return 0;
 	});
-/* twine-user-script #65: "System.js" */
+/* twine-user-script #68: "System.js" */
 //:: Action_Event[script]
 Action.set("reset")
 	.Filter(() => {
@@ -11777,7 +11983,7 @@ Action.set("stopTouch")
 		Flag.mode = 1;
 		//new Wikifier(null, `<<run P.flow(P.playerName()+'<<you>>把手从$target.name身上挪开了。',30,1)>>`)
 	});
-/* twine-user-script #66: "Tentacles.js" */
+/* twine-user-script #69: "Tentacles.js" */
 //:: Action_Tentacles_Option[script]
 /* 揉捏 */
 Action.set("x0")
@@ -11946,7 +12152,7 @@ Action.set("x13")
 	.Order(() => {
 		return 0;
 	});
-/* twine-user-script #67: "Touch.js" */
+/* twine-user-script #70: "Touch.js" */
 //:: Action_Touch_Option[script]
 
 /* 接吻 */
@@ -12126,7 +12332,7 @@ Action.set("t13")
 	.Order(() => {
 		return 0;
 	});
-/* twine-user-script #68: "RegistAllCom" */
+/* twine-user-script #71: "RegistAllCom" */
 //批处理多个指令。
 Com.init()
 
@@ -12200,7 +12406,7 @@ Com.globalCond = function(id){
 
     return true
 }
-/* twine-user-script #69: "Com_G1:Script" */
+/* twine-user-script #72: "Com_G1:Script" */
 /* 注册指令事件*/
 Com.set('G1')
     .Check(()=>{ 
@@ -12211,7 +12417,7 @@ Com.set('G1')
     })
 
 /* 事件文本，before执行前文本，after执行后文本，cancel执行取消时文本 */
-/* twine-user-script #70: "Com_G2:Script" */
+/* twine-user-script #73: "Com_G2:Script" */
 Com.set('G2')
     .Check(()=>{
         return random(1,100) <= target.mood + 10 && !target.state.contains('失声','失聪')
@@ -12219,12 +12425,12 @@ Com.set('G2')
     .Effect(()=>{
         Source[tc].favo += 10
     })
-/* twine-user-script #71: "Com_T4:Script" */
+/* twine-user-script #74: "Com_T4:Script" */
 Com.set('T4')
    .Filter(()=>{
         return target.gender !== 'female'
    })
-/* twine-user-script #72: "Com_T99:Script" */
+/* twine-user-script #75: "Com_T99:Script" */
 Com.set('T99')
    .Name(()=>{
         if(V.mode !== 'train'){
@@ -12268,7 +12474,7 @@ Com.set('T99')
             }
         }
    })
-/* twine-user-script #73: "Com_X1:Script" */
+/* twine-user-script #76: "Com_X1:Script" */
 Com.set('X1')
     .Check(()=>{
         //能跑进来时已经过滤掉的情况：非合意且对象具备抵抗能力
@@ -12291,7 +12497,7 @@ Com.set('X1')
         Chara.getexp(target, 'B', random(2));
     })
     .ForceAble()
-/* twine-user-script #74: "Com_X2:Script" */
+/* twine-user-script #77: "Com_X2:Script" */
 Com.set('X2')
     .Check(()=>{
         //能跑进来时已经过滤掉的情况：非合意且对象具备抵抗能力
@@ -12313,7 +12519,7 @@ Com.set('X2')
         Chara.getexp(target, '触手', random(3));
         Chara.getexp(target, 'B', random(2));
     })
-/* twine-user-script #75: "Kojo_Ayres_Regist" */
+/* twine-user-script #78: "Kojo_Ayres_Regist" */
 Kojo.set('Ayres')
     .Intro('出身不明的鬼人（？），在大贤者的推荐下来到奥兰尼亚第一魔法学院研究魔药学。')
     .Home('学生宿舍,S303')
@@ -12330,14 +12536,14 @@ Kojo.set('Ayres')
 
     //自定义动作
     .Action(0, {id:'Ayres_PotionExperience', name:'魔药研究', type:'G'})
-/* twine-user-script #76: "Kojo_Ayres_Actions_Option" */
+/* twine-user-script #79: "Kojo_Ayres_Actions_Option" */
 Action.kojo.Ayres = function(){
    Action.set('Ayres_PotionExperience')
       .Filter(()=>{
          return pc === 'Ayres' && V.location.name === '魔药研究所'
       })
 }
-/* twine-user-script #77: "Kojo_Isil_Regist" */
+/* twine-user-script #80: "Kojo_Isil_Regist" */
 /* 代码区，用于注册角色颜色、额外的设定、flag信息等 */
 Kojo.set('Isil','#F9F570')
     //角色介绍
@@ -12395,14 +12601,14 @@ Kojo.set('Isil','#F9F570')
     .Action(0,{id:'Isil_MagicaResearch',name:'研究魔法',type:'G'})
     
 //自定义动作的设置
-/* twine-user-script #78: "Kojo_Isil_Actions_Option" */
+/* twine-user-script #81: "Kojo_Isil_Actions_Option" */
 Action.kojo.Isil = function(){
    Action.set('Isil_MagicaResearch')
       .Filter(()=>{
          return pc === 'Isil' && V.location.name === '魔法研究室'
       })
 }
-/* twine-user-script #79: "Kojo_Nanaly_Regist" */
+/* twine-user-script #82: "Kojo_Nanaly_Regist" */
 /* 纯代码区,用于注册角色信息 */
 /*注意：娜娜莉是姛，如果条件允许应当当玩家是女性/双性时才可攻略*/
 Kojo.set('Nanaly', '#66CCFF') //角色id与 名牌颜色
@@ -12414,7 +12620,7 @@ Kojo.set('Nanaly', '#66CCFF') //角色id与 名牌颜色
     //日程表填写顺序, 日程id(从0开始), [ '地点', [ 星期几 ], 起始时间,  结束时间,  滞留时长,  出现概率 ]
 
     .Event()
-/* twine-user-script #80: "startconfig.js" */
+/* twine-user-script #83: "startconfig.js" */
 game.version = "0.1.8";
 l10nStrings.errorTitle = game.version + " Error";
 console.log("Game Version:", game.version);
@@ -12857,7 +13063,8 @@ MP: $target.base.mana[0] / $target.base.mana[1]&lt;br&gt;
     let txt = `:: Kojo_${ $(&#39;#input-npcid&#39;).val() }_${type}_${id}\n`
 
     if(type == &#39;Event&#39;){
-        txt =  `:: Kojo_${ $(&#39;#input-npcid&#39;).val() }_${id}::Before\n&lt;&lt;set $evnt.id = &quot;CE_1&quot;&gt;&gt;/* 设置事件id。数字可自行更换。 */\n&lt;&lt;run F.setMemory(&quot;CE_1&quot;, &quot;事件回想标题&quot;, &quot;${ $(&#39;#input-npcid&#39;).val() }&quot;)/* 登记回想 */\n\n` + txt
+        txt =  `:: Kojo_${ $(&#39;#input-npcid&#39;).val() }_${id}::Before\n
+        &lt;&lt;set $evnt.id = &quot;CE_1&quot;&gt;&gt;/* 设置事件id。数字可自行更换。 */\n&lt;&lt;run F.setMemory(&quot;CE_1&quot;, &quot;事件回想标题&quot;, &quot;${ $(&#39;#input-npcid&#39;).val() }&quot;)/* 登记回想 */\n\n` + txt
     }
 
     if(type.includes(&#39;Mark&#39;)){
@@ -12866,7 +13073,7 @@ MP: $target.base.mana[0] / $target.base.mana[1]&lt;br&gt;
         if(type.includes(&#39;Get&#39;)){
             txt += `&lt;&lt;case 4&gt;&gt;\n&lt;&lt;case 5&gt;&gt;\n`
         }
-        txt += `&lt;&lt;/switch&gt;&gt;\n`
+        txt += `&lt;&lt;/` + &#39;switch&gt;&gt;\n&#39;
     }
 
     $(&#39;#kojotext&#39;).val(txt)
@@ -13346,9 +13553,9 @@ $target.fullname&lt;br&gt;
 /* time：花费时间，locationTags：需求的地点标签，setting：额外设置 */
 /* 上课属于互动事件类型？上课期间可以对别人涩涩或作为伊希露被涩涩什么的！ */
 #G ,id   ,name ,time ,locationTags, placement, setting
-Relax, 放松, 15, 休息点, 沙发|椅子, canTrain
+Relax, 放松, 15, 休息区, 沙发|椅子, canTrain
 Walk, 散步, 15, 室外
-Plant, 种植, 30, 种植点
+Plant, 种植, 30, 种植区
 Bath, 洗澡, 30, 沐浴|澡堂, 浴室
 Read, 读书, 60, 阅读区, 书架
 Learn, 学习, 60, 教室, 书桌
@@ -13359,9 +13566,9 @@ Cook, 煮饭, 15, 厨房
 Sing, 唱歌, 5, ,canTrain
 Dance, 跳舞, 10, 活动|舞台
 PlayMusic, 演奏, 5, 乐器
-Fish, 钓鱼, 30, 钓鱼点
-Gather, 采集, 20, 采集点
-Mine, 挖矿, 30, 挖矿点
+Fish, 钓鱼, 30, 钓鱼区
+Gather, 采集, 20, 采集区
+Mine, 挖矿, 30, 挖矿区
 
 /* 主分类和模式切换，点开持续开关的话，会将当前动作保存到using。关闭就是单发。 */
 #M, id, name, setting
@@ -15431,13 +15638,13 @@ flagname替换成对应的变量名&lt;br&gt;
 &lt;&lt;switch $location.name&gt;&gt;
     &lt;&lt;case &#39;魔法学院&#39;&gt;&gt;
         在学校广场中
-    &lt;&lt;case &#39;学生宿舍&#39;&gt;&gt;
-        在宿舍中
+    &lt;&lt;case &#39;宿舍大厅&#39;&gt;&gt;
+        在宿舍大厅中
     &lt;&lt;case &#39;教学楼&#39;&gt;&gt;
         魔法学院教学楼
-    &lt;&lt;case &#39;魔法研究所&#39;&gt;&gt;
+    &lt;&lt;case &#39;魔法分析室&#39;&gt;&gt;
         安德鲁教授的魔法研究所
-    &lt;&lt;case &#39;研究室&#39;&gt;&gt;
+    &lt;&lt;case &#39;物理实验室&#39;&gt;&gt;
         伊希露的研究室
     &lt;&lt;case &#39;大浴场&#39;&gt;&gt;
         奥兰尼亚(城镇)里的公共大浴场
@@ -15461,7 +15668,7 @@ flagname替换成对应的变量名&lt;br&gt;
         奥兰尼亚城外北部, 远处能看到格拉祖大山脉(山顶有雪, 山脚有矿)
     &lt;&lt;case &#39;对决台&#39;&gt;&gt;
         学院里供学生用的对决台
-    &lt;&lt;case &#39;饭堂&#39;&gt;&gt;
+    &lt;&lt;case &#39;学生饭堂&#39;&gt;&gt;
         魔法研究院的饭堂
     &lt;&lt;case &#39;美术馆&#39;&gt;&gt;
         城镇里的美术馆

@@ -912,7 +912,25 @@
 	  }
 	  Tags(...tags) {
 	    this.tags = tags;
+	    if (tags.includes("\u6237\u5916")) {
+	      this.tags.push("\u5F00\u9614");
+	    }
+	    if (tags.has("\u5BA4\u5916", "\u6237\u5916") && !tags.includes("\u906E\u9876")) {
+	      this.tags.push("\u9732\u5929");
+	    }
 	    return this;
+	  }
+	  CheckParent() {
+	    if (!this.groupId)
+	      return false;
+	    const path = this.groupId.split(".");
+	    let parent = worldMap;
+	    for (let i = 0; i < path.length; i++) {
+	      parent = parent[path[i]];
+	    }
+	    if (parent)
+	      return parent;
+	    return false;
 	  }
 	  setPortal(...points) {
 	    this.portal = {
@@ -952,12 +970,14 @@
 	    return this;
 	  }
 	}
-	class location extends Maps {
+	class Locations extends Maps {
 	  constructor(mapid, name, group, side) {
 	    super(name, "location");
 	    this.mapId = mapid;
 	    this.groupId = group;
+	    this.side = side;
 	    this.tags.push(side);
+	    this.placement = [];
 	  }
 	  Rooms(...rooms) {
 	    this.rooms = rooms;
@@ -993,6 +1013,18 @@
 	  }
 	  Placement(...placement) {
 	    this.placement = placement;
+	    return this;
+	  }
+	  AdoptParent() {
+	    const parent = this.CheckParent();
+	    if (parent) {
+	      this.tags = this.tags.concat(parent.tags);
+	      this.placement = this.placement.concat(parent.placement);
+	    }
+	    return this;
+	  }
+	  MaxSlots(number) {
+	    this.maxSlots = number;
 	    return this;
 	  }
 	  static countPlacement(placement) {
@@ -1058,338 +1090,17 @@
 	      return Maps;
 	    }
 	  },
-	  TownMap: {
+	  townMap: {
 	    get() {
 	      return townMap;
 	    }
 	  },
 	  Locations: {
 	    get() {
-	      return Location;
+	      return Locations;
 	    }
 	  }
 	});
-
-	const worldMap$1 = {
-	  Orlania: new townMap("Orlania", "", ["\u5965\u5170\u5C3C\u4E9A"], ["GateNorth", "GateSouth", "GateWest", "GateEast"], 35, 35),
-	  MagicaAcademy: new townMap("MagicaAcademy", "Orlania", ["\u7B2C\u4E00\u9B54\u6CD5\u5B66\u9662"], ["SchoolGate"], 7, 25)
-	};
-	worldMap$1.Orlania.Spots(
-	  ["OutskirtsNorth|field", -17, 0, "S"],
-	  ["OutskirtsSouth|field", 17, 0, "N"],
-	  ["OutskirtsWest|field", 0, -17, "E"],
-	  ["OutskirtsEast|field", 0, 17, "W"],
-	  ["GateNorth|passable", -15, 0, "S"],
-	  ["GateSouth|passable", 15, 0, "N"],
-	  ["GateWest|passable", 0, -15, "E"],
-	  ["GateEast|passable", 0, 15, "W"],
-	  ["TownCenter|passable", 0, 0, "SNWE"],
-	  ["CenterSquare|passable", 2, 0, "SN"],
-	  ["MagicaAcademy", -11, 8, "SW"],
-	  ["Hospital", -9, 3, "W"],
-	  ["ShopAlley|passable", 11, -4, "E"],
-	  ["BathHouse", 9, -4, "EN"],
-	  ["Aquarium", 12, 13, "N"],
-	  ["ArtGallery", -8, 8, "WNS"],
-	  ["Church", -12, 4, "E"],
-	  ["BlackCat", -10, 8, "W"],
-	  ["OperaHouse", -6, 11, "S"],
-	  ["BairdTrading|passable", -4, -11, "SN"],
-	  ["SliverChimes", -4, -8, "N"],
-	  ["CentaurBar", -6, -8, "N"]
-	);
-	worldMap$1.MagicaAcademy.Spots(
-	  ["MageTower", -3, -12, "S"],
-	  ["SchoolEntrance|passable", 0, -12, "EN"],
-	  ["ActivitySquare|passable", 0, -10, "SNWE"],
-	  ["ClassBuildingR1|passable", 3, -8, "N"],
-	  ["ClassBuildingR2|passable", -3, -8, "S"],
-	  ["ResearchLabA", 2, -5, "WSN"],
-	  ["ResearchLabB", -2, -5, "WSN"],
-	  ["Library|passable", 2, -2, "SN"],
-	  ["Arena|passable", -2, 1, "SNWE"],
-	  ["HistoryMuseum", 2, 2, "N"],
-	  ["DiningHall", 2, 10, "N"],
-	  ["GreenGarden|passable", -2, -2, "SN"],
-	  ["StudentCenter", -2, 7, "S"],
-	  ["Dormitory", 0, 12, "W"]
-	);
-	Object.defineProperties(window, {
-	  worldMap: { get: () => worldMap$1 }
-	});
-	worldMap$1.Orlania.mapdata = {
-	  OutskirtsNorth: [[0, 17]],
-	  road: [
-	    [1, 17],
-	    [3, 17],
-	    [4, 17],
-	    [5, 17],
-	    [5, 22],
-	    [6, 17],
-	    [6, 18],
-	    [6, 19],
-	    [6, 20],
-	    [6, 21],
-	    [6, 22],
-	    [6, 23],
-	    [6, 24],
-	    [7, 17],
-	    [7, 24],
-	    [8, 17],
-	    [8, 24],
-	    [8, 25],
-	    [9, 17],
-	    [9, 20],
-	    [9, 21],
-	    [9, 22],
-	    [9, 23],
-	    [9, 24],
-	    [10, 10],
-	    [10, 11],
-	    [10, 12],
-	    [10, 13],
-	    [10, 14],
-	    [10, 15],
-	    [10, 16],
-	    [10, 17],
-	    [10, 18],
-	    [10, 19],
-	    [10, 20],
-	    [10, 21],
-	    [10, 24],
-	    [10, 25],
-	    [11, 10],
-	    [11, 17],
-	    [11, 25],
-	    [12, 5],
-	    [12, 6],
-	    [12, 7],
-	    [12, 9],
-	    [12, 10],
-	    [12, 17],
-	    [12, 18],
-	    [12, 19],
-	    [12, 20],
-	    [12, 21],
-	    [12, 22],
-	    [12, 23],
-	    [12, 24],
-	    [12, 25],
-	    [12, 26],
-	    [12, 27],
-	    [12, 28],
-	    [13, 5],
-	    [13, 7],
-	    [13, 10],
-	    [13, 17],
-	    [14, 5],
-	    [14, 6],
-	    [14, 7],
-	    [14, 8],
-	    [14, 9],
-	    [14, 10],
-	    [14, 11],
-	    [14, 12],
-	    [14, 13],
-	    [14, 14],
-	    [14, 15],
-	    [14, 16],
-	    [14, 17],
-	    [15, 8],
-	    [15, 17],
-	    [16, 8],
-	    [16, 16],
-	    [16, 17],
-	    [16, 18],
-	    [17, 1],
-	    [17, 3],
-	    [17, 4],
-	    [17, 5],
-	    [17, 6],
-	    [17, 7],
-	    [17, 8],
-	    [17, 9],
-	    [17, 10],
-	    [17, 11],
-	    [17, 12],
-	    [17, 13],
-	    [17, 14],
-	    [17, 15],
-	    [17, 16],
-	    [17, 18],
-	    [17, 19],
-	    [17, 20],
-	    [17, 21],
-	    [17, 22],
-	    [17, 23],
-	    [17, 24],
-	    [17, 25],
-	    [17, 26],
-	    [17, 27],
-	    [17, 28],
-	    [17, 29],
-	    [17, 30],
-	    [17, 31],
-	    [17, 33],
-	    [18, 12],
-	    [18, 16],
-	    [18, 17],
-	    [18, 18],
-	    [18, 30],
-	    [19, 12],
-	    [19, 16],
-	    [19, 18],
-	    [19, 30],
-	    [20, 12],
-	    [20, 16],
-	    [20, 17],
-	    [20, 18],
-	    [20, 30],
-	    [21, 12],
-	    [21, 17],
-	    [21, 30],
-	    [22, 12],
-	    [22, 17],
-	    [22, 30],
-	    [23, 12],
-	    [23, 17],
-	    [23, 30],
-	    [24, 12],
-	    [24, 17],
-	    [24, 30],
-	    [25, 12],
-	    [25, 17],
-	    [25, 30],
-	    [26, 12],
-	    [26, 14],
-	    [26, 17],
-	    [26, 30],
-	    [27, 12],
-	    [27, 13],
-	    [27, 14],
-	    [27, 17],
-	    [27, 30],
-	    [28, 12],
-	    [28, 14],
-	    [28, 15],
-	    [28, 16],
-	    [28, 17],
-	    [28, 18],
-	    [28, 19],
-	    [28, 20],
-	    [28, 21],
-	    [28, 22],
-	    [28, 23],
-	    [28, 24],
-	    [28, 25],
-	    [28, 26],
-	    [28, 27],
-	    [28, 28],
-	    [28, 29],
-	    [28, 30],
-	    [29, 17],
-	    [30, 17],
-	    [31, 17],
-	    [33, 17]
-	  ],
-	  GateNorth: [[2, 17]],
-	  Church: [[5, 21]],
-	  MagicaAcademy: [[6, 25]],
-	  BlackCat: [[7, 25]],
-	  Hospital: [[8, 20]],
-	  ArtGallery: [[9, 25]],
-	  CentaurBar: [[11, 9]],
-	  OperaHouse: [[11, 28]],
-	  BairdTrading: [[13, 6]],
-	  SliverChimes: [[13, 9]],
-	  OutskirtsWest: [[17, 0]],
-	  GateWest: [[17, 2]],
-	  TownCenter: [[17, 17]],
-	  GateEast: [[17, 32]],
-	  OutskirtsEast: [[17, 34]],
-	  CenterSquare: [[19, 17]],
-	  BathHouse: [[26, 13]],
-	  ShopAlley: [[28, 13]],
-	  Aquarium: [[29, 30]],
-	  GateSouth: [[32, 17]],
-	  OutskirtsSouth: [[34, 17]]
-	};
-	worldMap$1.MagicaAcademy.mapdata = {
-	  MageTower: [[0, 0]],
-	  "ClassBuildingR2|passable": [[0, 4]],
-	  road: [
-	    [0, 7],
-	    [0, 8],
-	    [0, 9],
-	    [0, 10],
-	    [0, 12],
-	    [0, 13],
-	    [0, 14],
-	    [1, 0],
-	    [1, 4],
-	    [1, 5],
-	    [1, 6],
-	    [1, 12],
-	    [1, 14],
-	    [2, 0],
-	    [2, 2],
-	    [2, 3],
-	    [2, 6],
-	    [2, 7],
-	    [2, 10],
-	    [2, 12],
-	    [2, 13],
-	    [2, 14],
-	    [2, 19],
-	    [3, 1],
-	    [3, 3],
-	    [3, 4],
-	    [3, 5],
-	    [3, 6],
-	    [3, 10],
-	    [3, 13],
-	    [3, 18],
-	    [3, 19],
-	    [3, 20],
-	    [3, 21],
-	    [3, 22],
-	    [3, 23],
-	    [4, 2],
-	    [4, 3],
-	    [4, 6],
-	    [4, 7],
-	    [4, 10],
-	    [4, 11],
-	    [4, 12],
-	    [4, 13],
-	    [4, 14],
-	    [4, 15],
-	    [4, 16],
-	    [4, 17],
-	    [4, 18],
-	    [4, 22],
-	    [5, 4],
-	    [5, 5],
-	    [5, 6],
-	    [6, 7],
-	    [6, 8],
-	    [6, 9],
-	    [6, 10]
-	  ],
-	  ResearchLabB: [[1, 7]],
-	  "GreenGarden|passable": [[1, 10]],
-	  "Arena|passable": [[1, 13]],
-	  StudentCenter: [[1, 19]],
-	  "SchoolEntrance|passable": [[3, 0]],
-	  "ActivitySquare|passable": [[3, 2]],
-	  Dormitory: [[3, 24]],
-	  ResearchLabA: [[5, 7]],
-	  "Library|passable": [[5, 10]],
-	  HistoryMuseum: [[5, 14]],
-	  DiningHall: [[5, 22]],
-	  "ClassBuildingR1|passable": [[6, 4]]
-	};
-	new location("SchoolEntrance", ["\u5B66\u9662\u5165\u53E3"], "MagicaAcademy", "\u5BA4\u5916").Railcar().Tags("\u516C\u5171\u573A\u6240", "\u4EA4\u901A", "\u5149\u4EAE\u5904", "\u5F00\u9614").Placement("\u79FB\u52A8\u644A\u4F4D");
 
 	window.database = {};
 	window.gameutils = {

@@ -28,9 +28,9 @@ noSelectPart，没有目标部位，只需选择动作部位。
 /* time：花费时间，locationTags：需求的地点标签，setting：额外设置 */
 /* 上课属于互动事件类型？上课期间可以对别人涩涩或作为伊希露被涩涩什么的！ */
 #G ,id   ,name ,time ,locationTags, placement, setting
-Relax, 放松, 15, 休息点, 沙发|椅子, canTrain
+Relax, 放松, 15, 休息区, 沙发|椅子, canTrain
 Walk, 散步, 15, 室外
-Plant, 种植, 30, 种植点
+Plant, 种植, 30, 种植区
 Bath, 洗澡, 30, 沐浴|澡堂, 浴室
 Read, 读书, 60, 阅读区, 书架
 Learn, 学习, 60, 教室, 书桌
@@ -41,9 +41,9 @@ Cook, 煮饭, 15, 厨房
 Sing, 唱歌, 5, ,canTrain
 Dance, 跳舞, 10, 活动|舞台
 PlayMusic, 演奏, 5, 乐器
-Fish, 钓鱼, 30, 钓鱼点
-Gather, 采集, 20, 采集点
-Mine, 挖矿, 30, 挖矿点
+Fish, 钓鱼, 30, 钓鱼区
+Gather, 采集, 20, 采集区
+Mine, 挖矿, 30, 挖矿区
 
 /* 主分类和模式切换，点开持续开关的话，会将当前动作保存到using。关闭就是单发。 */
 #M, id, name, setting

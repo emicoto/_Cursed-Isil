@@ -87,7 +87,7 @@ game.init = function () {
 		mapId: "Dormitory",
 		roomId: "S303",
 		name: ["宿舍S303"],
-		tags: ["私室", "宿舍", "沐浴", "厨房", "厕所"],
+		tags: ["私室", "宿舍", "沐浴", "厕所"],
 		placement: [
 			["床", "单人床"],
 			["床", "单人床"],
@@ -112,7 +112,7 @@ game.init = function () {
 		mapId: "Dormitory", //当前地图
 		roomId: "S303", //地图内房间id
 
-		id: "Academy_Dormitory_S303", //当前地点的绝对id
+		id: "Academy-Dormitory-S303", //当前地点的绝对id
 		entry: "Dormitory", //地点出入口
 
 		name: "宿舍S303",

@@ -101,7 +101,8 @@
     let txt = `:: Kojo_${ $('#input-npcid').val() }_${type}_${id}\n`
 
     if(type == 'Event'){
-        txt =  `:: Kojo_${ $('#input-npcid').val() }_${id}::Before\n<<set $evnt.id = "CE_1">>/* 设置事件id。数字可自行更换。 */\n<<run F.setMemory("CE_1", "事件回想标题", "${ $('#input-npcid').val() }")/* 登记回想 */\n\n` + txt
+        txt =  `:: Kojo_${ $('#input-npcid').val() }_${id}::Before\n
+        <<set $evnt.id = "CE_1">>/* 设置事件id。数字可自行更换。 */\n<<run F.setMemory("CE_1", "事件回想标题", "${ $('#input-npcid').val() }")/* 登记回想 */\n\n` + txt
     }
 
     if(type.includes('Mark')){
@@ -110,7 +111,7 @@
         if(type.includes('Get')){
             txt += `<<case 4>>\n<<case 5>>\n`
         }
-        txt += `<</switch>>\n`
+        txt += `<</` + 'switch>>\n'
     }
 
     $('#kojotext').val(txt)
