@@ -17,6 +17,33 @@
     <<listbox "_selectMap">>
         <<optionsfrom _mapoptions>>
     <</listbox>>
+
+    <<button '读取地图'>>
+    <<run
+        T.mapdata = Maps.getBoard(T.selectMap)
+        T.mapsizeX = T.mapdata.length
+        T.mapsizeY = T.mapdata[0].length
+        generateMapField(T.mapdata)
+    >>
+    <</button>>
+    
+    <<button '从源档案新建'>>
+    <<run
+        T.mapdata = GenerateMap(worldMap[T.selectMap])
+        T.mapsizeX = T.mapdata.length
+        T.mapsizeY = T.mapdata[0].length
+        generateMapField(T.mapdata)    
+    >>
+    <</button>>
+
+    <<button '读取源档案'>>
+    <<run
+        T.mapdata = GenerateSpot(worldMap[T.selectMap])[0]
+        T.mapsizeX = T.mapdata.length
+        T.mapsizeY = T.mapdata[0].length
+        generateMapField(T.mapdata)    
+    >>
+    <</button>>
     </div>
     <div>
     新建地图：
@@ -33,11 +60,17 @@
     <<checkbox '_destroymode' 0 1 autocheck>>
     </div>
     <div>
-    保存地图：
-    <<button 'save'>>
+    <<button '保存地图'>>
     <<run
-        let mapdata = compresMapData(T.mapdata)
+        let mapdata = Maps.convertData(T.mapdata)
+        delete mapdata['.'] // remove empty space
         download(JSON.stringify(mapdata), T.selectMap, 'txt')
+    >>
+    <</button>>
+
+    <<button '保存为设置文件'>>
+    <<run
+        saveMapConfig()
     >>
     <</button>>
     </div>
@@ -52,14 +85,6 @@
 
 <<done>>
 <<script>>
-
-$('#listbox--selectmap').on('change',()=>{
-    console.log(T.selectMap)
-    T.mapdata = GenerateMap(worldMap[T.selectMap])
-    T.mapsizeX = T.mapdata.length
-    T.mapsizeY = T.mapdata[0].length
-    generateMapField(T.mapdata)
-})
 
 $('#checkbox--destroymode').on('change',()=>{
     if(T.placemode){

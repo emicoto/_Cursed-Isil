@@ -2088,7 +2088,303 @@ Object.defineProperty(String.prototype, "readBracketedList", {
 	  Chara: { value: Chara }
 	});
 
+	const moveableTile = ["road", "glass", "field", "TRoad", "LRoad", "crossRoad", "passable"];
+	function GenerateSpot(map) {
+	  const townmap = new Array(map.mapsize.x).fill(0).map(() => new Array(map.mapsize.y).fill(""));
+	  const spots = Array.from(map.spots);
+	  spots.sort((a, b) => {
+	    if (a[1][0].x === b[1][0].x) {
+	      return a[1][0].y - b[1][0].y;
+	    }
+	    return a[1][0].x - b[1][0].x;
+	  });
+	  spots.forEach((location) => {
+	    const pos = location[1][0];
+	    townmap[pos.x][pos.y] = location[0];
+	  });
+	  const road = [];
+	  const setRoad = (x, y, side) => {
+	    if (x < 0 || y < 0 || x >= map.mapsize.x || y >= map.mapsize.y)
+	      return;
+	    if (townmap[x][y] === "") {
+	      townmap[x][y] = "road";
+	      road.push([side, x, y]);
+	    }
+	  };
+	  spots.forEach((location) => {
+	    const pos = location[1][0];
+	    const side = location[1][1];
+	    side.split("").forEach((s) => {
+	      switch (s) {
+	        case "W":
+	        case "w":
+	          setRoad(pos.x, pos.y - 1, "W");
+	          break;
+	        case "E":
+	        case "e":
+	          setRoad(pos.x, pos.y + 1, "E");
+	          break;
+	        case "S":
+	        case "s":
+	          setRoad(pos.x + 1, pos.y, "S");
+	          break;
+	        case "N":
+	        case "n":
+	          setRoad(pos.x - 1, pos.y, "N");
+	          break;
+	      }
+	    });
+	  });
+	  return [townmap, road];
+	}
+	function GenerateMap(map) {
+	  const maps = GenerateSpot(map);
+	  const townmap = maps[0];
+	  const road = maps[1];
+	  const directions = [
+	    [0, -1],
+	    [0, 1],
+	    [1, 0],
+	    [-1, 0]
+	  ];
+	  const directions2 = [
+	    [1, -1],
+	    [1, 1],
+	    [-1, 1],
+	    [-1, -1]
+	  ];
+	  const checkRoad = (side, x, y, start, end) => {
+	    if (x < 0 || y < 0 || x >= townmap.length || y >= townmap[x].length)
+	      return false;
+	    if (side == "x") {
+	      for (let i = start; i <= end; i++) {
+	        if (townmap[i][y] !== "" && townmap[i][y] !== "road")
+	          return false;
+	      }
+	    }
+	    if (side == "y") {
+	      for (let i = start; i <= end; i++) {
+	        if (townmap[x][i] !== "" && townmap[x][i] !== "road")
+	          return false;
+	      }
+	    }
+	    return true;
+	  };
+	  const isRoad = (x, y) => {
+	    if (x < 0 || y < 0 || x >= townmap.length || y >= townmap[x].length)
+	      return false;
+	    return townmap[x][y] === "road";
+	  };
+	  const hasRoadAround = (side, x, y) => {
+	    if (x < 0 || y < 0 || x >= townmap.length || y >= townmap[x].length)
+	      return false;
+	    let count = 0;
+	    directions.concat(directions2).forEach((dir) => {
+	      if (side == "x" && dir[0] == 0) ; else if (side == "y" && dir[1] == 0) ; else if (isRoad(x + dir[0], y + dir[1]))
+	        count++;
+	    });
+	    return count > 4;
+	  };
+	  const connectRoad = (side, x, y, start, end) => {
+	    if (side == "x") {
+	      for (let i = start; i <= end; i++) {
+	        if (townmap[i][y] === "") {
+	          if (hasRoadAround(side, i, y))
+	            continue;
+	          townmap[i][y] = "road";
+	        }
+	      }
+	    }
+	    if (side == "y") {
+	      for (let i = start; i <= end; i++) {
+	        if (townmap[x][i] === "") {
+	          if (hasRoadAround(side, x, i))
+	            continue;
+	          townmap[x][i] = "road";
+	        }
+	      }
+	    }
+	  };
+	  road.forEach((road2) => {
+	    const x = road2[1];
+	    const y = road2[2];
+	    const side = road2[0];
+	    if (side == "N" || side == "S") {
+	      for (let i = x - 1; i >= 0; i--) {
+	        if (townmap[i][y] === "road") {
+	          if (checkRoad("x", x, y, i + 1, x - 1)) {
+	            connectRoad("x", x, y, i + 1, x - 1);
+	          }
+	        }
+	      }
+	      for (let i = x + 1; i < map.mapsize.x; i++) {
+	        if (townmap[i][y] === "road") {
+	          if (checkRoad("x", x, y, x + 1, i - 1)) {
+	            connectRoad("x", x, y, x + 1, i - 1);
+	          }
+	        }
+	      }
+	    }
+	    for (let i = y - 1; i >= 0; i--) {
+	      if (townmap[x][i] === "road") {
+	        if (checkRoad("y", x, y, i + 1, y - 1)) {
+	          connectRoad("y", x, y, i + 1, y - 1);
+	        }
+	      }
+	    }
+	    for (let i = y + 1; i < map.mapsize.y; i++) {
+	      if (townmap[x][i] === "road") {
+	        if (checkRoad("y", x, y, y + 1, i - 1)) {
+	          connectRoad("y", x, y, y + 1, i - 1);
+	        }
+	      }
+	    }
+	  });
+	  clearUnconnectRoad(townmap);
+	  printMap(townmap);
+	  return townmap;
+	}
+	function Distance(start, goal) {
+	  return Math.abs(start.x - start.x) + Math.abs(goal.y - goal.y);
+	}
+	function outOfMap(x, y, map) {
+	  return x < 0 || y < 0 || x >= map.length || y >= map[x].length;
+	}
+	function UnconnectRoad(x, y, map) {
+	  const directions = [
+	    [-1, 0],
+	    [1, 0],
+	    [0, -1],
+	    [0, 1]
+	  ];
+	  let i = 0;
+	  directions.forEach((dir) => {
+	    if (outOfMap(x + dir[0], y + dir[1], map)) ; else if (!groupmatch(map[x + dir[0]][y + dir[1]], "", "."))
+	      i++;
+	  });
+	  return i === 0;
+	}
+	function clearUnconnectRoad(map) {
+	  for (let x = 0; x < map.length; x++) {
+	    for (let y = 0; y < map[x].length; y++) {
+	      if (map[x][y] === "road") {
+	        if (UnconnectRoad(x, y, map)) {
+	          map[x][y] = "";
+	        }
+	      }
+	    }
+	  }
+	  return map;
+	}
+	function isConnected(pos1, pos2, map) {
+	  const x1 = pos1.x, y1 = pos1.y, x2 = pos2.x, y2 = pos2.y;
+	  if (x1 === x2 && y1 === y2)
+	    return true;
+	  if (x1 === x2) {
+	    if (y1 > y2) {
+	      for (let i = y2; i <= y1; i++) {
+	        if (groupmatch(map[x1][i], "", ".") || map[x1][i].has("unpassable"))
+	          return false;
+	      }
+	    } else {
+	      for (let i = y1; i <= y2; i++) {
+	        if (groupmatch(map[x1][i], "", ".") || map[x1][i].has("unpassable"))
+	          return false;
+	      }
+	    }
+	  } else if (y1 === y2) {
+	    if (x1 > x2) {
+	      for (let i = x2; i <= x1; i++) {
+	        if (groupmatch(map[i][y1], "", ".") || map[x1][i].has("unpassable"))
+	          return false;
+	      }
+	    } else {
+	      for (let i = x1; i <= x2; i++) {
+	        if (groupmatch(map[i][y1], "", ".") || map[x1][i].has("unpassable"))
+	          return false;
+	      }
+	    }
+	  } else {
+	    return Distance(pos1, pos2) === 1;
+	  }
+	  return true;
+	}
+	function findPath(mapdata, startPoint, goalPoint) {
+	  const queue = [];
+	  const visited = /* @__PURE__ */ new Set();
+	  const directions = [
+	    [-1, 0],
+	    [1, 0],
+	    [0, -1],
+	    [0, 1]
+	  ];
+	  queue.push({ x: startPoint.x, y: startPoint.y, path: [], from: null });
+	  visited.add(startPoint);
+	  while (queue.length > 0) {
+	    const current = queue.shift();
+	    if (current.x === goalPoint.x && current.y === goalPoint.y) {
+	      return current.path;
+	    }
+	    for (const dir of directions) {
+	      const x = current.x + dir[0];
+	      const y = current.y + dir[1];
+	      if (x < 0 || y < 0 || x >= mapdata.length || y >= mapdata[0].length) {
+	        continue;
+	      }
+	      if (mapdata[x][y].has("unpassable"))
+	        continue;
+	      if (!mapdata[x][y].has(moveableTile) && x != goalPoint.x && y != goalPoint.y)
+	        continue;
+	      if (!isConnected({ x: current.x, y: current.y }, { x, y }, mapdata))
+	        continue;
+	      if (visited.has(`${x},${y}`)) {
+	        continue;
+	      }
+	      if (current.from !== null && current.from[0] === -dir[0] && current.from[1] === -dir[1])
+	        continue;
+	      visited.add(`${x},${y}`);
+	      queue.push({ x, y, path: current.path.concat([[x, y]]), from: dir });
+	    }
+	  }
+	  return null;
+	}
+	function printPath(mapdata, path) {
+	  const map = mapdata.map((row) => row.map((cell) => " "));
+	  path.forEach((point) => {
+	    map[point[0]][point[1]] = "x";
+	  });
+	  map.forEach((row) => console.log(row.join("")));
+	}
+	Object.defineProperties(window, {
+	  GenerateMap: { value: GenerateMap },
+	  GenerateSpot: { value: GenerateSpot },
+	  findPath: { value: findPath },
+	  printPath: { value: printPath }
+	});
+
 	class Maps {
+	  static get(type, mapId, ...args) {
+	    const data = worldMap[mapId];
+	    if (type == "pos") {
+	      return data.spots.get(args[0])[0];
+	    }
+	    if (type == "spots") {
+	      return data.spots.get(args[0]);
+	    }
+	    if (data[type]) {
+	      return data[type];
+	    }
+	  }
+	  static getBoard(mapId) {
+	    const data = worldMap[mapId];
+	    return mapdataToBoard(data.mapdata, data.mapsize.x, data.mapsize.y);
+	  }
+	  static convertData(mapdata) {
+	    return boardToMapdata(mapdata);
+	  }
+	  static print(map) {
+	    printMap(map);
+	  }
 	  constructor(name, type) {
 	    this.name = name;
 	    this.type = type;
@@ -2125,11 +2421,13 @@ Object.defineProperty(String.prototype, "readBracketedList", {
 	  }
 	  Gerenate() {
 	    const rawdata = GenerateMap(this);
-	    this.mapdata = compressMapData(rawdata);
+	    this.mapdata = boardToMapdata(rawdata);
 	    return this;
 	  }
+	  Console() {
+	    printMapFromData(this);
+	  }
 	}
-	Maps.data = {};
 	class townMap extends Maps {
 	  constructor(mapid, groupid, name, entry, mapsizeX = 33, mapsizeY = 33) {
 	    super(name, "town");
@@ -2199,144 +2497,34 @@ Object.defineProperty(String.prototype, "readBracketedList", {
 	    return Array.from(new Set(objects));
 	  }
 	}
-	function GenerateMap(map) {
-	  const townmap = new Array(map.mapsize.x).fill(0).map(() => new Array(map.mapsize.y).fill(""));
-	  const spots = Array.from(map.spots);
-	  spots.sort((a, b) => {
-	    if (a[1][0].x === b[1][0].x) {
-	      return a[1][0].y - b[1][0].y;
-	    }
-	    return a[1][0].x - b[1][0].x;
-	  });
-	  spots.forEach((location2) => {
-	    const pos = location2[1][0];
-	    townmap[pos.x][pos.y] = location2[0];
-	  });
-	  const road = [];
-	  const setRoad = (x, y, side) => {
-	    if (x < 0 || y < 0 || x >= map.mapsize.x || y >= map.mapsize.y)
-	      return;
-	    if (townmap[x][y] === "") {
-	      townmap[x][y] = "road";
-	      road.push([side, x, y]);
-	    }
-	  };
-	  spots.forEach((location2) => {
-	    const pos = location2[1][0];
-	    const side = location2[1][1];
-	    side.split("").forEach((s) => {
-	      switch (s) {
-	        case "W":
-	        case "w":
-	          setRoad(pos.x, pos.y - 1, "W");
-	          break;
-	        case "E":
-	        case "e":
-	          setRoad(pos.x, pos.y + 1, "E");
-	          break;
-	        case "S":
-	        case "s":
-	          setRoad(pos.x + 1, pos.y, "S");
-	          break;
-	        case "N":
-	        case "n":
-	          setRoad(pos.x - 1, pos.y, "N");
-	          break;
+	function boardToMapdata(mapData) {
+	  var map = {};
+	  for (var x = 0; x < mapData.length; x++) {
+	    for (var y = 0; y < mapData[x].length; y++) {
+	      if (mapData[x][y] != "") {
+	        if (map[mapData[x][y]] == void 0) {
+	          map[mapData[x][y]] = [];
+	        }
+	        map[mapData[x][y]].push([x, y]);
 	      }
+	    }
+	  }
+	  return map;
+	}
+	function mapdataToBoard(map, xsize, ysize) {
+	  var mapData = [];
+	  for (var i = 0; i < xsize; i++) {
+	    mapData[i] = [];
+	    for (var j = 0; j < ysize; j++) {
+	      mapData[i][j] = "";
+	    }
+	  }
+	  for (var key in map) {
+	    map[key].forEach((value) => {
+	      mapData[value[0]][value[1]] = key;
 	    });
-	  });
-	  const checkRoad = (side, x, y, start, end) => {
-	    if (x < 0 || y < 0 || x >= map.mapsize.x || y >= map.mapsize.y)
-	      return false;
-	    if (side == "x") {
-	      for (let i = start; i <= end; i++) {
-	        if (townmap[i][y] !== "" && townmap[i][y] !== "road")
-	          return false;
-	      }
-	    }
-	    if (side == "y") {
-	      for (let i = start; i <= end; i++) {
-	        if (townmap[x][i] !== "" && townmap[x][i] !== "road")
-	          return false;
-	      }
-	    }
-	    return true;
-	  };
-	  const isRoad = (x, y) => {
-	    if (x < 0 || y < 0 || x >= map.mapsize.x || y >= map.mapsize.y)
-	      return false;
-	    return townmap[x][y] === "road";
-	  };
-	  const hasRoadAround = (side, x, y) => {
-	    if (x < 0 || y < 0 || x >= map.mapsize.x || y >= map.mapsize.y)
-	      return false;
-	    if (side == "x" && isRoad(x, y - 1) && isRoad(x - 1, y - 1) && isRoad(x - 2, y - 1))
-	      return true;
-	    if (side == "x" && isRoad(x, y + 1) && isRoad(x - 1, y + 1) && isRoad(x - 2, y + 1))
-	      return true;
-	    if (side == "y" && isRoad(x - 1, y) && isRoad(x - 1, y - 1) && isRoad(x - 1, y - 2))
-	      return true;
-	    if (side == "y" && isRoad(x + 1, y) && isRoad(x + 1, y - 1) && isRoad(x + 1, y - 2))
-	      return true;
-	    return false;
-	  };
-	  const connectRoad = (side, x, y, start, end) => {
-	    if (side == "x") {
-	      for (let i = start; i <= end; i++) {
-	        if (townmap[i][y] === "") {
-	          if (hasRoadAround(side, i, y))
-	            continue;
-	          townmap[i][y] = "road";
-	        }
-	      }
-	    }
-	    if (side == "y") {
-	      for (let i = start; i <= end; i++) {
-	        if (townmap[x][i] === "") {
-	          if (hasRoadAround(side, x, i))
-	            continue;
-	          townmap[x][i] = "road";
-	        }
-	      }
-	    }
-	  };
-	  road.forEach((road2) => {
-	    const x = road2[1];
-	    const y = road2[2];
-	    const side = road2[0];
-	    if (side == "N" || side == "S") {
-	      for (let i = x - 1; i >= 0; i--) {
-	        if (townmap[i][y] === "road") {
-	          if (checkRoad("x", x, y, i + 1, x - 1)) {
-	            connectRoad("x", x, y, i + 1, x - 1);
-	          }
-	        }
-	      }
-	      for (let i = x + 1; i < map.mapsize.x; i++) {
-	        if (townmap[i][y] === "road") {
-	          if (checkRoad("x", x, y, x + 1, i - 1)) {
-	            connectRoad("x", x, y, x + 1, i - 1);
-	          }
-	        }
-	      }
-	    }
-	    for (let i = y - 1; i >= 0; i--) {
-	      if (townmap[x][i] === "road") {
-	        if (checkRoad("y", x, y, i + 1, y - 1)) {
-	          connectRoad("y", x, y, i + 1, y - 1);
-	        }
-	      }
-	    }
-	    for (let i = y + 1; i < map.mapsize.y; i++) {
-	      if (townmap[x][i] === "road") {
-	        if (checkRoad("y", x, y, y + 1, i - 1)) {
-	          connectRoad("y", x, y, y + 1, i - 1);
-	        }
-	      }
-	    }
-	  });
-	  printMap(townmap);
-	  return townmap;
+	  }
+	  return mapData;
 	}
 	function printMap(map) {
 	  const printmap = [];
@@ -2355,297 +2543,346 @@ Object.defineProperty(String.prototype, "readBracketedList", {
 	  console.log(printmap.join("\n"));
 	}
 	function printMapFromData(map) {
-	  const mapdata = mapToMapData(map.mapdata, map.mapsize.x, map.mapsize.y);
+	  const mapdata = mapdataToBoard(map, map.mapsize.x, map.mapsize.y);
 	  printMap(mapdata);
 	}
-	function Distance(pos1, pos2) {
-	  return Math.abs(pos1.x - pos2.x) + Math.abs(pos1.y - pos2.y);
-	}
-	function DistanceByMap(pos1, pos2, map) {
-	  const road = [];
-	  for (let i = 0; i < map.length; i++) {
-	    for (let j = 0; j < map[i].length; j++) {
-	      if (map[i][j] === "road")
-	        road.push({ x: i, y: j });
-	    }
-	  }
-	  const roadDistance = road.map((road2) => {
-	    return Distance(pos1, road2) + Distance(pos2, road2);
-	  });
-	  return Math.min(...roadDistance);
-	}
-	function compressMapData(mapData) {
-	  var map = {};
-	  for (var i = 0; i < mapData.length; i++) {
-	    for (var j = 0; j < mapData[i].length; j++) {
-	      if (mapData[i][j] != "") {
-	        if (map[mapData[i][j]] == void 0) {
-	          map[mapData[i][j]] = [];
-	        }
-	        map[mapData[i][j]].push([j, i]);
-	      }
-	    }
-	  }
-	  return map;
-	}
-	function mapToMapData(map, xsize, ysize) {
-	  var mapData = [];
-	  for (var i = 0; i < xsize; i++) {
-	    mapData[i] = [];
-	    for (var j = 0; j < ysize; j++) {
-	      mapData[i][j] = "";
-	    }
-	  }
-	  for (var key in map) {
-	    for (var i = 0; i < map[key].length; i++) {
-	      mapData[map[key][i][1]][map[key][i][0]] = key;
-	    }
-	  }
-	  return mapData;
-	}
 	Object.defineProperties(window, {
-	  Maps: { value: Maps },
-	  Distance: { value: Distance },
-	  TownMap: { value: townMap },
-	  Locations: { value: location },
-	  GenerateMap: { value: GenerateMap },
-	  DistanceByMap: { value: DistanceByMap },
-	  printMap: { value: printMap },
-	  compressMapData: { value: compressMapData },
-	  mapToMapData: { value: mapToMapData },
-	  printMapFromData: { value: printMapFromData }
+	  Maps: {
+	    get() {
+	      return Maps;
+	    }
+	  },
+	  TownMap: {
+	    get() {
+	      return townMap;
+	    }
+	  },
+	  Locations: {
+	    get() {
+	      return Location;
+	    }
+	  }
 	});
 
-	const worldMap = {
+	const worldMap$1 = {
 	  Orlania: new townMap("Orlania", "", ["\u5965\u5170\u5C3C\u4E9A"], ["GateNorth", "GateSouth", "GateWest", "GateEast"], 35, 35),
-	  MagicaAcademy: new townMap("MagicaAcademy", "Orlania", ["\u7B2C\u4E00\u9B54\u6CD5\u5B66\u9662"], ["SchoolGate"], 5, 25)
+	  MagicaAcademy: new townMap("MagicaAcademy", "Orlania", ["\u7B2C\u4E00\u9B54\u6CD5\u5B66\u9662"], ["SchoolGate"], 7, 25)
 	};
-	worldMap.Orlania.Spots(
-	  ["OutskirtsNorth", -17, 0, "S"],
-	  ["OutskirtsSouth", 17, 0, "N"],
-	  ["OutskirtsWest", 0, -17, "E"],
-	  ["OutskirtsEast", 0, 17, "W"],
-	  ["GateNorth", -15, 0, "S"],
-	  ["GateSouth", 15, 0, "N"],
-	  ["GateWest", 0, -15, "E"],
-	  ["GateEast", 0, 15, "W"],
-	  ["TownCenter", 0, 0, "SNWE"],
-	  ["CenterSquare", 2, 0, "SN"],
+	worldMap$1.Orlania.Spots(
+	  ["OutskirtsNorth|field", -17, 0, "S"],
+	  ["OutskirtsSouth|field", 17, 0, "N"],
+	  ["OutskirtsWest|field", 0, -17, "E"],
+	  ["OutskirtsEast|field", 0, 17, "W"],
+	  ["GateNorth|passable", -15, 0, "S"],
+	  ["GateSouth|passable", 15, 0, "N"],
+	  ["GateWest|passable", 0, -15, "E"],
+	  ["GateEast|passable", 0, 15, "W"],
+	  ["TownCenter|passable", 0, 0, "SNWE"],
+	  ["CenterSquare|passable", 2, 0, "SN"],
 	  ["MagicaAcademy", -11, 8, "SW"],
 	  ["Hospital", -9, 3, "W"],
-	  ["ShopAlley", 11, -4, "E"],
+	  ["ShopAlley|passable", 11, -4, "E"],
 	  ["BathHouse", 9, -4, "EN"],
 	  ["Aquarium", 12, 13, "N"],
 	  ["ArtGallery", -8, 8, "WNS"],
 	  ["Church", -12, 4, "E"],
 	  ["BlackCat", -10, 8, "W"],
 	  ["OperaHouse", -6, 11, "S"],
-	  ["BairdTrading", -4, -11, "SN"],
+	  ["BairdTrading|passable", -4, -11, "SN"],
 	  ["SliverChimes", -4, -8, "N"],
 	  ["CentaurBar", -6, -8, "N"]
 	);
-	worldMap.MagicaAcademy.Spots(
-	  ["SchoolEntrance", 0, -12, "WEN"],
-	  ["MageTower", -2, -12, "S"],
-	  ["ClassBuildingR1", 1, -8, "N"],
-	  ["ClassBuildingR2", -1, -6, "S"],
-	  ["ResearchLabA", 1, -4, "N"],
-	  ["ResearchLabB", -1, -2, "S"],
-	  ["Library", 1, 0, "N"],
-	  ["Arena", -2, 1, "S"],
-	  ["HistoryMuseum", 1, 3, "N"],
-	  ["DiningHall", -1, 5, "S"],
-	  ["GreenGarden", 1, 8, "N"],
-	  ["StudentCenter", 2, 10, "N"],
-	  ["Dormitory", 0, 12, "WE"]
+	worldMap$1.MagicaAcademy.Spots(
+	  ["MageTower", -3, -12, "S"],
+	  ["SchoolEntrance|passable", 0, -12, "EN"],
+	  ["ActivitySquare|passable", 0, -10, "SNWE"],
+	  ["ClassBuildingR1|passable", 3, -8, "N"],
+	  ["ClassBuildingR2|passable", -3, -8, "S"],
+	  ["ResearchLabA", 2, -5, "WSN"],
+	  ["ResearchLabB", -2, -5, "WSN"],
+	  ["Library|passable", 2, -2, "SN"],
+	  ["Arena|passable", -2, 1, "SNWE"],
+	  ["HistoryMuseum", 2, 2, "N"],
+	  ["DiningHall", 2, 10, "N"],
+	  ["GreenGarden|passable", -2, -2, "SN"],
+	  ["StudentCenter", -2, 7, "S"],
+	  ["Dormitory", 0, 12, "W"]
 	);
 	Object.defineProperties(window, {
-	  worldMap: { get: () => worldMap }
+	  worldMap: { get: () => worldMap$1 }
 	});
-	worldMap.Orlania.mapdata = {
-	  OutskirtsNorth: [[17, 0]],
+	worldMap$1.Orlania.mapdata = {
+	  OutskirtsNorth: [[0, 17]],
 	  road: [
+	    [1, 17],
+	    [3, 17],
+	    [4, 17],
+	    [5, 17],
+	    [5, 22],
+	    [6, 17],
+	    [6, 18],
+	    [6, 19],
+	    [6, 20],
+	    [6, 21],
+	    [6, 22],
+	    [6, 23],
+	    [6, 24],
+	    [7, 17],
+	    [7, 24],
+	    [8, 17],
+	    [8, 24],
+	    [8, 25],
+	    [9, 17],
+	    [9, 20],
+	    [9, 21],
+	    [9, 22],
+	    [9, 23],
+	    [9, 24],
+	    [10, 10],
+	    [10, 11],
+	    [10, 12],
+	    [10, 13],
+	    [10, 14],
+	    [10, 15],
+	    [10, 16],
+	    [10, 17],
+	    [10, 18],
+	    [10, 19],
+	    [10, 20],
+	    [10, 21],
+	    [10, 24],
+	    [10, 25],
+	    [11, 10],
+	    [11, 17],
+	    [11, 25],
+	    [12, 5],
+	    [12, 6],
+	    [12, 7],
+	    [12, 9],
+	    [12, 10],
+	    [12, 17],
+	    [12, 18],
+	    [12, 19],
+	    [12, 20],
+	    [12, 21],
+	    [12, 22],
+	    [12, 23],
+	    [12, 24],
+	    [12, 25],
+	    [12, 26],
+	    [12, 27],
+	    [12, 28],
+	    [13, 5],
+	    [13, 7],
+	    [13, 10],
+	    [13, 17],
+	    [14, 5],
+	    [14, 6],
+	    [14, 7],
+	    [14, 8],
+	    [14, 9],
+	    [14, 10],
+	    [14, 11],
+	    [14, 12],
+	    [14, 13],
+	    [14, 14],
+	    [14, 15],
+	    [14, 16],
+	    [14, 17],
+	    [15, 8],
+	    [15, 17],
+	    [16, 8],
+	    [16, 16],
+	    [16, 17],
+	    [16, 18],
 	    [17, 1],
 	    [17, 3],
 	    [17, 4],
 	    [17, 5],
 	    [17, 6],
-	    [18, 6],
-	    [19, 6],
-	    [20, 6],
-	    [21, 6],
-	    [22, 6],
-	    [23, 6],
-	    [24, 6],
 	    [17, 7],
-	    [21, 7],
-	    [24, 7],
 	    [17, 8],
-	    [21, 8],
-	    [24, 8],
 	    [17, 9],
-	    [20, 9],
-	    [21, 9],
-	    [22, 9],
-	    [23, 9],
-	    [24, 9],
-	    [10, 10],
-	    [11, 10],
-	    [12, 10],
-	    [13, 10],
-	    [14, 10],
-	    [15, 10],
-	    [16, 10],
 	    [17, 10],
-	    [18, 10],
-	    [19, 10],
-	    [20, 10],
-	    [25, 10],
-	    [10, 11],
 	    [17, 11],
-	    [25, 11],
-	    [5, 12],
-	    [6, 12],
-	    [7, 12],
-	    [10, 12],
 	    [17, 12],
-	    [18, 12],
-	    [19, 12],
-	    [20, 12],
-	    [21, 12],
-	    [22, 12],
-	    [23, 12],
-	    [24, 12],
-	    [25, 12],
-	    [26, 12],
-	    [27, 12],
-	    [28, 12],
-	    [5, 13],
-	    [7, 13],
-	    [10, 13],
-	    [13, 13],
-	    [14, 13],
-	    [15, 13],
-	    [16, 13],
 	    [17, 13],
-	    [5, 14],
-	    [6, 14],
-	    [7, 14],
-	    [8, 14],
-	    [9, 14],
-	    [10, 14],
-	    [11, 14],
-	    [12, 14],
-	    [13, 14],
 	    [17, 14],
 	    [17, 15],
 	    [17, 16],
-	    [1, 17],
-	    [3, 17],
-	    [4, 17],
-	    [5, 17],
-	    [6, 17],
-	    [7, 17],
-	    [8, 17],
-	    [9, 17],
-	    [10, 17],
-	    [11, 17],
-	    [12, 17],
-	    [13, 17],
-	    [14, 17],
-	    [15, 17],
-	    [16, 17],
-	    [18, 17],
-	    [19, 17],
-	    [20, 17],
-	    [21, 17],
-	    [22, 17],
-	    [23, 17],
-	    [24, 17],
-	    [25, 17],
-	    [26, 17],
-	    [27, 17],
-	    [28, 17],
-	    [29, 17],
-	    [30, 17],
-	    [31, 17],
-	    [33, 17],
-	    [13, 18],
 	    [17, 18],
-	    [30, 18],
-	    [13, 19],
-	    [30, 19],
-	    [13, 20],
+	    [17, 19],
 	    [17, 20],
-	    [30, 20],
-	    [13, 21],
 	    [17, 21],
-	    [30, 21],
-	    [13, 22],
 	    [17, 22],
-	    [30, 22],
-	    [13, 23],
 	    [17, 23],
-	    [30, 23],
-	    [13, 24],
 	    [17, 24],
-	    [30, 24],
-	    [13, 25],
-	    [14, 25],
 	    [17, 25],
-	    [30, 25],
-	    [14, 26],
 	    [17, 26],
-	    [30, 26],
-	    [13, 27],
-	    [14, 27],
 	    [17, 27],
-	    [30, 27],
-	    [14, 28],
-	    [15, 28],
-	    [16, 28],
 	    [17, 28],
-	    [18, 28],
-	    [19, 28],
-	    [20, 28],
-	    [21, 28],
-	    [22, 28],
-	    [23, 28],
-	    [24, 28],
-	    [25, 28],
-	    [26, 28],
-	    [27, 28],
-	    [28, 28],
-	    [29, 28],
-	    [30, 28],
 	    [17, 29],
 	    [17, 30],
 	    [17, 31],
-	    [17, 33]
+	    [17, 33],
+	    [18, 12],
+	    [18, 16],
+	    [18, 17],
+	    [18, 18],
+	    [18, 30],
+	    [19, 12],
+	    [19, 16],
+	    [19, 18],
+	    [19, 30],
+	    [20, 12],
+	    [20, 16],
+	    [20, 17],
+	    [20, 18],
+	    [20, 30],
+	    [21, 12],
+	    [21, 17],
+	    [21, 30],
+	    [22, 12],
+	    [22, 17],
+	    [22, 30],
+	    [23, 12],
+	    [23, 17],
+	    [23, 30],
+	    [24, 12],
+	    [24, 17],
+	    [24, 30],
+	    [25, 12],
+	    [25, 17],
+	    [25, 30],
+	    [26, 12],
+	    [26, 14],
+	    [26, 17],
+	    [26, 30],
+	    [27, 12],
+	    [27, 13],
+	    [27, 14],
+	    [27, 17],
+	    [27, 30],
+	    [28, 12],
+	    [28, 14],
+	    [28, 15],
+	    [28, 16],
+	    [28, 17],
+	    [28, 18],
+	    [28, 19],
+	    [28, 20],
+	    [28, 21],
+	    [28, 22],
+	    [28, 23],
+	    [28, 24],
+	    [28, 25],
+	    [28, 26],
+	    [28, 27],
+	    [28, 28],
+	    [28, 29],
+	    [28, 30],
+	    [29, 17],
+	    [30, 17],
+	    [31, 17],
+	    [33, 17]
 	  ],
-	  GateNorth: [[17, 2]],
-	  Church: [[21, 5]],
-	  MagicaAcademy: [[25, 6]],
-	  BlackCat: [[25, 7]],
-	  Hospital: [[20, 8]],
-	  ArtGallery: [[25, 9]],
-	  CentaurBar: [[9, 11]],
-	  OperaHouse: [[28, 11]],
-	  BairdTrading: [[6, 13]],
-	  SliverChimes: [[9, 13]],
-	  OutskirtsWest: [[0, 17]],
-	  GateWest: [[2, 17]],
+	  GateNorth: [[2, 17]],
+	  Church: [[5, 21]],
+	  MagicaAcademy: [[6, 25]],
+	  BlackCat: [[7, 25]],
+	  Hospital: [[8, 20]],
+	  ArtGallery: [[9, 25]],
+	  CentaurBar: [[11, 9]],
+	  OperaHouse: [[11, 28]],
+	  BairdTrading: [[13, 6]],
+	  SliverChimes: [[13, 9]],
+	  OutskirtsWest: [[17, 0]],
+	  GateWest: [[17, 2]],
 	  TownCenter: [[17, 17]],
-	  GateEast: [[32, 17]],
-	  OutskirtsEast: [[34, 17]],
-	  CenterSquare: [[17, 19]],
-	  BathHouse: [[13, 26]],
-	  ShopAlley: [[13, 28]],
-	  Aquarium: [[30, 29]],
-	  GateSouth: [[17, 32]],
-	  OutskirtsSouth: [[17, 34]]
+	  GateEast: [[17, 32]],
+	  OutskirtsEast: [[17, 34]],
+	  CenterSquare: [[19, 17]],
+	  BathHouse: [[26, 13]],
+	  ShopAlley: [[28, 13]],
+	  Aquarium: [[29, 30]],
+	  GateSouth: [[32, 17]],
+	  OutskirtsSouth: [[34, 17]]
 	};
-	worldMap.MagicaAcademy.mapdata = compressMapData(GenerateMap(worldMap.MagicaAcademy));
+	worldMap$1.MagicaAcademy.mapdata = {
+	  MageTower: [[0, 0]],
+	  "ClassBuildingR2|passable": [[0, 4]],
+	  road: [
+	    [0, 7],
+	    [0, 8],
+	    [0, 9],
+	    [0, 10],
+	    [0, 12],
+	    [0, 13],
+	    [0, 14],
+	    [1, 0],
+	    [1, 4],
+	    [1, 5],
+	    [1, 6],
+	    [1, 12],
+	    [1, 14],
+	    [2, 0],
+	    [2, 2],
+	    [2, 3],
+	    [2, 6],
+	    [2, 7],
+	    [2, 10],
+	    [2, 12],
+	    [2, 13],
+	    [2, 14],
+	    [2, 19],
+	    [3, 1],
+	    [3, 3],
+	    [3, 4],
+	    [3, 5],
+	    [3, 6],
+	    [3, 10],
+	    [3, 13],
+	    [3, 18],
+	    [3, 19],
+	    [3, 20],
+	    [3, 21],
+	    [3, 22],
+	    [3, 23],
+	    [4, 2],
+	    [4, 3],
+	    [4, 6],
+	    [4, 7],
+	    [4, 10],
+	    [4, 11],
+	    [4, 12],
+	    [4, 13],
+	    [4, 14],
+	    [4, 15],
+	    [4, 16],
+	    [4, 17],
+	    [4, 18],
+	    [4, 22],
+	    [5, 4],
+	    [5, 5],
+	    [5, 6],
+	    [6, 7],
+	    [6, 8],
+	    [6, 9],
+	    [6, 10]
+	  ],
+	  ResearchLabB: [[1, 7]],
+	  "GreenGarden|passable": [[1, 10]],
+	  "Arena|passable": [[1, 13]],
+	  StudentCenter: [[1, 19]],
+	  "SchoolEntrance|passable": [[3, 0]],
+	  "ActivitySquare|passable": [[3, 2]],
+	  Dormitory: [[3, 24]],
+	  ResearchLabA: [[5, 7]],
+	  "Library|passable": [[5, 10]],
+	  HistoryMuseum: [[5, 14]],
+	  DiningHall: [[5, 22]],
+	  "ClassBuildingR1|passable": [[6, 4]]
+	};
 	new location("SchoolEntrance", ["\u5B66\u9662\u5165\u53E3"], "MagicaAcademy", "\u5BA4\u5916").Railcar().Tags("\u516C\u5171\u573A\u6240", "\u4EA4\u901A", "\u5149\u4EAE\u5904", "\u5F00\u9614").Placement("\u79FB\u52A8\u644A\u4F4D");
 
 	window.database = {};
@@ -10436,12 +10673,84 @@ window.generateMapField = function (grid) {
 		$(this).html(grid[row][col]);
 		$(this).removeClass("fillcell");
 
-		$("#currentpos").html(`当前位置： X${row - Math.floor(T.mapsizeX / 2)}, Y${col - Math.floor(T.mapsizeY / 2)}`);
+		$("#currentpos").html(
+			`当前位置： X${row - Math.floor(T.mapsizeX / 2)}, Y${
+				col - Math.floor(T.mapsizeY / 2)
+			} 绝对坐标： X${row}, Y${col}`
+		);
 
 		if (grid[row][col] !== ".") {
 			$(this).addClass("fillcell");
 		}
 	});
+};
+
+window.saveMapConfig = function () {
+	const direction = [
+		[0, 1, "E"],
+		[0, -1, "W"],
+		[1, 0, "S"],
+		[-1, 0, "N"],
+	];
+	let raw = Maps.convertData(T.mapdata);
+	delete raw["."]; // remove empty space
+	delete raw["road"]; // remove road
+	let arr = [];
+
+	const checkRoad = (key, x, y) => {
+		let result = "";
+		direction.forEach(([dx, dy, dir]) => {
+			if (x + dx < 0 || y + dy < 0 || x + dx >= T.mapsizeX || y + dy >= T.mapsizeY) {
+			} else if (T.mapdata[x + dx][y + dy] == "road") {
+				result += dir;
+			}
+			console.log(key, "x", x + dx, "y", y + dy, dir);
+		});
+		return result;
+	};
+
+	//先排个序，保证从左到右，从上到下
+	let sorted = Object.keys(raw).sort((a, b) => {
+		let [ax, ay] = raw[a][0];
+		let [bx, by] = raw[b][0];
+		if (ay == by) {
+			return ax - bx;
+		} else {
+			return ay - by;
+		}
+	});
+
+	sorted.forEach((key) => {
+		let side = "",
+			x,
+			y;
+		if (raw[key].length == 1) {
+			x = raw[key][0][0];
+			y = raw[key][0][1];
+			side = checkRoad(key, x, y);
+
+			x = x - Math.floor(T.mapsizeX / 2);
+			y = y - Math.floor(T.mapsizeY / 2);
+			arr.push([key, x, y, side]);
+		} else {
+			raw[key].forEach(([x, y], i) => {
+				side = checkRoad(key, x, y);
+				x = x - Math.floor(T.mapsizeX / 2);
+				y = y - Math.floor(T.mapsizeY / 2);
+				arr.push([key, x, y, side]);
+			});
+		}
+	});
+
+	arr = JSON.stringify(arr);
+	//去掉开头和结尾的中括号
+	arr = arr.slice(1, -1);
+	//换行
+	arr = arr.split("],").join("],\n");
+
+	let data = `worldMap['${T.selectMap}'].Spots(\n${arr}\n)`;
+
+	download(data, T.selectMap, "txt");
 };
 /* twine-user-script #56: "textProcessor.js" */
 /**
@@ -12679,6 +12988,33 @@ $(&#39;#listbox--condition&#39;).on(&#39;change&#39;,()=&gt;{
     &lt;&lt;listbox &quot;_selectMap&quot;&gt;&gt;
         &lt;&lt;optionsfrom _mapoptions&gt;&gt;
     &lt;&lt;/listbox&gt;&gt;
+
+    &lt;&lt;button &#39;读取地图&#39;&gt;&gt;
+    &lt;&lt;run
+        T.mapdata = Maps.getBoard(T.selectMap)
+        T.mapsizeX = T.mapdata.length
+        T.mapsizeY = T.mapdata[0].length
+        generateMapField(T.mapdata)
+    &gt;&gt;
+    &lt;&lt;/button&gt;&gt;
+    
+    &lt;&lt;button &#39;从源档案新建&#39;&gt;&gt;
+    &lt;&lt;run
+        T.mapdata = GenerateMap(worldMap[T.selectMap])
+        T.mapsizeX = T.mapdata.length
+        T.mapsizeY = T.mapdata[0].length
+        generateMapField(T.mapdata)    
+    &gt;&gt;
+    &lt;&lt;/button&gt;&gt;
+
+    &lt;&lt;button &#39;读取源档案&#39;&gt;&gt;
+    &lt;&lt;run
+        T.mapdata = GenerateSpot(worldMap[T.selectMap])[0]
+        T.mapsizeX = T.mapdata.length
+        T.mapsizeY = T.mapdata[0].length
+        generateMapField(T.mapdata)    
+    &gt;&gt;
+    &lt;&lt;/button&gt;&gt;
     &lt;/div&gt;
     &lt;div&gt;
     新建地图：
@@ -12695,11 +13031,17 @@ $(&#39;#listbox--condition&#39;).on(&#39;change&#39;,()=&gt;{
     &lt;&lt;checkbox &#39;_destroymode&#39; 0 1 autocheck&gt;&gt;
     &lt;/div&gt;
     &lt;div&gt;
-    保存地图：
-    &lt;&lt;button &#39;save&#39;&gt;&gt;
+    &lt;&lt;button &#39;保存地图&#39;&gt;&gt;
     &lt;&lt;run
-        let mapdata = compresMapData(T.mapdata)
+        let mapdata = Maps.convertData(T.mapdata)
+        delete mapdata[&#39;.&#39;] // remove empty space
         download(JSON.stringify(mapdata), T.selectMap, &#39;txt&#39;)
+    &gt;&gt;
+    &lt;&lt;/button&gt;&gt;
+
+    &lt;&lt;button &#39;保存为设置文件&#39;&gt;&gt;
+    &lt;&lt;run
+        saveMapConfig()
     &gt;&gt;
     &lt;&lt;/button&gt;&gt;
     &lt;/div&gt;
@@ -12714,14 +13056,6 @@ $(&#39;#listbox--condition&#39;).on(&#39;change&#39;,()=&gt;{
 
 &lt;&lt;done&gt;&gt;
 &lt;&lt;script&gt;&gt;
-
-$(&#39;#listbox--selectmap&#39;).on(&#39;change&#39;,()=&gt;{
-    console.log(T.selectMap)
-    T.mapdata = GenerateMap(worldMap[T.selectMap])
-    T.mapsizeX = T.mapdata.length
-    T.mapsizeY = T.mapdata[0].length
-    generateMapField(T.mapdata)
-})
 
 $(&#39;#checkbox--destroymode&#39;).on(&#39;change&#39;,()=&gt;{
     if(T.placemode){

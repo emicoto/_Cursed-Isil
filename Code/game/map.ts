@@ -1,3 +1,4 @@
+import { GenerateMap } from "./MapPath";
 import { Dict, maptype, maptags, rarity, locationside } from "./types";
 
 export interface iPos {
@@ -68,9 +69,32 @@ export interface dungeonMap extends fieldMap {
 	puzzle?: Function;
 }
 
+declare const worldMap: typeof window.worldMap;
+
 // 地图基类
 export class Maps {
-	public static data: Dict<Maps> = {};
+	public static get(type, mapId, ...args) {
+		const data = worldMap[mapId];
+		if (type == "pos") {
+			return data.spots.get(args[0])[0];
+		}
+		if (type == "spots") {
+			return data.spots.get(args[0]);
+		}
+		if (data[type]) {
+			return data[type];
+		}
+	}
+	public static getBoard(mapId) {
+		const data = worldMap[mapId];
+		return mapdataToBoard(data.mapdata, data.mapsize.x, data.mapsize.y);
+	}
+	public static convertData(mapdata) {
+		return boardToMapdata(mapdata);
+	}
+	public static print(map: string[][]) {
+		printMap(map);
+	}
 	constructor(name: string[], type: maptype) {
 		this.name = name;
 		this.type = type;
@@ -107,8 +131,11 @@ export class Maps {
 	}
 	Gerenate() {
 		const rawdata = GenerateMap(this);
-		this.mapdata = compressMapData(rawdata);
+		this.mapdata = boardToMapdata(rawdata);
 		return this;
+	}
+	Console() {
+		printMapFromData(this);
 	}
 }
 
@@ -196,165 +223,37 @@ export class location extends Maps {
 	}
 }
 
-//根据各个地点的坐标，自动生成连接各地点之间的道路。
-export function GenerateMap(map: Maps) {
-	//初始化地图
-	const townmap = new Array(map.mapsize.x).fill(0).map(() => new Array(map.mapsize.y).fill(""));
-
-	//根据x,y坐标，整理个地点的坐标。首先按x坐标排序，从小到大。
-	//接着检查排序，如果y坐标相同，则按y坐标排序，从小到大。
-	const spots = Array.from(map.spots);
-
-	spots.sort((a, b) => {
-		if (a[1][0].x === b[1][0].x) {
-			return a[1][0].y - b[1][0].y;
-		}
-		return a[1][0].x - b[1][0].x;
-	});
-
-	//放置地点
-	spots.forEach((location) => {
-		const pos = location[1][0];
-		townmap[pos.x][pos.y] = location[0];
-	});
-
-	//先可通过方向，在地点前方放置道路。
-	//并且缓存道路的位置，以便后续的道路连接。
-	const road = [];
-	const setRoad = (x, y, side) => {
-		if (x < 0 || y < 0 || x >= map.mapsize.x || y >= map.mapsize.y) return;
-		if (townmap[x][y] === "") {
-			townmap[x][y] = "road";
-			road.push([side, x, y]);
-		}
-	};
-
-	spots.forEach((location) => {
-		const pos = location[1][0];
-		const side = location[1][1];
-
-		side.split("").forEach((s) => {
-			switch (s) {
-				case "W": //west
-				case "w":
-					setRoad(pos.x, pos.y - 1, "W");
-					break;
-				case "E": //east
-				case "e":
-					setRoad(pos.x, pos.y + 1, "E");
-					break;
-				case "S": //south
-				case "s":
-					setRoad(pos.x + 1, pos.y, "S");
-					break;
-				case "N": //north
-				case "n":
-					setRoad(pos.x - 1, pos.y, "N");
-					break;
+//将地图数组（棋盘）转换为地图对象
+function boardToMapdata(mapData) {
+	var map = {};
+	for (var x = 0; x < mapData.length; x++) {
+		for (var y = 0; y < mapData[x].length; y++) {
+			if (mapData[x][y] != "") {
+				if (map[mapData[x][y]] == undefined) {
+					map[mapData[x][y]] = [];
+				}
+				map[mapData[x][y]].push([x, y]);
 			}
+		}
+	}
+	return map;
+}
+
+//将地图对象转换为地图数组（棋盘）
+function mapdataToBoard(map, xsize, ysize) {
+	var mapData = [];
+	for (var i = 0; i < xsize; i++) {
+		mapData[i] = [];
+		for (var j = 0; j < ysize; j++) {
+			mapData[i][j] = "";
+		}
+	}
+	for (var key in map) {
+		map[key].forEach((value) => {
+			mapData[value[0]][value[1]] = key;
 		});
-	});
-
-	//检查两条路之间是否有障碍物，如果有，则不连通。
-	const checkRoad = (side, x, y, start, end) => {
-		if (x < 0 || y < 0 || x >= map.mapsize.x || y >= map.mapsize.y) return false;
-
-		if (side == "x") {
-			for (let i = start; i <= end; i++) {
-				if (townmap[i][y] !== "" && townmap[i][y] !== "road") return false;
-			}
-		}
-		if (side == "y") {
-			for (let i = start; i <= end; i++) {
-				if (townmap[x][i] !== "" && townmap[x][i] !== "road") return false;
-			}
-		}
-		return true;
-	};
-
-	const isRoad = (x, y) => {
-		if (x < 0 || y < 0 || x >= map.mapsize.x || y >= map.mapsize.y) return false;
-		return townmap[x][y] === "road";
-	};
-
-	//检查周围是否已经有路
-	const hasRoadAround = (side, x, y) => {
-		if (x < 0 || y < 0 || x >= map.mapsize.x || y >= map.mapsize.y) return false;
-
-		if (side == "x" && isRoad(x, y - 1) && isRoad(x - 1, y - 1) && isRoad(x - 2, y - 1)) return true;
-		if (side == "x" && isRoad(x, y + 1) && isRoad(x - 1, y + 1) && isRoad(x - 2, y + 1)) return true;
-		if (side == "y" && isRoad(x - 1, y) && isRoad(x - 1, y - 1) && isRoad(x - 1, y - 2)) return true;
-		if (side == "y" && isRoad(x + 1, y) && isRoad(x + 1, y - 1) && isRoad(x + 1, y - 2)) return true;
-		return false;
-	};
-
-	//连通道路
-	const connectRoad = (side, x, y, start, end) => {
-		if (side == "x") {
-			for (let i = start; i <= end; i++) {
-				if (townmap[i][y] === "") {
-					//检查周围是否已经有道路，如果有，则不连通。
-					if (hasRoadAround(side, i, y)) continue;
-
-					townmap[i][y] = "road";
-				}
-			}
-		}
-		if (side == "y") {
-			for (let i = start; i <= end; i++) {
-				if (townmap[x][i] === "") {
-					//检查周围是否已经有道路，如果有，则不连通。
-					if (hasRoadAround(side, x, i)) continue;
-					townmap[x][i] = "road";
-				}
-			}
-		}
-	};
-
-	//按照缓存的道路，连通道路
-	road.forEach((road) => {
-		const x = road[1];
-		const y = road[2];
-		const side = road[0];
-
-		if (side == "N" || side == "S") {
-			for (let i = x - 1; i >= 0; i--) {
-				if (townmap[i][y] === "road") {
-					if (checkRoad("x", x, y, i + 1, x - 1)) {
-						connectRoad("x", x, y, i + 1, x - 1);
-					}
-				}
-			}
-
-			for (let i = x + 1; i < map.mapsize.x; i++) {
-				if (townmap[i][y] === "road") {
-					if (checkRoad("x", x, y, x + 1, i - 1)) {
-						connectRoad("x", x, y, x + 1, i - 1);
-					}
-				}
-			}
-		}
-
-		for (let i = y - 1; i >= 0; i--) {
-			if (townmap[x][i] === "road") {
-				if (checkRoad("y", x, y, i + 1, y - 1)) {
-					connectRoad("y", x, y, i + 1, y - 1);
-				}
-			}
-		}
-		for (let i = y + 1; i < map.mapsize.y; i++) {
-			if (townmap[x][i] === "road") {
-				if (checkRoad("y", x, y, y + 1, i - 1)) {
-					connectRoad("y", x, y, y + 1, i - 1);
-				}
-			}
-		}
-	});
-
-	//打印地图
-	printMap(townmap);
-
-	return townmap;
+	}
+	return mapData;
 }
 
 export function printMap(map: string[][]) {
@@ -372,72 +271,25 @@ export function printMap(map: string[][]) {
 	console.log(printmap.join("\n"));
 }
 
-export function printMapFromData(map) {
-	const mapdata = mapToMapData(map.mapdata, map.mapsize.x, map.mapsize.y);
+function printMapFromData(map: Maps) {
+	const mapdata = mapdataToBoard(map, map.mapsize.x, map.mapsize.y);
 	printMap(mapdata);
 }
 
-//计算两个地点之间的移动距离
-export function Distance(pos1: iPos, pos2: iPos) {
-	return Math.abs(pos1.x - pos2.x) + Math.abs(pos1.y - pos2.y);
-}
-
-//根据两个地点的坐标，以及道路连接情况，计算两个地点之间的移动距离
-export function DistanceByMap(pos1: iPos, pos2: iPos, map: string[][]) {
-	const road = [];
-	for (let i = 0; i < map.length; i++) {
-		for (let j = 0; j < map[i].length; j++) {
-			if (map[i][j] === "road") road.push({ x: i, y: j });
-		}
-	}
-	const roadDistance = road.map((road) => {
-		return Distance(pos1, road) + Distance(pos2, road);
-	});
-	return Math.min(...roadDistance);
-}
-
-//将地图数据转换为地图对象
-export function compressMapData(mapData) {
-	var map = {};
-	for (var i = 0; i < mapData.length; i++) {
-		for (var j = 0; j < mapData[i].length; j++) {
-			if (mapData[i][j] != "") {
-				if (map[mapData[i][j]] == undefined) {
-					map[mapData[i][j]] = [];
-				}
-				map[mapData[i][j]].push([j, i]);
-			}
-		}
-	}
-	return map;
-}
-
-//将地图对象转换为地图数据
-export function mapToMapData(map, xsize, ysize) {
-	var mapData = [];
-	for (var i = 0; i < xsize; i++) {
-		mapData[i] = [];
-		for (var j = 0; j < ysize; j++) {
-			mapData[i][j] = "";
-		}
-	}
-	for (var key in map) {
-		for (var i = 0; i < map[key].length; i++) {
-			mapData[map[key][i][1]][map[key][i][0]] = key;
-		}
-	}
-	return mapData;
-}
-
 Object.defineProperties(window, {
-	Maps: { value: Maps },
-	Distance: { value: Distance },
-	TownMap: { value: townMap },
-	Locations: { value: location },
-	GenerateMap: { value: GenerateMap },
-	DistanceByMap: { value: DistanceByMap },
-	printMap: { value: printMap },
-	compressMapData: { value: compressMapData },
-	mapToMapData: { value: mapToMapData },
-	printMapFromData: { value: printMapFromData },
+	Maps: {
+		get() {
+			return Maps;
+		},
+	},
+	TownMap: {
+		get() {
+			return townMap;
+		},
+	},
+	Locations: {
+		get() {
+			return Location;
+		},
+	},
 });

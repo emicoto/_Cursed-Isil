@@ -1,0 +1,16 @@
+worldMap['MagicaAcademy'].Spots(
+["MageTower",-3,-12,"S"],
+["SchoolEntrance|passable",0,-12,"EN"],
+["ActivitySquare|passable",0,-10,"EWSN"],
+["ClassBuildingR2|passable",-3,-8,"S"],
+["ClassBuildingR1|passable",3,-8,"N"],
+["ResearchLabB",-2,-5,"WSN"],
+["ResearchLabA",2,-5,"WSN"],
+["GreenGarden|passable",-2,-2,"SN"],
+["Library|passable",2,-2,"SN"],
+["Arena|passable",-2,1,"EWSN"],
+["HistoryMuseum",2,2,"N"],
+["StudentCenter",-2,7,"S"],
+["DiningHall",2,10,"N"],
+["Dormitory",0,12,"W"]
+)

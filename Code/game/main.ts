@@ -24,6 +24,7 @@ declare global {
 		ui; // ui control
 		P; // text/ img/ buttons printer
 		cond; //condition short cut
+		worldMap;
 	}
 }
 
