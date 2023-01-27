@@ -60,6 +60,14 @@
     <<checkbox '_destroymode' 0 1 autocheck>>
     </div>
     <div>
+    <<checkbox '_setStartPoint' 0 1 autocheck>>设置起点：
+    <div id='startpos'></div>
+    <<checkbox '_setGoalPoint' 0 1 autocheck>>设置终点：
+    <div id='goalpos'></div>
+    <<button '创建路线图'>>
+    <</button>>
+    </div>
+    <div>
     <<button '保存地图'>>
     <<run
         let mapdata = Maps.convertData(T.mapdata)

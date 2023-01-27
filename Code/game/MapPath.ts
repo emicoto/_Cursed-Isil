@@ -13,16 +13,16 @@ export function GenerateSpot(map: Maps) {
 	const spots = Array.from(map.spots);
 
 	spots.sort((a, b) => {
-		if (a[1][0].x === b[1][0].x) {
-			return a[1][0].y - b[1][0].y;
+		if (a[1].pos.x === b[1].pos.x) {
+			return a[1].pos.y - b[1].pos.y;
 		}
-		return a[1][0].x - b[1][0].x;
+		return a[1].pos.x - b[1].pos.x;
 	});
 
 	//放置地点
 	spots.forEach((location) => {
-		const pos = location[1][0];
-		townmap[pos.x][pos.y] = location[0];
+		const pos = location[1].pos;
+		townmap[pos.x][pos.y] = location[0] + location[1].tags.join("|");
 	});
 
 	//先可通过方向，在地点前方放置道路。
@@ -37,8 +37,8 @@ export function GenerateSpot(map: Maps) {
 	};
 
 	spots.forEach((location) => {
-		const pos = location[1][0];
-		const side = location[1][1];
+		const pos = location[1].pos;
+		const side = location[1].side;
 
 		side.split("").forEach((s) => {
 			switch (s) {

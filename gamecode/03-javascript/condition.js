@@ -201,8 +201,8 @@ cond.markIs = function (cid, key, val) {
 	return C[cid].mark[markkey] === val;
 };
 
-F.getKeyByValue = function (object, value) {
-	return Object.keys(object).find(
-		(key) => object[key] === value || object[key].includes(value) || object[key][0].includes(value)
-	);
+cond.StallBusinessTime = function () {
+	if (groupmatch(V.date.week, 0, 6)) return cond.betweenTime(5.5, 20);
+	if (V.date.week == 1) return cond.betweenTime(5.5, 16);
+	else return cond.betweenTime(13, 17);
 };

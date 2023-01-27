@@ -83,3 +83,9 @@ F.setActor = function (cid, tid, ...parts) {
 	else T.actPart = "hands";
 };
 DefineMacroS("setActor", F.setActor);
+
+F.getKeyByValue = function (object, value) {
+	return Object.keys(object).find(
+		(key) => object[key] === value || object[key].includes(value) || object[key][0].includes(value)
+	);
+};

@@ -4,7 +4,7 @@ Kojo.set('Isil','#F9F570')
     //角色介绍
     .Intro('来自光森林的精灵王子，为了专研魔法而来到了奥兰尼亚。') 
     //起始点
-    .Home('学生宿舍,S303')
+    .Home('宿舍,S303')
 
     //关系性
     .Relation('Ayres', '亦敌亦友', 120) 
@@ -13,9 +13,9 @@ Kojo.set('Isil','#F9F570')
     .WakeupTime(6)
 
     //日程表
-    .Schedule(0,['魔法研究室',[1,3,5], 8, 12, 3, 80]) 
+    .Schedule(0,['魔法研究所',[1,3,5], 8, 12, 3, 80]) 
     .Schedule(0, ['植物园', [2, 4], 14, 17, 3, 80])
-    .Schedule(0, ['学生宿舍,S303', 'allday', 20, 8, 12, 100])
+    .Schedule(0, ['宿舍,S303', 'allday', 20, 8, 12, 100])
 
     //过滤器
     .Filter((actiondata)=>{
@@ -60,7 +60,7 @@ Kojo.set('Isil','#F9F570')
 Action.kojo.Isil = function(){
    Action.set('Isil_MagicaResearch')
       .Filter(()=>{
-         return pc === 'Isil' && V.location.name === '魔法研究室'
+         return pc === 'Isil' && V.location.name === '魔法研究所'
       })
 }
 

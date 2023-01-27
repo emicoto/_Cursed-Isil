@@ -6,8 +6,8 @@ export interface iPos {
 }
 
 export interface Maps {
-	mapId: string;
-	groupId?: string;
+	mapId: string; //绝对id
+	groupId?: string; //父级id
 	type: maptype;
 	tags: maptags[];
 
@@ -19,9 +19,10 @@ export interface Maps {
 		points: Array<string | iPos>;
 	};
 
-	spots?: Map<string, [iPos, string?]>;
+	spots?: Map<string, { pos: iPos; side?: string; tags?: string[] }>;
 	mapsize?: iPos;
 	mapdata?: any;
+	maptag?: string[];
 }
 
 export interface townMap extends Maps {
@@ -30,7 +31,6 @@ export interface townMap extends Maps {
 }
 
 export interface Locations extends Maps {
-	roomId?: string;
 	rooms?: string[];
 	business?: {
 		weekday: number[] | "allday";
@@ -77,7 +77,7 @@ export class Maps {
 	public static get(type, mapId, ...args) {
 		const data = worldMap[mapId];
 		if (type == "pos") {
-			return data.spots.get(args[0])[0];
+			return data.spots.get(args[0]).pos;
 		}
 		if (type == "spots") {
 			return data.spots.get(args[0]);
@@ -96,19 +96,36 @@ export class Maps {
 	public static print(map: string[][]) {
 		printMap(map);
 	}
-	constructor(name: string[], type: maptype) {
-		this.name = name;
-		this.type = type;
-		this.tags = [];
-		this.description = function () {
-			return "";
-		};
-		this.events = function () {
-			return "";
-		};
+	public static copy(map, groupId, mapId) {
+		let newMap;
+		if (map.type == "town") {
+			newMap = new townMap(map.mapId, map.groupId, { name: map.name, entry: map.entry, xy: map.mapsize }, map);
+		}
+
+		if (map.type == "location" || map.type == "room") {
+			newMap = new Locations(map.mapId, map.name, map.groupId, map.side, map);
+		}
+		newMap.groupId = groupId;
+		newMap.mapId = mapId;
+		return newMap;
 	}
-	Description(callback) {
-		this.description = callback;
+
+	constructor(name: string[], type: maptype, map?: Maps) {
+		if (map) {
+			for (let key in map) {
+				this[key] = map[key];
+			}
+		} else {
+			this.name = name;
+			this.type = type;
+			this.tags = [];
+			this.events = function () {
+				return "";
+			};
+		}
+	}
+	setName(name) {
+		this.name = name;
 		return this;
 	}
 
@@ -126,16 +143,17 @@ export class Maps {
 		}
 		return this;
 	}
-	CheckParent() {
-		if (!this.groupId) return false;
-		const path = this.groupId.split(".");
+	getParent() {
+		if (!this.groupId) return null;
+		const path = this.mapId.split(".");
+		path.pop();
 		let parent = worldMap;
 		for (let i = 0; i < path.length; i++) {
 			parent = parent[path[i]];
 		}
 		if (parent) return parent;
 
-		return false;
+		return null;
 	}
 	setPortal(...points: Array<string | iPos>) {
 		this.portal = {
@@ -160,20 +178,22 @@ export class Maps {
 
 // 城镇地图
 export class townMap extends Maps {
-	constructor(
-		mapid: string,
-		groupid: string,
-		name: string[],
-		entry: string[],
-		mapsizeX: number = 33,
-		mapsizeY: number = 33
-	) {
+	constructor(mapid: string, groupid: string, { name, entry, xy }, map?: townMap) {
 		super(name, "town");
-		this.mapId = mapid; //城镇的id
-		this.groupId = groupid; //上级地图的id
-		this.entry = entry;
-		this.spots = new Map();
-		this.mapsize = { x: mapsizeX, y: mapsizeY };
+		if (map) {
+			for (let key in map) {
+				this[key] = map[key];
+			}
+		} else {
+			if (!xy[0]) xy[0] = 13;
+			if (!xy[1]) xy[1] = xy[0];
+
+			this.mapId = mapid; //城镇的id
+			this.groupId = groupid; //上级地图的id
+			this.entry = entry;
+			this.spots = new Map();
+			this.mapsize = { x: xy[0], y: xy[1] };
+		}
 	}
 	Spots(...spots: Array<[string, number, number, string?]>) {
 		spots.forEach((spot) => {
@@ -181,7 +201,11 @@ export class townMap extends Maps {
 			spot[1] += Math.floor(this.mapsize.x / 2);
 			spot[2] += Math.floor(this.mapsize.y / 2);
 
-			this.spots.set(spot[0], [{ x: spot[1], y: spot[2] }, spot[3]]);
+			let tags = spot[0].split("|");
+			let name = tags[0];
+			tags.splice(0, 1);
+
+			this.spots.set(name, { pos: { x: spot[1], y: spot[2] }, side: spot[3], tags: tags });
 		});
 		return this;
 	}
@@ -189,13 +213,25 @@ export class townMap extends Maps {
 
 // 具体地点
 export class Locations extends Maps {
-	constructor(mapid, name: string[], group: string, side: "室内" | "室外" | "户外") {
+	constructor(mapid, name: string[], group: string, side: "室内" | "室外" | "户外", map?: Locations) {
 		super(name, "location");
-		this.mapId = mapid; //地点的id
-		this.groupId = group; //上级地图的id
-		this.side = side;
-		this.tags.push(side);
-		this.placement = [];
+		if (map) {
+			for (let key in map) {
+				this[key] = map[key];
+			}
+		} else {
+			this.mapId = group + "." + mapid; //地点的绝对id
+			this.groupId = group; //目录的id
+			this.side = side;
+			this.tags.push(side);
+			this.placement = [];
+		}
+	}
+	isRoom() {
+		this.type = "room";
+		const path = this.mapId.split(".");
+		this.entry = path[path.length - 2];
+		return this;
 	}
 	Rooms(...rooms: string[]) {
 		this.rooms = rooms;
@@ -234,7 +270,7 @@ export class Locations extends Maps {
 		return this;
 	}
 	AdoptParent() {
-		const parent = this.CheckParent();
+		const parent = this.getParent();
 		if (parent) {
 			this.tags = this.tags.concat(parent.tags);
 			this.placement = this.placement.concat(parent.placement);

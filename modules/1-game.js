@@ -599,14 +599,14 @@
 	  const townmap = new Array(map.mapsize.x).fill(0).map(() => new Array(map.mapsize.y).fill(""));
 	  const spots = Array.from(map.spots);
 	  spots.sort((a, b) => {
-	    if (a[1][0].x === b[1][0].x) {
-	      return a[1][0].y - b[1][0].y;
+	    if (a[1].pos.x === b[1].pos.x) {
+	      return a[1].pos.y - b[1].pos.y;
 	    }
-	    return a[1][0].x - b[1][0].x;
+	    return a[1].pos.x - b[1].pos.x;
 	  });
 	  spots.forEach((location) => {
-	    const pos = location[1][0];
-	    townmap[pos.x][pos.y] = location[0];
+	    const pos = location[1].pos;
+	    townmap[pos.x][pos.y] = location[0] + location[1].tags.join("|");
 	  });
 	  const road = [];
 	  const setRoad = (x, y, side) => {
@@ -618,8 +618,8 @@
 	    }
 	  };
 	  spots.forEach((location) => {
-	    const pos = location[1][0];
-	    const side = location[1][1];
+	    const pos = location[1].pos;
+	    const side = location[1].side;
 	    side.split("").forEach((s) => {
 	      switch (s) {
 	        case "W":
@@ -872,7 +872,7 @@
 	  static get(type, mapId, ...args) {
 	    const data = worldMap[mapId];
 	    if (type == "pos") {
-	      return data.spots.get(args[0])[0];
+	      return data.spots.get(args[0]).pos;
 	    }
 	    if (type == "spots") {
 	      return data.spots.get(args[0]);
@@ -891,19 +891,34 @@
 	  static print(map) {
 	    printMap(map);
 	  }
-	  constructor(name, type) {
-	    this.name = name;
-	    this.type = type;
-	    this.tags = [];
-	    this.description = function() {
-	      return "";
-	    };
-	    this.events = function() {
-	      return "";
-	    };
+	  static copy(map, groupId, mapId) {
+	    let newMap;
+	    if (map.type == "town") {
+	      newMap = new townMap(map.mapId, map.groupId, { name: map.name, entry: map.entry, xy: map.mapsize }, map);
+	    }
+	    if (map.type == "location" || map.type == "room") {
+	      newMap = new Locations(map.mapId, map.name, map.groupId, map.side, map);
+	    }
+	    newMap.groupId = groupId;
+	    newMap.mapId = mapId;
+	    return newMap;
 	  }
-	  Description(callback) {
-	    this.description = callback;
+	  constructor(name, type, map) {
+	    if (map) {
+	      for (let key in map) {
+	        this[key] = map[key];
+	      }
+	    } else {
+	      this.name = name;
+	      this.type = type;
+	      this.tags = [];
+	      this.events = function() {
+	        return "";
+	      };
+	    }
+	  }
+	  setName(name) {
+	    this.name = name;
 	    return this;
 	  }
 	  Events(callback) {
@@ -920,17 +935,18 @@
 	    }
 	    return this;
 	  }
-	  CheckParent() {
+	  getParent() {
 	    if (!this.groupId)
-	      return false;
-	    const path = this.groupId.split(".");
+	      return null;
+	    const path = this.mapId.split(".");
+	    path.pop();
 	    let parent = worldMap;
 	    for (let i = 0; i < path.length; i++) {
 	      parent = parent[path[i]];
 	    }
 	    if (parent)
 	      return parent;
-	    return false;
+	    return null;
 	  }
 	  setPortal(...points) {
 	    this.portal = {
@@ -953,31 +969,56 @@
 	  }
 	}
 	class townMap extends Maps {
-	  constructor(mapid, groupid, name, entry, mapsizeX = 33, mapsizeY = 33) {
+	  constructor(mapid, groupid, { name, entry, xy }, map) {
 	    super(name, "town");
-	    this.mapId = mapid;
-	    this.groupId = groupid;
-	    this.entry = entry;
-	    this.spots = /* @__PURE__ */ new Map();
-	    this.mapsize = { x: mapsizeX, y: mapsizeY };
+	    if (map) {
+	      for (let key in map) {
+	        this[key] = map[key];
+	      }
+	    } else {
+	      if (!xy[0])
+	        xy[0] = 13;
+	      if (!xy[1])
+	        xy[1] = xy[0];
+	      this.mapId = mapid;
+	      this.groupId = groupid;
+	      this.entry = entry;
+	      this.spots = /* @__PURE__ */ new Map();
+	      this.mapsize = { x: xy[0], y: xy[1] };
+	    }
 	  }
 	  Spots(...spots) {
 	    spots.forEach((spot) => {
 	      spot[1] += Math.floor(this.mapsize.x / 2);
 	      spot[2] += Math.floor(this.mapsize.y / 2);
-	      this.spots.set(spot[0], [{ x: spot[1], y: spot[2] }, spot[3]]);
+	      let tags = spot[0].split("|");
+	      let name = tags[0];
+	      tags.splice(0, 1);
+	      this.spots.set(name, { pos: { x: spot[1], y: spot[2] }, side: spot[3], tags });
 	    });
 	    return this;
 	  }
 	}
 	class Locations extends Maps {
-	  constructor(mapid, name, group, side) {
+	  constructor(mapid, name, group, side, map) {
 	    super(name, "location");
-	    this.mapId = mapid;
-	    this.groupId = group;
-	    this.side = side;
-	    this.tags.push(side);
-	    this.placement = [];
+	    if (map) {
+	      for (let key in map) {
+	        this[key] = map[key];
+	      }
+	    } else {
+	      this.mapId = group + "." + mapid;
+	      this.groupId = group;
+	      this.side = side;
+	      this.tags.push(side);
+	      this.placement = [];
+	    }
+	  }
+	  isRoom() {
+	    this.type = "room";
+	    const path = this.mapId.split(".");
+	    this.entry = path[path.length - 2];
+	    return this;
 	  }
 	  Rooms(...rooms) {
 	    this.rooms = rooms;
@@ -1016,7 +1057,7 @@
 	    return this;
 	  }
 	  AdoptParent() {
-	    const parent = this.CheckParent();
+	    const parent = this.getParent();
 	    if (parent) {
 	      this.tags = this.tags.concat(parent.tags);
 	      this.placement = this.placement.concat(parent.placement);

@@ -197,10 +197,19 @@
 
 #footer{
     width: 100%;
-    font-size: 16px;
+    font-size: 14px;
     font-family: "Times New Roman", "NotoSerifL";
     position: fixed;
     bottom: 0px;
     left: 0px;
     text-align: center;
+}
+
+#footer a {
+    font-family: "Times New Roman", "NotoSerifS";
+    color: lightskyblue
+}
+
+#footer a:hover {
+    color: aquamarine;
 }

@@ -200,6 +200,7 @@ worldMap.Academy.mapdata = {
 	MageTower: [[0, 0]],
 	"ClassBuildingR2|passable": [[0, 4]],
 	road: [
+		[0, 6],
 		[0, 7],
 		[0, 8],
 		[0, 9],
@@ -253,6 +254,7 @@ worldMap.Academy.mapdata = {
 		[5, 4],
 		[5, 5],
 		[5, 6],
+		[6, 6],
 		[6, 7],
 		[6, 8],
 		[6, 9],

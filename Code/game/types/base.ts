@@ -164,7 +164,7 @@ export type expkey =
 
 export type markkey = "hypno" | "ecstacy" | "surrend" | "pain" | "fear" | "humil" | "resit";
 
-export type maptype = "town" | "field" | "dungeon" | "location";
+export type maptype = "town" | "field" | "dungeon" | "location" | "room" | "spot";
 
 export type rarity = "C" | "UC" | "R" | "SP" | "ER" | "LR";
 
@@ -219,6 +219,7 @@ export type maptags =
 	| "家"
 	| "防御"
 	| "研究"
+	| "宿舍"
 
 	//特征
 	| "阴影处" //只用在室外

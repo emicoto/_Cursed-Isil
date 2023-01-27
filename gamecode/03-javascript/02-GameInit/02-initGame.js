@@ -52,7 +52,7 @@ game.init = function () {
 
 	V.pricefactor = D.defaultPriceFactor;
 
-	V.mode = D.defaultMode; // 用于整体模式的控制
+	V.mode = S.defaultMode; // 用于整体模式的控制
 
 	V.flag = {
 		activePC: "Isil/m0/",
@@ -83,11 +83,10 @@ game.init = function () {
 	};
 
 	V.home = {
-		groupId: "Academy",
-		mapId: "Dormitory",
-		roomId: "S303",
+		path: "Academy.Domitory.S303",
 		name: ["宿舍S303"],
-		tags: ["私室", "宿舍", "沐浴", "厕所"],
+		room: ["Bathroom"],
+		tags: ["私人", "宿舍"],
 		placement: [
 			["床", "单人床"],
 			["床", "单人床"],
@@ -106,28 +105,11 @@ game.init = function () {
 		maxslot: 12,
 	};
 
+	V.lastLocation = null;
+
 	//当前地点详情
-	V.location = {
-		groupId: "Academy", //上级地图id
-		mapId: "Dormitory", //当前地图
-		roomId: "S303", //地图内房间id
-
-		id: "Academy-Dormitory-S303", //当前地点的绝对id
-		entry: "Dormitory", //地点出入口
-
-		name: "宿舍S303",
-		tags: ["私室", "宿舍", "沐浴", "厨房", "厕所"],
-		placement: ["床", "衣柜", "桌子", "椅子", "书柜", "镜子", "衣架", "植物"],
-		chara: ["Isil", "Ayres"],
-
-		yourHome: true,
-		portal: {
-			exist: false,
-			points: [],
-		},
-
-		pos: { x: 0, y: 0 },
-	};
+	V.location = F.iniLocation("Academy.Dormitory.S303");
+	V.location.chara = ["Isil", "Ayres"];
 };
 
 game.start = function (skip) {
@@ -138,6 +120,7 @@ game.start = function (skip) {
 		F.setEvent("Story", "Opening");
 	} else {
 		F.setMemory("SE_0", "序章 - 故事开头");
+		V.mode = "normal";
 	}
 	if (T.futa == 2) {
 		for (let i in V.chara) {

@@ -136,7 +136,7 @@ Action.updateMovement = function () {
 	//每次移动后的场景初始化。根据当前场景获取移动信息，和角色信息。
 	//地图系统还没弄好，暂时用这个代替。
 	let txt = P.playerName();
-	if (local.id == "A0") {
+	if (local.mapId == "Academy.Dormitory.S303") {
 		txt += "<<you>>回到了宿舍房间。<br>";
 		if (pc == "Ayres") txt += `${C.Isil.name}`;
 		else txt += `${C.Ayres.name}`;
