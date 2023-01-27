@@ -12,7 +12,7 @@
 <div id='editor_menu'>
     <div id='currentpos'>
     </div>
-    <div><<set _mapoptions = [''].concat(Object.keys(worldMap))>>
+    <div><<set _mapoptions = [''].concat(Object.keys(worldMap).filter( key=> !groupmatch(key, 'get', 'CommonSpots')))>>
     选择地图：
     <<listbox "_selectMap">>
         <<optionsfrom _mapoptions>>
@@ -65,6 +65,20 @@
     <<checkbox '_setGoalPoint' 0 1 autocheck>>设置终点：
     <div id='goalpos'></div>
     <<button '创建路线图'>>
+    <<run 
+        if(T.startPoint && T.goalPoint)
+            showPathMap();
+    >>
+    <</button>>
+
+    <<button '清除路线'>>
+    <<run
+        $('.mapcell').removeClass('pathcell')
+        T.startPoint = null
+        T.goalPoint = null
+        T.setStartPoint = 0
+        T.setGoalPoint = 0
+    >>
     <</button>>
     </div>
     <div>

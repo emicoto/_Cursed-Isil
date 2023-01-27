@@ -1,34 +1,13 @@
 :: Map
 
-<div id="Movement">
-
-<<link '活动广场  0:05' 'MainLoop'>><<run V.location = F.iniLocation('Academy.ActivitySquare')>><<set $aftermovement to true>><</link>><br>
-<<link '宿舍大厅  0:02' 'MainLoop'>><<run V.location = F.iniLocation('Academy.Dormitory')>><<set $aftermovement to true>><</link>><br>
-<<link '宿舍S303  0:05' 'MainLoop'>><<run V.location = F.iniLocation('Academy.Dormitory.S303')>><<set $aftermovement to true>><</link>><br>
-
-<<link '返回' 'MainLoop'>><</link>><br>
+<div id="travel">
 
 </div>
+
+<<link '返回' 'MainLoop'>><</link>><br>
 /* 实际可移动项目与时间会根据目前所在地来计算。跟EWA旧版差不多机制。全自动生成可移动链接。 */
+<<done>>
 <<run
-    T.map = Maps.getBoard(V.location.groupId)
-    console.log(V.location.pos)
-
-    const list = Array.from(worldMap[V.location.groupId].spots).filter(spot => spot[0] !== V.location.posId ).map( spot => 
-    [V.location.groupId + '.' + spot[0], spot[1].pos, spot[1].tags]
-    )
-    console.log(list)
-
-    if(V.location.rooms){
-        V.location.rooms.forEach(room => {
-            list.push( [V.location.mapId + '.' + room , 'isRoom'])
-        })
-    }
-
-    list.forEach( item =>{
-        if(item[1] === 'isRoom' || item[2].has('invisible'))
-            console.log( item[0] + '  ' + 0 + '  ' + 'Room' )
-        else
-            console.log( item[0] + '  ' + findPath(T.map, V.location.pos, item[1]).length + '  ' + 'Pos' )
-    })
+    F.createLocationLink()
 >>
+<</done>>

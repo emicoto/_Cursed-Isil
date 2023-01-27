@@ -106,7 +106,7 @@
 }
 
 .mapcell {
-    border: solid 1px #888;
+    border: solid 1px #666;
     width: 32px;
     height: 28px;
     border-radius: 6px;
@@ -119,6 +119,10 @@
 
 .fillcell {
     background-color: beige;
+}
+
+.pathcell {
+    background-color: #f36fa6 !important;
 }
 
 #editor_menu{

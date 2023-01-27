@@ -49,6 +49,7 @@ window.generateMapField = function (grid) {
 
 	$(".mapcell").on("click", function () {
 		const grid = T.mapdata;
+		const pathmode = T.setStartPoint || T.setGoalPoint;
 
 		const row = $(this).data("row");
 		const col = $(this).data("col");
@@ -56,25 +57,38 @@ window.generateMapField = function (grid) {
 		T.xpos = row;
 		T.ypos = col;
 
-		if (T.destroymode) {
-			grid[row][col] = ".";
-		} else if (T.placemode) {
-			grid[row][col] = T.building;
-		} else if (grid[row][col] === ".") {
-			grid[row][col] = "road";
-		} else if (grid[row][col] === "road") {
-			grid[row][col] = ".";
+		if (T.setStartPoint) {
+			T.startPoint = { x: row, y: col };
+			$("#startpos").html(`起点： X${row}, Y${col}"`);
+		} else if (T.setGoalPoint) {
+			T.goalPoint = { x: row, y: col };
+			$("#goalpos").html(`终点： X${row}, Y${col}"`);
+		}
+
+		if (!pathmode) {
+			if (T.destroymode) {
+				grid[row][col] = ".";
+			} else if (T.placemode) {
+				grid[row][col] = T.building;
+			} else if (grid[row][col] === ".") {
+				grid[row][col] = "road";
+			} else if (grid[row][col] === "road") {
+				grid[row][col] = ".";
+			}
+			$("#currentpos").html(
+				`当前位置： X${row - Math.floor(T.mapsizeX / 2)}, Y${
+					col - Math.floor(T.mapsizeY / 2)
+				} 绝对坐标： X${row}, Y${col}`
+			);
 		}
 
 		$(this).html(grid[row][col]);
 		$(this).removeClass("fillcell");
+		$(this).removeClass("pathcell");
 
-		$("#currentpos").html(
-			`当前位置： X${row - Math.floor(T.mapsizeX / 2)}, Y${
-				col - Math.floor(T.mapsizeY / 2)
-			} 绝对坐标： X${row}, Y${col}`
-		);
-
+		if (pathmode) {
+			$(this).addClass("pathcell");
+		}
 		if (grid[row][col] !== ".") {
 			$(this).addClass("fillcell");
 		}
@@ -147,4 +161,21 @@ window.saveMapConfig = function () {
 	let data = `worldMap['${T.selectMap}'].Spots(\n${arr}\n)`;
 
 	download(data, T.selectMap, "txt");
+};
+
+window.showPathMap = function () {
+	const grid = T.mapdata;
+	const pos1 = T.startPoint;
+	const pos2 = T.goalPoint;
+	const path = findPath(grid, pos1, pos2);
+	console.log(path);
+	console.log(printPath(grid, path));
+
+	if (!path.length) return;
+
+	path.forEach(([x, y], i) => {
+		setTimeout(() => {
+			$(`.mapcell[data-row=${x}][data-col=${y}]`).addClass("pathcell");
+		}, i * 150);
+	});
 };

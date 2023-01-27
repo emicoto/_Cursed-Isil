@@ -95,7 +95,7 @@ FMA.Arena = new Locations("Arena", ["竞技场"], "Academy", "室外")
 	.Tags("战斗区", "活动", "开阔", "悬浮", "景点")
 	.Placement("旗帜", "长椅");
 
-FMA.HistoryMeuseum = new Locations("HistoryMeuseum", ["博物馆"], "Academy", "室内")
+FMA.HistoryMuseum = new Locations("HistoryMuseum", ["博物馆"], "Academy", "室内")
 	.Tags("休息区", "景点")
 	.Placement("展示柜", "长椅");
 
@@ -122,6 +122,7 @@ FMA.Dormitory = new Locations("Dormitory", ["宿舍大厅"], "Academy", "室内"
 	.Placement("沙发", "桌子", "椅子", "盆栽", "魔网", "傀儡充能器", "冰箱");
 
 FMA.Dormitory.Kitchen = new Locations("Kitchen", ["宿舍厨房"], "Academy.Dormitory", "室内")
+	.isRoom()
 	.Tags("厨房")
 	.Placement("烤炉", "冰箱", "炉灶", "储物柜");
 
@@ -131,6 +132,7 @@ FMA.Dormitory.rooms.forEach(function (room) {
 	if (groupmatch(room, "Kitchen", "Storage")) {
 	} else {
 		FMA.Dormitory[room] = new Locations("Dormitory." + room, ["宿舍|" + room], "Academy", "室内")
+			.isRoom()
 			.Rooms("Bathroom")
 			.Tags("私人", "睡房")
 			.Placement("床", "书桌", "椅子", "衣柜", "书架")

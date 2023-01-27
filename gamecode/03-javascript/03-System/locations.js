@@ -1,3 +1,5 @@
+//const { Maps } = require("Code/game/map");
+
 F.getLocationMsg = function (fullId) {
 	let title = `Msg_Spots_${fullId}`;
 	if (Story.has(title)) return Story.get(title).text;
@@ -35,6 +37,7 @@ F.iniLocation = function (path) {
 		"loot",
 		"busiess",
 		"rooms",
+		"entry",
 	];
 
 	const local = {};
@@ -72,4 +75,61 @@ F.iniLocation = function (path) {
 	local.posId = posId;
 
 	return local;
+};
+
+F.createLocationLink = function () {
+	T.map = Maps.getBoard(V.location.groupId);
+	$("#travel").html("");
+	//先把所有地点都列出来
+	const list = Array.from(worldMap[V.location.groupId].spots)
+		.filter((spot) => spot[0] !== V.location.posId)
+		.map((spot) => [V.location.groupId + "." + spot[0], spot[1].pos, spot[1].tags]);
+
+	//再把房间和出入口加进去
+	if (V.location.rooms) {
+		V.location.rooms.forEach((room) => {
+			list.push([V.location.mapId + "." + room, "isRoom"]);
+		});
+	}
+
+	if (V.location.entry !== V.location.groupId) {
+		let fullId = V.location.groupId + "." + V.location.entry;
+		list.push([fullId, "isEntry"]);
+	}
+
+	//整理出新的列表。 录入顺序 [地点id, 移动时间]
+	const spots = [];
+
+	list.forEach((item) => {
+		if (item[1].has && item[1].has("isRoom", "isEntry")) {
+			spots.push([item[0], 1]);
+		} else if (item[2].has("invisible", "inaccessible")) {
+		} else {
+			spots.push([item[0], Math.floor(findPath(T.map, V.location.pos, item[1]).length * 1.2 + 0.5)]);
+		}
+	});
+
+	//按移动时间排序
+	spots.sort((a, b) => a[1] - b[1]);
+
+	//生成链接
+	const link = spots
+		.map((item) => {
+			const fullId = item[0];
+			const locdata = worldMap.get(fullId);
+			if (locdata.tags.has("上锁")) return;
+			//时间 0:00
+			const time = `${Math.floor(item[1] / 60)}:${(item[1] % 60).toString().padStart(2, "0")}`;
+			const name = worldMap.get(fullId).name[0].split("|").join("");
+
+			const link = `<<link '${name}　${time}' 'MainLoop'>> <<run F.travleTo('${fullId}'); V.aftermovement = true; >><<passtime ${item[1]}>><</link>>`;
+			return `<div class="travel">${link}</div>`;
+		})
+		.join("");
+
+	new Wikifier(null, `<<replace #travel>>${link}<</replace>>`);
+};
+
+F.travleTo = function (fullId) {
+	V.location = F.iniLocation(fullId);
 };

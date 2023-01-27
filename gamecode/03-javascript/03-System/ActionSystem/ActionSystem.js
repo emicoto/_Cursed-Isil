@@ -133,16 +133,20 @@ Action.updateScene = function () {
 Action.updateMovement = function () {
 	const local = V.location;
 
-	//每次移动后的场景初始化。根据当前场景获取移动信息，和角色信息。
-	//地图系统还没弄好，暂时用这个代替。
-	let txt = P.playerName();
+	//虽然地图系统好了，但转场这边还没弄好！
+	let txt = "";
 	if (local.mapId == "Academy.Dormitory.S303") {
 		txt += "<<you>>回到了宿舍房间。<br>";
 		if (pc == "Ayres") txt += `${C.Isil.name}`;
 		else txt += `${C.Ayres.name}`;
 		txt += "在房间里。";
 	} else {
-		txt += "<<you>>来到了学院的活动广场。<br>";
+		const title = `Msg_Spots_${local.mapId.replace(".", "_")}`;
+		if (Story.has(title)) {
+			txt += Story.get(title).text;
+		} else {
+			txt += `<<you>>来到了${local.printname}。`;
+		}
 	}
 
 	//根据角色们的日程进行召唤。

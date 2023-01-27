@@ -225,13 +225,9 @@ window.condP = function (array) {
 	}
 };
 
-/**
- *
- * @param  {Array<[number, number, string]|['else', string]>} args
- * @returns
- */
 P.inTime = function (...args) {
 	let retxt = "";
+
 	for (let i = 0; i < args.length; i++) {
 		if (args[i][0] === "else") {
 			retxt = args[i][1];

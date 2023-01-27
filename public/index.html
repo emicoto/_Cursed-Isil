@@ -4288,7 +4288,7 @@ FMA.Arena = new Locations("Arena", ["竞技场"], "Academy", "室外")
 	.Tags("战斗区", "活动", "开阔", "悬浮", "景点")
 	.Placement("旗帜", "长椅");
 
-FMA.HistoryMeuseum = new Locations("HistoryMeuseum", ["博物馆"], "Academy", "室内")
+FMA.HistoryMuseum = new Locations("HistoryMuseum", ["博物馆"], "Academy", "室内")
 	.Tags("休息区", "景点")
 	.Placement("展示柜", "长椅");
 
@@ -4315,6 +4315,7 @@ FMA.Dormitory = new Locations("Dormitory", ["宿舍大厅"], "Academy", "室内"
 	.Placement("沙发", "桌子", "椅子", "盆栽", "魔网", "傀儡充能器", "冰箱");
 
 FMA.Dormitory.Kitchen = new Locations("Kitchen", ["宿舍厨房"], "Academy.Dormitory", "室内")
+	.isRoom()
 	.Tags("厨房")
 	.Placement("烤炉", "冰箱", "炉灶", "储物柜");
 
@@ -4324,6 +4325,7 @@ FMA.Dormitory.rooms.forEach(function (room) {
 	if (groupmatch(room, "Kitchen", "Storage")) {
 	} else {
 		FMA.Dormitory[room] = new Locations("Dormitory." + room, ["宿舍|" + room], "Academy", "室内")
+			.isRoom()
 			.Rooms("Bathroom")
 			.Tags("私人", "睡房")
 			.Placement("床", "书桌", "椅子", "衣柜", "书架")
@@ -8389,16 +8391,20 @@ Action.updateScene = function () {
 Action.updateMovement = function () {
 	const local = V.location;
 
-	//每次移动后的场景初始化。根据当前场景获取移动信息，和角色信息。
-	//地图系统还没弄好，暂时用这个代替。
-	let txt = P.playerName();
+	//虽然地图系统好了，但转场这边还没弄好！
+	let txt = "";
 	if (local.mapId == "Academy.Dormitory.S303") {
 		txt += "<<you>>回到了宿舍房间。<br>";
 		if (pc == "Ayres") txt += `${C.Isil.name}`;
 		else txt += `${C.Ayres.name}`;
 		txt += "在房间里。";
 	} else {
-		txt += "<<you>>来到了学院的活动广场。<br>";
+		const title = `Msg_Spots_${local.mapId.replace(".", "_")}`;
+		if (Story.has(title)) {
+			txt += Story.get(title).text;
+		} else {
+			txt += `<<you>>来到了${local.printname}。`;
+		}
 	}
 
 	//根据角色们的日程进行召唤。
@@ -9736,6 +9742,8 @@ F.charaEvent = function (cid) {
 	});
 };
 /* twine-user-script #47: "locations.js" */
+//const { Maps } = require("Code/game/map");
+
 F.getLocationMsg = function (fullId) {
 	let title = `Msg_Spots_${fullId}`;
 	if (Story.has(title)) return Story.get(title).text;
@@ -9773,6 +9781,7 @@ F.iniLocation = function (path) {
 		"loot",
 		"busiess",
 		"rooms",
+		"entry",
 	];
 
 	const local = {};
@@ -9810,6 +9819,63 @@ F.iniLocation = function (path) {
 	local.posId = posId;
 
 	return local;
+};
+
+F.createLocationLink = function () {
+	T.map = Maps.getBoard(V.location.groupId);
+	$("#travel").html("");
+	//先把所有地点都列出来
+	const list = Array.from(worldMap[V.location.groupId].spots)
+		.filter((spot) => spot[0] !== V.location.posId)
+		.map((spot) => [V.location.groupId + "." + spot[0], spot[1].pos, spot[1].tags]);
+
+	//再把房间和出入口加进去
+	if (V.location.rooms) {
+		V.location.rooms.forEach((room) => {
+			list.push([V.location.mapId + "." + room, "isRoom"]);
+		});
+	}
+
+	if (V.location.entry !== V.location.groupId) {
+		let fullId = V.location.groupId + "." + V.location.entry;
+		list.push([fullId, "isEntry"]);
+	}
+
+	//整理出新的列表。 录入顺序 [地点id, 移动时间]
+	const spots = [];
+
+	list.forEach((item) => {
+		if (item[1].has && item[1].has("isRoom", "isEntry")) {
+			spots.push([item[0], 1]);
+		} else if (item[2].has("invisible", "inaccessible")) {
+		} else {
+			spots.push([item[0], Math.floor(findPath(T.map, V.location.pos, item[1]).length * 1.2 + 0.5)]);
+		}
+	});
+
+	//按移动时间排序
+	spots.sort((a, b) => a[1] - b[1]);
+
+	//生成链接
+	const link = spots
+		.map((item) => {
+			const fullId = item[0];
+			const locdata = worldMap.get(fullId);
+			if (locdata.tags.has("上锁")) return;
+			//时间 0:00
+			const time = `${Math.floor(item[1] / 60)}:${(item[1] % 60).toString().padStart(2, "0")}`;
+			const name = worldMap.get(fullId).name[0].split("|").join("");
+
+			const link = `<<link '${name}　${time}' 'MainLoop'>> <<run F.travleTo('${fullId}'); V.aftermovement = true; >><<passtime ${item[1]}>><</link>>`;
+			return `<div class="travel">${link}</div>`;
+		})
+		.join("");
+
+	new Wikifier(null, `<<replace #travel>>${link}<</replace>>`);
+};
+
+F.travleTo = function (fullId) {
+	V.location = F.iniLocation(fullId);
 };
 /* twine-user-script #48: "setEvent.js" */
 
@@ -11079,6 +11145,7 @@ window.generateMapField = function (grid) {
 
 	$(".mapcell").on("click", function () {
 		const grid = T.mapdata;
+		const pathmode = T.setStartPoint || T.setGoalPoint;
 
 		const row = $(this).data("row");
 		const col = $(this).data("col");
@@ -11086,25 +11153,38 @@ window.generateMapField = function (grid) {
 		T.xpos = row;
 		T.ypos = col;
 
-		if (T.destroymode) {
-			grid[row][col] = ".";
-		} else if (T.placemode) {
-			grid[row][col] = T.building;
-		} else if (grid[row][col] === ".") {
-			grid[row][col] = "road";
-		} else if (grid[row][col] === "road") {
-			grid[row][col] = ".";
+		if (T.setStartPoint) {
+			T.startPoint = { x: row, y: col };
+			$("#startpos").html(`起点： X${row}, Y${col}"`);
+		} else if (T.setGoalPoint) {
+			T.goalPoint = { x: row, y: col };
+			$("#goalpos").html(`终点： X${row}, Y${col}"`);
+		}
+
+		if (!pathmode) {
+			if (T.destroymode) {
+				grid[row][col] = ".";
+			} else if (T.placemode) {
+				grid[row][col] = T.building;
+			} else if (grid[row][col] === ".") {
+				grid[row][col] = "road";
+			} else if (grid[row][col] === "road") {
+				grid[row][col] = ".";
+			}
+			$("#currentpos").html(
+				`当前位置： X${row - Math.floor(T.mapsizeX / 2)}, Y${
+					col - Math.floor(T.mapsizeY / 2)
+				} 绝对坐标： X${row}, Y${col}`
+			);
 		}
 
 		$(this).html(grid[row][col]);
 		$(this).removeClass("fillcell");
+		$(this).removeClass("pathcell");
 
-		$("#currentpos").html(
-			`当前位置： X${row - Math.floor(T.mapsizeX / 2)}, Y${
-				col - Math.floor(T.mapsizeY / 2)
-			} 绝对坐标： X${row}, Y${col}`
-		);
-
+		if (pathmode) {
+			$(this).addClass("pathcell");
+		}
 		if (grid[row][col] !== ".") {
 			$(this).addClass("fillcell");
 		}
@@ -11177,6 +11257,23 @@ window.saveMapConfig = function () {
 	let data = `worldMap['${T.selectMap}'].Spots(\n${arr}\n)`;
 
 	download(data, T.selectMap, "txt");
+};
+
+window.showPathMap = function () {
+	const grid = T.mapdata;
+	const pos1 = T.startPoint;
+	const pos2 = T.goalPoint;
+	const path = findPath(grid, pos1, pos2);
+	console.log(path);
+	console.log(printPath(grid, path));
+
+	if (!path.length) return;
+
+	path.forEach(([x, y], i) => {
+		setTimeout(() => {
+			$(`.mapcell[data-row=${x}][data-col=${y}]`).addClass("pathcell");
+		}, i * 150);
+	});
 };
 /* twine-user-script #62: "textProcessor.js" */
 /**
@@ -11406,13 +11503,9 @@ window.condP = function (array) {
 	}
 };
 
-/**
- *
- * @param  {Array<[number, number, string]|['else', string]>} args
- * @returns
- */
 P.inTime = function (...args) {
 	let retxt = "";
+
 	for (let i = 0; i < args.length; i++) {
 		if (args[i][0] === "else") {
 			retxt = args[i][1];
@@ -13139,38 +13232,17 @@ MP: $target.base.mana[0] / $target.base.mana[1]&lt;br&gt;
 &lt;br&gt;&lt;hr&gt;
 
 &lt;/div&gt;
-&lt;&lt;link &#39;返回&#39; $lastsession&gt;&gt;&lt;&lt;/link&gt;&gt;</tw-passagedata><tw-passagedata pid="21" name="Magicom" tags="" position="100,350" size="100,100">&lt;&lt;link &#39;返回&#39; $lastsession&gt;&gt;&lt;&lt;/link&gt;&gt;</tw-passagedata><tw-passagedata pid="22" name="Map" tags="" position="225,350" size="100,100">&lt;div id=&quot;Movement&quot;&gt;
-
-&lt;&lt;link &#39;活动广场  0:05&#39; &#39;MainLoop&#39;&gt;&gt;&lt;&lt;run V.location = F.iniLocation(&#39;Academy.ActivitySquare&#39;)&gt;&gt;&lt;&lt;set $aftermovement to true&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;br&gt;
-&lt;&lt;link &#39;宿舍大厅  0:02&#39; &#39;MainLoop&#39;&gt;&gt;&lt;&lt;run V.location = F.iniLocation(&#39;Academy.Dormitory&#39;)&gt;&gt;&lt;&lt;set $aftermovement to true&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;br&gt;
-&lt;&lt;link &#39;宿舍S303  0:05&#39; &#39;MainLoop&#39;&gt;&gt;&lt;&lt;run V.location = F.iniLocation(&#39;Academy.Dormitory.S303&#39;)&gt;&gt;&lt;&lt;set $aftermovement to true&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;br&gt;
-
-&lt;&lt;link &#39;返回&#39; &#39;MainLoop&#39;&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;br&gt;
+&lt;&lt;link &#39;返回&#39; $lastsession&gt;&gt;&lt;&lt;/link&gt;&gt;</tw-passagedata><tw-passagedata pid="21" name="Magicom" tags="" position="100,350" size="100,100">&lt;&lt;link &#39;返回&#39; $lastsession&gt;&gt;&lt;&lt;/link&gt;&gt;</tw-passagedata><tw-passagedata pid="22" name="Map" tags="" position="225,350" size="100,100">&lt;div id=&quot;travel&quot;&gt;
 
 &lt;/div&gt;
+
+&lt;&lt;link &#39;返回&#39; &#39;MainLoop&#39;&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;br&gt;
 /* 实际可移动项目与时间会根据目前所在地来计算。跟EWA旧版差不多机制。全自动生成可移动链接。 */
+&lt;&lt;done&gt;&gt;
 &lt;&lt;run
-    T.map = Maps.getBoard(V.location.groupId)
-    console.log(V.location.pos)
-
-    const list = Array.from(worldMap[V.location.groupId].spots).filter(spot =&gt; spot[0] !== V.location.posId ).map( spot =&gt; 
-    [V.location.groupId + &#39;.&#39; + spot[0], spot[1].pos, spot[1].tags]
-    )
-    console.log(list)
-
-    if(V.location.rooms){
-        V.location.rooms.forEach(room =&gt; {
-            list.push( [V.location.mapId + &#39;.&#39; + room , &#39;isRoom&#39;])
-        })
-    }
-
-    list.forEach( item =&gt;{
-        if(item[1] === &#39;isRoom&#39; || item[2].has(&#39;invisible&#39;))
-            console.log( item[0] + &#39;  &#39; + 0 + &#39;  &#39; + &#39;Room&#39; )
-        else
-            console.log( item[0] + &#39;  &#39; + findPath(T.map, V.location.pos, item[1]).length + &#39;  &#39; + &#39;Pos&#39; )
-    })
-&gt;&gt;</tw-passagedata><tw-passagedata pid="23" name="Story_Opening::Before" tags="" position="350,350" size="100,100">/* 这里做前置设置。 */
+    F.createLocationLink()
+&gt;&gt;
+&lt;&lt;/done&gt;&gt;</tw-passagedata><tw-passagedata pid="23" name="Story_Opening::Before" tags="" position="350,350" size="100,100">/* 这里做前置设置。 */
 &lt;&lt;set $event.id = &#39;SE_0&#39;&gt;&gt;
 &lt;&lt;run F.setMemory(&#39;SE_0&#39;,&#39;序章 - 故事开头&#39;)&gt;&gt;</tw-passagedata><tw-passagedata pid="24" name="Story_Opening::After" tags="" position="475,350" size="100,100">/* 剧情结束时做的处理。 */</tw-passagedata><tw-passagedata pid="25" name="Story_Opening" tags="" position="600,350" size="100,100">#:{ &quot;test&quot;:true }
 “嗷呜……总算通关了这个遗迹，这次月考也太磨人了。”
@@ -13443,7 +13515,7 @@ $(&#39;#listbox--condition&#39;).on(&#39;change&#39;,()=&gt;{
     $(&#39;#kojotext&#39;).val(txt);
 })
 &lt;&lt;/script&gt;&gt;
-&lt;&lt;/done&gt;&gt;</tw-passagedata><tw-passagedata pid="28" name="Msg_Spots_Academy_SchoolEntrance" tags="" position="975,350" size="100,100">这里是魔法学院的入口，&lt;&lt;=P.inTime([8, 17, &quot;从这里就能看到远处那高高耸立着的法师塔。&quot;],[&#39;else&#39;, &#39;从这里能看到远处法师塔上闪烁的光芒。&#39;])&gt;&gt;
+&lt;&lt;/done&gt;&gt;</tw-passagedata><tw-passagedata pid="28" name="Msg_Spots_Academy_SchoolEntrance" tags="" position="975,350" size="100,100">这里是魔法学院的入口，&lt;&lt;=P.inTime([8, 17, &quot;从这里就能看到远处那高高耸立着的法师塔。&quot;],[&#39;else&#39;, &#39;从这里能看到远处法师塔上闪烁的光芒。&#39;])&gt;&gt;&lt;br&gt;
 &lt;&lt;=P.inTime([8, 19, &quot;大门上空有几个监控水晶悬浮着，盯着来往的人。&quot;],[&#39;else&#39;, &#39;几个监控水晶在大门附近巡逻着，观察着周围一切变化。&#39;])&gt;&gt;&lt;br&gt;
 &lt;&lt;switch $date.week&gt;&gt;
 /*周末 */
@@ -13452,9 +13524,9 @@ $(&#39;#listbox--condition&#39;).on(&#39;change&#39;,()=&gt;{
 &lt;&lt;=P.inTime(
     [0, 5.5, &#39;凌晨时间也能偶尔看到学生在门口进出。&#39;],
     [5.5, 8, &#39;一大早就能看到有学生跑出来摆摊了。&#39;],
-    [9, 12, &#39;除了穿着制服的魔法学生们，有时还能看到外来人士的来访。&#39;]
-    [20, 24, &#39;这个时间点也能看到学生溜出校外游玩。&#39;]
-    [&#39;else&#39;, &#39;门口前的广场边上有一些摊贩在卖东西。&#39;]
+    [9, 12, &#39;除了穿着制服的魔法学生们，有时还能看到外来人士的来访。&#39;],
+    [20, 24, &#39;这个时间点也能看到学生溜出校外游玩。&#39;],
+    [&#39;else&#39;, &#39;门口前的广场边上有一些摊贩在卖东西。&#39;],
 )&gt;&gt;
 
 /*周一 */
@@ -13464,17 +13536,17 @@ $(&#39;#listbox--condition&#39;).on(&#39;change&#39;,()=&gt;{
 	[5.5, 8, &quot;一大早就看到有摊贩在门前开桌下赌注了。&quot;],
 	[8, 9, &quot;在门口就能看到远处悬浮台上盛放的各种魔法特效。&quot;],
 	[10, 12, &quot;从门口就能听到远处竞技场传来的欢呼声。&quot;],
-    [12, 16, &#39;从摊贩们的表情就能看出光日表演赛的盛况。&#39;]
-    [16, 18, &#39;赚的赚赔的赔，摊贩们在收拾东西陆续离开中。&#39;]
-	[&quot;else&quot;, &quot;大门上的悬浮屏正在回放着今天的表演。&quot;]
+    [12, 16, &#39;从摊贩们的表情就能看出光日表演赛的盛况。&#39;],
+    [16, 18, &#39;赚的赚赔的赔，摊贩们在收拾东西陆续离开中。&#39;],
+	[&quot;else&quot;, &quot;大门上的悬浮屏正在回放着今天的表演。&quot;],
 )&gt;&gt;
 
 /*其他日子 */
 &lt;&lt;default&gt;&gt;
 &lt;&lt;=P.inTime(
     [13, 17, &quot;门口前的广场边上有一些摊贩在卖东西。&quot;],
-    [18, 19, &#39;原来聚集在门前的摊贩们已经开始收拾东西准备离开了。&#39;]
-    [6, 14, &#39;偶尔能看到学生在门口进出。&#39;]
+    [18, 19, &#39;原来聚集在门前的摊贩们已经开始收拾东西准备离开了。&#39;],
+    [6, 14, &#39;偶尔能看到学生在门口进出。&#39;],
 )&gt;&gt;
 &lt;&lt;/switch&gt;&gt;
 &lt;br&gt;</tw-passagedata><tw-passagedata pid="29" name="Msg_Spots_Academy_MageTower" tags="" position="1100,350" size="100,100">这里是学院的法师塔。几个大型防御炮台就悬浮在塔身周围，保护着学院的安全。&lt;br&gt;
@@ -13494,7 +13566,7 @@ $(&#39;#listbox--condition&#39;).on(&#39;change&#39;,()=&gt;{
 &lt;div id=&#39;editor_menu&#39;&gt;
     &lt;div id=&#39;currentpos&#39;&gt;
     &lt;/div&gt;
-    &lt;div&gt;&lt;&lt;set _mapoptions = [&#39;&#39;].concat(Object.keys(worldMap))&gt;&gt;
+    &lt;div&gt;&lt;&lt;set _mapoptions = [&#39;&#39;].concat(Object.keys(worldMap).filter( key=&gt; !groupmatch(key, &#39;get&#39;, &#39;CommonSpots&#39;)))&gt;&gt;
     选择地图：
     &lt;&lt;listbox &quot;_selectMap&quot;&gt;&gt;
         &lt;&lt;optionsfrom _mapoptions&gt;&gt;
@@ -13547,6 +13619,20 @@ $(&#39;#listbox--condition&#39;).on(&#39;change&#39;,()=&gt;{
     &lt;&lt;checkbox &#39;_setGoalPoint&#39; 0 1 autocheck&gt;&gt;设置终点：
     &lt;div id=&#39;goalpos&#39;&gt;&lt;/div&gt;
     &lt;&lt;button &#39;创建路线图&#39;&gt;&gt;
+    &lt;&lt;run 
+        if(T.startPoint &amp;&amp; T.goalPoint)
+            showPathMap();
+    &gt;&gt;
+    &lt;&lt;/button&gt;&gt;
+
+    &lt;&lt;button &#39;清除路线&#39;&gt;&gt;
+    &lt;&lt;run
+        $(&#39;.mapcell&#39;).removeClass(&#39;pathcell&#39;)
+        T.startPoint = null
+        T.goalPoint = null
+        T.setStartPoint = 0
+        T.setGoalPoint = 0
+    &gt;&gt;
     &lt;&lt;/button&gt;&gt;
     &lt;/div&gt;
     &lt;div&gt;
