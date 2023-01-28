@@ -1,4 +1,4 @@
-import { townMap, Locations } from "./map";
+import { TownMap, Spots } from "./map";
 declare function groupmatch(arg, ...args): boolean;
 
 declare const worldMap: typeof window.worldMap;

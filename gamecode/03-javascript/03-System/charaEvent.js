@@ -35,10 +35,10 @@ F.switchChara = function () {
 	let com = `<<set $pc to '${charaB}'>>`;
 
 	let event = `if (
-      Kojo.has('${charaB}', 'Daily', 'onSwitch')
+      Kojo.has('${charaB}', { type: 'Daily', id:'onSwitch' })
       ){
       P.flow(
-         Kojo.put('${charaB}', { type: 'Event', id: 'onSwitch'})
+         Kojo.put('${charaB}', { type: 'Daily', id: 'onSwitch'})
       )
    }`;
 

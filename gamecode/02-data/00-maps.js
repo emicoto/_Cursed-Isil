@@ -1,10 +1,14 @@
 const worldMap = {
-	Orlania: new townMap("Orlania", "", {
+	Orlania: new TownMap("Orlania", "", {
 		name: ["奥兰尼亚"],
 		entry: ["GateNorth", "GateSouth", "GateWest", "GateEast"],
 		xy: [35],
 	}),
-	Academy: new townMap("Academy", "Orlania", { name: ["第一魔法学院"], entry: ["SchoolGate"], xy: [7, 25] }),
+	Academy: new TownMap("Academy", "Orlania", {
+		name: ["第一魔法学院"],
+		entry: ["Academy.SchoolEntrance"],
+		xy: [7, 25],
+	}),
 	CommonSpots: {},
 };
 

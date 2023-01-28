@@ -54,7 +54,7 @@ F.iniLocation = function (path) {
 	local.chara = [];
 
 	if (yourHome) {
-		local.placement = Locations.countPlacement(V.home.placement);
+		local.placement = Spots.countPlacement(V.home.placement);
 	}
 
 	//传送点有可能初始时不存在，但会在后续事件中出现
@@ -78,8 +78,10 @@ F.iniLocation = function (path) {
 };
 
 F.createLocationLink = function () {
+	const mapdata = worldMap.get(V.location.groupId);
 	T.map = Maps.getBoard(V.location.groupId);
 	$("#travel").html("");
+
 	//先把所有地点都列出来
 	const list = Array.from(worldMap[V.location.groupId].spots)
 		.filter((spot) => spot[0] !== V.location.posId)
@@ -97,10 +99,19 @@ F.createLocationLink = function () {
 		list.push([fullId, "isEntry"]);
 	}
 
+	//如果是大地图的出入口
+	if (mapdata.entry === V.location.mapId) {
+		//添加移动到大地图的链接.
+	}
+
 	//整理出新的列表。 录入顺序 [地点id, 移动时间]
 	const spots = [];
 
 	list.forEach((item) => {
+		const id = item[0];
+		const locdata = worldMap.get(id);
+		//在这里时进行条件筛选。如果不符合条件，就不会出现在列表中。
+
 		if (item[1].has && item[1].has("isRoom", "isEntry")) {
 			spots.push([item[0], 1]);
 		} else if (item[2].has("invisible", "inaccessible")) {
@@ -131,5 +142,17 @@ F.createLocationLink = function () {
 };
 
 F.travleTo = function (fullId) {
+	V.lastLocation = clone(V.location);
 	V.location = F.iniLocation(fullId);
+};
+
+F.DisplayMiniMap = function () {
+	//以玩家坐标为中心，在9x9的范围内显示周围地图。
+	const mapdata = worldMap.get(V.location.groupId);
+	const map = Maps.getBoard(mapdata);
+	const pos = V.location.pos;
+	const size = 9;
+	const start = { x: pos.x - Math.floor(size / 2), y: pos.y - Math.floor(size / 2) };
+	const end = { x: pos.x + Math.floor(size / 2), y: pos.y + Math.floor(size / 2) };
+	let output = "";
 };

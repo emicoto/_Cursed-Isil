@@ -1,5 +1,5 @@
 import { GenerateMap } from "./MapPath";
-import { Dict, maptype, maptags, rarity, locationside } from "./types";
+import { Dict, maptype, maptags, rarity, spotType } from "./types";
 export interface iPos {
 	x: number;
 	y: number;
@@ -25,19 +25,18 @@ export interface Maps {
 	maptag?: string[];
 }
 
-export interface townMap extends Maps {
+export interface TownMap extends Maps {
 	entry: string[];
-	locations?: Dict<Locations>;
+	locations?: Dict<Spots>;
 }
 
-export interface Locations extends Maps {
+export interface Spots extends Maps {
 	rooms?: string[];
-	business?: {
+	opentime?: {
 		weekday: number[] | "allday";
 		open: number;
 		close: number;
 	};
-	side?: "室内" | "室外" | "户外";
 	yourHome?: boolean;
 	hasParking?: boolean;
 	hasRailcar?: boolean;
@@ -46,6 +45,7 @@ export interface Locations extends Maps {
 	placement?: string[];
 	maxslot?: number;
 	[key: string]: any;
+	spotType?: spotType;
 }
 
 export interface fieldMap extends Maps {
@@ -99,11 +99,11 @@ export class Maps {
 	public static copy(map, groupId, mapId) {
 		let newMap;
 		if (map.type == "town") {
-			newMap = new townMap(map.mapId, map.groupId, { name: map.name, entry: map.entry, xy: map.mapsize }, map);
+			newMap = new TownMap(map.mapId, map.groupId, { name: map.name, entry: map.entry, xy: map.mapsize }, map);
 		}
 
-		if (map.type == "location" || map.type == "room") {
-			newMap = new Locations(map.mapId, map.name, map.groupId, map.side, map);
+		if (map.type == "spot" || map.type == "room") {
+			newMap = new Spots(map.mapId, map.name, map.groupId, map.side, map);
 		}
 		newMap.groupId = groupId;
 		newMap.mapId = mapId;
@@ -133,6 +133,7 @@ export class Maps {
 		this.events = callback;
 		return this;
 	}
+	initTags() {}
 	Tags(...tags: maptags[]) {
 		this.tags = tags;
 		if (tags.includes("户外")) {
@@ -177,9 +178,9 @@ export class Maps {
 }
 
 // 城镇地图
-export class townMap extends Maps {
-	constructor(mapid: string, groupid: string, { name, entry, xy }, map?: townMap) {
-		super(name, "town");
+export class TownMap extends Maps {
+	constructor(mapid: string, groupid: string, { name, entry, xy }, map?: TownMap) {
+		super(name, "board");
 		if (map) {
 			for (let key in map) {
 				this[key] = map[key];
@@ -212,9 +213,9 @@ export class townMap extends Maps {
 }
 
 // 具体地点
-export class Locations extends Maps {
-	constructor(mapid, name: string[], group: string, side: "室内" | "室外" | "户外", map?: Locations) {
-		super(name, "location");
+export class Spots extends Maps {
+	constructor(mapid, name: string[], group: string, spotType: spotType, map?: Spots) {
+		super(name, "spot");
 		if (map) {
 			for (let key in map) {
 				this[key] = map[key];
@@ -222,10 +223,12 @@ export class Locations extends Maps {
 		} else {
 			this.mapId = group + "." + mapid; //地点的绝对id
 			this.groupId = group; //目录的id
-			this.side = side;
-			this.tags.push(side);
+			this.spotType = spotType;
 			this.placement = [];
 		}
+	}
+	InitTags() {
+		return this;
 	}
 	isRoom() {
 		this.type = "room";
@@ -237,8 +240,8 @@ export class Locations extends Maps {
 		this.rooms = rooms;
 		return this;
 	}
-	Business(weekday: number[] | "allday", open: number, close: number) {
-		this.business = {
+	Opentime(weekday: number[] | "allday", open: number, close: number) {
+		this.opentime = {
 			weekday: weekday,
 			open: open,
 			close: close,
@@ -279,6 +282,11 @@ export class Locations extends Maps {
 	}
 	MaxSlots(number: number) {
 		this.maxSlots = number;
+		return this;
+	}
+
+	isCommon() {
+		this.spotType = "common";
 		return this;
 	}
 
@@ -352,14 +360,14 @@ Object.defineProperties(window, {
 			return Maps;
 		},
 	},
-	townMap: {
+	TownMap: {
 		get() {
-			return townMap;
+			return TownMap;
 		},
 	},
-	Locations: {
+	Spots: {
 		get() {
-			return Locations;
+			return Spots;
 		},
 	},
 });

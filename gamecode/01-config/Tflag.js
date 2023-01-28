@@ -9,14 +9,13 @@ D.tflag = [
 	"actPartFilter", // action part 过滤器
 
 	"actor", //正在执行动作的人。
-	"actTg", //action target的缩写。
+	"target", //选择的对象。
 	"actPart", // 进行动作的部位
 	"selectpart", //选择的动作对象部位
-	"actionDetail", // 确认执行时记录的动作详情
-	"counterDetail", //counter详细会根据在场npc分别记录。
+	"action", // 确认执行时记录的动作详情
+	"counter", //counter详细会根据在场npc分别记录。
 
 	"inside", // is Sex inside,
-	"posId", // pose Id
 	"actId", // 动作 id
 	"msgId", // 信息 id
 

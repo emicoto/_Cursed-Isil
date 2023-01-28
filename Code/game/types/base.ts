@@ -164,7 +164,7 @@ export type expkey =
 
 export type markkey = "hypno" | "ecstacy" | "surrend" | "pain" | "fear" | "humil" | "resit";
 
-export type maptype = "town" | "field" | "dungeon" | "location" | "room" | "spot";
+export type maptype = "board" | "spot" | "room" | "field" | "dungeon" | "dungeonroom" | "maze";
 
 export type rarity = "C" | "UC" | "R" | "SP" | "ER" | "LR";
 
@@ -220,6 +220,7 @@ export type maptags =
 	| "防御"
 	| "研究"
 	| "宿舍"
+	| "营业"
 
 	//特征
 	| "阴影处" //只用在室外
@@ -234,9 +235,6 @@ export type maptags =
 	| "上锁"
 	| "遮顶"
 	| "异空间";
-
-//特征
-export type maptrait = "光亮处" | "阴影处" | "隐蔽" | "辽阔" | "封闭" | "狭窄" | "宽敞" | "高台";
 
 //设施、家具
 export type placement =
@@ -256,4 +254,19 @@ export type placement =
 	| "长椅"
 	| "旗帜";
 
-export type locationside = "E" | "W" | "N" | "S";
+export type dirside = "E" | "W" | "N" | "S";
+
+//地点类型。用于判断地点的功能属性。common是通用地点，用的共同数据档案。building是可以直接进入到内部的地点。 buildingEntry是建筑物的入口，需要通过入口才能进入到内部。
+export type spotType =
+	| "common"
+	| "building"
+	| "buildingEntry"
+	| "park"
+	| "field"
+	| "mapEntry"
+	| "float"
+	| "privateRoom"
+	| "secretArea"
+	| "area";
+
+export type tileType = "grass" | "road" | "float" | "passable" | "unpassable" | "bridge" | "water";

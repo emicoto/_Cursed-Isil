@@ -12,7 +12,18 @@ Era the Cursed
 </div>
 
 <div id='footer'>
-开发者工具：<<link '地图编辑器' 'MapEditor'>><</link>>　<<link '口上编辑器' 'KojoEditor'>><</link>>　<<link '获取口上模板'>><<run Action.output('kojo'); Action.output('kojocounter')>><</link>>　<<link '获取系统文模板'>><<run Action.output('msg')>><</link>>　<<link '获取指令设置模板'>><<run Action.output('script')>><</link>>　<<link '快速重启'>><<run Engine.restart()>><</link>><br>
+开发者工具：
+<<link '地图编辑器' 'MapEditor'>><</link>>
+　
+<<link '口上编辑器' 'KojoEditor'>><</link>>
+　
+<<link '获取口上模板'>><<run Action.output('kojo'); Action.output('kojocounter')>><</link>>
+　
+<<link '获取系统文模板'>><<run Action.output('msg')>><</link>>
+　
+<<link '获取指令设置模板'>><<run Action.output('script')>><</link>>
+　
+<<link '快速重启'>><<run Engine.restart()>><</link>><br>
 </div>
 
 

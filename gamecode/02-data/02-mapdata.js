@@ -1,5 +1,4 @@
 worldMap.Orlania.mapdata = {
-	OutskirtsNorth: [[0, 17]],
 	road: [
 		[1, 17],
 		[3, 17],
@@ -173,6 +172,7 @@ worldMap.Orlania.mapdata = {
 		[31, 17],
 		[33, 17],
 	],
+	OutskirtsNorth: [[0, 17]],
 	GateNorth: [[2, 17]],
 	Church: [[5, 21]],
 	MagicaAcademy: [[6, 25]],
@@ -197,8 +197,6 @@ worldMap.Orlania.mapdata = {
 };
 
 worldMap.Academy.mapdata = {
-	MageTower: [[0, 0]],
-	"ClassBuildingR2|passable": [[0, 4]],
 	road: [
 		[0, 6],
 		[0, 7],
@@ -260,6 +258,8 @@ worldMap.Academy.mapdata = {
 		[6, 9],
 		[6, 10],
 	],
+	MageTower: [[0, 0]],
+	"ClassBuildingR2|passable": [[0, 4]],
 	ResearchLabB: [[1, 7]],
 	"GreenGarden|passable": [[1, 10]],
 	"Arena|passable": [[1, 13]],

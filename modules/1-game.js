@@ -894,10 +894,10 @@
 	  static copy(map, groupId, mapId) {
 	    let newMap;
 	    if (map.type == "town") {
-	      newMap = new townMap(map.mapId, map.groupId, { name: map.name, entry: map.entry, xy: map.mapsize }, map);
+	      newMap = new TownMap(map.mapId, map.groupId, { name: map.name, entry: map.entry, xy: map.mapsize }, map);
 	    }
-	    if (map.type == "location" || map.type == "room") {
-	      newMap = new Locations(map.mapId, map.name, map.groupId, map.side, map);
+	    if (map.type == "spot" || map.type == "room") {
+	      newMap = new Spots(map.mapId, map.name, map.groupId, map.side, map);
 	    }
 	    newMap.groupId = groupId;
 	    newMap.mapId = mapId;
@@ -924,6 +924,8 @@
 	  Events(callback) {
 	    this.events = callback;
 	    return this;
+	  }
+	  initTags() {
 	  }
 	  Tags(...tags) {
 	    this.tags = tags;
@@ -968,9 +970,9 @@
 	    printMapFromData(this);
 	  }
 	}
-	class townMap extends Maps {
+	class TownMap extends Maps {
 	  constructor(mapid, groupid, { name, entry, xy }, map) {
-	    super(name, "town");
+	    super(name, "board");
 	    if (map) {
 	      for (let key in map) {
 	        this[key] = map[key];
@@ -999,9 +1001,9 @@
 	    return this;
 	  }
 	}
-	class Locations extends Maps {
-	  constructor(mapid, name, group, side, map) {
-	    super(name, "location");
+	class Spots extends Maps {
+	  constructor(mapid, name, group, spotType2, map) {
+	    super(name, "spot");
 	    if (map) {
 	      for (let key in map) {
 	        this[key] = map[key];
@@ -1009,10 +1011,12 @@
 	    } else {
 	      this.mapId = group + "." + mapid;
 	      this.groupId = group;
-	      this.side = side;
-	      this.tags.push(side);
+	      this.spotType = spotType2;
 	      this.placement = [];
 	    }
+	  }
+	  InitTags() {
+	    return this;
 	  }
 	  isRoom() {
 	    this.type = "room";
@@ -1024,8 +1028,8 @@
 	    this.rooms = rooms;
 	    return this;
 	  }
-	  Business(weekday, open, close) {
-	    this.business = {
+	  Opentime(weekday, open, close) {
+	    this.opentime = {
 	      weekday,
 	      open,
 	      close
@@ -1066,6 +1070,10 @@
 	  }
 	  MaxSlots(number) {
 	    this.maxSlots = number;
+	    return this;
+	  }
+	  isCommon() {
+	    this.spotType = "common";
 	    return this;
 	  }
 	  static countPlacement(placement) {
@@ -1131,14 +1139,14 @@
 	      return Maps;
 	    }
 	  },
-	  townMap: {
+	  TownMap: {
 	    get() {
-	      return townMap;
+	      return TownMap;
 	    }
 	  },
-	  Locations: {
+	  Spots: {
 	    get() {
-	      return Locations;
+	      return Spots;
 	    }
 	  }
 	});

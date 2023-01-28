@@ -1,5 +1,4 @@
 import { Maps, iPos, printMap } from "./map";
-import { locationside } from "./types/base";
 
 declare function groupmatch(arg, ...args): boolean;
 const moveableTile = ["road", "glass", "field", "TRoad", "LRoad", "crossRoad", "passable"];
