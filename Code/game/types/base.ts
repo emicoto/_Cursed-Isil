@@ -166,7 +166,7 @@ export type markkey = "hypno" | "ecstacy" | "surrend" | "pain" | "fear" | "humil
 
 export type maptype = "board" | "spot" | "room" | "field" | "dungeon" | "dungeonroom" | "maze";
 
-export type rarity = "C" | "UC" | "R" | "SP" | "ER" | "LR";
+export type rarity = "C" | "UC" | "R" | "SR" | "UR" | "LR";
 
 export type maptags =
 	//地点区域
@@ -175,8 +175,10 @@ export type maptags =
 	| "采集区"
 	| "挖矿区"
 	| "钓鱼区"
-	| "阅读区"
-	| "探索区"
+	| "训练场"
+	| "地图接口"
+
+	//区域特征
 	| "地下"
 	| "森林"
 	| "平原"
@@ -185,13 +187,9 @@ export type maptags =
 	| "山岳"
 	| "严寒"
 	| "炎热"
-	| "室内" //室外户外都属于外部开放空间。但室外指建筑物外，附近可能存在建造物和围墙。
-	| "室外" //户外自带开阔属性。
-	| "户外"
-	| "露天" //这个露天是室内用的
-	| "交通"
+	| "室内"
+	| "室外"
 	| "水源"
-	| "战斗区"
 	| "景点"
 
 	//房间类型
@@ -199,42 +197,40 @@ export type maptags =
 	| "个人"
 	| "睡房"
 	| "厕所"
-	| "浴厕"
 	| "沐浴"
 	| "澡堂"
 	| "厨房"
 	| "教室"
-	| "商店"
 	| "活动"
 	| "舞台"
-	| "餐厅"
-	| "酒馆"
-	| "旅馆"
-	| "会所"
-	| "娼馆"
 	| "遗迹"
-	| "地下城"
 	| "迷宫"
 	| "下水道"
-	| "家"
+	| "住宅"
 	| "防御"
 	| "研究"
 	| "宿舍"
+	| "旅馆"
 	| "营业"
+	| "交通"
+	| "上锁"
+	| "医务"
 
 	//特征
 	| "阴影处" //只用在室外
 	| "隐蔽"
-	| "开阔"
+	| "开阔" //视野开阔的地点，能看到很远。通常比较高
 	| "封闭" //没有窗没有门的全封闭空间，只能通过特殊途径进入
 	| "狭窄"
 	| "宽敞"
 	| "高台"
-	| "悬浮"
-	| "无窗"
-	| "上锁"
-	| "遮顶"
-	| "异空间";
+	| "悬浮" //悬浮的建筑，不开放时需要使用魔法或飞行器才能接近。
+	| "无窗" //没有窗
+	| "异空间"
+	| "天窗"
+	| "露天" //只有围墙的开放空间
+	| "开放" //有遮顶的开放型室内空间
+	| "魔网"; //有wifi
 
 //设施、家具
 export type placement =
@@ -247,7 +243,6 @@ export type placement =
 	| "乐器"
 	| "落地窗"
 	| "镜子"
-	| "魔网"
 	| "移动摊位"
 	| "防御炮台"
 	| "传送门"
@@ -261,12 +256,45 @@ export type spotType =
 	| "common"
 	| "building"
 	| "buildingEntry"
+	| "mapEntry" //地图入口
+	| "gate" //大门
+	| "transport" //交通
+	| "portal" //传送点
+	| "shopAlley"
 	| "park"
 	| "field"
-	| "mapEntry"
 	| "float"
-	| "privateRoom"
+	| "private"
+	| "room"
+	| "dungeon"
+	| "dungeonRoom"
+	| "dungeonEntrance"
+	| "floorstairs"
+	| "BossRoom"
+	| "TreasureRoom"
 	| "secretArea"
-	| "area";
+	| "ground"
+	| "house";
 
-export type tileType = "grass" | "road" | "float" | "passable" | "unpassable" | "bridge" | "water";
+export type tileType =
+	| "grass"
+	| "road"
+	| "float"
+	| "passable"
+	| "unpassable"
+	| "bridge"
+	| "water"
+	| "blank"
+	| "spot"
+	| "";
+
+export type boardtype =
+	| "town"
+	| "forest"
+	| "ocean"
+	| "mountain"
+	| "floatingIsland"
+	| "dungeon"
+	| "maze"
+	| "field"
+	| "academy";

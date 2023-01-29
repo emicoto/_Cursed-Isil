@@ -13,13 +13,13 @@ window.confirmNewmap = function () {
 		if (T.mapsizeY % 2 === 0) {
 			T.mapsizeY += 1;
 		}
-		T.mapdata = newMap(T.mapsizeX, T.mapsizeY);
+		T.mapdata = F.newMap(T.mapsizeX, T.mapsizeY);
 		generateMapField(T.mapdata);
 		console.log(T.mapdata);
 	}
 };
 
-window.newMap = function (x, y) {
+F.newMap = function (x, y) {
 	const grid = [];
 	for (let i = 0; i < x; i++) {
 		grid[i] = [];
@@ -102,7 +102,7 @@ window.saveMapConfig = function () {
 		[1, 0, "S"],
 		[-1, 0, "N"],
 	];
-	let raw = Maps.convertData(T.mapdata);
+	let raw = GameMap.convertData(T.mapdata);
 	delete raw["."]; // remove empty space
 	delete raw["road"]; // remove road
 	let arr = [];

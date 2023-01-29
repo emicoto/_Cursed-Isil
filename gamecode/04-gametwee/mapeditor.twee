@@ -20,7 +20,7 @@
 
     <<button '读取地图'>>
     <<run
-        T.mapdata = Maps.getBoard(T.selectMap)
+        T.mapdata = GameMap.getBoard(T.selectMap)
         T.mapsizeX = T.mapdata.length
         T.mapsizeY = T.mapdata[0].length
         generateMapField(T.mapdata)
@@ -58,6 +58,15 @@
     <<checkbox "_placemode" 0 1 autocheck>>
     清除模式：
     <<checkbox '_destroymode' 0 1 autocheck>>
+
+    <<button '自动补充道路'>>
+    <<run
+        T.mapdata = AutoFillRoads(T.mapdata)
+        T.mapsizeX = T.mapdata.length
+        T.mapsizeY = T.mapdata[0].length
+        generateMapField(T.mapdata) 
+    >>
+    <</button>>
     </div>
     <div>
     <<checkbox '_setStartPoint' 0 1 autocheck>>设置起点：

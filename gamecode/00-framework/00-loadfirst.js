@@ -65,3 +65,7 @@ window.saveToFile = function () {
 	const savedata = Save.serialize(V);
 	fs.writeFileSync("public/save/save.sav", savedata);
 };
+
+if (!fs || !fs.existsSync || !os) {
+	console.log("node.js not supported");
+}

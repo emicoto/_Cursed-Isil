@@ -2088,9 +2088,22 @@ Object.defineProperty(String.prototype, "readBracketedList", {
 	  Chara: { value: Chara }
 	});
 
-	const moveableTile = ["road", "glass", "field", "TRoad", "LRoad", "crossRoad", "passable"];
+	const moveableTile = ["road", "glass", "field", "passable", "area"];
+	const directions = [
+	  [-1, 0],
+	  [1, 0],
+	  [0, -1],
+	  [0, 1]
+	];
+	const directions2 = [
+	  [-1, -1],
+	  [-1, 1],
+	  [1, -1],
+	  [1, 1]
+	];
 	function GenerateSpot(map) {
-	  const townmap = new Array(map.mapsize.x).fill(0).map(() => new Array(map.mapsize.y).fill(""));
+	  const board = new Array(map.mapsize.x).fill(0).map(() => new Array(map.mapsize.y).fill(""));
+	  console.log(board);
 	  const spots = Array.from(map.spots);
 	  spots.sort((a, b) => {
 	    if (a[1].pos.x === b[1].pos.x) {
@@ -2098,151 +2111,108 @@ Object.defineProperty(String.prototype, "readBracketedList", {
 	    }
 	    return a[1].pos.x - b[1].pos.x;
 	  });
-	  spots.forEach((location) => {
-	    const pos = location[1].pos;
-	    townmap[pos.x][pos.y] = location[0] + location[1].tags.join("|");
-	  });
-	  const road = [];
-	  const setRoad = (x, y, side) => {
-	    if (x < 0 || y < 0 || x >= map.mapsize.x || y >= map.mapsize.y)
-	      return;
-	    if (townmap[x][y] === "") {
-	      townmap[x][y] = "road";
-	      road.push([side, x, y]);
-	    }
-	  };
-	  spots.forEach((location) => {
-	    const pos = location[1].pos;
-	    const side = location[1].side;
-	    side.split("").forEach((s) => {
-	      switch (s) {
-	        case "W":
-	        case "w":
-	          setRoad(pos.x, pos.y - 1, "W");
-	          break;
-	        case "E":
-	        case "e":
-	          setRoad(pos.x, pos.y + 1, "E");
-	          break;
-	        case "S":
-	        case "s":
-	          setRoad(pos.x + 1, pos.y, "S");
-	          break;
-	        case "N":
-	        case "n":
-	          setRoad(pos.x - 1, pos.y, "N");
-	          break;
-	      }
+	  spots.forEach((loc) => {
+	    const pos = loc[1].pos;
+	    pos.forEach(({ x, y }) => {
+	      board[x][y] = loc[0] + loc[1].tileType;
 	    });
 	  });
-	  return [townmap, road];
+	  const road = [];
+	  const setRoad = (x, y, s) => {
+	    if (x < 0 || y < 0 || x >= map.mapsize.x || y >= map.mapsize.y)
+	      return;
+	    if (groupmatch(board[x][y], "", ".", "blank")) {
+	      board[x][y] = "road";
+	      road.push({ x, y, s });
+	    }
+	  };
+	  spots.forEach((loc) => {
+	    const pos = loc[1].pos;
+	    const side = loc[1].dside;
+	    pos.forEach(({ x, y }) => {
+	      side.split("").forEach((s) => {
+	        switch (s) {
+	          case "W":
+	          case "w":
+	            setRoad(x, y - 1, "W");
+	            break;
+	          case "E":
+	          case "e":
+	            setRoad(x, y + 1, "E");
+	            break;
+	          case "S":
+	          case "s":
+	            setRoad(x + 1, y, "S");
+	            break;
+	          case "N":
+	          case "n":
+	            setRoad(x - 1, y, "N");
+	            break;
+	        }
+	      });
+	    });
+	  });
+	  return [board, road];
+	}
+	function AutoFillRoads(map) {
+	  const spots = [];
+	  for (let x = 0; x < map.length; x++) {
+	    for (let y = 0; y < map[x].length; y++) {
+	      if (!groupmatch(map[x][y], "", ".", "blank")) {
+	        spots.push({ x, y });
+	      }
+	    }
+	  }
+	  for (let i = 0; i < spots.length; i++) {
+	    const start = spots[i];
+	    for (let j = i + 1; j < spots.length; j++) {
+	      const goal = spots[j];
+	      const path = createPath(map, start, goal);
+	      if (!path)
+	        continue;
+	      path.forEach((p) => {
+	        if (groupmatch(map[p[0]][p[1]], "", ".", "blank")) {
+	          map[p[0]][p[1]] = "road";
+	        }
+	      });
+	    }
+	  }
+	  clearExtraRoad(map);
+	  clearUnconnectRoad(map);
+	  printMap(map);
+	  return map;
 	}
 	function GenerateMap(map) {
 	  const maps = GenerateSpot(map);
-	  const townmap = maps[0];
+	  const board = maps[0];
 	  const road = maps[1];
-	  const directions = [
-	    [0, -1],
-	    [0, 1],
-	    [1, 0],
-	    [-1, 0]
-	  ];
-	  const directions2 = [
-	    [1, -1],
-	    [1, 1],
-	    [-1, 1],
-	    [-1, -1]
-	  ];
-	  const checkRoad = (side, x, y, start, end) => {
-	    if (x < 0 || y < 0 || x >= townmap.length || y >= townmap[x].length)
-	      return false;
-	    if (side == "x") {
-	      for (let i = start; i <= end; i++) {
-	        if (townmap[i][y] !== "" && townmap[i][y] !== "road")
-	          return false;
-	      }
-	    }
-	    if (side == "y") {
-	      for (let i = start; i <= end; i++) {
-	        if (townmap[x][i] !== "" && townmap[x][i] !== "road")
-	          return false;
-	      }
-	    }
-	    return true;
-	  };
-	  const isRoad = (x, y) => {
-	    if (x < 0 || y < 0 || x >= townmap.length || y >= townmap[x].length)
-	      return false;
-	    return townmap[x][y] === "road";
-	  };
-	  const hasRoadAround = (side, x, y) => {
-	    if (x < 0 || y < 0 || x >= townmap.length || y >= townmap[x].length)
-	      return false;
-	    let count = 0;
-	    directions.concat(directions2).forEach((dir) => {
-	      if (side == "x" && dir[0] == 0) ; else if (side == "y" && dir[1] == 0) ; else if (isRoad(x + dir[0], y + dir[1]))
-	        count++;
-	    });
-	    return count > 4;
-	  };
-	  const connectRoad = (side, x, y, start, end) => {
-	    if (side == "x") {
-	      for (let i = start; i <= end; i++) {
-	        if (townmap[i][y] === "") {
-	          if (hasRoadAround(side, i, y))
-	            continue;
-	          townmap[i][y] = "road";
+	  for (let i = 0; i < road.length; i++) {
+	    const start = road[i];
+	    for (let j = i + 1; j < road.length; j++) {
+	      const goal = road[j];
+	      const path = createPath(board, start, goal, start.s);
+	      if (!path)
+	        continue;
+	      path.forEach((p) => {
+	        if (groupmatch(board[p[0]][p[1]], "", ".", "blank")) {
+	          board[p[0]][p[1]] = "road";
 	        }
+	      });
+	    }
+	  }
+	  clearExtraRoad(board);
+	  clearUnconnectRoad(board);
+	  printMap(board);
+	  return board;
+	}
+	function clearExtraRoad(map) {
+	  for (let x = 0; x < map.length; x++) {
+	    for (let y = 0; y < map[x].length; y++) {
+	      if (roadAroundRoads(x, y, map) >= 7) {
+	        map[x][y] = "";
 	      }
 	    }
-	    if (side == "y") {
-	      for (let i = start; i <= end; i++) {
-	        if (townmap[x][i] === "") {
-	          if (hasRoadAround(side, x, i))
-	            continue;
-	          townmap[x][i] = "road";
-	        }
-	      }
-	    }
-	  };
-	  road.forEach((road2) => {
-	    const x = road2[1];
-	    const y = road2[2];
-	    const side = road2[0];
-	    if (side == "N" || side == "S") {
-	      for (let i = x - 1; i >= 0; i--) {
-	        if (townmap[i][y] === "road") {
-	          if (checkRoad("x", x, y, i + 1, x - 1)) {
-	            connectRoad("x", x, y, i + 1, x - 1);
-	          }
-	        }
-	      }
-	      for (let i = x + 1; i < map.mapsize.x; i++) {
-	        if (townmap[i][y] === "road") {
-	          if (checkRoad("x", x, y, x + 1, i - 1)) {
-	            connectRoad("x", x, y, x + 1, i - 1);
-	          }
-	        }
-	      }
-	    }
-	    for (let i = y - 1; i >= 0; i--) {
-	      if (townmap[x][i] === "road") {
-	        if (checkRoad("y", x, y, i + 1, y - 1)) {
-	          connectRoad("y", x, y, i + 1, y - 1);
-	        }
-	      }
-	    }
-	    for (let i = y + 1; i < map.mapsize.y; i++) {
-	      if (townmap[x][i] === "road") {
-	        if (checkRoad("y", x, y, y + 1, i - 1)) {
-	          connectRoad("y", x, y, y + 1, i - 1);
-	        }
-	      }
-	    }
-	  });
-	  clearUnconnectRoad(townmap);
-	  printMap(townmap);
-	  return townmap;
+	  }
 	}
 	function Distance(start, goal) {
 	  return Math.abs(start.x - start.x) + Math.abs(goal.y - goal.y);
@@ -2250,13 +2220,20 @@ Object.defineProperty(String.prototype, "readBracketedList", {
 	function outOfMap(x, y, map) {
 	  return x < 0 || y < 0 || x >= map.length || y >= map[x].length;
 	}
+	function roadAroundRoads(x, y, map) {
+	  let count = 0, edge = 0;
+	  const dir = directions.concat(directions2);
+	  if (map[x][y] !== "road")
+	    return 0;
+	  dir.forEach((d) => {
+	    if (outOfMap(x + d[0], y + d[1], map)) {
+	      edge++;
+	    } else if (map[x + d[0]][y + d[1]] === "road")
+	      count++;
+	  });
+	  return count + edge;
+	}
 	function UnconnectRoad(x, y, map) {
-	  const directions = [
-	    [-1, 0],
-	    [1, 0],
-	    [0, -1],
-	    [0, 1]
-	  ];
 	  let i = 0;
 	  directions.forEach((dir) => {
 	    if (outOfMap(x + dir[0], y + dir[1], map)) ; else if (!groupmatch(map[x + dir[0]][y + dir[1]], "", "."))
@@ -2312,12 +2289,6 @@ Object.defineProperty(String.prototype, "readBracketedList", {
 	function findPath(mapdata, startPoint, goalPoint) {
 	  const queue = [];
 	  const visited = /* @__PURE__ */ new Set();
-	  const directions = [
-	    [-1, 0],
-	    [1, 0],
-	    [0, -1],
-	    [0, 1]
-	  ];
 	  queue.push({ x: startPoint.x, y: startPoint.y, path: [], from: null });
 	  visited.add(startPoint);
 	  while (queue.length > 0) {
@@ -2355,61 +2326,86 @@ Object.defineProperty(String.prototype, "readBracketedList", {
 	  });
 	  map.forEach((row) => console.log(row.join("")));
 	}
+	function createPath(mapdata, startPoint, goalPoint, side) {
+	  const queue = [];
+	  const visited = /* @__PURE__ */ new Set();
+	  let dirs;
+	  switch (side) {
+	    case "N":
+	      dirs = [
+	        [0, -1],
+	        [0, 1],
+	        [1, 0]
+	      ];
+	    case "S":
+	      dirs = [
+	        [0, -1],
+	        [0, 1],
+	        [-1, 0]
+	      ];
+	    case "W":
+	      dirs = [
+	        [-1, 0],
+	        [1, 0],
+	        [0, 1]
+	      ];
+	    case "E":
+	      dirs = [
+	        [-1, 0],
+	        [1, 0],
+	        [0, -1]
+	      ];
+	    default:
+	      dirs = directions;
+	  }
+	  queue.push({ x: startPoint.x, y: startPoint.y, path: [], from: null });
+	  visited.add(startPoint);
+	  while (queue.length > 0) {
+	    const current = queue.shift();
+	    if (current.x === goalPoint.x && current.y === goalPoint.y) {
+	      return current.path;
+	    }
+	    for (const dir of dirs) {
+	      const x = current.x + dir[0];
+	      const y = current.y + dir[1];
+	      if (x < 0 || y < 0 || x >= mapdata.length || y >= mapdata[0].length) {
+	        continue;
+	      }
+	      if (mapdata[x][y].has("unpassable"))
+	        continue;
+	      if (!groupmatch(mapdata[x][y], "", ".", "blank", "road") && x != goalPoint.x && y != goalPoint.y)
+	        continue;
+	      if (roadAroundRoads(x, y, mapdata) > 2)
+	        continue;
+	      if (visited.has(`${x},${y}`)) {
+	        continue;
+	      }
+	      if (current.from !== null && current.from[0] === -dir[0] && current.from[1] === -dir[1])
+	        continue;
+	      visited.add(`${x},${y}`);
+	      queue.push({ x, y, path: current.path.concat([[x, y]]), from: dir });
+	    }
+	  }
+	  return null;
+	}
 	Object.defineProperties(window, {
 	  GenerateMap: { value: GenerateMap },
 	  GenerateSpot: { value: GenerateSpot },
 	  findPath: { value: findPath },
-	  printPath: { value: printPath }
+	  printPath: { value: printPath },
+	  createPath: { value: createPath },
+	  AutoFillRoads: { value: AutoFillRoads }
 	});
 
-	class Maps {
-	  static get(type, mapId, ...args) {
-	    const data = worldMap[mapId];
-	    if (type == "pos") {
-	      return data.spots.get(args[0]).pos;
-	    }
-	    if (type == "spots") {
-	      return data.spots.get(args[0]);
-	    }
-	    if (data[type]) {
-	      return data[type];
-	    }
-	  }
-	  static getBoard(mapId) {
-	    const data = worldMap[mapId];
-	    return mapdataToBoard(data.mapdata, data.mapsize.x, data.mapsize.y);
-	  }
-	  static convertData(mapdata) {
-	    return boardToMapdata(mapdata);
-	  }
-	  static print(map) {
-	    printMap(map);
-	  }
-	  static copy(map, groupId, mapId) {
-	    let newMap;
-	    if (map.type == "town") {
-	      newMap = new TownMap(map.mapId, map.groupId, { name: map.name, entry: map.entry, xy: map.mapsize }, map);
-	    }
-	    if (map.type == "spot" || map.type == "room") {
-	      newMap = new Spots(map.mapId, map.name, map.groupId, map.side, map);
-	    }
-	    newMap.groupId = groupId;
-	    newMap.mapId = mapId;
-	    return newMap;
-	  }
-	  constructor(name, type, map) {
-	    if (map) {
-	      for (let key in map) {
-	        this[key] = map[key];
-	      }
-	    } else {
-	      this.name = name;
-	      this.type = type;
-	      this.tags = [];
-	      this.events = function() {
-	        return "";
-	      };
-	    }
+	class GameMap {
+	  constructor([boardId, id, name]) {
+	    this.boardId = boardId;
+	    this.id = boardId !== "" ? `${boardId}.${id}` : id;
+	    this.name = name;
+	    this.tags = [];
+	    this.events = function() {
+	      return "";
+	    };
 	  }
 	  setName(name) {
 	    this.name = name;
@@ -2419,30 +2415,25 @@ Object.defineProperty(String.prototype, "readBracketedList", {
 	    this.events = callback;
 	    return this;
 	  }
-	  initTags() {
-	  }
 	  Tags(...tags) {
-	    this.tags = tags;
-	    if (tags.includes("\u6237\u5916")) {
-	      this.tags.push("\u5F00\u9614");
-	    }
-	    if (tags.has("\u5BA4\u5916", "\u6237\u5916") && !tags.includes("\u906E\u9876")) {
-	      this.tags.push("\u9732\u5929");
-	    }
+	    this.tags = this.tags.concat(tags);
+	    this.tags = [...new Set(this.tags)];
 	    return this;
 	  }
-	  getParent() {
-	    if (!this.groupId)
-	      return null;
-	    const path = this.mapId.split(".");
-	    path.pop();
-	    let parent = worldMap;
-	    for (let i = 0; i < path.length; i++) {
-	      parent = parent[path[i]];
+	  getParentId() {
+	    if (!this.boardId || this.boardId === this.id) {
+	      return this.boardId;
 	    }
-	    if (parent)
-	      return parent;
-	    return null;
+	    const path = this.id.split(".");
+	    path.pop();
+	    return path.join(".");
+	  }
+	  getParent() {
+	    if (!this.boardId || this.boardId === this.id) {
+	      return null;
+	    }
+	    const id = this.getParentId();
+	    return GameMap.get(id);
 	  }
 	  setPortal(...points) {
 	    this.portal = {
@@ -2455,83 +2446,279 @@ Object.defineProperty(String.prototype, "readBracketedList", {
 	    this.portal.points.push(...points);
 	    return this;
 	  }
-	  Gerenate() {
-	    const rawdata = GenerateMap(this);
-	    this.mapdata = boardToMapdata(rawdata);
-	    return this;
+	  static get(mapId) {
+	    let path = mapId.split(".");
+	    let map = worldMap;
+	    for (let i = 0; i < path.length; i++) {
+	      try {
+	        map = map[path[i]];
+	      } catch (err) {
+	        console.log("\u5730\u56FE\u8DEF\u5F84\u9519\u8BEF", mapId, path, err);
+	        return null;
+	      }
+	    }
+	    return map;
 	  }
-	  Console() {
-	    printMapFromData(this);
+	  static getBy(type, mapdId, ...args) {
+	    const data = this.get(mapdId);
+	    if (!data)
+	      return null;
+	    if (type == "pos") {
+	      return data.spots.get(args[0]).pos;
+	    }
+	    if (type == "spots") {
+	      return data.spots.get(args[0]);
+	    }
+	    if (type == "rooms" && data.rooms) {
+	      return data.rooms;
+	    }
+	    if (data[type]) {
+	      return data[type];
+	    }
+	    console.log("\u5730\u56FE\u6570\u636E\u9519\u8BEF", type, mapdId, args);
+	    return null;
+	  }
+	  static getParentGroup(type, boardId) {
+	    if (!boardId)
+	      return null;
+	    let parent = worldMap;
+	    let path = boardId.split(".");
+	    let parentlist = [];
+	    for (let i = 0; i < path.length; i++) {
+	      try {
+	        parent = parent[path[i]];
+	        if (parent.mapType === type) {
+	          parentlist.push(parent);
+	        }
+	      } catch (err) {
+	        console.log("parent not found", path, i, path[i], err);
+	      }
+	    }
+	    if (parentlist.length === 0 && boardId !== "CommonSpots") {
+	      console.log("parent not found", path, type, boardId);
+	      return null;
+	    } else if (boardId === "CommonSpots") {
+	      console.log("CommonSpots has no parent", boardId);
+	      return null;
+	    }
+	    return parentlist[parentlist.length - 1];
+	  }
+	  static getBoard(mapId) {
+	    const data = this.get(mapId);
+	    if (!data) {
+	      console.log("\u5730\u56FE\u4E0D\u5B58\u5728:", mapId);
+	      return null;
+	    }
+	    if (data.mapType !== "board") {
+	      console.log("\u5730\u56FE\u7C7B\u578B\u9519\u8BEF:", mapId);
+	      return null;
+	    }
+	    if (!data.mapdata) {
+	      console.log("\u5730\u56FE\u6570\u636E\u672A\u8BBE\u5B9A:", mapId);
+	      return null;
+	    }
+	    return mapdataToBoard(data.mapdata, data.mapsize.x, data.mapsize.y);
+	  }
+	  static convertData(mapdata) {
+	    return boardToMapdata(mapdata);
+	  }
+	  static console(map) {
+	    printMap(map);
+	  }
+	  static copy(map, boardId, mapId) {
+	    let newMap, parent;
+	    if (map.mapType === "board") {
+	      newMap = new Boards(boardId, mapId, { type: map.boardType }, map);
+	      parent = this.getParentGroup("board", boardId);
+	    }
+	    if (map.mapType === "spot" || map.mapType === "room") {
+	      newMap = new Spots([boardId, mapId, map.name, map.spotType], map);
+	      parent = this.getParentGroup("spot", boardId);
+	    }
+	    if (parent) {
+	      newMap.boardId = parent.boardId;
+	      newMap.spotId = parent.id;
+	    } else {
+	      newMap.boardId = boardId;
+	    }
+	    newMap.id = boardId + "." + mapId;
+	    return newMap;
 	  }
 	}
-	class TownMap extends Maps {
-	  constructor(mapid, groupid, { name, entry, xy }, map) {
-	    super(name, "board");
+	class Boards extends GameMap {
+	  constructor(mapdId, boardId, {
+	    type,
+	    name,
+	    entry,
+	    main,
+	    xy
+	  }, map) {
+	    super([boardId, mapdId, name]);
 	    if (map) {
 	      for (let key in map) {
-	        this[key] = map[key];
+	        this[key] = clone(map[key]);
 	      }
 	    } else {
 	      if (!xy[0])
 	        xy[0] = 13;
 	      if (!xy[1])
 	        xy[1] = xy[0];
-	      this.mapId = mapid;
-	      this.groupId = groupid;
-	      this.entry = entry;
-	      this.spots = /* @__PURE__ */ new Map();
+	      this.mapType = "board";
+	      this.boardType = type;
+	      if (Array.isArray(entry)) {
+	        this.entries = entry;
+	        this.staticEntry = main || entry[0];
+	      } else {
+	        this.staticEntry = entry;
+	        this.entries = [entry];
+	      }
 	      this.mapsize = { x: xy[0], y: xy[1] };
+	      this.spots = /* @__PURE__ */ new Map();
 	    }
 	  }
 	  Spots(...spots) {
 	    spots.forEach((spot) => {
-	      spot[1] += Math.floor(this.mapsize.x / 2);
-	      spot[2] += Math.floor(this.mapsize.y / 2);
-	      let tags = spot[0].split("|");
-	      let name = tags[0];
-	      tags.splice(0, 1);
-	      this.spots.set(name, { pos: { x: spot[1], y: spot[2] }, side: spot[3], tags });
+	      let x = spot[1] += Math.floor(this.mapsize.x / 2);
+	      let y = spot[2] += Math.floor(this.mapsize.y / 2);
+	      let info = spot[0].split("|"), tileType2;
+	      if (info.length > 1) {
+	        tileType2 = info.slice(1).join("|");
+	      } else {
+	        tileType2 = "spot";
+	      }
+	      let name = info[0];
+	      let dside = spot[3];
+	      let spotType2 = spot[4].join("|");
+	      this.spots.set(name, { pos: [{ x, y }], dside, spotType: spotType2, tileType: tileType2 });
 	    });
 	    return this;
 	  }
-	}
-	class Spots extends Maps {
-	  constructor(mapid, name, group, spotType2, map) {
-	    super(name, "spot");
-	    if (map) {
-	      for (let key in map) {
-	        this[key] = map[key];
-	      }
-	    } else {
-	      this.mapId = group + "." + mapid;
-	      this.groupId = group;
-	      this.spotType = spotType2;
-	      this.placement = [];
-	    }
-	  }
-	  InitTags() {
+	  initBoard() {
+	    this.mapdata = new Array(this.mapsize.x).fill(0).map(() => new Array(this.mapsize.y).fill(0).map(() => ""));
+	    this.spots.forEach((spot, name) => {
+	      let pos = spot.pos[0];
+	      this.mapdata[pos.x][pos.y] = name;
+	    });
 	    return this;
 	  }
-	  isRoom() {
-	    this.type = "room";
-	    const path = this.mapId.split(".");
-	    this.entry = path[path.length - 2];
+	  Generate() {
+	    const rawdata = GenerateMap(this);
+	    this.mapdata = boardToMapdata(rawdata);
+	    return this;
+	  }
+	  console() {
+	    printMapFromData(this);
+	  }
+	}
+	class Spots extends GameMap {
+	  constructor([boardId, mapId, name, type], map) {
+	    let parent, id = boardId + "." + mapId;
+	    if (type.has("room")) {
+	      parent = GameMap.getParentGroup("spot", boardId);
+	      if (parent == null ? void 0 : parent.spotType)
+	        type = parent.spotType + "|" + type;
+	      boardId = (parent == null ? void 0 : parent.boardId) || boardId;
+	    } else {
+	      parent = GameMap.getParentGroup("board", boardId);
+	    }
+	    super([boardId, mapId, name]);
+	    if (map) {
+	      for (let key in map) {
+	        this[key] = clone(map[key]);
+	      }
+	    } else {
+	      this.boardId = boardId;
+	      this.mapType = "spot";
+	      this.spotType = type;
+	      this.spotId = mapId;
+	      this.placement = [];
+	      this.tags = [];
+	      if (type.has("room")) {
+	        this.roomId = mapId.split(".").pop();
+	        this.spotId = (parent == null ? void 0 : parent.id) || mapId;
+	        this.id = id;
+	        this.mapType = "room";
+	      }
+	      this.init();
+	    }
+	  }
+	  init() {
+	    const types = this.spotType.split("|");
+	    const typeTags = {
+	      building: ["\u5BA4\u5185"],
+	      buildingEntry: ["\u5BA4\u5916"],
+	      gate: ["\u5BA4\u5916", "\u68C0\u67E5\u70B9"],
+	      mapEntry: ["\u5730\u56FE\u63A5\u53E3"],
+	      transport: ["\u5BA4\u5916", "\u4EA4\u901A"],
+	      portal: ["\u5BA4\u5916"],
+	      shopAlley: ["\u5546\u5E97\u8857", "\u5BA4\u5916"],
+	      park: ["\u5BA4\u5916", "\u4F11\u606F\u533A"],
+	      field: ["\u5F00\u9614", "\u5BA4\u5916"],
+	      float: ["\u5BA4\u5916", "\u60AC\u6D6E", "\u5F00\u9614"],
+	      private: ["\u79C1\u4EBA", "\u4E0A\u9501"],
+	      room: ["\u5BA4\u5185"],
+	      secretArea: ["\u9690\u853D", "\u5C01\u95ED"],
+	      ground: ["\u5BA4\u5916", "\u5F00\u9614", "\u6D3B\u52A8"],
+	      house: ["\u5BA4\u5185", "\u4E2A\u4EBA", "\u4F11\u606F\u533A"]
+	    };
+	    types.forEach((type) => {
+	      if (typeTags[type]) {
+	        this.tags.push(...typeTags[type]);
+	      }
+	    });
+	    const parent = GameMap.getParentGroup("board", this.boardId);
+	    if (parent == null ? void 0 : parent.boardType) {
+	      switch (parent.boardType) {
+	        case "forest":
+	          if (this.tags.includes("\u5BA4\u5916")) {
+	            this.tags.push("\u68EE\u6797");
+	          }
+	          break;
+	        case "ocean":
+	          if (this.tags.includes("\u5BA4\u5916")) {
+	            this.tags.push("\u6C34\u4E0B");
+	          }
+	          break;
+	        case "mountain":
+	          if (this.tags.includes("\u5BA4\u5916")) {
+	            this.tags.push("\u5C71\u5CB3");
+	          }
+	          break;
+	        case "dungeon":
+	          this.tags.push("\u5730\u4E0B");
+	          break;
+	        case "maze":
+	          this.tags.push("\u5F02\u7A7A\u95F4");
+	          break;
+	        case "floatingIsland":
+	        case "field":
+	          if (this.tags.includes("\u5BA4\u5916")) {
+	            this.tags.push("\u5F00\u9614");
+	          }
+	          break;
+	        case "academy":
+	          if (!this.tags.includes("\u5F02\u7A7A\u95F4")) {
+	            this.tags.push("\u9B54\u7F51");
+	          }
+	      }
+	    }
+	    this.tags = [...new Set(this.tags)];
 	    return this;
 	  }
 	  Rooms(...rooms) {
 	    this.rooms = rooms;
 	    return this;
 	  }
-	  Opentime(weekday, open, close) {
-	    this.opentime = {
+	  OpenHour(weekday, open, close) {
+	    this.openhour = {
 	      weekday,
 	      open,
 	      close
 	    };
 	    return this;
 	  }
-	  YourHome() {
-	    this.yourHome = true;
+	  isHome() {
+	    this.Home = true;
 	    return this;
 	  }
 	  Parking() {
@@ -2550,8 +2737,19 @@ Object.defineProperty(String.prototype, "readBracketedList", {
 	    this.loot = loot;
 	    return this;
 	  }
+	  addLoot(loot) {
+	    for (const key in loot) {
+	      if (!this.loot[key]) {
+	        this.loot[key] = [];
+	      }
+	      this.loot[key].push(...loot[key]);
+	      this.loot[key] = [...new Set(this.loot[key])];
+	    }
+	    return this;
+	  }
 	  Placement(...placement) {
-	    this.placement = placement;
+	    this.placement = this.placement.concat(placement);
+	    this.placement = [...new Set(this.placement)];
 	    return this;
 	  }
 	  AdoptParent() {
@@ -2562,12 +2760,27 @@ Object.defineProperty(String.prototype, "readBracketedList", {
 	    }
 	    return this;
 	  }
-	  MaxSlots(number) {
-	    this.maxSlots = number;
+	  AdoptLoot() {
+	    const parent = this.getParent();
+	    if (parent) {
+	      this.addLoot(parent.loot);
+	    }
 	    return this;
 	  }
-	  isCommon() {
-	    this.spotType = "common";
+	  MaxSlots(number) {
+	    this.maxslot = number;
+	    return this;
+	  }
+	  Visitable(callback) {
+	    this.visitCond = callback;
+	    return this;
+	  }
+	  setOwner(...owner) {
+	    this.owner = owner;
+	    return this;
+	  }
+	  Rentable(cost) {
+	    this.rent = cost;
 	    return this;
 	  }
 	  static countPlacement(placement) {
@@ -2628,21 +2841,314 @@ Object.defineProperty(String.prototype, "readBracketedList", {
 	  printMap(mapdata);
 	}
 	Object.defineProperties(window, {
-	  Maps: {
-	    get() {
-	      return Maps;
-	    }
-	  },
-	  TownMap: {
-	    get() {
-	      return TownMap;
-	    }
-	  },
-	  Spots: {
-	    get() {
-	      return Spots;
-	    }
+	  printMap: { value: printMap },
+	  printMapFromData: { value: printMapFromData },
+	  GameMap: { value: GameMap },
+	  Boards: { value: Boards },
+	  Spots: { value: Spots }
+	});
+
+	function setCommon(id) {
+	  switch (id) {
+	    case "PublicToilet":
+	      CM[id].Tags("\u5395\u6240", "\u65E0\u7A97", "\u72ED\u7A84", "\u516C\u5171").Placement("\u6D17\u624B\u53F0", "\u955C\u5B50", "\u9A6C\u6876");
+	      break;
+	    case "Storage":
+	      CM[id].Tags("\u72ED\u7A84", "\u9690\u853D", "\u65E0\u7A97", "\u4E0A\u9501").Placement("\u50A8\u7269\u67DC", "\u5DE5\u5177\u7BB1").Loot({
+	        C: ["\u9489\u5B50", "\u5E9F\u6728\u6599", "\u7EB8\u5F20"],
+	        UC: ["\u6BDB\u5DFE", "\u676F\u5B50", "\u91D1\u5C5E\u96F6\u4EF6"],
+	        R: ["\u7528\u8FC7\u7684\u5957\u5957", "\u6728\u67F4", "\u9524\u5B50", "\u526A\u5200"],
+	        SR: ["\u5185\u88E4", "\u80F8\u7F69", "\u94DC\u5E01"],
+	        UR: ["\u94A5\u5319", "\u94F6\u5E01", "\u7EF3\u7D22"],
+	        LR: ["\u94B1\u5305"]
+	      });
+	      break;
+	    case "Bathroom":
+	      CM[id].Tags("\u6C90\u6D74", "\u5395\u6240", "\u65E0\u7A97").Placement("\u6D74\u7F38", "\u6D17\u624B\u53F0", "\u955C\u5B50");
+	      break;
+	    case "Kitchen":
+	      CM[id].Tags("\u53A8\u623F").Placement("\u7089\u7076", "\u53A8\u5177", "\u6D17\u624B\u53F0", "\u50A8\u7269\u67DC", "\u51B0\u7BB1");
+	      break;
+	    case "Restroom":
+	      CM[id].Tags("\u5395\u6240", "\u65E0\u7A97", "\u9690\u853D").Placement("\u6D17\u624B\u53F0", "\u955C\u5B50");
 	  }
+	}
+	function setAcademy(id) {
+	  switch (id) {
+	    case "MageTower":
+	      FMA[id].Rooms("Inside", "Observatory", "Storage").Tags("\u9AD8\u53F0", "\u60AC\u6D6E", "\u9632\u5FA1").Placement("\u9632\u5FA1\u70AE\u53F0");
+	      break;
+	    case "SchoolEntrance":
+	      FMA[id].Tags("\u4EA4\u901A").Placement("\u79FB\u52A8\u644A\u4F4D").Parking().Railcar();
+	      break;
+	    case "ActivitySquare":
+	      FMA[id].Rooms("Storage").Tags("\u821E\u53F0", "\u4F11\u606F\u533A").Placement("\u65D7\u5E1C", "\u957F\u6905");
+	      break;
+	    case "ClassBuildingR1":
+	      FMA[id].Rooms("C101", "C102", "PublicToilet");
+	    case "ClassBuildingR2":
+	      if (id === "ClassBuildingR2") {
+	        FMA[id].Rooms("C201", "C202", "PublicToilet");
+	      }
+	      FMA[id].Placement("\u50A8\u7269\u67DC", "\u957F\u6905", "\u81EA\u52A8\u8D29\u552E\u673A", "\u9B54\u5076", "\u76C6\u683D");
+	      break;
+	    case "ResearchLabA":
+	      FMA[id].Rooms("MagiPysics", "Analyzing", "Storage", "Restroom");
+	    case "ResearchLabB":
+	      if (id === "ResearchLabB") {
+	        FMA[id].Rooms("Alchemy", "Biologic", "MagiPotion", "Storage", "Restroom");
+	      }
+	      FMA[id].Tags("\u7814\u7A76", "\u5BBD\u655E").Placement("\u4E66\u67B6", "\u684C\u5B50", "\u6905\u5B50", "\u50A8\u7269\u67DC", "\u7814\u7A76\u53F0", "\u7535\u8111", "\u5080\u5121\u5145\u80FD\u5668");
+	      break;
+	    case "Library":
+	      FMA[id].Tags("\u5BBD\u655E", "\u9605\u8BFB\u533A", "\u4F11\u606F\u533A").Placement("\u4E66\u67B6", "\u684C\u5B50", "\u6905\u5B50", "\u7535\u8111");
+	      break;
+	    case "Arena":
+	      FMA[id].Tags("\u6218\u6597\u533A", "\u666F\u70B9").Placement("\u65D7\u5E1C", "\u957F\u6905", "\u64C2\u53F0", "\u96D5\u5851");
+	      break;
+	    case "HistoryMuseum":
+	      FMA[id].Tags("\u4F11\u606F\u533A", "\u666F\u70B9").Placement("\u5C55\u793A\u67DC", "\u957F\u6905");
+	      break;
+	    case "DiningHall":
+	      FMA[id].Tags("\u4F11\u606F\u533A", "\u9910\u5385", "\u5BBD\u655E").Placement("\u6905\u5B50", "\u684C\u5B50", "\u81EA\u52A8\u8D29\u552E\u673A", "\u81EA\u52A9\u67DC\u53F0", "\u5080\u5121\u5145\u80FD\u5668");
+	      break;
+	    case "GreenGarden":
+	      FMA[id].Rooms("GreenHouse", "Storage").Tags("\u666F\u70B9", "\u79CD\u690D\u533A", "\u5BBD\u655E").Placement("\u7EFF\u690D", "\u957F\u6905", "\u519C\u52A1\u8BBE\u5907");
+	      break;
+	    case "StudentCenter":
+	      FMA[id].Tags("\u533B\u52A1").Placement("\u6905\u5B50", "\u6C99\u53D1", "\u667A\u80FD\u6C34\u6676", "\u9B54\u5076", "\u533B\u7597\u8BBE\u5907");
+	      break;
+	    case "Dormitory":
+	      FMA[id].Rooms("Kitchen", "Storage", "A101", "A102", "A103", "A201", "A202", "A203", "S303").Tags("\u4F11\u606F\u533A", "\u5BBD\u655E").Placement("\u6C99\u53D1", "\u684C\u5B50", "\u6905\u5B50", "\u76C6\u683D", "\u5080\u5121\u5145\u80FD\u5668", "\u51B0\u7BB1");
+	      break;
+	    case "SecretTrainingGround":
+	      FMA[id].Tags("\u5F02\u7A7A\u95F4").Placement("\u4F20\u9001\u95E8", "\u8BAD\u7EC3\u5668\u6750").setPortal("Academy.MageTower.Hall");
+	      break;
+	  }
+	}
+	function setAcademyRoom(id, roomid) {
+	  switch (id) {
+	    case "MageTower":
+	      if (roomid == "Inside") {
+	        FMA[id][roomid].Tags("\u4E0A\u9501", "\u65E0\u7A97").Placement("\u4E66\u67B6", "\u684C\u5B50", "\u6C99\u53D1", "\u9B54\u6CD5\u9635", "\u4F20\u9001\u95E8").setPortal("Orlania.OutskirtE", "Academy.SecretTrainingGround");
+	      }
+	      if (roomid == "Observatory") {
+	        FMA[id][roomid].Tags("\u4E0A\u9501", "\u9AD8\u53F0", "\u9690\u853D", "\u5F00\u653E", "\u5F00\u9614");
+	      }
+	      if (roomid == "Storage") {
+	        FMA[id][roomid].Tags("\u4E0A\u9501").addLoot({ SR: ["\u66FC\u9640\u7F57\u8349\u5E72"], UR: ["\u9B54\u6CD5\u5377\u8F74(\u7A7A)", "\u7B26\u77F3"], LR: ["\u5C0F\u578B\u9B54\u529B\u6C34\u6676"] });
+	      }
+	    case "ClassBuildingR1":
+	    case "ClassBuildingR2":
+	      if (FMA[id][roomid].name[0].includes("\u6559\u5BA4")) {
+	        FMA[id][roomid].Tags("\u6559\u5BA4", "\u5BBD\u655E").Placement("\u684C\u5B50", "\u6905\u5B50", "\u4E66\u67B6", "\u50A8\u7269\u67DC", "\u76C6\u683D", "\u6559\u575B", "\u9ED1\u677F");
+	      }
+	      break;
+	    case "Dormitory":
+	      if (FMA[id][roomid].name[0].includes("\u5BBF\u820D")) {
+	        FMA[id][roomid].Rooms("Bathroom").Tags("\u5BBF\u820D", "\u7761\u623F").Placement("\u5E8A", "\u684C\u5B50", "\u6905\u5B50", "\u4E66\u684C", "\u8863\u67DC", "\u4E66\u67B6").MaxSlots(12);
+	        FMA[id][roomid].Bathroom = GameMap.copy(worldMap$1.CommonSpots["Bathroom"], FMA[id][roomid].id, "Bathroom");
+	      }
+	      if (roomid == "Kitchen") {
+	        FMA[id][roomid].MaxSlots(16).Placement("\u6905\u5B50");
+	      }
+	      break;
+	    case "GreenHouse":
+	      if (roomid == "GreenHouse") {
+	        FMA[id][roomid].AdoptParent();
+	      }
+	      break;
+	  }
+	  if (groupmatch(roomid, "MagiPysics", "Analyzing", "Alchemy", "Biologic", "MagiPotion")) {
+	    FMA[id][roomid].Tags("\u4E2A\u4EBA").AdoptParent();
+	  }
+	  switch (roomid) {
+	    case "MagiPysics":
+	      FMA[id][roomid].Placement("\u5927\u578B\u9B54\u529B\u6C34\u6676", "\u7B26\u6587\u96D5\u523B\u4EEA\u5668", "\u8BB0\u5F55\u6C34\u6676", "\u7269\u8D28\u89C2\u6D4B\u4EEA", "\u6C99\u53D1");
+	      break;
+	    case "Analyzing":
+	      FMA[id][roomid].Placement("\u9B54\u529B\u63A2\u6D4B\u4EEA", "\u5206\u89E3\u8BBE\u5907", "\u5206\u6790\u6C34\u6676", "\u6C99\u53D1", "\u5E8A");
+	      break;
+	    case "Alchemy":
+	      FMA[id][roomid].Placement("\u70BC\u91D1\u8BBE\u5907", "\u7194\u7089", "\u50A8\u7269\u67DC", "\u4FDD\u9669\u67DC", "\u70E4\u7BB1");
+	      break;
+	    case "Biologic":
+	      FMA[id][roomid].Placement("\u57F9\u517B\u69FD", "\u51B0\u7BB1", "\u9B54\u836F\u50A8\u5B58\u67DC", "\u5B75\u5316\u5668");
+	      break;
+	    case "MagiPotion":
+	      FMA[id][roomid].Placement("\u9B54\u836F\u70BC\u5236\u53F0", "\u79CD\u690D\u67B6", "\u51B0\u7BB1", "\u9B54\u836F\u50A8\u5B58\u67DC");
+	      break;
+	  }
+	}
+
+	const worldMap$1 = {
+	  Orlania: new Boards("Orlania", "", {
+	    type: "town",
+	    name: ["\u5965\u5170\u5C3C\u4E9A"],
+	    entry: ["Orlania.GateN", "Orlania.GateS", "Orlania.GateW", "Orlania.GateE"],
+	    xy: [35, 35]
+	  }),
+	  Academy: new Boards("Academy", "Orlania", {
+	    type: "academy",
+	    name: ["\u5965\u5170\u5C3C\u4E9A\u7B2C\u4E00\u9B54\u6CD5\u5B66\u9662"],
+	    entry: "Academy.SchoolEntrance",
+	    xy: [7, 25]
+	  }),
+	  CommonSpots: {
+	    groupId: "CommonSpots"
+	  }
+	};
+	Object.defineProperties(window, {
+	  worldMap: { get: () => worldMap$1 }
+	});
+	console.log(window.worldMap);
+	worldMap$1.Orlania["Academy"] = worldMap$1.Academy;
+	worldMap$1.Orlania.Spots(
+	  ["OutskirtN|field", -17, 0, "S", ["field", "mapEntry"]],
+	  ["OutskirtS|field", 17, 0, "N", ["field", "mapEntry"]],
+	  ["OutskirtW|field", 0, -17, "E", ["field", "mapEntry"]],
+	  ["OutskirtE|field", 0, 17, "W", ["field", "mapEntry"]],
+	  ["GateN|passable", -15, 0, "S", ["gate"]],
+	  ["GateS|passable", 15, 0, "N", ["gate"]],
+	  ["GateW|passable", 0, -15, "E", ["gate"]],
+	  ["GateE|passable", 0, 15, "W", ["gate"]],
+	  ["TownCenter|passable", 0, 0, "SNWE", ["buildingEntry"]],
+	  ["CenterSquare|passable", 2, 0, "SN", ["ground"]],
+	  ["Academy", -11, 8, "SW", ["buildingEntry", "mapEntry"]],
+	  ["Hospital", -9, 3, "W", ["building"]],
+	  ["ShopAlley|passable", 11, -4, "E", ["shopAlley", "mapEntry"]],
+	  ["BathHouse", 9, -4, "EN", ["building"]],
+	  ["Aquarium", 12, 13, "N", ["buildingEntry"]],
+	  ["ArtGallery", -8, 8, "WNS", ["building"]],
+	  ["Church", -12, 4, "E", ["buildingEntry"]],
+	  ["BlackCat", -9, 8, "W", ["building"]],
+	  ["OperaHouse", -6, 11, "S", ["building"]],
+	  ["BairdTrading|passable", -4, -11, "SN", ["ground"]],
+	  ["SliverChimes", -4, -8, "N", ["building"]],
+	  ["CentaurBar", -6, -8, "N", ["building"]]
+	);
+	worldMap$1.Academy.Spots(
+	  ["MageTower", -3, -12, "S", ["buildingEntry"]],
+	  ["SchoolEntrance|passable", 0, -12, "EN", ["mapEntry", "gate"]],
+	  ["ActivitySquare|passable", 0, -10, "SNWE", ["ground"]],
+	  ["ClassBuildingR1|passable", 3, -8, "N", ["building"]],
+	  ["ClassBuildingR2|passable", -3, -8, "S", ["building"]],
+	  ["ResearchLabA", 2, -5, "WSN", ["building"]],
+	  ["ResearchLabB", -2, -5, "ESN", ["building"]],
+	  ["Library|passable", 2, -2, "SN", ["building"]],
+	  ["Arena|passable", -2, 1, "SNWE", ["ground", "float"]],
+	  ["HistoryMuseum", 2, 2, "N", ["building"]],
+	  ["DiningHall", 2, 10, "N", ["building"]],
+	  ["GreenGarden|passable", -2, -2, "SN", ["park"]],
+	  ["StudentCenter", -2, 7, "S", ["building"]],
+	  ["Dormitory", 0, 12, "W", ["building"]],
+	  ["SecretTrainingGround|invisible", 3, 12, "", ["secretArea"]]
+	);
+	const OL = worldMap$1.Orlania;
+	const FMA = worldMap$1.Academy;
+	const CM = worldMap$1.CommonSpots;
+	const CMConfig = [
+	  ["RailcarStation", "\u8F68\u9053\u8F66\u7AD9", "stransport"],
+	  ["AirShipPort", "\u98DE\u8239\u6E2F\u53E3", "transport"],
+	  ["PublicToilet", "\u516C\u5171\u5395\u6240", "room"],
+	  ["Storage", "\u50A8\u7269\u95F4", "room"],
+	  ["Bathroom", "\u6D74\u5BA4", "room"],
+	  ["Kitchen", "\u53A8\u623F", "room"],
+	  ["Restroom", "\u5395\u6240", "room"]
+	];
+	CMConfig.forEach((config) => {
+	  let id = config[0], name = [config[1], id], type = "common|" + config[2];
+	  CM[id] = new Spots(["CommonSpots", id, name, type]);
+	  setCommon(id);
+	});
+	const OLConfig = [
+	  "\u57CE\u90CA(\u5317)",
+	  "\u57CE\u90CA(\u5357)",
+	  "\u57CE\u90CA(\u897F)",
+	  "\u57CE\u90CA(\u4E1C)",
+	  "\u57CE\u95E8(\u5317)",
+	  "\u57CE\u95E8(\u5357)",
+	  "\u57CE\u95E8(\u897F)",
+	  "\u57CE\u95E8(\u4E1C)",
+	  "\u57CE\u9547\u4E2D\u5FC3",
+	  "\u4E2D\u5FC3\u5E7F\u573A",
+	  "\u9B54\u6CD5\u5B66\u9662",
+	  "\u533B\u9662",
+	  "\u5546\u5E97\u8857",
+	  "\u5927\u6D74\u573A",
+	  "\u6C34\u65CF\u9986",
+	  "\u827A\u672F\u9986",
+	  "\u5143\u7075\u6559\u5802",
+	  "\u9ED1\u732B\u5496\u5561",
+	  "\u7EEF\u9E1F\u5267\u573A",
+	  "\u767E\u5FB7\u5546\u4F1A",
+	  "\u94F6\u94C3\u9910\u9986",
+	  "\u725B\u9A6C\u9152\u5427"
+	];
+	Array.from(worldMap$1.Orlania.spots).forEach((spot, i) => {
+	  const id = spot[0];
+	  const name = OLConfig[i];
+	  if (worldMap$1.Orlania[id] === void 0)
+	    OL[id] = new Spots(["Orlania", id, [name, id], spot[1].spotType]);
+	});
+	const A0Config = [
+	  "\u6CD5\u5E08\u5854",
+	  "\u9B54\u6CD5\u5B66\u9662|\u5165\u53E3",
+	  "\u9B54\u6CD5\u5B66\u9662|\u5E7F\u573A",
+	  "\u6559\u5B66\u697C|R1",
+	  "\u6559\u5B66\u697C|R2",
+	  "\u9B54\u6CD5\u7814\u7A76\u6240",
+	  "\u7EFC\u5408\u7814\u7A76\u6240",
+	  "\u56FE\u4E66\u9986",
+	  "\u7ADE\u6280\u573A",
+	  "\u535A\u7269\u9986",
+	  "\u5B66\u751F\u996D\u5802",
+	  "\u690D\u7269\u56ED",
+	  "\u5B66\u751F\u4E2D\u5FC3",
+	  "\u5BBF\u820D|\u5927\u5385",
+	  "\u79D8\u5BC6\u8BAD\u7EC3\u573A"
+	];
+	Array.from(worldMap$1.Academy.spots).forEach((spot, i) => {
+	  const id = spot[0];
+	  const name = A0Config[i];
+	  if (worldMap$1.Academy[id] === void 0)
+	    FMA[id] = new Spots(["Academy", id, [name, id], spot[1].spotType]);
+	  setAcademy(id);
+	});
+	const hasroom = Object.values(FMA).filter((spot) => {
+	  var _a;
+	  return (_a = spot.rooms) == null ? void 0 : _a.length;
+	});
+	const roomName = {
+	  GreenHouse: "\u6E29\u5BA4",
+	  Inside: "\u6CD5\u5E08\u5854|\u5185\u90E8",
+	  Observatory: "\u89C2\u6D4B\u53F0",
+	  MagiPysics: "\u9B54\u6CD5\u5B9E\u9A8C\u5BA4",
+	  Analyzing: "\u9B54\u6CD5\u5206\u6790\u5BA4",
+	  Alchemy: "\u70BC\u91D1\u5B9E\u9A8C\u5BA4",
+	  Biologic: "\u751F\u7269\u5B9E\u9A8C\u5BA4",
+	  MagiPotion: "\u9B54\u836F\u5B9E\u9A8C\u5BA4"
+	};
+	hasroom.forEach((spot) => {
+	  let id = spot.id.split(".").pop();
+	  spot.rooms.forEach((room) => {
+	    if (worldMap$1.CommonSpots[room]) {
+	      FMA[id][room] = GameMap.copy(worldMap$1.CommonSpots[room], spot.id, room);
+	    } else if (roomName[room]) {
+	      FMA[id][room] = new Spots([spot.id, room, [roomName[room], room], "room"]);
+	    } else {
+	      switch (id) {
+	        case "ClassBuildingR1":
+	        case "ClassBuildingR2":
+	          FMA[id][room] = new Spots([spot.id, room, ["\u6559\u5BA4|" + room, "Classroom|" + room], "room"]);
+	          break;
+	        case "Dormitory":
+	          FMA[id][room] = new Spots([spot.id, room, ["\u5BBF\u820D|" + room, "Dormitory|" + room], "room"]);
+	          break;
+	      }
+	    }
+	    setAcademyRoom(id, room);
+	  });
 	});
 
 	window.database = {};
@@ -2984,6 +3490,10 @@ window.saveToFile = function () {
 	const savedata = Save.serialize(V);
 	fs.writeFileSync("public/save/save.sav", savedata);
 };
+
+if (!fs || !fs.existsSync || !os) {
+	console.log("node.js not supported");
+}
 /* twine-user-script #2: "00-namespace.js" */
 /**
  * As part of my various refactors, I ended up introducing a bunch of
@@ -4129,251 +4639,7 @@ D.tflag = [
 	"comcount",
 	"comCancel",
 ];
-/* twine-user-script #13: "00-maps.js" */
-const worldMap = {
-	Orlania: new TownMap("Orlania", "", {
-		name: ["奥兰尼亚"],
-		entry: ["GateNorth", "GateSouth", "GateWest", "GateEast"],
-		xy: [35],
-	}),
-	Academy: new TownMap("Academy", "Orlania", {
-		name: ["第一魔法学院"],
-		entry: ["Academy.SchoolEntrance"],
-		xy: [7, 25],
-	}),
-	CommonSpots: {},
-};
-
-// x,y坐标，可通过的方向
-//     北 x-
-// y-西 东 y+
-//  南 x+
-//  例如：["GateSouth", 16, 0, "NWE"] 表示南门的坐标为(16,0)，可通过的方向为北、西、东
-//用Spots登记目录。地点id后可以用|添加属性，例如passable表示可通过，invisible表示不可见
-worldMap.Orlania.Spots(
-	//城郊
-	["OutskirtsNorth|field", -17, 0, "S"],
-	["OutskirtsSouth|field", 17, 0, "N"],
-	["OutskirtsWest|field", 0, -17, "E"],
-	["OutskirtsEast|field", 0, 17, "W"],
-
-	//城镇出入口，东南西北门
-	["GateNorth|passable", -15, 0, "S"],
-	["GateSouth|passable", 15, 0, "N"],
-	["GateWest|passable", 0, -15, "E"],
-	["GateEast|passable", 0, 15, "W"],
-
-	//中心区域，城镇中心，中心广场
-	["TownCenter|passable", 0, 0, "SNWE"],
-	["CenterSquare|passable", 2, 0, "SN"],
-
-	//魔法学院，位于城镇东北方
-	["Academy", -11, 8, "SW"],
-	["Hospital", -9, 3, "W"],
-
-	//城南的商业街、大浴场、水族馆
-	["ShopAlley|passable", 11, -4, "E"],
-	["BathHouse", 9, -4, "EN"],
-	["Aquarium", 12, 13, "N"],
-
-	//城北的美术馆、元灵教会、黑猫咖啡馆，距离魔法学院较近
-	["ArtGallery", -8, 8, "WNS"],
-	["Church", -12, 4, "E"],
-	["BlackCat", -10, 8, "W"],
-	["OperaHouse", -6, 11, "S"],
-
-	//城西一带
-	["BairdTrading|passable", -4, -11, "SN"],
-	["SliverChimes", -4, -8, "N"],
-	["CentaurBar", -6, -8, "N"]
-);
-
-worldMap.Academy.Spots(
-	["MageTower", -3, -12, "S"],
-	["SchoolEntrance|passable", 0, -12, "EN"],
-	["ActivitySquare|passable", 0, -10, "SNWE"],
-
-	["ClassBuildingR1|passable", 3, -8, "N"],
-	["ClassBuildingR2|passable", -3, -8, "S"],
-	["ResearchLabA", 2, -5, "WSN"],
-	["ResearchLabB", -2, -5, "WSN"],
-	["Library|passable", 2, -2, "SN"],
-	["Arena|passable", -2, 1, "SNWE"],
-	["HistoryMuseum", 2, 2, "N"],
-	["DiningHall", 2, 10, "N"],
-	["GreenGarden|passable", -2, -2, "SN"],
-	["StudentCenter", -2, 7, "S"],
-	["Dormitory", 0, 12, "W"],
-
-	["SecretTrianingGround|invisible", 3, 12, ""]
-);
-
-Object.defineProperties(window, {
-	worldMap: { get: () => worldMap },
-});
-/* twine-user-script #14: "01-locationData.js" */
-//没有个人、私人tag的地点，都是公共的，可以随意进入
-//个人指个人所有，但是可以让其他人进入的地点。私人指只有主人可以进入的地点
-//上锁的地方无法正常进入，但是可以通过其他方式进入
-//室外地点默认都是光亮处
-//户外与室外相等，但户外纯露天周围没有墙或大型建造物，自带开阔属性。
-//室外则指建筑物外部活动空间（花园广场什么的）， 室内指建筑物内
-
-//const { Spots } = require("Code/game/map");
-//这边做登记。
-
-var CM = worldMap.CommonSpots;
-
-const CMConfig = [
-	["RailcarStation", ["轨道车站"], "stransport"],
-	["AirShipPort", ["飞船港口"], "transport"],
-	["PublicToilet", ["公共厕所"], "room"],
-	["Storage", ["储物间"], "room"],
-	["Bathroom", ["浴室"], "room"],
-];
-
-CMConfig.forEach(([id, name, side]) => {
-	CM[id] = new Spots(id, name, "CommonSpots", "common/" + side);
-});
-
-CM.PublicToilet.Tags("厕所", "隐蔽", "无窗");
-CM.Storage.Tags("狭窄", "隐蔽", "无窗", "上锁").Placement("储物柜", "工具箱");
-CM.Bathroom.Tags("沐浴", "厕所", "无窗");
-
-//Orlania First Magica Academy
-var FMA = worldMap.Academy;
-
-const A0Config = [
-	["SchoolEntrance", ["魔法学院|入口"], "户外"],
-	["MageTower", ["法师塔"], "室外"],
-	["SecretTrainingGround", ["秘密训练场"], "室内"],
-	["ActivitySquare", ["魔法学院"], "户外"],
-	["ClassBuildingR1", ["教学楼|R1"], "室内"],
-	["ClassBuildingR2", ["教学楼|R2"], "室内"],
-	["ResearchLabA", ["魔法研究所"], "室内"],
-	["ResearchLabB", ["综合研究所"], "室内"],
-	["Library", ["图书馆"], "室内"],
-	["Arena", ["竞技场"], "室外"],
-	["HistoryMuseum", ["博物馆"], "室内"],
-	["DiningHall", ["学生饭堂"], "室内"],
-	["GreenGarden", ["植物园"], "室外"],
-	["StudentCenter", ["学生中心"], "室内"],
-	["Dormitory", ["宿舍大厅"], "室内"],
-];
-
-A0Config.forEach(([id, name, side]) => {
-	FMA[id] = new Spots(id, name, "Academy", side);
-});
-
-FMA.SchoolEntrance.Tags("交通").Placement("移动摊位").Parking().Railcar();
-
-FMA.MageTower.Rooms("Inside", "Observatory").Tags("高台", "悬浮", "防御").Placement("魔网", "防御炮台");
-
-FMA.SecretTrainingGround.Tags("隐蔽", "封闭", "异空间")
-	.Placement("传送门", "训练器材")
-	.setPortal("Academy.MageTower.Inside");
-
-FMA.ActivitySquare.Rooms("PublicToilet", "Storage").Tags("活动", "舞台", "休息区").Placement("旗帜", "长椅");
-
-FMA.ClassBuildingR1.Tags("教室", "宽敞").Placement("魔网", "书架", "桌子", "椅子", "储物柜");
-
-FMA.ResearchLabA.Rooms("MagiPysics", "Analyzing")
-	.Tags("研究", "宽敞")
-	.Placement("魔网", "书架", "桌子", "椅子", "储物柜", "研究台", "电脑", "傀儡充能器");
-
-FMA.Library.Tags("宽敞", "阅读区", "休息区").Placement("书架", "桌子", "椅子", "魔网", "电脑");
-
-FMA.Arena.Tags("战斗区", "活动", "开阔", "悬浮", "景点").Placement("旗帜", "长椅");
-
-FMA.HistoryMuseum.Tags("休息区", "景点").Placement("展示柜", "长椅");
-
-FMA.DiningHall.Tags("休息区", "餐厅", "宽敞").Placement("椅子", "桌子", "自动贩售机", "魔法柜台", "魔网", "傀儡充能器");
-
-FMA.GreenGarden.Rooms("GreenHouse", "Storage")
-	.Tags("休息区", "景点", "种植区", "宽敞")
-	.Placement("绿植", "长椅", "农务设备");
-
-FMA.StudentCenter.Placement("椅子", "沙发", "魔网", "智能水晶", "魔偶");
-
-//----------------------- copy map -----------------------//
-
-FMA.ClassBuildingR2 = Maps.copy(FMA.ClassBuildingR1, "Academy", "Academy.ClassBuildingR2").setName(["教学楼|R2"]);
-
-FMA.ResearchLabB = Maps.copy(FMA.ResearchLabA, "Academy", "Academy.ResearchLabB").setName(["综合研究所"]);
-
-//------------------------ Dormitory ------------------------//
-
-FMA.Dormitory.Rooms("Kitchen", "Storage", "A101", "A102", "A103", "A201", "A202", "A203", "S303")
-	.Tags("休息区", "宽敞")
-	.Placement("沙发", "桌子", "椅子", "盆栽", "魔网", "傀儡充能器", "冰箱");
-
-FMA.Dormitory.rooms.forEach(function (room) {
-	if (groupmatch(room, "Kitchen", "Storage")) {
-	} else {
-		FMA.Dormitory[room] = new Spots("Dormitory." + room, ["宿舍|" + room], "Academy", "室内")
-			.isRoom()
-			.Rooms("Bathroom")
-			.Tags("私人", "睡房")
-			.Placement("床", "书桌", "椅子", "衣柜", "书架")
-			.MaxSlots(12);
-		FMA.Dormitory[room].Bathroom = Maps.copy(
-			CM.Bathroom,
-			"Academy",
-			"Academy.Dormitory." + room + ".Bathroom"
-		).isRoom();
-	}
-});
-
-FMA.Dormitory.S303.YourHome().MaxSlots(12);
-FMA.Dormitory.Kitchen = new Spots("Dormitory.Kitchen", ["宿舍厨房"], "Academy", "室内")
-	.isRoom()
-	.Tags("厨房")
-	.Placement("烤炉", "冰箱", "炉灶", "储物柜");
-
-//----------------------- copy map -----------------------//
-
-FMA.Dormitory.Storage = Maps.copy(CM.Storage, "Academy", "Academy.Dormitory.Storage").isRoom();
-
-FMA.ActivitySquare.PublicToilet = Maps.copy(CM.PublicToilet, "Academy", "Academy.ActivitySquare.PublicToilet").isRoom();
-
-FMA.ActivitySquare.Storage = Maps.copy(CM.Storage, "Academy", "Academy.ActivitySquare.Storage").isRoom();
-
-FMA.GreenGarden.Storage = Maps.copy(CM.Storage, "Academy", "Academy.GreenGarden.Storage").isRoom();
-
-//------------------------ room list  ------------------------//
-
-const A1Config = [
-	["GreenGarden", "GreenHouse", ["温室"], "室内"],
-	["MageTower", "Inside", ["法师塔|内部"], "室内"],
-	["MageTower", "Observatory", ["观测台"], "室外"],
-	["ResearchLabA", "MagiPysics", ["魔法实验室"], "室内"],
-	["ResearchLabA", "Analyzing", ["魔法分析室"], "室内"],
-	["ResearchLabB", "Alchemy", ["炼金实验室"], "室内"],
-	["ResearchLabB", "Biologic", ["生物实验室"], "室内"],
-];
-
-A1Config.forEach(([group, id, name, side]) => {
-	FMA[group][id] = new Spots(group + "." + id, name, "Academy", side).isRoom();
-});
-
-FMA.GreenGarden.GreenHouse.AdoptParent();
-
-FMA.MageTower.Inside.Tags("上锁", "无窗")
-	.Placement("书架", "桌子", "沙发", "传送门")
-	.setPortal("Orlania.OutskirtsEast", "Academy.SecretTrainingGround");
-
-FMA.MageTower.Observatory.Tags("高台", "悬浮", "狭窄", "隐蔽", "遮顶");
-
-FMA.ResearchLabA.MagiPysics.Tags("个人").Placement("大型魔法阵", "记录水晶", "观测设备", "沙发").AdoptParent();
-
-FMA.ResearchLabA.Analyzing.Tags("个人").Placement("分析水晶", "分解设备", "魔力探测仪", "沙发", "床").AdoptParent();
-
-FMA.ResearchLabB.Alchemy.Tags("个人").Placement("炼金设备", "熔炉", "药物储存柜", "冰箱").AdoptParent();
-
-FMA.ResearchLabB.Biologic.Tags("个人").Placement("生物设备", "冰箱", "药物储存柜").AdoptParent();
-/* twine-user-script #15: "01-locationInfo.js" */
-//这边写地点详情。
-/* twine-user-script #16: "02-mapdata.js" */
+/* twine-user-script #13: "02-mapdata.js" */
 worldMap.Orlania.mapdata = {
 	road: [
 		[1, 17],
@@ -4548,28 +4814,28 @@ worldMap.Orlania.mapdata = {
 		[31, 17],
 		[33, 17],
 	],
-	OutskirtsNorth: [[0, 17]],
-	GateNorth: [[2, 17]],
+	"OutskirtN|field": [[0, 17]],
+	"GateN|passable": [[2, 17]],
 	Church: [[5, 21]],
-	MagicaAcademy: [[6, 25]],
+	Academy: [[6, 25]],
 	BlackCat: [[7, 25]],
 	Hospital: [[8, 20]],
 	ArtGallery: [[9, 25]],
 	CentaurBar: [[11, 9]],
 	OperaHouse: [[11, 28]],
-	BairdTrading: [[13, 6]],
+	"BairdTrading|passable": [[13, 6]],
 	SliverChimes: [[13, 9]],
-	OutskirtsWest: [[17, 0]],
-	GateWest: [[17, 2]],
-	TownCenter: [[17, 17]],
-	GateEast: [[17, 32]],
-	OutskirtsEast: [[17, 34]],
-	CenterSquare: [[19, 17]],
+	"OutskirtW|field": [[17, 0]],
+	"GateW|passable": [[17, 2]],
+	"TownCenter|passable": [[17, 17]],
+	"GateE|passable": [[17, 32]],
+	"OutskirtE|field": [[17, 34]],
+	"CenterSquare|passable": [[19, 17]],
 	BathHouse: [[26, 13]],
-	ShopAlley: [[28, 13]],
+	"ShopAlley|passable": [[28, 13]],
 	Aquarium: [[29, 30]],
-	GateSouth: [[32, 17]],
-	OutskirtsSouth: [[34, 17]],
+	"GateS|passable": [[32, 17]],
+	"OutskirtS|field": [[34, 17]],
 };
 
 worldMap.Academy.mapdata = {
@@ -4649,7 +4915,7 @@ worldMap.Academy.mapdata = {
 	DiningHall: [[5, 22]],
 	"ClassBuildingR1|passable": [[6, 4]],
 };
-/* twine-user-script #17: "clothesTemplet.js" */
+/* twine-user-script #14: "clothesTemplet.js" */
 
 
 D.category = {
@@ -4739,7 +5005,7 @@ D.clothesheet = {
     cursed:0, //是否诅咒物品。如果是则无法脱下
     effect:[],//衣服特殊效果。functionname, source
 }
-/* twine-user-script #18: "gamedata.js" */
+/* twine-user-script #15: "gamedata.js" */
 D.race = ["human", "elvin", "deamon", "wolves", "drawf", "goblin", "catvinx", "centaur", "orc", "titan", "dracon"];
 
 D.base = {
@@ -5035,7 +5301,7 @@ D.actAbleParts = ["handR", "handL", "mouth", "penis", "vagina", "anal", "foot"];
 D.selectAbleParts = ["breast", "critoris", "urin", "ears", "neck", "butts", "nipple", "thighs", "abdomen"].concat(
 	D.actAbleParts
 );
-/* twine-user-script #19: "raceTemplet.js" */
+/* twine-user-script #16: "raceTemplet.js" */
 const racesheet = {
     name:'high-elf',
 
@@ -5154,7 +5420,7 @@ const PlayerSpecies = [
 const NPCSpecies = [
     'human','elvins','high-elf','drawf','goblin','orc','wolves','deamon','centra','titan','kijin'//'slimen','jellish','dracon','linlog','lepios
 ]
-/* twine-user-script #20: "tips.js" */
+/* twine-user-script #17: "tips.js" */
 D.tips = {
 	mage: {
 		title: ["法师"],
@@ -5204,7 +5470,7 @@ D.tips = {
 		],
 	},
 };
-/* twine-user-script #21: "traitList.js" */
+/* twine-user-script #18: "traitList.js" */
 D.traits = [
 	//体质类
 	{
@@ -5744,10 +6010,10 @@ D.traitConflicGroup = [
 	["贞洁", "放荡"],
 	["忠诚", "善嫉"],
 ];
-/* twine-user-script #22: "audioloopto-macro-set.min.js" */
+/* twine-user-script #19: "audioloopto-macro-set.min.js" */
 /*! <<audioloopto>> macro set for SugarCube 2.x */
 !function(){"use strict";if("undefined"==typeof version||void 0===version.title||"SugarCube"!==version.title||void 0===version.major||version.major<2||void 0===version.minor||version.minor<28)throw new Error("<<audioloopto>> macro set requires SugarCube 2.28.0 or greater, aborting load");if(Has.audio){var _transitions=new Map;Macro.add("audioloopto",{handler:function(){if(this.args.length<3){var errors=[];return this.args.length<1&&errors.push("loop track ID"),this.args.length<2&&errors.push("passage name"),this.args.length<3&&errors.push("next track ID"),this.error("no "+errors.join(" or ")+" specified")}var loopId=this.args[0],passage=this.args[1],nextId=this.args[2],loopTrack=SimpleAudio.tracks.get(loopId),nextTrack=SimpleAudio.tracks.get(nextId);if(!loopTrack)return this.error('loop track "'+loopId+'" does not exist');if(!Story.has(passage))return this.error('passage "'+passage+'" does not exist');if(!nextTrack)return this.error('next track "'+nextId+'" does not exist');loopTrack.loop(!1),nextTrack.play(),nextTrack.pause();var loopMap=void 0;_transitions.has(loopId)?loopMap=_transitions.get(loopId):(loopMap=new Map,_transitions.set(loopId,loopMap),loopTrack.on("ended.macro-audioloopto",function(){loopMap.has(State.passage)?loopMap.get(State.passage).play():loopTrack.play()})),loopMap.set(passage,nextTrack)}}),Macro.add("audiounloopto",{handler:function(){if(0===this.args.length)return this.error("no loop track ID specified");var loopId=this.args[0],passage=this.args[1],loopTrack=SimpleAudio.tracks.get(loopId);if(!loopTrack)return this.error('loop track "'+loopId+'" does not exist');if(passage&&!Story.has(passage))return this.error('passage "'+passage+'" does not exist');if(passage){var loopMap=_transitions.get(loopId);loopMap&&loopMap.delete(passage)}else _transitions.delete(loopId),loopTrack.off("ended.macro-audioloopto")}})}else Macro.add(["audioloopto","audiounloopto"],{handler:function(){}})}();
-/* twine-user-script #23: "error.js" */
+/* twine-user-script #20: "error.js" */
 /**
  * Jimmy: To be used in Twee files to print an error, where the error container mimics SugarCube's own error handler.
  * 		   Leaving the second argument out will grab a snippet of the code before it, up to 128 characters.
@@ -5848,7 +6114,7 @@ const ErrorSystem = ((Scripting, Errors) => {
 		getTargetSource,
 	});
 })(Scripting, Errors);
-/* twine-user-script #24: "eventpool.js" */
+/* twine-user-script #21: "eventpool.js" */
 /*
  * Usage:
  *
@@ -5977,7 +6243,7 @@ Macro.add("runeventpool", {
 		jQuery(this.output).wiki(pick.content);
 	},
 });
-/* twine-user-script #25: "keyboardbinder.js" */
+/* twine-user-script #22: "keyboardbinder.js" */
 /* 允许键盘操作 */
 (function (window, define, exports) {
 
@@ -6084,7 +6350,7 @@ function numberify(selector) {
 }
 DefineMacroS("numberify", numberify);
 
-/* twine-user-script #26: "numberpool-sugarcube-addon.js" */
+/* twine-user-script #23: "numberpool-sugarcube-addon.js" */
 if ("undefined" == typeof version || "undefined" == typeof version.title || "SugarCube" !== version.title || "undefined" == typeof version.major || version.major < 2 || "undefined" == typeof version.minor || version.minor < 5)
   throw new Error("<<numberpool>> macro set requires SugarCube 2.5.0 or greater, aborting load");
 if (version.major <= 2 && version.minor < 33) {
@@ -6335,13 +6601,13 @@ Macro.add("numberslider", {
 		}));
   },
 });
-/* twine-user-script #27: "replacelink-macro-set.min.js" */
+/* twine-user-script #24: "replacelink-macro-set.min.js" */
 /*! <<replacelink>> macro set for SugarCube 2.x */
 !function(){"use strict";function showVer(n,notrans){n&&(n.innerHTML="",new Wikifier(n,n.tweecode),n.setAttribute("data-enabled","true"),n.style.display="inline",n.classList.remove("revision-span-out"),notrans||(n.classList.add("revision-span-in"),n.timeout&&clearTimeout(n.timeout),n.timeout=setTimeout(function(){n.classList.remove("revision-span-in"),n=null},20)))}function hideVer(n,notrans){n&&(n.setAttribute("data-enabled","false"),n.classList.remove("revision-span-in"),n.timeout&&clearTimeout(n.timeout),notrans?(n.style.display="none",n.innerHTML="",n=null):(n.classList.add("revision-span-out"),n.timeout=setTimeout(function(){"false"===n.getAttribute("data-enabled")&&(n.classList.remove("revision-span-out"),n.style.display="none",n.innerHTML=""),n=null},1e3)))}function tagcontents(b,starttags,desttags,endtags,k){function tagfound(i,e,endtag){for(var j=0;j<e.length;j++)if(a.indexOf("<<"+e[j]+(endtag?">>":""),i)===i)return e[j]}for(var tg,l=0,c="",a=b.source.slice(k),i=0;i<a.length;i++){if(tg=tagfound(i,starttags))l++;else{if((tg=tagfound(i,desttags,!0))&&0===l)return b.nextMatch=k+i+tg.length+4,[c,tg];if((tg=tagfound(i,endtags,!0))&&(l--,l<0))return null}c+=a.charAt(i)}return null}function revisionSpanHandler(g,e,f,b){function mkspan(vtype){return h=insertElement(m,"span",null,"revision-span "+vtype),h.setAttribute("data-enabled",!1),h.style.display="none",h.tweecode="",h}var becomes,c,cn,m,h,vsn,k=b.source.indexOf(">>",b.matchStart)+2,vsns=[],vtype=e,flen=f.length;if(this.shorthand&&flen)for(;f.length>0;)vsns.push([f.shift(),"insert"===this.flavour?"gains":"becomes"]);else("insert"===this.flavour||"continue"===this.flavour&&"time"===this.trigger)&&vsns.push(["","becomes"]);if("continue"===this.flavour&&flen)b.nextMatch=k+b.source.slice(k).length,vsns.push([b.source.slice(k),vtype]);else{if(becomes=["becomes","gains"],c=tagcontents(b,begintags,becomes.concat(endtags),endtags,k),c&&endtags.indexOf(c[1])===-1){for(;c;)vsns.push(c),c=tagcontents(b,begintags,becomes,endtags,b.nextMatch);c=tagcontents(b,begintags,["/"+e,"end"+e],endtags,b.nextMatch)}if(!c)return void throwError(g,"<<"+e+">>: cannot find a matching close tag");vsns.push(c),"continue"===this.flavour&&(k=b.nextMatch,b.nextMatch=k+b.source.slice(k).length,vsns.push([b.source.slice(k),""]))}for("remove"===this.flavour&&vsns.push(["","becomes"]),cn=0,m=insertElement(g,"span",null,e),m.setAttribute("data-flavour",this.flavour),h=mkspan("initial"),vsn=vsns.shift(),h.tweecode=vsn[0],showVer(h,!0);vsns.length>0;)vsn&&(vtype=vsn[1]),vsn=vsns.shift(),h=mkspan(vtype),h.tweecode=vsn[0];"function"==typeof this.setup&&this.setup(m,g,e,f)}function revisionSetup(m,g,e,f){m.className+=" "+f[0].replace(" ","_")}function keySetup(m,g,e,f){f[0];m.setEventListener("keydown",function l(e){var done=!revise("revise",m);done&&m.removeEventListener("keydown",l)})}function timeSetup(m,g,e,f){function cssTimeUnit(s){if("string"==typeof s){if("ms"===s.slice(-2).toLowerCase())return Number(s.slice(0,-2))||0;if("s"===s.slice(-1).toLowerCase())return 1e3*Number(s.slice(0,-1))||0}return throwError(g,"<<"+e+'>>: "'+s+'" is not a valid CSS time unit'),0}var tm=cssTimeUnit(f[0]),s=passage();setTimeout(function timefn(){if(passage()===s){var done=!revise("revise",m);done||setTimeout(timefn,tm)}},tm)}function hoverSetup(m){var fn,noMouseEnter=null!==document.head.onmouseenter,m1=m.children[0],m2=m.children[1],gains=m2.className.indexOf("gains")>-1;m1&&m2&&(m1.onmouseenter=function(e){for(var efp=document.elementFromPoint(e.clientX,e.clientY);efp&&efp!==this;)efp=efp.parentNode;efp&&"false"!==this.getAttribute("data-enabled")&&revise("revise",this.parentNode)},m2.onmouseleave=function(e){for(var efp=document.elementFromPoint(e.clientX,e.clientY);efp&&efp!==this;)efp=efp.parentNode;efp||"false"!==this.getAttribute("data-enabled")&&revise("revert",this.parentNode)},gains&&(m1.onmouseleave=m2.onmouseleave),noMouseEnter&&(fn=function(n){return function(e){event.relatedTarget&&(event.relatedTarget===this||this.compareDocumentPosition(event.relatedTarget)&Node.DOCUMENT_POSITION_CONTAINED_BY)||this[n]()}},m1.onmouseover=fn("onmouseenter"),m2.onmouseout=fn("onmouseleave"),gains&&(m1.onmouseout=m2.onmouseout)),m=null)}function mouseSetup(m){var evt=null===document.head.onmouseenter?"onmouseenter":"onmouseover";m[evt]=function(){var done=!revise("revise",this);done&&(this[evt]=null)},m=null}function linkSetup(m,g,e,f){var l=document.createElement("a"),p=m.parentNode;l.className="link-internal replaceLink",p.insertBefore(l,m),l.insertBefore(m,null),jQuery(l).ariaClick(function(){var done=!1;m&&m.parentNode===this&&(done=!revise("revise",m),scrollWindowTo(m)),done&&(this.parentNode.insertBefore(m,this),this.parentNode.removeChild(this))}),l=null}function visitedSetup(m,g,e,f){var done,sav=State.variables,os="once seen",d=m.firstChild&&("insert"===this.flavour?m.firstChild.nextSibling:m.firstChild).tweecode;if(sav[os]=sav[os]||{},d&&!sav[os].hasOwnProperty(d))sav[os][d]=1;else{for(var i=sav[os][d];i>0&&!done;i--)done=!revise("revise",m,!0);sav[os].hasOwnProperty(d)&&(sav[os][d]+=1)}}function insideDepartingSpan(elem){for(var r=elem.parentNode;!r.classList.contains("passage");){if(r.classList.contains("revision-span-out"))return!0;r=r.parentNode}}function reviseAll(rt,rname){for(var rall=document.querySelectorAll(".passage [data-flavour]."+rname),ret=!1,i=0;i<rall.length;i++)insideDepartingSpan(rall[i])||(ret=revise(rt,rall[i])||ret);return ret}function revise(rt,r,notrans){function doToGainerSpans(n,fn){for(var k=n-1;k>=0&&rc[k+1].classList.contains("gains");k--)fn(rc[k],notrans)}for(var ind2,curr,next,ind=-1,rev="revert"===rt,rnd=rt.indexOf("random")>-1,fl=r.getAttribute("data-flavour"),rc=r.childNodes,cyc="cycle"===fl,rcl=rc.length-1,k=0;k<=rcl;k++)"true"===rc[k].getAttribute("data-enabled")&&(ind=k);rev&&(ind-=1),curr=ind>=0?rc[ind]:cyc?rc[rcl]:null,ind2=ind,rnd&&(ind2=(ind+Math.floor(Math.random()*rcl))%rcl),next=ind2<rcl?rc[ind2+1]:cyc?rc[0]:null;var docurr=rev?showVer:hideVer,donext=rev?hideVer:showVer,currfn=function(){next&&next.classList.contains("gains")&&!rnd||(docurr(curr,notrans),doToGainerSpans(ind,docurr,notrans))},nextfn=function(){donext(next,notrans),rnd&&doToGainerSpans(ind2+1,donext,notrans)};return rev?(nextfn(),currfn()):(currfn(),nextfn()),!!cyc||(rev?ind>0:ind2<rcl-1)}if("undefined"==typeof version||"undefined"==typeof version.title||"SugarCube"!==version.title||"undefined"==typeof version.major||version.major<2)throw new Error("<<replacelink>> macro set requires SugarCube 2.0.0 or greater, aborting load");version.extensions.replacelinkMacroSet={major:1,minor:1,revision:7};var begintags=[],endtags=[];[{name:"insertlink",flavour:"insert",trigger:"link",setup:linkSetup},{name:"timedinsert",flavour:"insert",trigger:"time",setup:timeSetup},{name:"insertion",flavour:"insert",trigger:"revisemacro",setup:revisionSetup},{name:"later",flavour:"insert",trigger:"visited",setup:visitedSetup},{name:"keyinsert",flavour:"insert",trigger:"key",setup:keySetup},{name:"replacelink",flavour:"replace",trigger:"link",setup:linkSetup},{name:"timedreplace",flavour:"replace",trigger:"time",setup:timeSetup},{name:"mousereplace",flavour:"replace",trigger:"mouse",setup:mouseSetup},{name:"hoverreplace",flavour:"replace",trigger:"hover",setup:hoverSetup},{name:"revision",flavour:"replace",trigger:"revisemacro",setup:revisionSetup},{name:"keyreplace",flavour:"replace",trigger:"key",setup:keySetup},{name:"timedremove",flavour:"remove",trigger:"time",setup:timeSetup},{name:"mouseremove",flavour:"remove",trigger:"mouse",setup:mouseSetup},{name:"hoverremove",flavour:"remove",trigger:"hover",setup:hoverSetup},{name:"removal",flavour:"remove",trigger:"revisemacro",setup:revisionSetup},{name:"once",flavour:"remove",trigger:"visited",setup:visitedSetup},{name:"keyremove",flavour:"remove",trigger:"key",setup:keySetup},{name:"continuelink",flavour:"continue",trigger:"link",setup:linkSetup},{name:"timedcontinue",flavour:"continue",trigger:"time",setup:timeSetup},{name:"mousecontinue",flavour:"continue",trigger:"mouse",setup:mouseSetup},{name:"keycontinue",flavour:"continue",trigger:"key",setup:keySetup},{name:"cycle",flavour:"cycle",trigger:"revisemacro",setup:revisionSetup},{name:"mousecycle",flavour:"cycle",trigger:"mouse",setup:mouseSetup},{name:"timedcycle",flavour:"cycle",trigger:"time",setup:timeSetup},{name:"keycycle",flavour:"replace",trigger:"key",setup:keySetup}].forEach(function(e){e.handler=revisionSpanHandler,e.shorthand=["link","mouse","hover"].indexOf(e.trigger)>-1,macros[e.name]=e,Macro.tags.register(e.name),begintags.push(e.name),endtags.push("/"+e.name,"end"+e.name)}),macros.revertlink=macros.reviselink=macros.randomiselink=macros.randomizelink={handler:function(a,b,c){function disableLink(l){l.style.display="none"}function enableLink(l){l.style.display="inline"}function updateLink(l){if(l.className.indexOf("random")>-1)return void enableLink(l);for(var cannext,canprev,r,fl,rall=document.querySelectorAll(".passage [data-flavour]."+rname),i=0;i<rall.length;i++)r=rall[i],fl=r.getAttribute("data-flavour"),insideDepartingSpan(r)||("cycle"===fl?cannext=canprev=!0:("false"===r.firstChild.getAttribute("data-enabled")&&(canprev=!0),"false"===r.lastChild.getAttribute("data-enabled")&&(cannext=!0)));var can=l.classList.contains("revert")?canprev:cannext;(can?enableLink:disableLink)(l)}function toggleText(w){w.classList.toggle(rl+"Enabled"),w.classList.toggle(rl+"Disabled"),w.style.display="none"===w.style.display?"inline":"none"}if(c.length<2)return void throwError(a,"<<"+b+">>: insufficient arguments (requires at least 2)");var l,rname,actName=b.slice(0,-4),rl="reviseLink",v="",end=!1,out=!1;switch(rname=c.shift().replace(" ","_"),l=insertElement(a,"a"),l.className="link-internal "+rl+" "+rl+"_"+rname+" "+actName,c.length>1&&"$"===c[0][0]&&(v=c[0].slice(1),c.shift()),c[c.length-1]){case"end":end=!0,c.pop();break;case"out":out=!0,c.pop()}for(var h=State.variables,i=0;i<c.length;i++){var on=i===Math.max(c.indexOf(h[v]),0),d=insertElement(null,"span",null,rl+(on?"En":"Dis")+"abled");on?(h[v]=c[i],l.setAttribute("data-cycle",i)):d.style.display="none",insertText(d,c[i]),l.appendChild(d)}jQuery(l).ariaClick(function(){reviseAll(actName,rname);var lall,t=this.childNodes,u=this.getAttribute("data-cycle")-0,m=t.length;if((end||out)&&u>=m-(end?2:1)){if(!end)return void this.parentNode.removeChild(this);var n=this.removeChild(t[u+1]||t[u]);n.className=rl+"End",n.style.display="inline",this.parentNode.replaceChild(n,this)}else toggleText(t[u]),u=(u+1)%m,v&&(h[v]=c[u]),toggleText(t[u]),this.setAttribute("data-cycle",u);lall=document.getElementsByClassName(rl+"_"+rname);for(var i=0;i<lall.length;i++)updateLink(lall[i])}),disableLink(l),setTimeout(function(l){return function(){updateLink(l)}}(l),1),l=null}},macros.mouserevise=macros.hoverrevise={handler:function(a,b,c,d){var endtags=["/"+b,"end"+b],evt=null===window.onmouseenter?"onmouseenter":"onmouseover",t=tagcontents(d,[b],endtags,endtags,d.source.indexOf(">>",d.matchStart)+2);if(t){var rname=c[0].replace(" ","_"),h=insertElement(a,"span",null,"hoverrevise hoverrevise_"+rname),f=function(){var done=!reviseAll("revise",rname);"hoverrevise"!=b&&done&&(this[evt]=null)};new Wikifier(h,t[0]),"hoverrevise"===b?(h.onmouseover=f,h.onmouseout=function(){reviseAll("revert",rname)}):h[evt]=f,h=null}}},Macro.tags.register("mouserevise"),Macro.tags.register("hoverrevise"),macros.instantrevise={handler:function(a,b,c,d){reviseAll("revise",c[0].replace(" ","_"))}}}();
-/* twine-user-script #28: "shake-macro-set.min.js" */
+/* twine-user-script #25: "shake-macro-set.min.js" */
 /*! <<shake>> macro set for SugarCube 2.x */
 !function(){"use strict";if("undefined"==typeof version||"undefined"==typeof version.title||"SugarCube"!==version.title||"undefined"==typeof version.major||version.major<2||"undefined"==typeof version.minor||version.minor<5)throw new Error("<<shake>> macro requires SugarCube 2.5.0 or greater, aborting load");Macro.add("shake",{tags:null,handler:function(){var duration=this.args.length>0?this.args[0]:1/0,shakeClass="shake";if(1/0!==duration)try{duration=Math.max(Engine.minDomActionDelay,Util.fromCssTime(duration))}catch(e){return this.error(e.message)}Config.debug&&this.debugView.modes({block:!0});var $wrapper=jQuery(document.createElement("span"));$wrapper.addClass("macro-"+this.name+" "+shakeClass).wiki(this.payload[0].contents).appendTo(this.output),1/0!==duration&&setTimeout(function(){$wrapper.removeClass(shakeClass)},Engine.minDomActionDelay+duration)}}),Macro.add(["shakescreen","shaketarget"],{handler:function(){var $targets,duration,shakeClass;if("shakescreen"===this.name)$targets=jQuery("#passages"),duration=this.args.length>0?this.args[0]:1/0,shakeClass="shake-block";else{if(0===this.args.length)return this.error("no selector specified");if($targets=jQuery(this.args[0]),0===$targets.length)return this.error('no elements matched the selector "'+this.args[0]+'"');duration=this.args.length>1?this.args[1]:1/0,shakeClass="block"===jQuery($targets[0]).css("display")?"shake-block":"shake"}if("stop"===duration)return void $targets.removeClass(shakeClass);if(1/0!==duration)try{duration=Math.max(Engine.minDomActionDelay,Util.fromCssTime(duration))}catch(e){return this.error(e.message)}$targets.addClass(shakeClass),1/0!==duration&&setTimeout(function(){$targets.removeClass(shakeClass)},Engine.minDomActionDelay+duration)}})}();
-/* twine-user-script #29: "00-initUlts.js" */
+/* twine-user-script #26: "00-initUlts.js" */
 F.makeList = function (path, option) {
 	const rawtxt = Story.get(path).text.split("\n");
 
@@ -6513,7 +6779,7 @@ fix.reveals = function (reveal, equip) {
 
 	return reveal;
 };
-/* twine-user-script #30: "01-actions.js" */
+/* twine-user-script #27: "01-actions.js" */
 const extendTags = function (raw) {
 	if (!raw) return [];
 	return raw.split("|");
@@ -6830,7 +7096,7 @@ Action.data = actList;
 Action.kojo = {};
 
 Action.initdata();
-/* twine-user-script #31: "01-trait.js" */
+/* twine-user-script #28: "01-trait.js" */
 const traitdata = {};
 
 window.findConflic = function (source, conflicGroup) {
@@ -6981,7 +7247,7 @@ Trait.set("理智")
 		else if (cond.baseLt(tc, "health", 0.3) || cond.baseLt(tc, "stamina", 0.1)) return 15;
 		else return 2;
 	});
-/* twine-user-script #32: "02-initChara.js" */
+/* twine-user-script #29: "02-initChara.js" */
 Chara.data = {};
 
 Chara.data.Ayres = function () {
@@ -7113,7 +7379,7 @@ Chara.data.m0 = function () {
 
 	return chara;
 };
-/* twine-user-script #33: "02-initGame.js" */
+/* twine-user-script #30: "02-initGame.js" */
 game.init = function () {
 	//-------->> 记录类变量 <<-----------//
 	S.dialog = {};
@@ -7203,22 +7469,34 @@ game.init = function () {
 		name: ["宿舍S303"],
 		room: ["Bathroom"],
 		tags: ["私人", "宿舍"],
-		placement: [
-			["床", "单人床"],
-			["床", "单人床"],
-			["衣柜", "小的木衣柜"],
-			["衣柜", "小的木衣柜"],
-			["桌子", "木书桌"],
-			["桌子", "木书桌"],
-			["椅子", "木椅"],
-			["椅子", "木椅"],
-			["书柜", "木书柜"],
-			["镜子", "全身镜"],
-			["衣架", "木衣架"],
-			["植物", "小型盆栽"],
-		],
+		placement: {
+			S303: {
+				max: 12,
+				obj: [
+					["床", "单人床"],
+					["床", "单人床"],
+					["衣柜", "小的木衣柜"],
+					["衣柜", "小的木衣柜"],
+					["桌子", "木书桌"],
+					["桌子", "木书桌"],
+					["椅子", "木椅"],
+					["椅子", "木椅"],
+					["书柜", "木书柜"],
+					["镜子", "全身镜"],
+					["衣架", "木衣架"],
+					["植物", "小型盆栽"],
+				],
+			},
+			Bathroom: {
+				max: 5,
+				obj: [
+					["马桶", "陶瓷马桶"],
+					["沐浴间", "莲蓬花洒"],
+					["洗手盆", "洗手盆"],
+				],
+			},
+		},
 		storage: {},
-		maxslot: 12,
 	};
 
 	V.lastLocation = null;
@@ -7226,6 +7504,8 @@ game.init = function () {
 	//当前地点详情
 	V.location = F.iniLocation("Academy.Dormitory.S303");
 	V.location.chara = ["Isil", "Ayres"];
+
+	F.initSquareData();
 };
 
 game.start = function (skip) {
@@ -7265,7 +7545,57 @@ game.start = function (skip) {
 		}
 	}
 };
-/* twine-user-script #34: "03-initplayer.js" */
+
+F.initSquareData = function () {
+	V.mapdata = {};
+	let square;
+
+	const initBoards = (path) => {
+		const data = GameMap.get(path);
+		for (const [key, values] of Object.entries(data)) {
+			if (values instanceof Boards) {
+				let id = values.id.split(".").pop();
+				V.mapdata[id] = {};
+				square = setByPath(V.mapdata, values.id);
+				square.visited = 0;
+				square.explore = 0;
+
+				if (values.tags.has("上锁", "封闭", "异次元")) {
+					square.locked = 1;
+				}
+
+				initBoards(values.id);
+			}
+			if (values instanceof Spots) {
+				initSpots(values.id);
+			}
+		}
+	};
+	const initSpots = (path) => {
+		const data = GameMap.get(path);
+		for (const [key, values] of Object.entries(data)) {
+			if (values instanceof Spots) {
+				const spot = setByPath(V.mapdata, values.id);
+				spot.visited = 0;
+				spot.explore = 0;
+
+				if (values.tags.has("上锁", "私人", "封闭", "异次元")) {
+					spot.locked = 1;
+				}
+
+				initSpots(values.id);
+			}
+		}
+	};
+
+	for (const [boardkey, boards] of Object.entries(worldMap)) {
+		if (boards instanceof Boards) {
+			V.mapdata[boardkey] = {};
+			initBoards(boards.id);
+		}
+	}
+};
+/* twine-user-script #31: "03-initplayer.js" */
 //beauty=ALR*100+wearbuff+traitbuff
 Chara.onLoad = function () {
 	for (let i in V.chara) {
@@ -7546,7 +7876,7 @@ Chara.initGlobal = function () {
 		});
 	}
 };
-/* twine-user-script #35: "makeCharaSheet.js" */
+/* twine-user-script #32: "makeCharaSheet.js" */
 const initCSV = function (cid) {
 	const _raw = Story.get(`CharaSheet_${cid}`).text.replace(/\n/g, "#L#").replace(/\s/g, "");
 	const raw = _raw.split("#L#");
@@ -7699,7 +8029,7 @@ Chara.initCSV = function (cid) {
 
 	return chara;
 };
-/* twine-user-script #36: "0-ActionGlobalFilter.js" */
+/* twine-user-script #33: "0-ActionGlobalFilter.js" */
 //全局过滤器
 Action.globalFilter = function (id) {
 	const data = Action.data[id];
@@ -7863,7 +8193,7 @@ Action.globalPartAble = function (id, part, cid) {
 
 	return Using[cid][part]?.action == "" || Using[cid][part]?.action == id;
 };
-/* twine-user-script #37: "0-ActionUI.js" */
+/* twine-user-script #34: "0-ActionUI.js" */
 const selectedActionBtn = function (name) {
 	return `<div class='actions selectAct'>[ ${name} ]</div>`;
 };
@@ -8111,7 +8441,7 @@ Action.redraw = function () {
 	ui.replace("showtime", "<<showtime>><<showmoney>>");
 	return "";
 };
-/* twine-user-script #38: "0-ActionUtils.js" */
+/* twine-user-script #35: "0-ActionUtils.js" */
 Action.typeFilter = function (...types) {
 	return Object.values(Action.data).filter((action) => types.includes(action.type));
 };
@@ -8210,7 +8540,7 @@ Action.SelectableParts = function (actionId, filterMode) {
 	}
 	return selectAbleParts;
 };
-/* twine-user-script #39: "0-InitAction.js" */
+/* twine-user-script #36: "0-InitAction.js" */
 Action.initMode = function () {
 	T.actionTypeFilter = "all";
 	T.select = {};
@@ -8305,7 +8635,7 @@ Action.unset = function (cid, part, id) {
 
 	Using[cid][part] = { action: "", target: "", onPart: "", actor: "" };
 };
-/* twine-user-script #40: "ActionSystem.js" */
+/* twine-user-script #37: "ActionSystem.js" */
 cond.hasSelectableParts = function (parts) {
 	let arr = Array.from(new Set(parts));
 	if (!parts || parts.length <= 1) return false;
@@ -8711,7 +9041,7 @@ Action.Failed = function (id) {
 };
 
 //---------->> 设置finish事件 <<----------//
-/* twine-user-script #41: "0-command.js" */
+/* twine-user-script #38: "0-command.js" */
 //添加macro com
 Macro.add("com", {
 	tags: null,
@@ -8910,7 +9240,7 @@ Com.updateMovement = function () {
 
 	return "";
 };
-/* twine-user-script #42: "1-commandEvent.js" */
+/* twine-user-script #39: "1-commandEvent.js" */
 //----->> 初始化 <<---------------------------//
 
 //刷新指令目录
@@ -9178,7 +9508,7 @@ Com.endEvent = function () {
 	P.msg(resetHtml);
 	Com.next();
 };
-/* twine-user-script #43: "utils.js" */
+/* twine-user-script #40: "utils.js" */
 //----->> 小功能 <<---------------------------//
 
 Com.shownext = function () {
@@ -9222,7 +9552,7 @@ Com.reset = function () {
 	//刷新画面
 	Com.resetScene();
 };
-/* twine-user-script #44: "DialogSystem.js" */
+/* twine-user-script #41: "DialogSystem.js" */
 // 信息流控制
 P.flow = function (txt, time, dashline) {
 	if (!time) time = 60;
@@ -9487,7 +9817,7 @@ Dlog.next = function () {
 		if (e.afterselect) delete e.afterselect;
 	}
 };
-/* twine-user-script #45: "Kojo.js" */
+/* twine-user-script #42: "Kojo.js" */
 class Kojo {
 	static data = {};
 	static set(id, color) {
@@ -9692,7 +10022,7 @@ F.convertKojo = function (txt) {
 
 	return txt;
 };
-/* twine-user-script #46: "charaEvent.js" */
+/* twine-user-script #43: "charaEvent.js" */
 F.summonChara = function () {
 	const local = V.location;
 
@@ -9791,7 +10121,7 @@ F.charaEvent = function (cid) {
 		}
 	});
 };
-/* twine-user-script #47: "locations.js" */
+/* twine-user-script #44: "locations.js" */
 //const { Maps } = require("Code/game/map");
 
 F.getLocationMsg = function (fullId) {
@@ -9800,55 +10130,55 @@ F.getLocationMsg = function (fullId) {
 	else return `<span class="error'>Error: No message for ${fullId}."</span>`;
 };
 
-worldMap.get = function (path) {
-	const _path = path.split(".");
-	let _map = worldMap;
-	for (let i = 0; i < _path.length; i++) {
-		if (_map[_path[i]] == undefined) {
-			console.log(`Error: No such path ${path} in worldMap.`);
-			return;
-		}
-		_map = _map[_path[i]];
-	}
-	return _map;
-};
-
-//获取地点信息
+//获取地点信息, boardId 为地图棋盘Id， path就是绝对id，
+//spotId为地点在棋盘上的id。 roomId为当前棋盘格子内部的房间id
+//entry是链接上级地图的入口id
+//所有的棋盘都在worldMap中有个快捷访问的路径，比如worldMap.Academy。
 F.iniLocation = function (path) {
-	const raw = worldMap.get(path);
-	let { groupId, name, entry, yourHome, portal } = raw;
+	const raw = GameMap.get(path);
+	let { boardId, name, entry, Home, portal, roomId, spotId } = raw;
+	let parent = raw.getParent();
+	let topParent = GameMap.get(raw.spotId);
 
 	const copylist = [
-		"groupId",
-		"mapId",
+		"boardId",
 		"tags",
 		"placement",
 		"portal",
-		"yourHome",
 		"hasParking",
 		"hasRailcar",
 		"hasAirship",
 		"loot",
-		"busiess",
+		"openhour",
 		"rooms",
+		"owner",
 		"entry",
+		"spotId",
+		"spotType",
+		"roomId",
+		"mapType",
+		"loot",
 	];
 
 	const local = {};
+	local.mapId = path;
+	local.parentId = parent.id || boardId;
 
 	copylist.forEach((item) => {
 		if (raw[item]) local[item] = clone(raw[item]);
 	});
 
 	if (!entry) {
-		local.entry = groupId;
+		local.entry = parent.staticEntry || parent.id || boardId;
 	}
 	local.name = name[0].split("|")[0];
 	local.printname = name[0].split("|").join("");
 	local.chara = [];
 
-	if (yourHome) {
-		local.placement = Spots.countPlacement(V.home.placement);
+	if (Home || parent?.Home || topParent?.Home) {
+		local.atHome = true;
+		if (V.home.placement[roomId]) local.placement = Spots.countPlacement(V.home.placement[roomId].obj);
+		if (V.home.placement[spotId]) local.placement = Spots.countPlacement(V.home.placement[spotId].obj);
 	}
 
 	//传送点有可能初始时不存在，但会在后续事件中出现
@@ -9860,9 +10190,9 @@ F.iniLocation = function (path) {
 	}
 
 	let pos = { x: 0, y: 0 },
-		posId = path.split(".")[1];
-	if (groupId !== "CommonSpots" && groupId !== "") {
-		pos = worldMap[groupId].spots.get(posId).pos;
+		posId = spotId.split(".")[1] || spotId;
+	if (boardId !== "CommonSpots" && boardId !== "") {
+		pos = worldMap[boardId].spots.get(posId).pos[0];
 	}
 
 	local.pos = pos;
@@ -9872,14 +10202,15 @@ F.iniLocation = function (path) {
 };
 
 F.createLocationLink = function () {
-	const mapdata = worldMap.get(V.location.groupId);
-	T.map = Maps.getBoard(V.location.groupId);
+	const { boardId, posId } = V.location;
+	const mapdata = GameMap.get(boardId);
+	T.map = GameMap.getBoard(boardId);
 	$("#travel").html("");
 
 	//先把所有地点都列出来
-	const list = Array.from(worldMap[V.location.groupId].spots)
-		.filter((spot) => spot[0] !== V.location.posId)
-		.map((spot) => [V.location.groupId + "." + spot[0], spot[1].pos, spot[1].tags]);
+	const list = Array.from(worldMap[boardId].spots)
+		.filter((spot) => spot[0] !== posId)
+		.map((spot) => [boardId + "." + spot[0], spot[1].pos[0], spot[1].spotType]);
 
 	//再把房间和出入口加进去
 	if (V.location.rooms) {
@@ -9888,27 +10219,39 @@ F.createLocationLink = function () {
 		});
 	}
 
-	if (V.location.entry !== V.location.groupId) {
-		let fullId = V.location.groupId + "." + V.location.entry;
-		list.push([fullId, "isEntry"]);
-	}
-
-	//如果是大地图的出入口
-	if (mapdata.entry === V.location.mapId) {
-		//添加移动到大地图的链接.
+	//如果是出入口，就把出入口加进去
+	if (V.location.entry !== V.location.mapId) {
+		list.push([V.location.entry, "isEntry"]);
 	}
 
 	//整理出新的列表。 录入顺序 [地点id, 移动时间]
 	const spots = [];
+	console.log(list);
 
 	list.forEach((item) => {
+		//console.log(item);
 		const id = item[0];
-		const locdata = worldMap.get(id);
+		const locdata = GameMap.get(id);
+		const squaredata = setByPath(V.mapdata, id);
+
 		//在这里时进行条件筛选。如果不符合条件，就不会出现在列表中。
+
+		//这种地点只能通过传送门到达。
+		if (
+			locdata.tags.has("封闭", "异空间") ||
+			(typeof item[2]?.has === "function" && item[2].has("secretAre", "inaccesible"))
+		) {
+			return;
+		}
+
+		//如果是锁着的私室，就不会出现在列表中。
+		if (locdata.visitCond && !locdata.visitCond()) return;
+		if (locdata.tags.containsAll("私人", "上锁") && squaredata.locked) {
+			return;
+		}
 
 		if (item[1].has && item[1].has("isRoom", "isEntry")) {
 			spots.push([item[0], 1]);
-		} else if (item[2].has("invisible", "inaccessible")) {
 		} else {
 			spots.push([item[0], Math.floor(findPath(T.map, V.location.pos, item[1]).length * 1.2 + 0.5)]);
 		}
@@ -9917,15 +10260,15 @@ F.createLocationLink = function () {
 	//按移动时间排序
 	spots.sort((a, b) => a[1] - b[1]);
 
+	//console.log(spots);
+
 	//生成链接
 	const link = spots
 		.map((item) => {
 			const fullId = item[0];
-			const locdata = worldMap.get(fullId);
-			if (locdata.tags.has("上锁")) return;
 			//时间 0:00
 			const time = `${Math.floor(item[1] / 60)}:${(item[1] % 60).toString().padStart(2, "0")}`;
-			const name = worldMap.get(fullId).name[0].split("|").join("");
+			const name = GameMap.get(fullId).name[0].split("|").join("");
 
 			const link = `<<link '${name}　${time}' 'MainLoop'>> <<run F.travleTo('${fullId}'); V.aftermovement = true; >><<passtime ${item[1]}>><</link>>`;
 			return `<div class="travel">${link}</div>`;
@@ -9942,15 +10285,15 @@ F.travleTo = function (fullId) {
 
 F.DisplayMiniMap = function () {
 	//以玩家坐标为中心，在9x9的范围内显示周围地图。
-	const mapdata = worldMap.get(V.location.groupId);
-	const map = Maps.getBoard(mapdata);
+	const mapdata = GameMap.get(V.location.groupId);
+	const map = GameMap.getBoard(mapdata);
 	const pos = V.location.pos;
 	const size = 9;
 	const start = { x: pos.x - Math.floor(size / 2), y: pos.y - Math.floor(size / 2) };
 	const end = { x: pos.x + Math.floor(size / 2), y: pos.y + Math.floor(size / 2) };
 	let output = "";
 };
-/* twine-user-script #48: "setEvent.js" */
+/* twine-user-script #45: "setEvent.js" */
 
 F.resetEvent = function () {
 	V.event = {
@@ -10001,7 +10344,7 @@ F.setMemory = function (id, title, chara) {
 		};
 	}
 };
-/* twine-user-script #49: "sourceTrack.js" */
+/* twine-user-script #46: "sourceTrack.js" */
 F.sourceCheck = function (chara, cid) {
 	//source的处理。根据条件对source的获得值进行加减。
 
@@ -10078,7 +10421,7 @@ F.sourceUp = function (chara) {
 };
 
 F.trackCheck = function (chara, cid) {};
-/* twine-user-script #50: "timeprocess.js" */
+/* twine-user-script #47: "timeprocess.js" */
 F.timeProcess = function (t) {
 	const date = V.date;
 
@@ -10139,14 +10482,14 @@ F.timeEffects = function (t, mode) {
 	//对不在场的角色进行时间经过处理。
 	//charas = F.getNoActiveChara()
 };
-/* twine-user-script #51: "Lib.js" */
+/* twine-user-script #48: "Lib.js" */
 ;(function () {
 	'use strict';
 
 	console.log("lib");
 
 })();
-/* twine-user-script #52: "UI.js" */
+/* twine-user-script #49: "UI.js" */
 ui.replace = function (label, html) {
 	new Wikifier(null, `<<replace #${label}>>${html}<</replace>>`);
 };
@@ -10157,7 +10500,7 @@ ui.delink = function () {
 	return "";
 };
 DefineMacroS("resetLink", ui.delink);
-/* twine-user-script #53: "condition.js" */
+/* twine-user-script #50: "condition.js" */
 cond.isClasstime = function () {
 	const date = V.date;
 	if (inrange(date.week, 1, 5)) {
@@ -10357,7 +10700,7 @@ cond.markLv = function (cid, key) {
 };
 
 cond.markIs = function (cid, key, val) {
-	const markkey = F.getKeyByValue(D.mark, key);
+	const markkey = getKeyByValue(D.mark, key);
 	return C[cid].mark[markkey] === val;
 };
 
@@ -10366,7 +10709,7 @@ cond.StallBusinessTime = function () {
 	if (V.date.week == 1) return cond.betweenTime(5.5, 16);
 	else return cond.betweenTime(13, 17);
 };
-/* twine-user-script #54: "getInfo.js" */
+/* twine-user-script #51: "getInfo.js" */
 function statsRank(v) {
 	const select = new SelectCase();
 	select
@@ -10510,7 +10853,7 @@ P.mutants = function (level) {
 	}
 	return txt;
 };
-/* twine-user-script #55: "getTime.js" */
+/* twine-user-script #52: "getTime.js" */
 const weeks = ["暗", "光", "火", "水", "木", "雷", "土"];
 const weekcolor = ["C770FF", "F9FEA8", "FF7447", "8FE1F9", "BFE83F", "E4FCFE", "E1C57A"];
 
@@ -10576,7 +10919,7 @@ F.timePhase = function () {
 
 	return select.has(h);
 };
-/* twine-user-script #56: "newutil.js" */
+/* twine-user-script #53: "newutil.js" */
 F.playtime = function () {
 	let time = V.gametime;
 
@@ -10663,12 +11006,31 @@ F.setActor = function (cid, tid, ...parts) {
 };
 DefineMacroS("setActor", F.setActor);
 
-F.getKeyByValue = function (object, value) {
+window.getKeyByValue = function (object, value) {
+	const findArray = (arr, val) => {
+		return arr.find((item) => typeof item.includes === "function" && item.includes(val));
+	};
 	return Object.keys(object).find(
-		(key) => object[key] === value || object[key].includes(value) || object[key][0].includes(value)
+		(key) =>
+			object[key] === value ||
+			object[key].includes(value) ||
+			(Array.isArray(object) && (object[key].includes(value) || findArray(object[key], value)))
 	);
 };
-/* twine-user-script #57: "palamChange.js" */
+
+window.setByPath = function (obj, path) {
+	const pathArray = path.split(".");
+	const last = pathArray.pop();
+	for (let i = 0; i < pathArray.length; i++) {
+		if (!obj[pathArray[i]]) obj[pathArray[i]] = {};
+		obj = obj[pathArray[i]];
+	}
+	if (!obj[last]) {
+		obj[last] = {};
+	}
+	return obj[last];
+};
+/* twine-user-script #54: "palamChange.js" */
 //根据温度变化，调整水分消耗速度。
 //设人体最佳适应温度为24℃，当温度高于最佳适应温度时，每3℃ 增加10%的水分消耗速度。
 F.hydrationLoseMult = function (currentTemp, bestTemp) {
@@ -10852,7 +11214,7 @@ F.levelMp = function (lv) {
 	let a = lv * lv * 10 + Math.pow(lv, 3);
 	return Math.floor(a / 10 + 0.5) * 10;
 };
-/* twine-user-script #58: "selection.js" */
+/* twine-user-script #55: "selection.js" */
 Macro.add("selection", {
 	tags: ["pick"],
 	handler: function () {
@@ -11039,7 +11401,7 @@ Macro.add("eventSelect", {
 		jQuery(this.output).wiki(html);
 	},
 });
-/* twine-user-script #59: "shortcut.js" */
+/* twine-user-script #56: "shortcut.js" */
 F.baseUp = function (chara, key, val) {
 	chara.base[key][0] += val;
 };
@@ -11115,7 +11477,7 @@ F.metToday = function (cid) {
 F.tentaclesNum = function () {
 	return V.cursedLord.abl.num + 2;
 };
-/* twine-user-script #60: "hover.js" */
+/* twine-user-script #57: "hover.js" */
 /* HoverTxt - Start */
 var HTIntervalID = 0;
 $(document).on(":passagerender", function (ev) {
@@ -11166,7 +11528,7 @@ function UpdateHoverTxt(Container) {
 	}
 }
 /* HoverTxt - End */
-/* twine-user-script #61: "mapeditor.js" */
+/* twine-user-script #58: "mapeditor.js" */
 window.confirmNewmap = function () {
 	T.mapsizeX = parseInt(T.mapsizeX);
 	T.mapsizeY = parseInt(T.mapsizeY);
@@ -11182,13 +11544,13 @@ window.confirmNewmap = function () {
 		if (T.mapsizeY % 2 === 0) {
 			T.mapsizeY += 1;
 		}
-		T.mapdata = newMap(T.mapsizeX, T.mapsizeY);
+		T.mapdata = F.newMap(T.mapsizeX, T.mapsizeY);
 		generateMapField(T.mapdata);
 		console.log(T.mapdata);
 	}
 };
 
-window.newMap = function (x, y) {
+F.newMap = function (x, y) {
 	const grid = [];
 	for (let i = 0; i < x; i++) {
 		grid[i] = [];
@@ -11271,7 +11633,7 @@ window.saveMapConfig = function () {
 		[1, 0, "S"],
 		[-1, 0, "N"],
 	];
-	let raw = Maps.convertData(T.mapdata);
+	let raw = GameMap.convertData(T.mapdata);
 	delete raw["."]; // remove empty space
 	delete raw["road"]; // remove road
 	let arr = [];
@@ -11348,7 +11710,7 @@ window.showPathMap = function () {
 		}, i * 150);
 	});
 };
-/* twine-user-script #62: "textProcessor.js" */
+/* twine-user-script #59: "textProcessor.js" */
 /**
  *
  * @param {string} text
@@ -11595,7 +11957,7 @@ P.inTime = function (...args) {
 	}
 	return retxt;
 };
-/* twine-user-script #63: "Common.js" */
+/* twine-user-script #60: "Common.js" */
 /* 放松 */
 Action.set("Relax")
 	.Filter(() => {
@@ -11787,7 +12149,7 @@ Action.set("Mine")
 	.Order(() => {
 		return 0;
 	});
-/* twine-user-script #64: "Interaction.js" */
+/* twine-user-script #61: "Interaction.js" */
 /* 闲聊 */
 Action.set("Talk").Check(() => {
 	let rate = random(1, 100);
@@ -11883,7 +12245,7 @@ Action.set("AskMoney")
 Action.set("Payback").Filter(() => {
 	return pc == "Ayres" && player.wallet > target.flag.debt;
 });
-/* twine-user-script #65: "Items.js" */
+/* twine-user-script #62: "Items.js" */
 
 /* 跳蛋 */
 Action.set('Rotor')
@@ -11908,7 +12270,7 @@ Action.set('Vibrator')
      .Order(()=>{
          return 0
       })
-/* twine-user-script #66: "Magic.js" */
+/* twine-user-script #63: "Magic.js" */
 /* 静心咒 */
 Action.set("m0")
 	.Filter(() => {
@@ -11932,7 +12294,7 @@ Action.set("m1")
 	.Order(() => {
 		return 0;
 	});
-/* twine-user-script #67: "Main.js" */
+/* twine-user-script #64: "Main.js" */
 /* 交流 */
 Action.set("Interaction")
 	.Filter(() => {
@@ -12145,7 +12507,7 @@ Action.set("Other")
 	.Event(() => {
 		T.actionTypeFilter = "其他";
 	});
-/* twine-user-script #68: "Other.js" */
+/* twine-user-script #65: "Other.js" */
 //:: Action_Command_Option[script]
 /* 直播 */
 Action.set("Stream")
@@ -12207,7 +12569,7 @@ Action.set("GetNude")
 	.Order(() => {
 		return 0;
 	});
-/* twine-user-script #69: "Pose.js" */
+/* twine-user-script #66: "Pose.js" */
 //根据角色的动作状态，判断能否执行某些动作。
 //例如对方被捆绑中时，可选体位根据捆绑姿势受限。
 //:: Action_Pose_Option[script]
@@ -12279,7 +12641,7 @@ Action.set("pose11").Filter(() => {
 
 	return 1;
 });
-/* twine-user-script #70: "Reverse.js" */
+/* twine-user-script #67: "Reverse.js" */
 //:: Action_Reverse_Option[script]
 /* 口交 */
 Action.set("r0")
@@ -12316,7 +12678,7 @@ Action.set("r2")
 	.Order(() => {
 		return 0;
 	});
-/* twine-user-script #71: "System.js" */
+/* twine-user-script #68: "System.js" */
 //:: Action_Event[script]
 Action.set("reset")
 	.Filter(() => {
@@ -12393,7 +12755,7 @@ Action.set("stopTouch")
 		Flag.mode = 1;
 		//new Wikifier(null, `<<run P.flow(P.playerName()+'<<you>>把手从$target.name身上挪开了。',30,1)>>`)
 	});
-/* twine-user-script #72: "Tentacles.js" */
+/* twine-user-script #69: "Tentacles.js" */
 //:: Action_Tentacles_Option[script]
 /* 揉捏 */
 Action.set("x0")
@@ -12562,7 +12924,7 @@ Action.set("x13")
 	.Order(() => {
 		return 0;
 	});
-/* twine-user-script #73: "Touch.js" */
+/* twine-user-script #70: "Touch.js" */
 //:: Action_Touch_Option[script]
 
 /* 接吻 */
@@ -12742,7 +13104,7 @@ Action.set("t13")
 	.Order(() => {
 		return 0;
 	});
-/* twine-user-script #74: "RegistAllCom" */
+/* twine-user-script #71: "RegistAllCom" */
 //批处理多个指令。
 Com.init()
 
@@ -12816,7 +13178,7 @@ Com.globalCond = function(id){
 
     return true
 }
-/* twine-user-script #75: "Com_G1:Script" */
+/* twine-user-script #72: "Com_G1:Script" */
 /* 注册指令事件*/
 Com.set('G1')
     .Check(()=>{ 
@@ -12827,7 +13189,7 @@ Com.set('G1')
     })
 
 /* 事件文本，before执行前文本，after执行后文本，cancel执行取消时文本 */
-/* twine-user-script #76: "Com_G2:Script" */
+/* twine-user-script #73: "Com_G2:Script" */
 Com.set('G2')
     .Check(()=>{
         return random(1,100) <= target.mood + 10 && !target.state.contains('失声','失聪')
@@ -12835,12 +13197,12 @@ Com.set('G2')
     .Effect(()=>{
         Source[tc].favo += 10
     })
-/* twine-user-script #77: "Com_T4:Script" */
+/* twine-user-script #74: "Com_T4:Script" */
 Com.set('T4')
    .Filter(()=>{
         return target.gender !== 'female'
    })
-/* twine-user-script #78: "Com_T99:Script" */
+/* twine-user-script #75: "Com_T99:Script" */
 Com.set('T99')
    .Name(()=>{
         if(V.mode !== 'train'){
@@ -12884,7 +13246,7 @@ Com.set('T99')
             }
         }
    })
-/* twine-user-script #79: "Com_X1:Script" */
+/* twine-user-script #76: "Com_X1:Script" */
 Com.set('X1')
     .Check(()=>{
         //能跑进来时已经过滤掉的情况：非合意且对象具备抵抗能力
@@ -12907,7 +13269,7 @@ Com.set('X1')
         Chara.getexp(target, 'B', random(2));
     })
     .ForceAble()
-/* twine-user-script #80: "Com_X2:Script" */
+/* twine-user-script #77: "Com_X2:Script" */
 Com.set('X2')
     .Check(()=>{
         //能跑进来时已经过滤掉的情况：非合意且对象具备抵抗能力
@@ -12929,7 +13291,7 @@ Com.set('X2')
         Chara.getexp(target, '触手', random(3));
         Chara.getexp(target, 'B', random(2));
     })
-/* twine-user-script #81: "Kojo_Ayres_Regist" */
+/* twine-user-script #78: "Kojo_Ayres_Regist" */
 Kojo.set('Ayres')
     .Intro('出身不明的鬼人（？），在大贤者的推荐下来到奥兰尼亚第一魔法学院研究魔药学。')
     .Home('宿舍,S303')
@@ -12946,14 +13308,14 @@ Kojo.set('Ayres')
 
     //自定义动作
     .Action(0, {id:'Ayres_PotionExperience', name:'魔药研究', type:'G'})
-/* twine-user-script #82: "Kojo_Ayres_Actions_Option" */
+/* twine-user-script #79: "Kojo_Ayres_Actions_Option" */
 Action.kojo.Ayres = function(){
    Action.set('Ayres_PotionExperience')
       .Filter(()=>{
          return pc === 'Ayres' && V.location.name === '综合研究所'
       })
 }
-/* twine-user-script #83: "Kojo_Isil_Regist" */
+/* twine-user-script #80: "Kojo_Isil_Regist" */
 /* 代码区，用于注册角色颜色、额外的设定、flag信息等 */
 Kojo.set('Isil','#F9F570')
     //角色介绍
@@ -13011,14 +13373,14 @@ Kojo.set('Isil','#F9F570')
     .Action(0,{id:'Isil_MagicaResearch',name:'研究魔法',type:'G'})
     
 //自定义动作的设置
-/* twine-user-script #84: "Kojo_Isil_Actions_Option" */
+/* twine-user-script #81: "Kojo_Isil_Actions_Option" */
 Action.kojo.Isil = function(){
    Action.set('Isil_MagicaResearch')
       .Filter(()=>{
          return pc === 'Isil' && V.location.name === '魔法研究所'
       })
 }
-/* twine-user-script #85: "Kojo_Nanaly_Regist" */
+/* twine-user-script #82: "Kojo_Nanaly_Regist" */
 /* 纯代码区,用于注册角色信息 */
 /*注意：娜娜莉是姛，如果条件允许应当当玩家是女性/双性时才可攻略*/
 Kojo.set('Nanaly', '#66CCFF') //角色id与 名牌颜色
@@ -13030,7 +13392,7 @@ Kojo.set('Nanaly', '#66CCFF') //角色id与 名牌颜色
     //日程表填写顺序, 日程id(从0开始), [ '地点', [ 星期几 ], 起始时间,  结束时间,  滞留时长,  出现概率 ]
 
     .Event()
-/* twine-user-script #86: "startconfig.js" */
+/* twine-user-script #83: "startconfig.js" */
 game.version = "0.2.0";
 l10nStrings.errorTitle = game.version + " Error";
 console.log("Game Version:", game.version);
@@ -13620,7 +13982,7 @@ $(&#39;#listbox--condition&#39;).on(&#39;change&#39;,()=&gt;{
 
     &lt;&lt;button &#39;读取地图&#39;&gt;&gt;
     &lt;&lt;run
-        T.mapdata = Maps.getBoard(T.selectMap)
+        T.mapdata = GameMap.getBoard(T.selectMap)
         T.mapsizeX = T.mapdata.length
         T.mapsizeY = T.mapdata[0].length
         generateMapField(T.mapdata)
@@ -13658,6 +14020,15 @@ $(&#39;#listbox--condition&#39;).on(&#39;change&#39;,()=&gt;{
     &lt;&lt;checkbox &quot;_placemode&quot; 0 1 autocheck&gt;&gt;
     清除模式：
     &lt;&lt;checkbox &#39;_destroymode&#39; 0 1 autocheck&gt;&gt;
+
+    &lt;&lt;button &#39;自动补充道路&#39;&gt;&gt;
+    &lt;&lt;run
+        T.mapdata = AutoFillRoads(T.mapdata)
+        T.mapsizeX = T.mapdata.length
+        T.mapsizeY = T.mapdata[0].length
+        generateMapField(T.mapdata) 
+    &gt;&gt;
+    &lt;&lt;/button&gt;&gt;
     &lt;/div&gt;
     &lt;div&gt;
     &lt;&lt;checkbox &#39;_setStartPoint&#39; 0 1 autocheck&gt;&gt;设置起点：
@@ -16116,7 +16487,7 @@ flagname替换成对应的变量名&lt;br&gt;
         魔法研究院的饭堂
     &lt;&lt;case &#39;美术馆&#39;&gt;&gt;
         城镇里的美术馆
-    &lt;&lt;case &#39;教堂&#39;&gt;&gt;
+    &lt;&lt;case &#39;元灵教堂&#39;&gt;&gt;
         元灵教的教堂
     &lt;&lt;case &#39;黑猫咖啡馆&#39;&gt;&gt;
         城镇里的咖啡馆
@@ -16126,7 +16497,7 @@ flagname替换成对应的变量名&lt;br&gt;
         城内的商业步行街
     &lt;&lt;case &#39;城镇中心&#39;&gt;&gt;
         城镇中心广场
-    &lt;&lt;case &#39;剧场&#39;&gt;&gt;
+    &lt;&lt;case &#39;绯鸟剧场&#39;&gt;&gt;
         城镇里的剧场,可以看歌舞剧,话剧表演等, 还有映画播放厅
     &lt;&lt;case &#39;学生中心&#39;&gt;&gt;
         进行人生商谈, 职业规划, 心理咨询的地方. 基本上啥都能在这里问
@@ -16211,7 +16582,7 @@ $target.name轻轻抚摸着&lt;&lt;you&gt;&gt;的脑袋，使其靠在自己的�
 &lt;&lt;/switch&gt;&gt;
 &lt;br&gt;</tw-passagedata><tw-passagedata pid="316" name="Msg_Spots_Academy_MageTower" tags="" position="725,3975" size="100,100">这里是学院的法师塔。几个大型防御炮台就悬浮在塔身周围，保护着学院的安全。&lt;br&gt;
 法师塔的大门紧闭着，不是谁都能进入。&lt;br&gt;
-&lt;&lt;if !cond.betweetime(8, 17)&gt;&gt;从远处就能看到塔顶上那代表魔网信号的光芒有节奏地闪烁着。&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="317" name="Msg_Spots_Academy_MageTower_Inside" tags="" position="850,3975" size="100,100">这里是法师塔的内部。塔内的空间比外面看起来要大得多，似乎运用了魔法的扩展效果。&lt;br&gt;
+&lt;&lt;if !cond.betweeTime(8, 17)&gt;&gt;从远处就能看到塔顶上那代表魔网信号的光芒有节奏地闪烁着。&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="317" name="Msg_Spots_Academy_MageTower_Inside" tags="" position="850,3975" size="100,100">这里是法师塔的内部。塔内的空间比外面看起来要大得多，似乎运用了魔法的扩展效果。&lt;br&gt;
 抬头望去，头顶上是星空一般的空间，感觉就像是在宇宙中漂浮着一样。&lt;br&gt;
 在空间中，一个巨大的魔法阵在不停地转动着，似乎在吸收着周围的魔力。&lt;br&gt;</tw-passagedata><tw-passagedata pid="318" name="Msg_Spots_Academy_ActivitySquare" tags="" position="975,3975" size="100,100">这里是学院的活动广场。学生们在这里聚集着，进行着各种活动。&lt;br&gt;</tw-passagedata><tw-passagedata pid="319" name="Msg_Spots_CommonSpots_PublicToilet" tags="" position="1100,3975" size="100,100">这里是公共厕所。</tw-passagedata></tw-storydata>
 	<script id="script-sugarcube" type="text/javascript">

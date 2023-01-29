@@ -119,6 +119,7 @@ interface iName {
 }
 
 export type creaturetype = "chara" | "nnpc" | "monster";
+declare function groupmatch(arg, ...args): boolean;
 
 export class Creature {
 	static data: Dict<Creature> = {};

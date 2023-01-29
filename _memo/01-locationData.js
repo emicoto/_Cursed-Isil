@@ -51,13 +51,9 @@ A0Config.forEach(([id, name, side]) => {
 	FMA[id] = new Spots(id, name, "Academy", side);
 });
 
-FMA.SchoolEntrance.Tags("交通").Placement("移动摊位").Parking().Railcar();
-
 FMA.MageTower.Rooms("Inside", "Observatory").Tags("高台", "悬浮", "防御").Placement("魔网", "防御炮台");
 
-FMA.SecretTrainingGround.Tags("隐蔽", "封闭", "异空间")
-	.Placement("传送门", "训练器材")
-	.setPortal("Academy.MageTower.Inside");
+FMA.SchoolEntrance.Tags("交通").Placement("移动摊位").Parking().Railcar();
 
 FMA.ActivitySquare.Rooms("PublicToilet", "Storage").Tags("活动", "舞台", "休息区").Placement("旗帜", "长椅");
 
@@ -81,6 +77,9 @@ FMA.GreenGarden.Rooms("GreenHouse", "Storage")
 
 FMA.StudentCenter.Placement("椅子", "沙发", "魔网", "智能水晶", "魔偶");
 
+FMA.SecretTrainingGround.Tags("隐蔽", "封闭", "异空间")
+	.Placement("传送门", "训练器材")
+	.setPortal("Academy.MageTower.Inside");
 //----------------------- copy map -----------------------//
 
 FMA.ClassBuildingR2 = Maps.copy(FMA.ClassBuildingR1, "Academy", "Academy.ClassBuildingR2").setName(["教学楼|R2"]);

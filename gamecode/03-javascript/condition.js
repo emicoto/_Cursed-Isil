@@ -197,7 +197,7 @@ cond.markLv = function (cid, key) {
 };
 
 cond.markIs = function (cid, key, val) {
-	const markkey = F.getKeyByValue(D.mark, key);
+	const markkey = getKeyByValue(D.mark, key);
 	return C[cid].mark[markkey] === val;
 };
 

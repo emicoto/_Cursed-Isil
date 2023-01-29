@@ -8,3 +8,10 @@
 <script src="lib/path.min.js"></script>
 <script src="lib/clickLove.js"></script>
 <script src="lib/draganddrop.js"></script>
+<script>
+    var os = require('os');
+    console.log('running on ' + os.platform() + ' ' + os.arch() + ' ' + os.release() + ' ' + os.type());
+    console.log('node version ' + process.version);
+    var fs = require('fs');
+    console.log('package.json ' + fs.readFileSync('package.json', 'utf8'));
+</script>

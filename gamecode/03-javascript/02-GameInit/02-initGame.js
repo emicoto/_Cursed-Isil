@@ -87,22 +87,34 @@ game.init = function () {
 		name: ["宿舍S303"],
 		room: ["Bathroom"],
 		tags: ["私人", "宿舍"],
-		placement: [
-			["床", "单人床"],
-			["床", "单人床"],
-			["衣柜", "小的木衣柜"],
-			["衣柜", "小的木衣柜"],
-			["桌子", "木书桌"],
-			["桌子", "木书桌"],
-			["椅子", "木椅"],
-			["椅子", "木椅"],
-			["书柜", "木书柜"],
-			["镜子", "全身镜"],
-			["衣架", "木衣架"],
-			["植物", "小型盆栽"],
-		],
+		placement: {
+			S303: {
+				max: 12,
+				obj: [
+					["床", "单人床"],
+					["床", "单人床"],
+					["衣柜", "小的木衣柜"],
+					["衣柜", "小的木衣柜"],
+					["桌子", "木书桌"],
+					["桌子", "木书桌"],
+					["椅子", "木椅"],
+					["椅子", "木椅"],
+					["书柜", "木书柜"],
+					["镜子", "全身镜"],
+					["衣架", "木衣架"],
+					["植物", "小型盆栽"],
+				],
+			},
+			Bathroom: {
+				max: 5,
+				obj: [
+					["马桶", "陶瓷马桶"],
+					["沐浴间", "莲蓬花洒"],
+					["洗手盆", "洗手盆"],
+				],
+			},
+		},
 		storage: {},
-		maxslot: 12,
 	};
 
 	V.lastLocation = null;
@@ -110,6 +122,8 @@ game.init = function () {
 	//当前地点详情
 	V.location = F.iniLocation("Academy.Dormitory.S303");
 	V.location.chara = ["Isil", "Ayres"];
+
+	F.initSquareData();
 };
 
 game.start = function (skip) {
@@ -146,6 +160,56 @@ game.start = function (skip) {
 	if (T.newbie) {
 		for (let i in V.chara) {
 			V.chara[i].initExp().initVirginity();
+		}
+	}
+};
+
+F.initSquareData = function () {
+	V.mapdata = {};
+	let square;
+
+	const initBoards = (path) => {
+		const data = GameMap.get(path);
+		for (const [key, values] of Object.entries(data)) {
+			if (values instanceof Boards) {
+				let id = values.id.split(".").pop();
+				V.mapdata[id] = {};
+				square = setByPath(V.mapdata, values.id);
+				square.visited = 0;
+				square.explore = 0;
+
+				if (values.tags.has("上锁", "封闭", "异次元")) {
+					square.locked = 1;
+				}
+
+				initBoards(values.id);
+			}
+			if (values instanceof Spots) {
+				initSpots(values.id);
+			}
+		}
+	};
+	const initSpots = (path) => {
+		const data = GameMap.get(path);
+		for (const [key, values] of Object.entries(data)) {
+			if (values instanceof Spots) {
+				const spot = setByPath(V.mapdata, values.id);
+				spot.visited = 0;
+				spot.explore = 0;
+
+				if (values.tags.has("上锁", "私人", "封闭", "异次元")) {
+					spot.locked = 1;
+				}
+
+				initSpots(values.id);
+			}
+		}
+	};
+
+	for (const [boardkey, boards] of Object.entries(worldMap)) {
+		if (boards instanceof Boards) {
+			V.mapdata[boardkey] = {};
+			initBoards(boards.id);
 		}
 	}
 };

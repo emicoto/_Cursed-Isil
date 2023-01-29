@@ -84,8 +84,27 @@ F.setActor = function (cid, tid, ...parts) {
 };
 DefineMacroS("setActor", F.setActor);
 
-F.getKeyByValue = function (object, value) {
+window.getKeyByValue = function (object, value) {
+	const findArray = (arr, val) => {
+		return arr.find((item) => typeof item.includes === "function" && item.includes(val));
+	};
 	return Object.keys(object).find(
-		(key) => object[key] === value || object[key].includes(value) || object[key][0].includes(value)
+		(key) =>
+			object[key] === value ||
+			object[key].includes(value) ||
+			(Array.isArray(object) && (object[key].includes(value) || findArray(object[key], value)))
 	);
+};
+
+window.setByPath = function (obj, path) {
+	const pathArray = path.split(".");
+	const last = pathArray.pop();
+	for (let i = 0; i < pathArray.length; i++) {
+		if (!obj[pathArray[i]]) obj[pathArray[i]] = {};
+		obj = obj[pathArray[i]];
+	}
+	if (!obj[last]) {
+		obj[last] = {};
+	}
+	return obj[last];
 };
