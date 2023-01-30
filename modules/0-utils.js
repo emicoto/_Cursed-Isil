@@ -1,5 +1,11 @@
-;(function () {
+;(function (os, fs, path) {
 	'use strict';
+
+	function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+	var os__default = /*#__PURE__*/_interopDefaultLegacy(os);
+	var fs__default = /*#__PURE__*/_interopDefaultLegacy(fs);
+	var path__default = /*#__PURE__*/_interopDefaultLegacy(path);
 
 	function isObject(props) {
 	  return Object.prototype.toString.call(props) === "[object Object]";
@@ -160,6 +166,48 @@
 	function countArray(arr, element) {
 	  return arr.reduce((count, subarr) => count + (subarr.includes(element) ? 1 : 0), 0);
 	}
+	function setVByPath(obj, path, value) {
+	  if (typeof path === "string")
+	    path = path.split(".");
+	  if (path.length > 1) {
+	    const p = path.shift();
+	    if (obj[p] === void 0)
+	      obj[p] = {};
+	    setVByPath(obj[p], path, value);
+	  } else
+	    obj[path[0]] = value;
+	  return obj;
+	}
+	function getByPath(obj, path) {
+	  const pathArray = path.split(".");
+	  const first = pathArray.shift();
+	  if (obj[first] === void 0)
+	    obj[first] = {};
+	  if (pathArray.length === 0)
+	    return obj[first];
+	  return getByPath(obj[first], pathArray.join("."));
+	}
+	function getKeyByValue(object, value) {
+	  const findArray = (arr, val) => {
+	    return arr.find((item) => typeof item.includes === "function" && item.includes(val));
+	  };
+	  return Object.keys(object).find(
+	    (key) => object[key] === value || object[key].includes(value) || Array.isArray(object[key]) && (object[key].includes(value) || findArray(object[key], value))
+	  );
+	}
+	function setByPath(obj, path) {
+	  const pathArray = path.split(".");
+	  const last = pathArray.pop();
+	  for (let i = 0; i < pathArray.length; i++) {
+	    if (!obj[pathArray[i]])
+	      obj[pathArray[i]] = {};
+	    obj = obj[pathArray[i]];
+	  }
+	  if (!obj[last]) {
+	    obj[last] = {};
+	  }
+	  return obj[last];
+	}
 	Object.defineProperties(window, {
 	  isObject: { value: isObject },
 	  inrange: { value: inrange },
@@ -181,7 +229,11 @@
 	  clone: { value: clone },
 	  CtoF: { value: CtoF },
 	  download: { value: download },
-	  countArray: { value: countArray }
+	  countArray: { value: countArray },
+	  setVByPath: { value: setVByPath },
+	  getByPath: { value: getByPath },
+	  getKeyByValue: { value: getKeyByValue },
+	  setByPath: { value: setByPath }
 	});
 
 	class SelectCase {
@@ -308,6 +360,9 @@
 	  SelectCase: { value: Object.freeze(SelectCase) }
 	});
 
-	console.log("utils");
+	console.log(`It's running on ${os__default["default"].platform()} ${os__default["default"].arch()} ${os__default["default"].release()}`);
+	console.log("the user is", os__default["default"].userInfo().username, "and the home directory is", os__default["default"].homedir());
+	console.log("fs, path, child_process are loaded: ", fs__default["default"], path__default["default"]);
+	console.log("running utils");
 
-})();
+})(os, fs, path);

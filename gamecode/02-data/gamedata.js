@@ -1,5 +1,8 @@
 D.race = ["human", "elvin", "deamon", "wolves", "drawf", "goblin", "catvinx", "centaur", "orc", "titan", "dracon"];
 
+D.basicneeds = ["health", "stamina", "sanity", "mana", "hydration", "nutrient", "dirty"];
+D.basicpalam = ["drug", "alcohol", "stress", "libido", "ecstacy", "cum", "milk"];
+
 D.base = {
 	health: "健康",
 	stamina: "体力",
@@ -13,11 +16,13 @@ D.base = {
 	drug: "药物",
 	alcohol: "酒精",
 	stress: "压力",
+	libido: "性欲",
+	esctacy: "快感",
+	cum: "射精",
+	milk: "喷乳",
 };
 
 D.palam = {
-	ecstacy: "快感", //判定射精（有丁）or潮吹（无丁）。
-
 	//受方palam
 	arousal: "欲情", //欲望值，根据累积flag升级欲望lv。指令执行成功时概率获得依存值。
 	surrend: "屈从", //根据累积flag升级顺从Lv。屈从palamlv累计到一定值时获得刻印。指令执行成功时概率获得服从值/支配值。

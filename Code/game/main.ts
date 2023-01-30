@@ -4,6 +4,7 @@ import "./Items";
 import "./character";
 import "./Map";
 import "./mapdata";
+import fs from "fs";
 declare global {
 	interface Window {
 		gameutils;
@@ -25,6 +26,7 @@ declare global {
 		P; // text/ img/ buttons printer
 		cond; //condition short cut
 		worldMap;
+		config;
 	}
 }
 
@@ -86,3 +88,12 @@ Object.defineProperties(window, {
 });
 
 console.log(lan("游戏开始", "game start"));
+
+console.log("utils loaded, the game is", window.game);
+console.log("package.json", fs.readFileSync("./package.json", "utf8"));
+console.log("config.json", fs.readFileSync("./public/config.json", "utf8"));
+
+$.getJSON("./config.json", function (data) {
+	window.config = data;
+	console.log("load config", data);
+});

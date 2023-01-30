@@ -32,15 +32,13 @@ export type wearlayers =
 
 export type shop =
 	| "general" //常规商店，线上线下都有
-	| "online" //在线商店限定
 	| "event" //只在活动中出售
 	| "adluts" //只在成人商店中出售
 	| "unique" //不会在商店中出售，只能从特定渠道入手
-	| "special" //只在特别商店中出售
-	| "ordermade" //只能定做
+	| "drop" //掉落
 	| "school" //校园商店
-	| "oceanic" //海边或泳具专门店
-	| "brandshop"; //品牌专门店
+	| "brands" //专门店
+	| "craft"; //定制、手工制作
 
 export type clothlineup = "all" | "spring" | "summer" | "autumn" | "winter" | "special"; //特殊节日限定
 

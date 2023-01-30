@@ -1,4 +1,4 @@
-const initCSV = function (cid) {
+window.initCSV = function (cid) {
 	const _raw = Story.get(`CharaSheet_${cid}`).text.replace(/\n/g, "#L#").replace(/\s/g, "");
 	const raw = _raw.split("#L#");
 
@@ -13,14 +13,14 @@ const initCSV = function (cid) {
 		const arr = line.split(",");
 		//总之先初始化路径
 		let path = arr[0].split(".");
-
+		3;
 		//重复项目是array
 		const times = _raw.split(`#L#${arr[0]},`).length - 1;
 		let values = clearCommentFromArray(arr.splice(1));
 		if (values.length == 1) values = values[0];
 
-		if (times > 1) definePropertyFromPath(path, chara, values, "array");
-		else definePropertyFromPath(path, chara, values);
+		if (times > 1) setVByPathAndType(path, chara, values, "array");
+		else setVByPathAndType(path, chara, values);
 	}
 	return chara;
 };
@@ -41,23 +41,17 @@ const clearCommentFromArray = function (arr) {
 	return arr;
 };
 
-window.definePropertyFromPath = function (path, obj, value, type) {
-	let key = "obj";
-
+window.setVByPathAndType = function (path, obj, value, type) {
+	const last = path.pop();
 	for (let i = 0; i < path.length; i++) {
-		key += `['${path[i]}']`;
-
-		if (!eval(key) && i < path.length - 1) {
-			eval(`${key} = {}`);
-		} else if (!eval(key)) {
-			if (type == "array") {
-				eval(`${key} = []; ${key}.push(${JSON.stringify(value)})`);
-			} else {
-				eval(`${key} = ${JSON.stringify(value)};`);
-			}
-		} else if (type == "array" && i == path.length - 1) {
-			eval(`${key}.push(${JSON.stringify(value)})`);
-		}
+		if (!obj[path[i]]) obj[path[i]] = {};
+		obj = obj[path[i]];
+	}
+	if (type == "array") {
+		if (!obj[last]) obj[last] = [];
+		obj[last].push(value);
+	} else {
+		obj[last] = value;
 	}
 	return obj;
 };

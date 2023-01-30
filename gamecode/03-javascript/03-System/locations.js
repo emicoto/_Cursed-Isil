@@ -1,9 +1,18 @@
 //const { Maps } = require("Code/game/map");
 
 F.getLocationMsg = function (fullId) {
+	const data = GameMap.get(fullId);
+	if (!data) return `<span class="error'>Error: No spots data. ${fullId}."</span>`;
+
 	let title = `Msg_Spots_${fullId}`;
+
+	if (data.spotType.has("common")) {
+		let id = fullId.split(".").pop();
+		title = `Msg_Spots_CommonSpots_${id}`;
+	}
+
 	if (Story.has(title)) return Story.get(title).text;
-	else return `<span class="error'>Error: No message for ${fullId}."</span>`;
+	else return `<span class="error'>Error: No message found. title: ${title} id: ${fullId}. "</span>`;
 };
 
 //获取地点信息, boardId 为地图棋盘Id， path就是绝对id，
@@ -44,13 +53,18 @@ F.iniLocation = function (path) {
 		if (raw[item]) local[item] = clone(raw[item]);
 	});
 
+	//如果没有entry，就用父地图的entry
 	if (!entry) {
 		local.entry = parent.staticEntry || parent.id || boardId;
 	}
+
+	//地点名字的显示。如果有|，就用|分割，第一部分是判断用的名字，后面的是补充到显示上的名字
+	//这样的话，就能用比较简单的方式来判断角色所在建筑群组。比如"宿舍｜S303"，就能用"宿舍"来判断是否在宿舍内
 	local.name = name[0].split("|")[0];
 	local.printname = name[0].split("|").join("");
 	local.chara = [];
 
+	//如果是在家里，就更新成家里的摆设信息
 	if (Home || parent?.Home || topParent?.Home) {
 		local.atHome = true;
 		if (V.home.placement[roomId]) local.placement = Spots.countPlacement(V.home.placement[roomId].obj);
@@ -65,6 +79,7 @@ F.iniLocation = function (path) {
 		};
 	}
 
+	//获取地点的坐标，和在spots表中的id
 	let pos = { x: 0, y: 0 },
 		posId = spotId.split(".")[1] || spotId;
 	if (boardId !== "CommonSpots" && boardId !== "") {
@@ -104,7 +119,7 @@ F.createLocationLink = function () {
 	const spots = [];
 	console.log(list);
 
-	list.forEach((item) => {
+	for (const item of list) {
 		//console.log(item);
 		const id = item[0];
 		const locdata = GameMap.get(id);
@@ -117,13 +132,14 @@ F.createLocationLink = function () {
 			locdata.tags.has("封闭", "异空间") ||
 			(typeof item[2]?.has === "function" && item[2].has("secretAre", "inaccesible"))
 		) {
-			return;
+			continue;
 		}
-
 		//如果是锁着的私室，就不会出现在列表中。
-		if (locdata.visitCond && !locdata.visitCond()) return;
+		if (locdata.visitCond && !locdata.visitCond()) {
+			continue;
+		}
 		if (locdata.tags.containsAll("私人", "上锁") && squaredata.locked) {
-			return;
+			continue;
 		}
 
 		if (item[1].has && item[1].has("isRoom", "isEntry")) {
@@ -131,7 +147,7 @@ F.createLocationLink = function () {
 		} else {
 			spots.push([item[0], Math.floor(findPath(T.map, V.location.pos, item[1]).length * 1.2 + 0.5)]);
 		}
-	});
+	}
 
 	//按移动时间排序
 	spots.sort((a, b) => a[1] - b[1]);
@@ -161,7 +177,7 @@ F.travleTo = function (fullId) {
 
 F.DisplayMiniMap = function () {
 	//以玩家坐标为中心，在9x9的范围内显示周围地图。
-	const mapdata = GameMap.get(V.location.groupId);
+	const mapdata = GameMap.get(V.location.boardId);
 	const map = GameMap.getBoard(mapdata);
 	const pos = V.location.pos;
 	const size = 9;

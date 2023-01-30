@@ -4,7 +4,7 @@ F.hydrationLoseMult = function (currentTemp, bestTemp) {
 	let temp = currentTemp - bestTemp;
 	let mult = 1;
 	if (temp > 0) {
-		mult += (temp / 3) * 0.1;
+		mult = Math.pow(1.1, temp / 3);
 	}
 	return fixed(mult, 4);
 };
@@ -69,9 +69,9 @@ F.healthWarn = function (cid) {
 	const { flag } = C[cid];
 
 	let multip = 0;
-	let cond = ["stamina", "sanity", "mana", "hydration", "nutrient"];
+	let conds = ["stamina", "sanity", "mana", "hydration", "nutrient"];
 	let evalcond = "";
-	cond.forEach((key) => {
+	conds.forEach((key) => {
 		evalcond += `cond.baseLt(cid, "${key}", 0.05) && `;
 	});
 

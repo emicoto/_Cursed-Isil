@@ -58,6 +58,22 @@ export type palamkey =
 	| "paV"
 	| "paA";
 
+export type effectpalam =
+	| "ecstacy"
+	| "pain"
+	| "ecM"
+	| "ecB"
+	| "ecC"
+	| "ecU"
+	| "ecV"
+	| "ecA"
+	| "paM"
+	| "paB"
+	| "paC"
+	| "paU"
+	| "paV"
+	| "paA";
+
 export type ablkey =
 	| "magica"
 	| "lumen"
@@ -85,15 +101,6 @@ export type sblkey =
 	| "hypnosis"
 	| "desire"
 	| "service"
-	| "Asens"
-	| "Bsens"
-	| "Csens"
-	| "Msens"
-	| "Usens"
-	| "Vsens"
-	| "Astrech"
-	| "Ustrech"
-	| "Vstrech"
 	| "exhibition"
 	| "promscuity"
 	| "sexaddic"

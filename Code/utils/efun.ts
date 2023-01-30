@@ -188,6 +188,51 @@ export function download(content, fileName, contentType) {
 export function countArray(arr, element) {
 	return arr.reduce((count, subarr) => count + (subarr.includes(element) ? 1 : 0), 0);
 }
+
+export function setVByPath(obj, path, value) {
+	if (typeof path === "string") path = path.split(".");
+	if (path.length > 1) {
+		const p = path.shift();
+		if (obj[p] === undefined) obj[p] = {};
+		setVByPath(obj[p], path, value);
+	} else obj[path[0]] = value;
+	return obj;
+}
+
+//get and init object by path
+export function getByPath(obj, path) {
+	const pathArray = path.split(".");
+	const first = pathArray.shift();
+	if (obj[first] === undefined) obj[first] = {};
+	if (pathArray.length === 0) return obj[first];
+	return getByPath(obj[first], pathArray.join("."));
+}
+
+export function getKeyByValue(object, value) {
+	const findArray = (arr, val) => {
+		return arr.find((item) => typeof item.includes === "function" && item.includes(val));
+	};
+	return Object.keys(object).find(
+		(key) =>
+			object[key] === value ||
+			object[key].includes(value) ||
+			(Array.isArray(object[key]) && (object[key].includes(value) || findArray(object[key], value)))
+	);
+}
+
+export function setByPath(obj, path) {
+	const pathArray = path.split(".");
+	const last = pathArray.pop();
+	for (let i = 0; i < pathArray.length; i++) {
+		if (!obj[pathArray[i]]) obj[pathArray[i]] = {};
+		obj = obj[pathArray[i]];
+	}
+	if (!obj[last]) {
+		obj[last] = {};
+	}
+	return obj[last];
+}
+
 Object.defineProperties(window, {
 	isObject: { value: isObject },
 	inrange: { value: inrange },
@@ -210,4 +255,8 @@ Object.defineProperties(window, {
 	CtoF: { value: CtoF },
 	download: { value: download },
 	countArray: { value: countArray },
+	setVByPath: { value: setVByPath },
+	getByPath: { value: getByPath },
+	getKeyByValue: { value: getKeyByValue },
+	setByPath: { value: setByPath },
 });

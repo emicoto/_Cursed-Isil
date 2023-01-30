@@ -1,5 +1,9 @@
-;(function () {
+;(function (fs) {
 	'use strict';
+
+	function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+	var fs__default = /*#__PURE__*/_interopDefaultLegacy(fs);
 
 	function lan(txt, ...txts) {
 	  let CN, EN;
@@ -58,21 +62,87 @@
 	});
 
 	class Item {
-	  static newId(categ) {
-	    const len = Db[categ].length;
-	    return `${categ}_${len}`;
+	  static newId(type, cate) {
+	    const len = Db[type].length;
+	    if (cate) {
+	      return `${type.toUpperCase()[0]}${cate}_${len}`;
+	    } else {
+	      return `${type}_${len}`;
+	    }
 	  }
-	  static new() {
+	  static new(name, des, type, cate = "") {
+	    getByPath(Db, type + cate ? `.${cate}` : "");
 	  }
-	  constructor(name, des, type) {
-	    this.id = Item.newId(type);
+	  constructor(name, des = name, type = "Items", cate = "") {
+	    this.id = Item.newId(type, cate);
 	    this.name = name;
 	    this.des = des;
 	    this.type = type;
+	    this.category = cate;
+	  }
+	  Price(num) {
+	    this.price = num;
+	    return this;
+	  }
+	  Durable(num) {
+	    this.durable = [num, num];
+	    return this;
+	  }
+	  Shop(...shops) {
+	    this.shop = shops;
+	    return this;
+	  }
+	  Tags(...tags) {
+	    this.tags = tags;
+	    return this;
+	  }
+	  Stats(...stats) {
+	    stats.forEach(([key, add]) => {
+	      this.stats[key] = add;
+	    });
+	    return this;
+	  }
+	  Effect(...palam) {
+	    palam.forEach(([key, t, a, m]) => {
+	      this.effect[key] = { t, a, m };
+	    });
+	    return this;
+	  }
+	}
+	class Clothes extends Item {
+	  constructor(cate, name, des, gender2 = "n") {
+	    super(name, des, "Clothes", cate);
+	    this.gender = gender2;
+	    this.uid = "0";
+	    this.tags = [];
+	    this.price = 0;
+	    this.color = [];
+	    this.cover = [];
+	    this.expose = 3;
+	    this.open = 3;
+	    this.allure = 0;
+	    this.defence = 0;
+	  }
+	  UID() {
+	    this.uid = random(1e5, 999999).toString();
+	    return this;
+	  }
+	  Color(colorcode, colorname) {
+	    this.color = [colorcode, colorname];
+	    return this;
+	  }
+	  Cover(...parts) {
+	    this.cover = parts;
+	    return this;
+	  }
+	  Set(key, value) {
+	    this[key] = value;
+	    return this;
 	  }
 	}
 	Object.defineProperties(window, {
-	  Item: { value: Item }
+	  Item: { value: Item },
+	  Clothes: { value: Clothes }
 	});
 
 	const _Creature = class {
@@ -1176,17 +1246,17 @@
 	    if (parent == null ? void 0 : parent.boardType) {
 	      switch (parent.boardType) {
 	        case "forest":
-	          if (this.tags.includes("\u5BA4\u5916")) {
+	          if (this.tags.has("\u5BA4\u5916")) {
 	            this.tags.push("\u68EE\u6797");
 	          }
 	          break;
 	        case "ocean":
-	          if (this.tags.includes("\u5BA4\u5916")) {
+	          if (this.tags.has("\u5BA4\u5916")) {
 	            this.tags.push("\u6C34\u4E0B");
 	          }
 	          break;
 	        case "mountain":
-	          if (this.tags.includes("\u5BA4\u5916")) {
+	          if (this.tags.has("\u5BA4\u5916")) {
 	            this.tags.push("\u5C71\u5CB3");
 	          }
 	          break;
@@ -1198,12 +1268,12 @@
 	          break;
 	        case "floatingIsland":
 	        case "field":
-	          if (this.tags.includes("\u5BA4\u5916")) {
+	          if (this.tags.has("\u5BA4\u5916")) {
 	            this.tags.push("\u5F00\u9614");
 	          }
 	          break;
 	        case "academy":
-	          if (!this.tags.includes("\u5F02\u7A7A\u95F4")) {
+	          if (!this.tags.has("\u5F02\u7A7A\u95F4")) {
 	            this.tags.push("\u9B54\u7F51");
 	          }
 	      }
@@ -1710,5 +1780,12 @@
 	  }
 	});
 	console.log(lan("\u6E38\u620F\u5F00\u59CB", "game start"));
+	console.log("utils loaded, the game is", window.game);
+	console.log("package.json", fs__default["default"].readFileSync("./package.json", "utf8"));
+	console.log("config.json", fs__default["default"].readFileSync("./public/config.json", "utf8"));
+	$.getJSON("./config.json", function(data) {
+	  window.config = data;
+	  console.log("load config", data);
+	});
 
-})();
+})(fs);

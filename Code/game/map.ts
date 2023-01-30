@@ -443,17 +443,17 @@ export class Spots extends GameMap {
 		if (parent?.boardType) {
 			switch (parent.boardType) {
 				case "forest":
-					if (this.tags.includes("室外")) {
+					if (this.tags.has("室外")) {
 						this.tags.push("森林");
 					}
 					break;
 				case "ocean":
-					if (this.tags.includes("室外")) {
+					if (this.tags.has("室外")) {
 						this.tags.push("水下");
 					}
 					break;
 				case "mountain":
-					if (this.tags.includes("室外")) {
+					if (this.tags.has("室外")) {
 						this.tags.push("山岳");
 					}
 					break;
@@ -465,12 +465,12 @@ export class Spots extends GameMap {
 					break;
 				case "floatingIsland":
 				case "field":
-					if (this.tags.includes("室外")) {
+					if (this.tags.has("室外")) {
 						this.tags.push("开阔");
 					}
 					break;
 				case "academy":
-					if (!this.tags.includes("异空间")) {
+					if (!this.tags.has("异空间")) {
 						this.tags.push("魔网");
 					}
 			}

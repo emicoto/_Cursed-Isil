@@ -1,6 +1,6 @@
 ;(function () {
 	'use strict';
 
-	console.log("lib");
+	console.log("this is lib");
 
 })();

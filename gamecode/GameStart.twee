@@ -4,6 +4,7 @@
 Era the Cursed
 </div>
 <div id='gamesubtitle'>
+<img src='./image/cursedEye.png'>
 - 伊希露的诅咒 -
 </div>
 <div id='gametitle_selection'>
@@ -31,6 +32,7 @@ Era the Cursed
 <li>总是显示主控角色名称 <<checkbox '$system.alwaysShowPCName' 0 1 autocheck>></li>
 <li>总是显示配合度检测  <<checkbox '$system.showOrder' 0 1 autocheck>></li>
 <li title='推荐打开哦。'>指令模式下，如果存在PC口上则优先显示 <<checkbox '$system.showPCKojo' 0 1 autocheck>></li>
+<li>开发者模式 <<checkbox '$system.debug' false true autocheck>></li>
 
 <<link 'Back' $lastsession>><</link>>
 
