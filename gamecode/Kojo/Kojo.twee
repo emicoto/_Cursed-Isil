@@ -78,7 +78,7 @@ $target.name敷衍地附和着你的话。<br>
 
 :: Kojo_Isil_Com_X1
 /* 触手，玩弄乳头 */
-<<if cond.isUncons(tc)>> /* cond.isUncons() 判定是否失去意识 */
+<<if Cond.isUncons(tc)>> /* Cond.isUncons() 判定是否失去意识 */
 "……嗯唔……"<br>
 沉睡中的伊希露难受地呼吸着。<br>
 <<else>>

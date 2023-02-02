@@ -123,7 +123,20 @@ P.checkTxtWithCode = function (text) {
 			}
 			retext[i] = "";
 		} else if (!isSwitch && con.includes("if")) {
-			code = con.replace(/elseif/g, "").replace(/if/g, "");
+			code = con
+				.replace(/elseif/g, "")
+				.replace(/if/g, "")
+				.replace(/is/g, "==")
+				.replace(/isnot/g, "!=")
+				.replace(/lte/g, "<=")
+				.replace(/gte/g, ">=")
+				.replace(/lt/g, "<")
+				.replace(/gt/g, ">")
+				.replace(/and/g, "&&")
+				.replace(/or/g, "||")
+				.replace(/\$/g, "V.")
+				.replace(/_/g, "T.");
+
 			if (eval(code)) {
 				result += P.countText(retext[i]);
 			}
@@ -188,11 +201,11 @@ P.txt = function (text) {
 	return txt.join("");
 };
 
-P.splitSex = function (chara, male, female, inter) {
+P.splitSex = function (chara, male, female, futa) {
 	if (chara.gender === "male") return male;
 	else {
-		if (inter && chara.gender === "inter") {
-			return inter;
+		if (futa && chara.gender === "herm") {
+			return futa;
 		}
 		return female;
 	}
@@ -236,7 +249,7 @@ P.inTime = function (...args) {
 			const t2 = args[i][1];
 			const txt = args[i][2];
 
-			if (cond.betweenTime(t1, t2)) {
+			if (Cond.betweenTime(t1, t2)) {
 				retxt = txt;
 				break;
 			}

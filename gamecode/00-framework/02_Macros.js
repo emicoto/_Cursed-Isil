@@ -7,7 +7,7 @@ function DefineMacro(macroName, macroFunction, tags, skipArgs) {
 		tags,
 		skipArgs,
 		handler() {
-			game.Perflog.logWidgetStart(macroName);
+			scEra.Perflog.logWidgetStart(macroName);
 			try {
 				const oldArgs = State.temporary.args;
 				State.temporary.args = this.args.slice();
@@ -18,7 +18,7 @@ function DefineMacro(macroName, macroFunction, tags, skipArgs) {
 					State.temporary.args = oldArgs;
 				}
 			} finally {
-				game.Perflog.logWidgetEnd(macroName);
+				scEra.Perflog.logWidgetEnd(macroName);
 			}
 		},
 	});
@@ -40,22 +40,19 @@ function DefineMacroS(macroName, macroFunction, tags, skipArgs, maintainContext)
 
 window.wikifier = function (widget, arg1, arg2, arg3) {
 	if (arg3 !== undefined) {
-		new Wikifier(null, '<<' + widget + ' ' + arg1 + ' ' + arg2 + ' ' + arg3 + '>>');
+		new Wikifier(null, "<<" + widget + " " + arg1 + " " + arg2 + " " + arg3 + ">>");
+	} else if (arg2 !== undefined) {
+		new Wikifier(null, "<<" + widget + " " + arg1 + " " + arg2 + ">>");
+	} else if (arg1 !== undefined) {
+		new Wikifier(null, "<<" + widget + " " + arg1 + ">>");
+	} else if (arg1 === undefined) {
+		new Wikifier(null, "<<" + widget + ">>");
 	}
-	else if (arg2 !== undefined) {
-		new Wikifier(null, '<<' + widget + ' ' + arg1 + ' ' + arg2 + '>>');
-	}
-	else if (arg1 !== undefined) {
-		new Wikifier(null, '<<' + widget + ' ' + arg1 + '>>');
-	}
-	else if (arg1 === undefined) {
-		new Wikifier(null, '<<' + widget + '>>');
-	}
-}
+};
 
 window.wikifier2 = function (str) {
 	new Wikifier(null, str);
-}
+};
 
 /*
  * Similar to <<script>>, but preprocesses the contents, so $variables are accessible.
@@ -66,18 +63,17 @@ window.wikifier2 = function (str) {
  *     output.textContent = $text
  * <</twinescript>>
  */
-Macro.add('twinescript', {
-	skipArgs : true,
-	tags     : null,
+Macro.add("twinescript", {
+	skipArgs: true,
+	tags: null,
 
 	handler() {
 		const output = document.createDocumentFragment();
 
 		try {
 			Scripting.evalTwineScript(this.payload[0].contents, output);
-		}
-		catch (ex) {
-			return this.error(`bad evaluation: ${typeof ex === 'object' ? ex.message : ex}`);
+		} catch (ex) {
+			return this.error(`bad evaluation: ${typeof ex === "object" ? ex.message : ex}`);
 		}
 		// Custom debug view setup.
 		if (Config.debug) {
@@ -87,7 +83,7 @@ Macro.add('twinescript', {
 		if (output.hasChildNodes()) {
 			this.output.appendChild(output);
 		}
-	}
+	},
 });
 
 /*
@@ -101,21 +97,21 @@ Macro.add('twinescript', {
  */
 Macro.add("radiovar", {
 	tags: null,
-	handler: function() {
+	handler: function () {
 		if (this.args.length < 2) return this.error("missing <<radiovar>> arguments");
 		var varname = this.args[0];
 		var value = this.args[1];
 		var content = this.payload[0].contents;
 		var e = $("<input>")
 			.attr({
-				name: "radiovar"+Util.slugify(varname),
-				id: "radiovar"+Util.slugify(varname)+"-"+Util.slugify(value),
+				name: "radiovar" + Util.slugify(varname),
+				id: "radiovar" + Util.slugify(varname) + "-" + Util.slugify(value),
 				tabindex: 0,
-				type: "radio"
+				type: "radio",
 			})
-			.prop("checked", State.getVar(varname) ==  value)
+			.prop("checked", State.getVar(varname) == value)
 			.addClass("macro-radiovar")
-			.on('change.macros', function () {
+			.on("change.macros", function () {
 				if (this.checked) {
 					State.setVar(varname, value);
 					Wikifier.wikifyEval(content);
@@ -123,5 +119,5 @@ Macro.add("radiovar", {
 			});
 		if (this.args[2]) e = $("<label>").append(this.args[2], e);
 		e.appendTo(this.output);
-	}
+	},
 });

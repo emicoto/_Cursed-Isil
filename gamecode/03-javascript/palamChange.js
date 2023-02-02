@@ -72,14 +72,14 @@ F.healthWarn = function (cid) {
 	let conds = ["stamina", "sanity", "mana", "hydration", "nutrient"];
 	let evalcond = "";
 	conds.forEach((key) => {
-		evalcond += `cond.baseLt(cid, "${key}", 0.05) && `;
+		evalcond += `Cond.baseLt(cid, "${key}", 0.05) && `;
 	});
 
 	if (eval(evalcond)) {
 		multip += 0.1;
 	}
 
-	if (!cond.baseLt(cid, "drug", 0.9) || !cond.baseLt(cid, "alcohol", 0.9)) {
+	if (!Cond.baseLt(cid, "drug", 0.9) || !Cond.baseLt(cid, "alcohol", 0.9)) {
 		multip += 0.1;
 	}
 
@@ -149,14 +149,14 @@ F.desireGain = function (cid) {
 	mult *= 1 + sbl.desire * 0.08;
 
 	//根据 身体状态调整
-	if (cond.baseLt(cid, "health", 0.2)) {
+	if (Cond.baseLt(cid, "health", 0.2)) {
 		mult *= 1.2;
 	}
-	if (cond.baseLt(cid, "sanity", 0.5)) {
-		mult *= 2 - cond.baseIs("sanity", cid);
+	if (Cond.baseLt(cid, "sanity", 0.5)) {
+		mult *= 2 - Cond.baseIs("sanity", cid);
 	}
-	if (!cond.baseLt(cid, "stress", 0.3)) {
-		mult *= 1 - cond.baseIs(cid, "stress") + cond.baseIs(cid, "stress") > 0.1 ? 0 : 1.1;
+	if (!Cond.baseLt(cid, "stress", 0.3)) {
+		mult *= 1 - Cond.baseIs(cid, "stress") + Cond.baseIs(cid, "stress") > 0.1 ? 0 : 1.1;
 	}
 	return fixed(mult, 4);
 };

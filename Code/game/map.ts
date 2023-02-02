@@ -172,7 +172,7 @@ export class GameMap {
 				return null;
 			}
 		}
-		return map;
+		return map as unknown as Boards | Spots | DungeonRooms | FieldMap;
 	}
 
 	//通过类型获取地图数据
@@ -640,10 +640,29 @@ function printMapFromData(map) {
 	printMap(mapdata);
 }
 
-Object.defineProperties(window, {
-	printMap: { value: printMap },
-	printMapFromData: { value: printMapFromData },
+Object.defineProperties(window.scEra.modules, {
 	GameMap: { value: GameMap },
 	Boards: { value: Boards },
 	Spots: { value: Spots },
+});
+
+Object.defineProperties(window, {
+	GameMap: {
+		get() {
+			return window.scEra.modules.GameMap;
+		},
+	},
+	Boards: {
+		get() {
+			return window.scEra.modules.Boards;
+		},
+	},
+	Spots: {
+		get() {
+			return window.scEra.modules.Spots;
+		},
+	},
+
+	printMap: { value: printMap },
+	printMapFromData: { value: printMapFromData },
 });

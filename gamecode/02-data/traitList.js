@@ -48,6 +48,27 @@ D.traits = [
 		sourceEffect: [["ecstacy", 0.25]],
 	},
 
+	{
+		name: "性冷淡",
+		group: "体质",
+		des: "没有世俗的欲望。",
+		sourceEffect: [
+			["libido", 0.3],
+			["lust", 0.3],
+			["libido", 2, "lose"],
+		],
+	},
+	{
+		name: "性欲强",
+		group: "体质",
+		des: "身体很容易被刺激到。",
+		sourceEffect: [
+			["libido", 1.5],
+			["lust", 1.5],
+			["libido", 0.5, "lose"],
+		],
+	},
+
 	//倾向性
 	{
 		name: "M体质", //无自觉M倾向, 疼痛的 0.1 转换为快感
@@ -104,10 +125,11 @@ D.traits = [
 	{
 		name: "淡漠",
 		group: "精神",
-		des: "没有世俗的欲望。",
+		des: "无所谓，没有什么能让我心动的。",
+		conflic: ["放纵", "冲动", "高调", "强欲"],
 		order: 0,
 		sourceEffect: [
-			["arousal", 0.75],
+			["lust", 0.75],
 			["eager", 0.8],
 			["satisfy", 1.2],
 		],
@@ -118,7 +140,7 @@ D.traits = [
 		des: "小孩才做选择，我全都要！",
 		order: 0,
 		sourceEffect: [
-			["arousal", 1.25],
+			["lust", 1.25],
 			["eager", 1.2],
 			["satisfy", 0.8],
 		],
@@ -141,7 +163,6 @@ D.traits = [
 	{
 		name: "冲动",
 		group: "精神",
-		conflic: ["忍耐"],
 		des: "别拦我，我就要去！",
 		order: 5,
 		sourceEffect: [["sanity", 1.2, "lose"]],
@@ -149,13 +170,12 @@ D.traits = [
 	{
 		name: "忍耐",
 		group: "精神",
-		conflic: ["冲动"],
 		des: "忍忍，就过去了。",
 		order: 0,
 		sourceEffect: [
 			["paAll", 0.9],
 			["fear", 0.9],
-			["arousal", 0.9],
+			["lust", 0.9],
 			["esAll", 0.9],
 		],
 	},
@@ -179,7 +199,7 @@ D.traits = [
 			["sanity", 0.8, "lose"],
 			["paAll", 0.9],
 			["fear", 0.9],
-			["arousal", 0.9],
+			["lust", 0.9],
 			["esAll", 0.9],
 		],
 	},
@@ -213,7 +233,6 @@ D.traits = [
 	{
 		name: "厚脸皮", // 交涉效果up
 		group: "精神",
-		conflic: ["高自尊"],
 		des: "只要我不尴尬，尴尬的就是别人",
 		order: 2,
 		sourceEffect: [
@@ -292,7 +311,7 @@ D.traits = [
 		des: "神啊，请原谅我的罪恶！",
 		order: -2,
 		sourceEffect: [
-			["arousal", 0.2],
+			["lust", 0.2],
 			["esAll", 1.2],
 		],
 	},
@@ -302,7 +321,7 @@ D.traits = [
 		des: "性自由今天就要实现！",
 		order: 2,
 		sourceEffect: [
-			["arousal", 1.8],
+			["lust", 1.8],
 			["esAll", 0.5],
 		],
 	},
@@ -312,7 +331,7 @@ D.traits = [
 		des: "脏死了，别碰我！",
 		order: 0,
 		sourceEffect: [
-			["arousal", 0.2],
+			["lust", 0.2],
 			["resist", 2],
 			["esAll", 0.9],
 		],
@@ -322,7 +341,10 @@ D.traits = [
 		group: "性观念",
 		des: "快，正面上我！！",
 		order: 10,
-		sourceEffect: [["arousal", 2.5]],
+		sourceEffect: [
+			["lust", 2.5],
+			["libido", 3],
+		],
 	},
 
 	// 行为模式
@@ -364,47 +386,41 @@ D.traits = [
 	{
 		name: "高调", //特定指令需求更少配合值
 		group: "行为",
-		conflic: ["低调"],
 		des: "还有谁不知道我？",
 		order: 2,
 	},
 	{
 		name: "低调", //特定指令需求更多或更少配合值
 		group: "行为",
-		conflic: ["高调"],
 		des: "应该没人知道我吧……？",
 		order: 0,
 	},
 	{
 		name: "高自尊",
 		group: "行为",
-		conflic: ["无节操", "厚脸皮"],
 		des: "我是有尊严的人，钱也不能收买我。",
 		order: -10,
 	},
 	{
 		name: "无节操",
 		group: "行为",
-		conflic: ["高自尊"],
 		des: "尊严又不能吃，只要给我钱，什么都能满足你。",
 		order: 10,
 	},
 	{
 		name: "贞洁", //欲情down, 非合意时抵触大幅up, 好意大幅down, 非正常play需求值++
 		group: "行为",
-		conflic: ["放荡"],
 		des: "性行为只能跟结婚对象做，而且必须得婚后。",
 		order: 0,
-		sourceEffect: [["arousal", 0.9]],
+		sourceEffect: [["lust", 0.9]],
 	},
 	{
 		name: "放荡", //欲情up，好意很容易提升，非正常play需求值--
 		group: "行为",
-		conflic: ["贞洁"],
 		des: "想做就做，没人可以约束我。",
 		order: 5,
 		sourceEffect: [
-			["arousal", 1.5],
+			["lust", 1.5],
 			["favo", 1.5],
 		],
 	},
@@ -491,8 +507,9 @@ D.traits = [
 	},
 ];
 
-//对调教数值没啥影响. 天赋才能, 成就称号类
-//class表里只有 名字, 说明, 效果三项目?
+//对调教数值没影响，只在特定情况起效果的类型。
+//天赋才能、特殊特征、荣誉称号等。
+//跟trait共用一个class，只是不用那么多属性。
 D.talent = [
 	"天才", //学习效果up
 	"光属性",
@@ -516,6 +533,8 @@ D.talent = [
 	"发光", //自带发光特效。不怕黑暗了呢！
 	"精力旺盛", //体力和精子量up!
 	"洞察力", //更容易获得线索（包括出轨证据）
+	"泌乳", //可以泌乳
+	"天然泌乳", //可以泌乳
 ];
 
 D.traitConflicGroup = [

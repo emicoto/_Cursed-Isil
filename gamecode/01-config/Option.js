@@ -1,8 +1,7 @@
 //经典era模式下的分类设置
-D.ComTypes = ["常规", "挑逗", "性交", "肛门", "尿道", "触手", "道具", "SM", "魔法", "情景", "其他"];
-
 D.ComFilterGeneral = ["常规", "挑逗", "魔法", "其他"];
 D.ComFilterTrain = ["前戏", "道具", "性交", "尿道", "SM", "鬼畜", "触手", "情景"];
+D.ComTypes = D.ComFilterGeneral.concat(D.ComFilterTrain);
 
 //scEra动作模式下的分类设置
 D.ActionTypes = [

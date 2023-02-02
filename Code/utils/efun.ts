@@ -1,26 +1,38 @@
+declare global {
+	interface Number {
+		fixed(a?: number): number;
+	}
+}
+
+//make sure the value is an object
 export function isObject(props) {
 	return Object.prototype.toString.call(props) === "[object Object]";
 }
 
+//check x is in range of min and max
 export function inrange(x: number, min: number, max: number) {
 	return x >= min && x <= max;
 }
 
+//make sure the value is an array
 export function ensureIsArray(x, check = false) {
 	if (check) x = ensure(x, []);
 	if (Array.isArray(x)) return x;
 	return [x];
 }
 
+//ensure the value is not null or undefined
 export function ensure(x, y) {
 	/* lazy comparison to include null. */
 	return x == undefined ? y : x;
 }
 
+//check x is between min and max
 export function between(x: number, min: number, max: number) {
 	return x > min && x < max;
 }
 
+//make a random number
 export function random(min: number, max?: number) {
 	if (!max) {
 		max = min;
@@ -29,11 +41,13 @@ export function random(min: number, max?: number) {
 	return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-export function fixed(int, a?) {
+//fix the number to any decimal places
+Number.prototype.fixed = function (a) {
 	if (!a) a = 2;
-	return parseFloat(int.toFixed(a));
-}
+	return parseFloat(this.toFixed(a));
+};
 
+//return a random element from an array by rate
 export function maybe(arr: Array<[string, number]>) {
 	let txt;
 	arr.forEach((v, i) => {
@@ -46,6 +60,7 @@ export function maybe(arr: Array<[string, number]>) {
 	return txt;
 }
 
+//compare two elements in an object
 export function compares(key) {
 	return function (m, n) {
 		let a = m[key];
@@ -54,6 +69,7 @@ export function compares(key) {
 	};
 }
 
+//roll dice
 export function roll(times?: number, max?: number) {
 	if (!times) times = 1;
 	if (!max) max = 6;
@@ -78,6 +94,7 @@ export function roll(times?: number, max?: number) {
 	return re;
 }
 
+//make sure the props is valid variables (not null, undefined, empty array, empty object)
 export function isValid(props) {
 	const type = typeof props;
 	const isArray = Array.isArray(props);
@@ -95,19 +112,24 @@ export function isValid(props) {
 	return true;
 }
 
+//transfer celsius to fahrenheit
 export function CtoF(c: number) {
 	return c * 1.8 + 32;
 }
 
+//check if the value is in the given array
 export function groupmatch(value, ...table: Array<number | string>) {
 	return table.includes(value);
 }
 
+//draw a random element from an array
 export function draw(array: any[]) {
-	var a = array.length;
+	if (!Array.isArray(array) || array.length == 0) return null;
+	var a = array.length - 1;
 	return array[random(0, a)];
 }
 
+//sum all the values in an object
 export function sum(obj) {
 	let sum = 0;
 	for (var el in obj) {
@@ -118,10 +140,12 @@ export function sum(obj) {
 	return sum;
 }
 
+//find the key of an object by value
 export function findkey(data, value, compare = (a, b) => a === b) {
 	return Object.keys(data).find((k) => compare(data[k], value));
 }
 
+//swap two elements in an array
 export function swap(arr: any[], a, b) {
 	let c = arr[a];
 	let d = arr[b];
@@ -130,11 +154,13 @@ export function swap(arr: any[], a, b) {
 	return arr;
 }
 
+//shift an array by given number
 export function arrShift(arr, n) {
 	if (Math.abs(n) > arr.length) n = n % arr.length;
 	return arr.slice(-n).concat(arr.slice(0, -n));
 }
 
+//deep clone an object
 export function clone(obj) {
 	var copy;
 
@@ -177,6 +203,7 @@ export function clone(obj) {
 	throw new Error("Unable to copy obj as type isn't supported " + obj.constructor.name);
 }
 
+//create a download file by given content
 export function download(content, fileName, contentType) {
 	var a = document.createElement("a");
 	var file = new Blob([content], { type: contentType });
@@ -185,10 +212,12 @@ export function download(content, fileName, contentType) {
 	a.click();
 }
 
+//count an element in a 2d array
 export function countArray(arr, element) {
 	return arr.reduce((count, subarr) => count + (subarr.includes(element) ? 1 : 0), 0);
 }
 
+//set value by path
 export function setVByPath(obj, path, value) {
 	if (typeof path === "string") path = path.split(".");
 	if (path.length > 1) {
@@ -208,6 +237,7 @@ export function getByPath(obj, path) {
 	return getByPath(obj[first], pathArray.join("."));
 }
 
+//get key by value
 export function getKeyByValue(object, value) {
 	const findArray = (arr, val) => {
 		return arr.find((item) => typeof item.includes === "function" && item.includes(val));
@@ -220,17 +250,9 @@ export function getKeyByValue(object, value) {
 	);
 }
 
-export function setByPath(obj, path) {
-	const pathArray = path.split(".");
-	const last = pathArray.pop();
-	for (let i = 0; i < pathArray.length; i++) {
-		if (!obj[pathArray[i]]) obj[pathArray[i]] = {};
-		obj = obj[pathArray[i]];
-	}
-	if (!obj[last]) {
-		obj[last] = {};
-	}
-	return obj[last];
+//get index by value
+export function getIndexByValue(array, value) {
+	return array.findIndex((item) => item === value);
 }
 
 Object.defineProperties(window, {
@@ -240,7 +262,6 @@ Object.defineProperties(window, {
 	ensure: { value: ensure },
 	between: { value: between },
 	random: { value: random },
-	fixed: { value: fixed },
 	maybe: { value: maybe },
 	compares: { value: compares },
 	roll: { value: roll },
@@ -258,5 +279,5 @@ Object.defineProperties(window, {
 	setVByPath: { value: setVByPath },
 	getByPath: { value: getByPath },
 	getKeyByValue: { value: getKeyByValue },
-	setByPath: { value: setByPath },
+	getIndexByValue: { value: getIndexByValue },
 });

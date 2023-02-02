@@ -1,3 +1,5 @@
+Init.WorldMap();
+
 worldMap.Orlania.mapdata = {
 	road: [
 		[1, 17],

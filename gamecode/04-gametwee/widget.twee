@@ -64,19 +64,19 @@
 
 <<widget "showpalam">>
 
-<<if $ui.sidebarpalam is true>>
+<<if $Ui.sidebarpalam is true>>
     <div id="show_palam">
         <<sidebar_palam>>
     </div>
     
     <<button "▲palam">>
-        <<set $ui.sidebarpalam to false>>
+        <<set $Ui.sidebarpalam to false>>
         <<replace "#palam">><<showpalam>><</replace>>
     <</button>>
 <<else>>
 
     <<button "▼palam">>
-        <<set $ui.sidebarpalam to true>>
+        <<set $Ui.sidebarpalam to true>>
         <<replace "#palam">><<showpalam>><</replace>>
     <</button>>
 

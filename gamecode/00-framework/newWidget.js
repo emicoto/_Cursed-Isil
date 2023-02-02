@@ -33,9 +33,7 @@ function trace() {
 }
 
 function allMagical() {
-	return Object.keys(State.variables).filter(
-		key => key.startsWith(VIRTUAL_CURRENT) && key !== VIRTUAL_CURRENT
-	);
+	return Object.keys(State.variables).filter((key) => key.startsWith(VIRTUAL_CURRENT) && key !== VIRTUAL_CURRENT);
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -71,9 +69,9 @@ Macro.add("widget", {
 				handler: (function (widgetCode) {
 					return function () {
 						// Custom code
-						if(!game.Stack) game.Stack = []
-						game.Stack.push(widgetName);
-						game.Perflog.logWidgetStart(widgetName);
+						if (!scEra.Stack) scEra.Stack = [];
+						scEra.Stack.push(widgetName);
+						scEra.Perflog.logWidgetStart(widgetName);
 						const newFrame = {};
 						State.variables[VIRTUAL_CURRENT] = newFrame;
 						vStack.push(newFrame);
@@ -89,16 +87,12 @@ Macro.add("widget", {
 							trace(`saving ${d(magicals)} to ${d(priorFrame)}`);
 						}
 						if (priorFrame !== undefined) {
-							magicals.forEach(key => {
+							magicals.forEach((key) => {
 								priorFrame[key] = State.variables[key];
 								delete State.variables[key];
 							});
 						} else if (magicals.length > 0) {
-							console.warn(
-								`Found variables: ${JSON.stringify(magicals)} declared in :: ${
-									State.passage
-								}`
-							);
+							console.warn(`Found variables: ${JSON.stringify(magicals)} declared in :: ${State.passage}`);
 						}
 						// End custom code
 
@@ -142,12 +136,10 @@ Macro.add("widget", {
 							const errList = [];
 
 							// Wikify the widget's code.
-							const resFrag = Wikifier.wikifyEval(
-								widgetCode.replace(/^\n+|\n+$/g, "").replace(/\n+/g, " ")
-							);
+							const resFrag = Wikifier.wikifyEval(widgetCode.replace(/^\n+|\n+$/g, "").replace(/\n+/g, " "));
 
 							// Carry over the output, unless there were errors.
-							Array.from(resFrag.querySelectorAll(".error")).forEach(errEl => {
+							Array.from(resFrag.querySelectorAll(".error")).forEach((errEl) => {
 								errList.push(errEl.textContent);
 							});
 
@@ -156,23 +148,21 @@ Macro.add("widget", {
 							} else {
 								console.error(`Error rendering widget ${widgetName}`, errList);
 								return this.error(
-									`error${
-										errList.length > 1 ? "s" : ""
-									} within widget code (${errList.join("; ")})`
+									`error${errList.length > 1 ? "s" : ""} within widget code (${errList.join("; ")})`
 								);
 							}
 						} catch (ex) {
 							return this.error(`cannot execute widget: ${ex.message}`);
 						} finally {
 							// Custom code
-							game.Stack.pop();
+							scEra.Stack.pop();
 							vStack.pop();
 							vContext.pop();
 							State.variables[VIRTUAL_CURRENT] = priorFrame;
 							const magicals = allMagical();
 							if (magicals.length > 0) {
 								trace(`cleaning up ${d(magicals)}`);
-								magicals.forEach(key => {
+								magicals.forEach((key) => {
 									// don't pollute the global namespace
 									delete State.variables[key];
 								});
@@ -182,7 +172,7 @@ Macro.add("widget", {
 								// restore prior frame
 								Object.assign(State.variables, priorFrame);
 							}
-							game.Perflog.logWidgetEnd(widgetName);
+							scEra.Perflog.logWidgetEnd(widgetName);
 							// End custom code
 
 							// Revert the `_args` variable shadowing.

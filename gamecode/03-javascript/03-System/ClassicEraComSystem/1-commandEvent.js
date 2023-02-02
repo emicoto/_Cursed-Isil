@@ -94,7 +94,7 @@ Com.Check = function (id) {
 	console.log(T.comAble);
 
 	//如果对方无反抗之力，目标值强行变零。
-	if (cond.isUncons(tc) || !cond.canMove(tc)) T.orderGoal = 0;
+	if (Cond.isUncons(tc) || !Cond.canMove(tc)) T.orderGoal = 0;
 
 	T.comPhase = "before";
 	let txt = "";

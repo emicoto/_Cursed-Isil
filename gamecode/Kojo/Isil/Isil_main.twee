@@ -21,20 +21,20 @@ Kojo.set('Isil','#F9F570')
     .Filter((actiondata)=>{
         const {type, id} = actiondata
 
-        //if(cond.isUncons('Isil') || V.system.debug ) return 1
+        //if(Cond.isUncons('Isil') || V.system.debug ) return 1
         
-        if(cond.pcIs('Isil') && groupmatch(id,'Firm','Touch','TrySex','Self') && !cond.isFallen('Isil'))
+        if(Cond.pcIs('Isil') && groupmatch(id,'Firm','Touch','TrySex','Self') && !Cond.isFallen('Isil'))
             return 0
 
         switch (type){
             case '接触':
-                if(cond.pcIs('Isil') && cond.hasTarget() && !cond.isFallen('Isil'))
+                if(Cond.pcIs('Isil') && Cond.hasTarget() && !Cond.isFallen('Isil'))
                     return 0
                 break
             case '触手':
-                if( cond.bothIs('Isil') && !cond.cursedLvGt('hypnos', 3))
+                if( Cond.bothIs('Isil') && !Cond.cursedLvGt('hypnos', 3))
                     return 0
-                if(cond.pcIs('Isil') && cond.hasTarget() && !cond.isFallen('Isil'))
+                if(Cond.pcIs('Isil') && Cond.hasTarget() && !Cond.isFallen('Isil'))
                     return 0
                 break
         }

@@ -1,107 +1,10 @@
-const traitdata = {};
-
-window.findConflic = function (source, conflicGroup) {
-	let conflicArr = source.filter((val) => conflicGroup.includes(val));
-	if (conflicArr.length < 2) {
-		return source;
-	} else {
-		let index = random(conflicArr.length - 1);
-		source.delete(conflicGroup);
-		source.push(conflicArr[index]);
-		return source;
-	}
-};
-//特征class
-class Trait {
-	//获取特征数据
-	static get(name, key = null, event) {
-		if (!key) return Trait.data[name];
-		if (event) return Trait.data[name][key](event);
-		else if (key && Trait.data[name][key]) return Trait.data[name][key];
-		else return;
-	}
-	//通过关键词获取特征列表
-	static list(type) {
-		const grouplist = [];
-
-		if (type == "group") {
-			Object.values(Trait.data).forEach((data) => {
-				if (grouplist.includes(data.group) == false) grouplist.push(data.group);
-			});
-			return grouplist;
-		}
-
-		return Object.values(Trait.data).filter((data) => data.group == type);
-	}
-	static set(name) {
-		return Trait.data[name];
-	}
-	//初始化
-	static init() {
-		D.traits.forEach((obj) => {
-			Trait.data[obj.name] = new Trait(obj);
-		});
-		console.log(Trait.data);
-	}
-	//构造
-	constructor({ name, des = "", order = 0, sourceEffect = [], group = "全部" } = {}) {
-		this.name = name;
-		this.des = des;
-		this.order = order;
-		this.group = group;
-
-		this.get = {};
-		this.lose = {};
-
-		if (sourceEffect.length) {
-			sourceEffect.forEach((set) => {
-				if (set[2]) {
-					this.lose[set[0]] = set[1];
-				} else {
-					this.get[set[0]] = set[1];
-				}
-			});
-		}
-	}
-
-	Effect(callback) {
-		this.effect = callback;
-		return this;
-	}
-	setFix(callback) {
-		this.onFix = callback;
-		return this;
-	}
-	setOrder(callback) {
-		this.onOrder = callback;
-		return this;
-	}
-	setSource(callback) {
-		this.onSource = callback;
-		return this;
-	}
-	setRest(callback) {
-		this.onRest = callback;
-		return this;
-	}
-}
-
-window.Trait = Trait;
-Object.defineProperties(Trait, {
-	data: {
-		get: function () {
-			return traitdata;
-		},
-	},
-});
-
 //traits 主要特征
 //talent 能力,天赋
 Trait.init();
 
 const initials = ["M", "B", "C", "U", "V", "A"];
 
-Trait.set("M体质").setSource((cid, ...args) => {
+Trait.set("M体质").Source((cid, ...args) => {
 	initials.forEach((k) => {
 		if (Source[cid][`pa${k}`] > 0) {
 			Source[cid][`es${k}`] += Source[cid][`pa${k}`] * 0.2;
@@ -109,7 +12,7 @@ Trait.set("M体质").setSource((cid, ...args) => {
 	});
 });
 
-Trait.set("M倾向").setSource((cid, ...args) => {
+Trait.set("M倾向").Source((cid, ...args) => {
 	initials.forEach((k) => {
 		if (Source[cid][`pa${k}`] > 0) {
 			Source[cid][`es${k}`] += Source[cid][`pa${k}`] * 0.3;
@@ -137,14 +40,11 @@ Trait.set('易伤体质')
 */
 
 Trait.set("理智")
-	.setFix((base, ...args) => {
+	.Fix((base, ...args) => {
 		base.sanity[1] *= 1.2;
 	})
-	.setRest((cid, ...args) => {
-		const list = ["fear", "mortify", "humilate", "depress", "resist", "uncomfort", "angry"];
-	})
-	.setOrder((cid, ...args) => {
-		if (cond.isWeaker(tc, pc)) return 10;
-		else if (cond.baseLt(tc, "health", 0.3) || cond.baseLt(tc, "stamina", 0.1)) return 15;
+	.Order((id, ...args) => {
+		if (Cond.isWeaker(tc, pc)) return 10;
+		else if (Cond.baseLt(tc, "health", 0.3) || Cond.baseLt(tc, "stamina", 0.1)) return 15;
 		else return 2;
 	});

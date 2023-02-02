@@ -1,7 +1,7 @@
-cond.hasSelectableParts = function (parts) {
+Cond.hasSelectableParts = function (parts) {
 	let arr = Array.from(new Set(parts));
 	if (!parts || parts.length <= 1) return false;
-	return (cond.justHands(arr) && V.mode !== "reverse") === false;
+	return (Cond.justHands(arr) && V.mode !== "reverse") === false;
 };
 
 Action.onInput = function (actionId, inputType, selection) {
@@ -36,7 +36,7 @@ Action.onInput = function (actionId, inputType, selection) {
 		const hasOption = () => {
 			if (able1.length <= 1 && able2.length <= 1) return 0;
 
-			return cond.hasSelectableParts(able1) || cond.hasSelectableParts(able2);
+			return Cond.hasSelectableParts(able1) || Cond.hasSelectableParts(able2);
 		};
 
 		//如果没有可选项，就自动选择部位，并准备执行。
@@ -58,7 +58,7 @@ Action.onInput = function (actionId, inputType, selection) {
 		T.select.actPart = selection;
 
 		let able = Action.SelectableParts(actionId, 2);
-		if (cond.hasSelectableParts(able)) {
+		if (Cond.hasSelectableParts(able)) {
 			Action.redraw();
 			return;
 		}
@@ -92,7 +92,7 @@ Action.onInput = function (actionId, inputType, selection) {
 };
 
 //创建角色交互按钮
-ui.createCharaBtn = function (charalist) {
+Ui.createCharaBtn = function (charalist) {
 	if (!charalist) return;
 
 	const html = [];
@@ -115,7 +115,7 @@ ui.createCharaBtn = function (charalist) {
 //更新场景
 Action.updateScene = function () {
 	const { name, id, chara, tags, setting, des } = V.location;
-	const charalist = ui.createCharaBtn(chara);
+	const charalist = Ui.createCharaBtn(chara);
 	let charaSwitch = F.switchChara();
 
 	let html = `主控 <span style='color:#fff000'>${player.name}</span>${charaSwitch}　|　所在位置 ${name}　|　`;
@@ -127,7 +127,7 @@ Action.updateScene = function () {
 	/*if (des) {
       html += `${des()}，${charalist.join("、")}在这里。`;
    }*/
-	ui.replace("location", html);
+	Ui.replace("location", html);
 };
 
 Action.updateMovement = function () {
@@ -211,8 +211,7 @@ Action.check = function (id) {
 
 	//确认无法执行的话，就在这个地方打断。
 	if (!T.actAble) Action.phase("cancel");
-
-	Action.phase("before");
+	else Action.phase("before");
 };
 
 //---------->> 执行前事件 <<----------//
@@ -291,6 +290,10 @@ Action.event = function (id) {
 	//幸运成功时
 	if (T.orderResult == "luck succeed") {
 		S.msg.push(`勉强配合: ${T.order}+LUK${player.stats.LUK[1]}/${T.orderGoal}<br>`);
+	}
+
+	if (T.orderResult == "failed") {
+		Action.phase("failed");
 	}
 
 	//强制时的分支。如果存在的话。
@@ -376,14 +379,15 @@ Action.cancel = function (id) {
 		type = "PCAction",
 		dif = "Cancel",
 		check = 1;
+	T.cancel = 1;
 
 	if (Kojo.has(pc, { type, id, dif, check, tag })) {
 		P.msg(Kojo.put(pc, { type, id, dif, tag }));
-		P.msg(`<<run T.cancel = 1; F.passtime(1); Action.reset(); Action.phase('init')>>`, 1);
+		P.msg(`<<run T.cancel = 1; F.passtime(1); Action.reset(); Action.phase('reset')>>`, 1);
 	} else {
 		T.cancel = 1;
 		Action.reset();
-		Action.phase("init");
+		Action.phase("reset");
 	}
 };
 
@@ -399,7 +403,7 @@ Action.Failed = function (id) {
 		P.msg("对方不愿意配合，执行失败。");
 	}
 
-	P.msg(`<<run T.cancel = 1; F.passtime(1); Action.reset(); Action.phase('init')>>`, 1);
+	P.msg(`<<run T.cancel = 1; F.passtime(1); Action.reset(); Action.phase('reset')>>`, 1);
 };
 
 //---------->> 设置finish事件 <<----------//

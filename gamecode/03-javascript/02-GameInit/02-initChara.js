@@ -28,13 +28,13 @@ Chara.data.Ayres = function () {
 			wrestle: 12,
 			cooking: 10,
 			craft: 8,
-			gathering: 9,
+			gather: 9,
 			dance: 10,
 		})
 		.setSexAbl({ knowledge: 10, technique: 10, endurance: 8, desire: 8 })
 		.setOrgan("p", { type: "魔鬼阴茎", trait: ["隆起", "浓厚"], size: 4, d: 48, l: 182 })
 		.setOrgan("m", { size: 3 })
-		.setExp({ 调教: random(100, 300), 插入: random(50, 120), 施虐: random(50, 120) })
+		.setExp({ train: random(100, 300), insertion: random(50, 120), sadic: random(50, 120) })
 		.setFame("job", 30)
 		.setFame("school", 50)
 		.setFame("public", 20);
@@ -108,7 +108,7 @@ Chara.data.Isil = function () {
 			plant: 4,
 			medicine: 14,
 			craft: 8,
-			gathering: 12,
+			gather: 12,
 			sing: 10,
 		})
 		.setSexAbl({ knowledge: 1, endurance: 2, refuse: 8 })

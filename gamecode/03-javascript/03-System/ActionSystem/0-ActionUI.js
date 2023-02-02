@@ -28,7 +28,7 @@ const createActionBtn = function (currentSelect, actionData, layer) {
 	let option = Action.SelectableParts(id);
 
 	//如果是当前选中的，就清除链接并加上选中标记。
-	if ((currentSelect == id && cond.hasSelectableParts(option)) || (type == "目录" && T.actionTypeFilter == id)) {
+	if ((currentSelect == id && Cond.hasSelectableParts(option)) || (type == "目录" && T.actionTypeFilter == id)) {
 		return selectedActionBtn(name);
 	}
 
@@ -94,15 +94,6 @@ const createMenu = function (typelist, outputArray, currentSelect, layer) {
 	});
 };
 
-ui.showhtml = function (tag, menu) {
-	if (menu.length) {
-		$(`#${tag}`).removeClass("hidden");
-		ui.replace(tag, menu.join(""));
-	} else {
-		$(`#${tag}`).addClass("hidden");
-	}
-};
-
 Action.hide = function () {
 	const label = "actionMenu_";
 
@@ -111,10 +102,10 @@ Action.hide = function () {
 	$(`#${label + 3}`).addClass("hidden");
 	$("#actionOption").addClass("hidden");
 
-	ui.replace(label + 1, " ");
-	ui.replace(label + 2, " ");
-	ui.replace(label + 3, " ");
-	ui.replace("actionOption", " ");
+	Ui.replace(label + 1, " ");
+	Ui.replace(label + 2, " ");
+	Ui.replace(label + 3, " ");
+	Ui.replace("actionOption", " ");
 };
 
 Action.show = function () {
@@ -167,13 +158,13 @@ Action.updateMenu = function () {
 	});
 
 	//可选部位
-	if (actorOption?.length > 1 && !cond.justHands(actorOption)) {
+	if (actorOption?.length > 1 && !Cond.justHands(actorOption)) {
 		actorOption.forEach((part) => {
 			partsMenu.push(createOptionBtn(selectId, part, "actor"));
 		});
 	}
 
-	if (targetOption?.length > 1 && !cond.justHands(targetOption)) {
+	if (targetOption?.length > 1 && !Cond.justHands(targetOption)) {
 		targetOption.forEach((part) => {
 			partsMenu.push(createOptionBtn(selectId, part, "target"));
 		});
@@ -191,11 +182,11 @@ Action.updateMenu = function () {
 
 	//console.log(selectId, partsMenu);
 
-	ui.replace("actionMenu_1", html);
+	Ui.replace("actionMenu_1", html);
 
-	ui.showhtml("actionMenu_2", subActionMenu);
-	ui.showhtml("actionOption", optionMenu);
-	ui.showhtml("actionMenu_3", partsMenu);
+	Ui.showhtml("actionMenu_2", subActionMenu);
+	Ui.showhtml("actionOption", optionMenu);
+	Ui.showhtml("actionMenu_3", partsMenu);
 };
 
 const createKeepingLinks = function (cid, actId, part) {
@@ -226,7 +217,7 @@ Action.onGoing = function () {
 		}
 	});
 
-	ui.showhtml("keeping", charaHtml);
+	Ui.showhtml("keeping", charaHtml);
 };
 
 //刷新界面和对象
@@ -234,14 +225,14 @@ Action.redraw = function () {
 	V.target = C[tc];
 	V.player = C[pc];
 
-	ui.delink();
+	Ui.delink();
 	Action.updateScene();
 	Action.show();
 	Action.updateMenu();
 	Action.shownext(1);
 	Action.onGoing();
-	//ui.sidebar()
+	//Ui.sidebar()
 
-	ui.replace("showtime", "<<showtime>><<showmoney>>");
+	Ui.replace("showtime", "<<showtime>><<showmoney>>");
 	return "";
 };

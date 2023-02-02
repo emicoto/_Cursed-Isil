@@ -1,8 +1,16 @@
 import { GameMap } from "./Map";
-import { worldMap, CM, FMA, OL } from "./mapdata";
 declare function groupmatch(arg, ...args): boolean;
+declare var worldMap: typeof window.worldMap;
+
+//declare worldMap as a global variable
+declare global {
+	interface Window {
+		worldMap;
+	}
+}
 
 export function setCommon(id) {
+	const CM = worldMap.CommonSpots;
 	switch (id) {
 		case "PublicToilet":
 			CM[id].Tags("厕所", "无窗", "狭窄", "公共").Placement("洗手台", "镜子", "马桶");
@@ -32,6 +40,7 @@ export function setCommon(id) {
 }
 
 export function setAcademy(id) {
+	const FMA = worldMap.Academy;
 	switch (id) {
 		case "MageTower":
 			FMA[id].Rooms("Inside", "Observatory", "Storage").Tags("高台", "悬浮", "防御").Placement("防御炮台");
@@ -101,6 +110,7 @@ export function setAcademy(id) {
 }
 
 export function setAcademyRoom(id, roomid) {
+	const FMA = worldMap.Academy;
 	switch (id) {
 		case "MageTower":
 			if (roomid == "Inside") {

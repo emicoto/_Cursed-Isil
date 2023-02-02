@@ -59,7 +59,7 @@ F.getMp = function (ecstacy, type) {
 Chara.getexp = function (chara, exp, val) {
 	chara.exp[exp].total += val;
 
-	if (!cond.isUncons(chara)) chara.exp[exp].aware += val;
+	if (!Cond.isUncons(chara)) chara.exp[exp].aware += val;
 
 	if (!chara.expUp[exp]) chara.expUp[exp] = 0;
 

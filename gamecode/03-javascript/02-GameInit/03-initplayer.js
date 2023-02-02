@@ -6,7 +6,7 @@ Chara.onLoad = function () {
 	}
 };
 
-fix.beauty = function (chara) {
+Fix.beauty = function (chara) {
 	const traitbuff = function (chara) {
 		let buff = 1;
 
@@ -81,27 +81,21 @@ Chara.skinCounter = function (chara, t) {
 
 			let layer = skin[i];
 			dolayer(layer, t);
-			total[i] = {
-				kiss: countArray(layer, "kissmark"),
-				scars: countArray(layer, "scar"),
-				whips: countArray(layer, "whip"),
-				wounds: countArray(layer, "wound"),
-				pen: countArray(layer, "pen"),
-				bruise: countArray(layer, "bruise"),
-			};
+			total[i] = {};
+			D.scarType.forEach((type) => {
+				total[i][type] = countArray(layer, type);
+			});
 		}
 		return total;
 	};
 
 	const count = () => {
-		const result = {
-			kiss: [0, []],
-			scars: [0, []],
-			whips: [0, []],
-			wounds: [0, []],
-			pen: [0, []],
-			bruise: [0, []],
-		};
+		const result = {};
+
+		D.scarType.forEach((type) => {
+			result[type] = [0, []];
+		});
+
 		for (let i in total) {
 			for (let k in total[i]) {
 				if (total[i][k] > 0) {
@@ -139,7 +133,7 @@ Chara.init = function () {
 	Chara.initGlobal();
 
 	for (let i in V.chara) {
-		fix.base(V.chara[i], 1);
+		Fix.base(V.chara[i], 1);
 		F.resetBase(V.chara[i]);
 	}
 
@@ -167,7 +161,7 @@ Chara.init = function () {
 	V.tc = "Isil";
 };
 //修正基础属性
-fix.base = function (chara, mode) {
+Fix.base = function (chara, mode) {
 	const { base, stats, race, traits } = chara;
 
 	if (chara.id == "m0") {
@@ -190,11 +184,11 @@ fix.base = function (chara, mode) {
 		base.sanity[0] = base.sanity[1];
 		base.mana[0] = base.mana[1];
 
-		fix.stats(chara);
+		Fix.stats(chara);
 	}
 };
 //修正角色的属性
-fix.stats = function (chara) {
+Fix.stats = function (chara) {
 	const { stats, equip, race } = chara;
 
 	if (chara.id === "m0") {
@@ -209,17 +203,17 @@ fix.stats = function (chara) {
 };
 
 F.raceBonus = function (race, type) {
-	const races = D.race;
+	const races = Object.keys(D.race);
 	const P = {
 		//health+stamina+mana = 3.3
 		//atk+def+mtk+mdf=4.4
-		health: [1.1, 0.7, 1, 1.3, 1, 0.8, 1, 1.3, 1.6, 1.4, 1],
-		stamina: [1.1, 0.6, 1, 1.3, 1.5, 2, 1, 2, 1.6, 1.4, 1],
-		mana: [1.1, 2, 1.3, 0.5, 0.8, 0.5, 1.3, 0.7, 0.1, 0.5, 1.3],
-		ATK: [1.1, 0.5, 1, 1.4, 1.2, 1, 1, 1.4, 2, 1.4, 1],
-		DEF: [1.1, 0.6, 1, 1, 1.6, 1, 0.8, 1.2, 1.8, 1.5, 1],
-		MTK: [1.1, 1.8, 1.2, 0.8, 0.6, 1, 1.4, 0.8, 0.1, 0.5, 1],
-		MDF: [1.1, 1.5, 1.2, 1.2, 1, 2, 1.2, 1, 0.5, 0.6, 1.4],
+		health: [1.1, 0.7, 1, 1.3, 1, 0.8, 1, 1.3, 1.6, 1.4, 1, 1],
+		stamina: [1.1, 0.6, 1, 1.3, 1.5, 2, 1, 2, 1.6, 1.4, 1, 1.2],
+		mana: [1.1, 2, 1.3, 0.5, 0.8, 0.5, 1.3, 0.7, 0.1, 0.5, 1.3, 1.1],
+		ATK: [1.1, 0.5, 1, 1.4, 1.2, 1, 1, 1.4, 2, 1.4, 1, 1.2],
+		DEF: [1.1, 0.6, 1, 1, 1.6, 1, 0.8, 1.2, 1.8, 1.5, 1, 1.1],
+		MTK: [1.1, 1.8, 1.2, 0.8, 0.6, 1, 1.4, 0.8, 0.1, 0.5, 1, 1],
+		MDF: [1.1, 1.5, 1.2, 1.2, 1, 2, 1.2, 1, 0.5, 0.6, 1.4, 1.1],
 	};
 
 	return P[type][races.indexOf(race)];

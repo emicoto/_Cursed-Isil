@@ -1,4 +1,4 @@
-cond.isClasstime = function () {
+Cond.isClasstime = function () {
 	const date = V.date;
 	if (inrange(date.week, 1, 5)) {
 		const select = new SelectCase();
@@ -8,7 +8,7 @@ cond.isClasstime = function () {
 	return false;
 };
 
-cond.baseLt = function (cid, key, val) {
+Cond.baseLt = function (cid, key, val) {
 	if (val === "max") return C[cid].base[key][0] < C[cid].base[key][1];
 	else {
 		if (between(val, 0, 1)) {
@@ -18,11 +18,11 @@ cond.baseLt = function (cid, key, val) {
 	}
 };
 
-cond.baseIs = function (cid, key) {
+Cond.baseIs = function (cid, key) {
 	return C[cid].base[key][0] / C[cid].base[key][1];
 };
 
-cond.palamLt = function (cid, key, val) {
+Cond.palamLt = function (cid, key, val) {
 	if (val === "max") return C[cid].palam[key][1] < C[cid].palam[key][2];
 	else {
 		if (between(val, 0, 1)) {
@@ -32,69 +32,69 @@ cond.palamLt = function (cid, key, val) {
 	}
 };
 
-cond.flagLt = function (cid, key, val) {
+Cond.flagLt = function (cid, key, val) {
 	return C[cid].flag[key] < val;
 };
 
-cond.favoLt = function (cid, val) {
+Cond.favoLt = function (cid, val) {
 	return C[cid].flag.favo < val;
 };
 
-cond.trustLt = function (cid, val) {
+Cond.trustLt = function (cid, val) {
 	return C[cid].flag.trust < val;
 };
 
-cond.dependLt = function (cid, val) {
+Cond.dependLt = function (cid, val) {
 	return C[cid].flag.depend < val;
 };
 
-cond.isVirgin = function (cid) {
+Cond.isVirgin = function (cid) {
 	if (C[cid].gender === "male") return C[cid].virginity.analsex.length > 1;
 	else return C[cid].virginity.vaginasex.length > 1;
 };
 
-cond.isCockVirgin = function (cid) {
+Cond.isCockVirgin = function (cid) {
 	if (C[cid].gender === "female") return false;
 	return C[cid].virginity.penis.length > 1;
 };
 
-cond.canSpeak = function (cid) {
+Cond.canSpeak = function (cid) {
 	return !C[cid].state.has("失声", "失聪", "口球", "自闭");
 };
 
-cond.canMove = function (cid) {
+Cond.canMove = function (cid) {
 	return !C[cid].state.has("拘束", "石化");
 };
 
-cond.canActNormal = function (cid) {
+Cond.canActNormal = function (cid) {
 	return !C[cid].state.has("精神崩溃", "毒瘾发作", "性瘾发作");
 };
 
-cond.isSleeping = function (cid) {
+Cond.isSleeping = function (cid) {
 	return C[cid].state.includes("睡眠");
 };
 
-cond.isUncons = function (cid) {
-	return C[cid].state.has("睡眠", "晕厥") || (cond.baseLt(cid, "stamina", 10) && cond.baseLt(cid, "sanity", 10));
+Cond.isUncons = function (cid) {
+	return C[cid].state.has("睡眠", "晕厥") || (Cond.baseLt(cid, "stamina", 10) && Cond.baseLt(cid, "sanity", 10));
 };
 
-cond.isActive = function (cid) {
+Cond.isActive = function (cid) {
 	return (
 		!C[cid].state.has("睡眠", "晕厥", "精神崩溃", "拘束", "石化") &&
-		!cond.baseLt(cid, "stamina", 0.1) &&
-		!cond.baseLt(cid, "sanity", 0.1)
+		!Cond.baseLt(cid, "stamina", 0.1) &&
+		!Cond.baseLt(cid, "sanity", 0.1)
 	);
 };
 
-cond.isRape = function (cid) {
+Cond.isRape = function (cid) {
 	return (V.mode == "train" || C[cid].tsv.woohoo) && !C[cid].tsv.oksign;
 };
 
-cond.candResist = function (cid) {
-	return !cond.isUncons(cid) && cond.canMove(cid);
+Cond.candResist = function (cid) {
+	return !Cond.isUncons(cid) && Cond.canMove(cid);
 };
 
-cond.isWeaker = function (a, b) {
+Cond.isWeaker = function (a, b) {
 	const charaA = C[a],
 		charaB = C[b];
 	let ap = charaA.bp();
@@ -103,12 +103,12 @@ cond.isWeaker = function (a, b) {
 	if (ap < bp * 0.8) {
 		return true;
 	} else {
-		return ap / bp <= 1.25 && cond.isEnergetic(a);
+		return ap / bp <= 1.25 && Cond.isEnergetic(a);
 	}
 };
 
 //是否有充足精力进行抵抗。a是角色档案。
-cond.isEnergetic = function (cid, compareValue) {
+Cond.isEnergetic = function (cid, compareValue) {
 	const a = C[cid];
 	//首先获取HP的影响值。HP影响抵御上限。公式：HP*2/HP上限
 	const hp = (a.base.health[0] * 2) / a.base.health[1];
@@ -131,59 +131,59 @@ cond.isEnergetic = function (cid, compareValue) {
 	return stamina + sanity + mana > compareValue;
 };
 
-cond.isFallen = function (cid) {
+Cond.isFallen = function (cid) {
 	if (C[cid].flag.fallen >= 50) return true;
 	if (C[cid].flag.depend >= 2500) return true;
 	return false;
 };
 
-cond.OnlyU = function () {
+Cond.OnlyU = function () {
 	return pc == tc && V.location.chara.length === 1;
 };
 
-cond.OnlyU2 = function () {
+Cond.OnlyU2 = function () {
 	return V.location.chara.length === 2 && pc !== tc;
 };
 
-cond.hasTarget = function () {
+Cond.hasTarget = function () {
 	return pc !== tc;
 };
 
-cond.bothIs = function (cid) {
+Cond.bothIs = function (cid) {
 	return cid === pc && cid === tc;
 };
 
-cond.pcIs = function (cid) {
+Cond.pcIs = function (cid) {
 	return cid === pc;
 };
 
-cond.hasPenis = function (cid) {
+Cond.hasPenis = function (cid) {
 	return C[cid].gender !== "female";
 };
 
-cond.hasVagina = function (cid) {
+Cond.hasVagina = function (cid) {
 	return C[cid].gender !== "male";
 };
 
-cond.justHands = function (part) {
+Cond.justHands = function (part) {
 	return (part.containsAll("handL", "handR") && part.length == 2) || (part.has("handL", "handR") && part.length == 1);
 };
 
-cond.cursedLvGt = function (abl, value) {
+Cond.cursedLvGt = function (abl, value) {
 	return V.cursedLord.abl[abl] > value;
 };
 
-cond.betweenTime = function (start, end) {
+Cond.betweenTime = function (start, end) {
 	return V.date.time >= start * 60 && V.date.time < end * 60;
 };
 
 //检测各个部位中的占用状态 。 如果为空或与当前id一致则返回true，否则返回false
-cond.partIsEmpty = function (cid, id, part) {
+Cond.partIsEmpty = function (cid, id, part) {
 	return Using[cid][part].action == id || !Using[cid][part].action;
 };
 
 //检查触手有无空余，有返回空余部位id，没有返回 -1
-cond.hasUnuseTentacle = function () {
+Cond.hasUnuseTentacle = function () {
 	const tentacle = Using.m0.tentacles;
 	for (let i = 0; i < tentacle.length; i++) {
 		const info = tentacle[i];
@@ -192,17 +192,17 @@ cond.hasUnuseTentacle = function () {
 	return -1;
 };
 
-cond.markLv = function (cid, key) {
+Cond.markLv = function (cid, key) {
 	return C[cid].mark[key];
 };
 
-cond.markIs = function (cid, key, val) {
+Cond.markIs = function (cid, key, val) {
 	const markkey = getKeyByValue(D.mark, key);
 	return C[cid].mark[markkey] === val;
 };
 
-cond.StallBusinessTime = function () {
-	if (groupmatch(V.date.week, 0, 6)) return cond.betweenTime(5.5, 20);
-	if (V.date.week == 1) return cond.betweenTime(5.5, 16);
-	else return cond.betweenTime(13, 17);
+Cond.StallBusinessTime = function () {
+	if (groupmatch(V.date.week, 0, 6)) return Cond.betweenTime(5.5, 20);
+	if (V.date.week == 1) return Cond.betweenTime(5.5, 16);
+	else return Cond.betweenTime(13, 17);
 };

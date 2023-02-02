@@ -4,28 +4,44 @@
     be merged—i.e. their elements will be concatenated, rather than the
     array itself.
 */
+
+/**
+ * @param {string[]} arg
+ * @returns {boolean}
+ * @description
+ * Checks if the string or array contains the given argument.
+ * @example
+ * "Hello World".has("Hello"); // 1
+ * "Hello World".has("Hello", "World", "Foo"); // 2
+ * "Hello World".has("Foo"); // false
+ * "Hello World".has("Foo", "Bar"); // false
+ */
 String.prototype.has = function (...arg) {
 	if (Array.isArray(arg[0])) arg = arg[0];
-
+	let count = 0;
 	for (let i = 0; i < arg.length; i++) {
-		if (this.includes(arg[i])) return true;
+		if (this.includes(arg[i])) count++;
 	}
-	return false;
+	if (!count) return false;
+	return count;
 };
-
 Array.prototype.has = function (...arg) {
 	if (Array.isArray(arg[0])) arg = arg[0];
-
+	let count = 0;
 	for (let i = 0; i < arg.length; i++) {
-		if (this.includes(arg[i])) return true;
+		if (this.includes(arg[i])) count++;
 	}
-	return false;
+	if (!count) return false;
+	return count;
 };
 
 /**
  *
  * @param {number} index
  * @param {string} string
+ * @returns {string}
+ * @description
+ * Inserts a string at the given index.
  */
 String.prototype.insert = function (index, string) {
 	this.splice(index, 0, string);
@@ -36,6 +52,9 @@ String.prototype.insert = function (index, string) {
  *
  * @param {number} index
  * @param {any} element
+ * @returns {Array}
+ * @description
+ * Inserts an element at the given index.
  */
 Array.prototype.insert = function (index, element) {
 	this.splice(index, 0, element);

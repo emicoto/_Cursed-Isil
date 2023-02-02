@@ -1,53 +1,59 @@
 /**
- * As part of my various refactors, I ended up introducing a bunch of
- * global namespace-esk variables.
  *
- * Having a single spot to document them makes sense. By convention,
- * if you need to make a new top-level namespace, declare it here.
+ * All the global shortcuts are defined here.
+ * You can extend any variable or function by adding it to the list below.
+ * Don't try to edit any variable under the window.scEra namespace.
+ *
  */
 
-/**
- * Declare everything in a root namespace, so that things can still be found
- * if shadowed, and for "documentation" purposes
- */
+const list = ["Base", "Stats", "Palam", "Source", "Sup", "Cflag", "Tsv", "Exp", "Juel", "Using", "Liquid", "Skin"];
 
-window.game = {
-	// In pseudo-load order
-	/**
-	 * Mini application reporter app
-	 * helps get detailed error messages to devs
-	 * {@link 01-error.js errors}
-	 */
-	Errors: {},
-	Perflog: {},
+Object.defineProperties(window.game, {
+	State: { value: State },
+	setup: { value: setup },
+});
 
-	/** Patch to make javascript execution more consistent (see comment below) */
-	State: State,
-	/** Patch to make javascript execution more consistent (see comment below) */
-	setup: setup,
-	/** Patch to make javascript execution more consistent (see comment below) */
+Object.defineProperties(window.scEra, {
+	Story: { get: () => Story },
+	Wikifier: { get: () => Wikifier },
+	Errors: { value: {} },
+	Perflog: { value: {} },
+});
+
+list.forEach((name) => {
+	window.game[name] = {};
+});
+
+defineGlobalNamespaces(window.game);
+
+const shortcuts = {
+	S: setup,
+	V: State.variables,
+	T: State.temporary,
+	Story: Story,
 	Wikifier: Wikifier,
-	version: "0.0.0",
-	debug: false,
+
+	Errors: window.scEra.Errors,
+	Perflog: window.scEra.Perflog,
 };
-/* Make each of these namespaces available at the top level as well */
-window.defineGlobalNamespaces = (namespaces) => {
-	Object.entries(namespaces).forEach(([name, namespaceObject]) => {
-		try {
-			if (window[name] && window[name] !== namespaceObject) {
-				console.warn(
-					`Attempted to set ${name} in the global namespace, but it's already in use. Skipping this assignment. Existing Object:`,
-					window[name]
-				);
-			} else {
-				/* Make it more difficult to shadow/overwrite things (users can still Object.defineProperty if they really mean it) */
-				Object.defineProperty(window, name, { value: namespaceObject, writeable: false });
-			}
-		} catch (e) {
-			if (window[name] !== namespaceObject) {
-				console.error(`Failed to setup global namespace object ${name}. Attempting to continue. Source Error:`, e);
-			}
-		}
-	});
-};
-defineGlobalNamespaces(game);
+
+defineGlobalShortcuts(shortcuts);
+
+// those properties are not defined at this point, so we just define them as empty objects
+Object.defineProperties(window, {
+	C: { get: () => State.variables.chara },
+	Flag: {
+		get: () => State.variables.flag,
+	},
+	tc: { get: () => State.variables.tc, set: (v) => (State.variables.tc = v) },
+	pc: {
+		get: () => State.variables.pc,
+		set: (v) => (State.variables.pc = v),
+	},
+	player: {
+		get: () => State.variables.chara[pc],
+	},
+	target: {
+		get: () => State.variables.chara[tc],
+	},
+});

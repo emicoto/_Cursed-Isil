@@ -1,0 +1,6 @@
+:: ItemEditor
+<<run
+    //总之先初始化一下。
+    T.itemName = 'Item'
+    T.itemDes = 'An item.'
+>>

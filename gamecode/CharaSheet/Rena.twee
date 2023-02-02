@@ -49,14 +49,14 @@ abl.lumen, 5
 abl.wrestle, 10
 abl.cooking, 2
 abl.medicine, 4
-abl.gathering, 6
+abl.gather, 6
 
 sbl.knowledge, 5
 sbl.technique, 2
 sbl.endurance, 2
 
-exp.自慰, 30+random(100)
-exp.同性, 30+random(100)
+exp.onani, 30+random(100)
+exp.homo, 30+random(100)
 
 organ.v.size, 1
 

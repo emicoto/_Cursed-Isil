@@ -123,7 +123,7 @@ F.createLocationLink = function () {
 		//console.log(item);
 		const id = item[0];
 		const locdata = GameMap.get(id);
-		const squaredata = setByPath(V.mapdata, id);
+		const squaredata = getByPath(V.mapdata, id);
 
 		//在这里时进行条件筛选。如果不符合条件，就不会出现在列表中。
 

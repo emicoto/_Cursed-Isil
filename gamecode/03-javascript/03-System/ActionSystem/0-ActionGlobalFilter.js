@@ -40,7 +40,7 @@ Action.globalFilter = function (id) {
 			if (!Flag.master || (data.mode > 2 && V.date.time < 1200)) return 0;
 
 			//如果没有空余触手，就不显示
-			if (cond.hasUnuseTentacle() == -1) return 0;
+			if (Cond.hasUnuseTentacle() == -1) return 0;
 			break;
 
 		case "接触":
@@ -48,7 +48,11 @@ Action.globalFilter = function (id) {
 			if (Flag.mode < 2) return 0;
 
 			//对象npc清醒，同时解禁等级不足
-			if (!cond.isUncons(tc) && data.mode > Cflag[tc].touchLv + 0.5) return 0;
+			if (!Cond.isUncons(tc) && data.mode > Cflag[tc].touchLv + 0.5) return 0;
+
+			const idnum = parseInt(id.replace("t", ""));
+			//console.log(idnum, groupmatch(id, "t4", "t5") || inrange(idnum, 7, 13));
+			if (inrange(idnum, 7, 13) && V.mode !== "train") return 0;
 			break;
 
 		case "逆位":
@@ -97,7 +101,7 @@ Action.globalCheck = function (id) {
 
 	switch (data.type) {
 		case "触手":
-			if (!cond.isFallen(target) && !cond.isUncons(target) && !Flag.aware) {
+			if (!Cond.isFallen(tc) && !Cond.isUncons(tc) && !Flag.aware) {
 				T.reason += "【未堕落的对象】";
 				return 0;
 			}
@@ -123,7 +127,7 @@ Action.globalOrder = function (id) {
 			}
 			break;
 		case "触手":
-			if (!cond.isFallen(target)) {
+			if (!Cond.isFallen(tc)) {
 				T.orderMsg += "【未堕落(-30)】";
 				T.order -= 30;
 			}

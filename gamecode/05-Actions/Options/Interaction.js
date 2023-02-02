@@ -1,7 +1,7 @@
 /* 闲聊 */
 Action.set("Talk").Check(() => {
 	let rate = random(1, 100);
-	return rate <= target.mood + 10 && cond.canSpeak(tc);
+	return rate <= target.mood + 10 && Cond.canSpeak(tc);
 });
 
 /* 观察 */

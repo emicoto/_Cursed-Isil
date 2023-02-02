@@ -48,7 +48,7 @@ abl.wrestle, 16
 abl.cooking, 6
 abl.craft, 12
 abl.fishing, 12
-abl.gathering, 10
+abl.gather, 10
 
 sbl.knowledge, 5
 sbl.endurance, 2
@@ -64,10 +64,10 @@ organ.m.size, 4
 
 flag.jobfame, 40
 
-exp.自慰, 30+random(100)
-exp.同性, 5+random(30)
-exp.肛交, 5+random(30)
-exp.插入, 10+random(30)
+exp.onani, 30+random(100)
+exp.homo, 5+random(30)
+exp.analsex, 5+random(30)
+exp.insertion, 10+random(30)
 
 scar.face, scar
 scar.back, scar

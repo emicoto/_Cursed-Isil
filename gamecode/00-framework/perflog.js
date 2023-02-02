@@ -1,7 +1,13 @@
 // Time in milliseconds, float with microsecond precision if available.
-const millitime = (typeof performance === 'object' && typeof performance.now === 'function') ?
-	function() { return performance.now() } : function() { return new Date().getTime() };
-game.Perflog.millitime = millitime;
+const millitime =
+	typeof performance === "object" && typeof performance.now === "function"
+		? function () {
+				return performance.now();
+		  }
+		: function () {
+				return new Date().getTime();
+		  };
+scEra.Perflog.millitime = millitime;
 
 /**
  * Widget performance records for one passage.
@@ -18,45 +24,45 @@ wpRec[wpSelf.name] = wpSelf;
 /**
  * Global widget performance records
  */
-game.Perflog.globalRec = {};
-game.Perflog.lastRec = {};
-game.Perflog.enabled = true;
-game.Perflog.self = true; // Record own performance
+scEra.Perflog.globalRec = {};
+scEra.Perflog.lastRec = {};
+scEra.Perflog.enabled = true;
+scEra.Perflog.self = true; // Record own performance
 /**
  * Performance stack entry = { t0: widget start time, i: internal widget duration }
  */
 const wpStack = []; // Widget performance stack
-game.Perflog.nPassages = 0;
-$(document).on(':passageend', function() {
-	if (!game.Perflog.enabled) return;
+scEra.Perflog.nPassages = 0;
+$(document).on(":passageend", function () {
+	if (!scEra.Perflog.enabled) return;
 	try {
-		if (game.Perflog.self) game.Perflog.logWidgetStart("__perflog_passageEnd")
-		game.Perflog.nPassages++;
+		if (scEra.Perflog.self) scEra.Perflog.logWidgetStart("__perflog_passageEnd");
+		scEra.Perflog.nPassages++;
 		for (var name in wpRec) {
 			var rec = wpRec[name];
-			var grec = game.Perflog.globalRec[name];
+			var grec = scEra.Perflog.globalRec[name];
 			if (!grec) {
-				game.Perflog.globalRec[name] = rec;
+				scEra.Perflog.globalRec[name] = rec;
 			} else {
 				grec.n += rec.n;
 				grec.total += rec.total;
 				grec.own += rec.own;
 			}
 		}
-		game.Perflog.lastRec = wpRec;
+		scEra.Perflog.lastRec = wpRec;
 		wpRec = {};
 	} finally {
-		if (game.Perflog.self) game.Perflog.logWidgetEnd("__perflog_passageEnd")
+		if (scEra.Perflog.self) scEra.Perflog.logWidgetEnd("__perflog_passageEnd");
 	}
 });
-game.Perflog.logWidgetStart = function(widgetName) {
-	if (!game.Perflog.enabled) return;
+scEra.Perflog.logWidgetStart = function (widgetName) {
+	if (!scEra.Perflog.enabled) return;
 	wpStack.push({
 		name: widgetName,
 		t0: millitime(),
-		i: 0
+		i: 0,
 	});
-}
+};
 /**
  * Record that widget `widgetName` executed in `totaltime` ms,
  * including `internaltime` internal widget calls
@@ -64,25 +70,26 @@ game.Perflog.logWidgetStart = function(widgetName) {
  * @param {number} totaltime
  * @param {number=0} internaltime
  */
-game.Perflog.logWidgetTime = function(widgetName, totaltime, internaltime) {
+scEra.Perflog.logWidgetTime = function (widgetName, totaltime, internaltime) {
 	if (typeof internaltime !== "number") internaltime = 0;
 	const prevPerflog = wpStack[wpStack.length - 1];
 	if (prevPerflog) {
 		prevPerflog.i += totaltime;
 	}
 	var perfrec = wpRec[widgetName];
-	if (!perfrec) perfrec = wpRec[widgetName] = {
-		name:widgetName,
-		n:0,
-		total:0,
-		own:0
-	};
+	if (!perfrec)
+		perfrec = wpRec[widgetName] = {
+			name: widgetName,
+			n: 0,
+			total: 0,
+			own: 0,
+		};
 	perfrec.n++;
 	perfrec.total += totaltime;
 	perfrec.own += totaltime - internaltime;
-}
-game.Perflog.logWidgetEnd = function(widgetName) {
-	if (!game.Perflog.enabled) return;
+};
+scEra.Perflog.logWidgetEnd = function (widgetName) {
+	if (!scEra.Perflog.enabled) return;
 	const time = millitime();
 	const perflog = wpStack[wpStack.length - 1];
 	if (!perflog || perflog.name !== widgetName) {
@@ -90,14 +97,14 @@ game.Perflog.logWidgetEnd = function(widgetName) {
 		return;
 	}
 	wpStack.pop();
-	game.Perflog.logWidgetTime(widgetName, time-perflog.t0, perflog.i);
-	if (game.Perflog.self) {
-		const selfDt = millitime() - time
+	scEra.Perflog.logWidgetTime(widgetName, time - perflog.t0, perflog.i);
+	if (scEra.Perflog.self) {
+		const selfDt = millitime() - time;
 		wpSelf.n++;
 		wpSelf.own += selfDt;
 		wpSelf.total += selfDt;
 	}
-}
+};
 
 /**
  * Returns a "nice" string representation of a number without too much decimal digits.
@@ -107,9 +114,9 @@ function niceround(x) {
 	if (Math.floor(x) === x) return x; // Integers
 	if (-1 < x && x < 1) {
 		// Small number, round to 0.001 instead
-		return Math.round(x*1000)/1000;
+		return Math.round(x * 1000) / 1000;
 	}
-	return Math.round(x*10)/10;
+	return Math.round(x * 10) / 10;
 }
 /**
  * Return performance report. Can be viewed by DevTools table() function.
@@ -132,62 +139,65 @@ function niceround(x) {
  * @param {boolean} [options.round=true] Round to 0.1 precision
  * @param {string} [options.filter=null] A regular expression pattern that will be used to filter widgets
  */
-game.Perflog.report = function (options) {
-	options = Object.assign({
-		sort: 'own',
-		limit: 20,
-		global: true,
-		round: true,
-		filter: null
-	}, options);
-	const numfn = options.round ? niceround : (x)=>x;
+scEra.Perflog.report = function (options) {
+	options = Object.assign(
+		{
+			sort: "own",
+			limit: 20,
+			global: true,
+			round: true,
+			filter: null,
+		},
+		options
+	);
+	const numfn = options.round ? niceround : (x) => x;
 	var entries;
 	if (options.global) {
-		const np = game.Perflog.nPassages;
+		const np = scEra.Perflog.nPassages;
 		// Add 'per passage' metrics
-		entries = Object.values(game.Perflog.globalRec).map(e=>({
+		entries = Object.values(scEra.Perflog.globalRec).map((e) => ({
 			name: e.name,
 			n: e.n,
 			total: numfn(e.total),
 			own: numfn(e.own),
-			npp: numfn(e.n/np),
-			totalpp: numfn(e.total/np),
-			ownpp: numfn(e.own/np),
-			totalp1: numfn(e.total/e.n),
-			ownp1: numfn(e.own/e.n)
+			npp: numfn(e.n / np),
+			totalpp: numfn(e.total / np),
+			ownpp: numfn(e.own / np),
+			totalp1: numfn(e.total / e.n),
+			ownp1: numfn(e.own / e.n),
 		}));
 	} else {
-		entries = Object.values(game.Perflog.lastRec).map(e=>({
+		entries = Object.values(scEra.Perflog.lastRec).map((e) => ({
 			name: e.name,
 			n: e.n,
 			total: numfn(e.total),
 			own: numfn(e.own),
-			totalp1: numfn(e.total/e.n),
-			ownp1: numfn(e.own/e.n),
+			totalp1: numfn(e.total / e.n),
+			ownp1: numfn(e.own / e.n),
 		}));
 	}
 	if (options.filter) {
-		var matcher = new RegExp(options.filter)
-		entries = entries.filter(x => typeof x.name === 'string' && matcher.test(x.name))
+		var matcher = new RegExp(options.filter);
+		entries = entries.filter((x) => typeof x.name === "string" && matcher.test(x.name));
 	}
 	var comparator;
 	const sort = options.sort;
 	switch (sort) {
-		case 'own':
-		case 'total':
-		case 'n':
-		case 'npp':
-		case 'ownpp':
-		case 'totalpp':
-		case 'totalp1':
-		case 'ownp1':
-			comparator = (a,b)=>b[sort] - a[sort];
+		case "own":
+		case "total":
+		case "n":
+		case "npp":
+		case "ownpp":
+		case "totalpp":
+		case "totalp1":
+		case "ownp1":
+			comparator = (a, b) => b[sort] - a[sort];
 			break;
-		case 'name':
+		case "name":
 		default:
-			comparator = (a,b)=> a.name < b.name ? -1 : a.name > b.name ? +1 : 0;
+			comparator = (a, b) => (a.name < b.name ? -1 : a.name > b.name ? +1 : 0);
 	}
 	entries.sort(comparator);
 	if (options.limit > 0 && entries.length > options.limit) entries.splice(options.limit);
 	return entries;
-}
+};

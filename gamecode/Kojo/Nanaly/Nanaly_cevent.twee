@@ -13,20 +13,20 @@
 #:{ "type":"endPhase" }
 <<if $pc is 'Isil'>>
   <<if $location.name is '博物馆'>>
-    <<set $event.ep to 2>>
+    <<set $event.config.ep to 2>>
     双休日的博物馆，是孩子们的乐园。
     <<you>>抱着来消遣的想法，来到了这里。
   <<elseif $location.name is '海洋馆'>>
-    <<set $event.ep to 3>>
+    <<set $event.config.ep to 3>>
     相较于内陆城市，奥兰尼亚作为一座沿海城市，有着得天独厚的环境条件和特色，
     这也就使得它没有选择建造水族馆，而是一座海洋馆。
     难得的休息日，<<you>>来到了海洋馆。
   <<else>>
-    <<set $event.ep to 1>>
+    <<set $event.config.ep to 1>>
     <<you>>来到了教学楼时，注意到了个熟悉的身影。<br><br>
   <</if>>
 <<else>>
-  <<set $event.ep to 4>>
+  <<set $event.config.ep to 4>>
   <<you>>注意到了一个头上长着晶龙角的少女，并试着上前搭讪。<br><br>
 <</if>>
 

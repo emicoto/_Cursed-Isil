@@ -1,11 +1,5 @@
-;(function (os, fs, path) {
+;(function () {
 	'use strict';
-
-	function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-	var os__default = /*#__PURE__*/_interopDefaultLegacy(os);
-	var fs__default = /*#__PURE__*/_interopDefaultLegacy(fs);
-	var path__default = /*#__PURE__*/_interopDefaultLegacy(path);
 
 	function isObject(props) {
 	  return Object.prototype.toString.call(props) === "[object Object]";
@@ -33,11 +27,11 @@
 	  }
 	  return Math.floor(Math.random() * (max - min + 1) + min);
 	}
-	function fixed(int, a) {
+	Number.prototype.fixed = function(a) {
 	  if (!a)
 	    a = 2;
-	  return parseFloat(int.toFixed(a));
-	}
+	  return parseFloat(this.toFixed(a));
+	};
 	function maybe(arr) {
 	  let txt;
 	  arr.forEach((v, i) => {
@@ -97,7 +91,9 @@
 	  return table.includes(value);
 	}
 	function draw(array) {
-	  var a = array.length;
+	  if (!Array.isArray(array) || array.length == 0)
+	    return null;
+	  var a = array.length - 1;
 	  return array[random(0, a)];
 	}
 	function sum(obj) {
@@ -195,18 +191,8 @@
 	    (key) => object[key] === value || object[key].includes(value) || Array.isArray(object[key]) && (object[key].includes(value) || findArray(object[key], value))
 	  );
 	}
-	function setByPath(obj, path) {
-	  const pathArray = path.split(".");
-	  const last = pathArray.pop();
-	  for (let i = 0; i < pathArray.length; i++) {
-	    if (!obj[pathArray[i]])
-	      obj[pathArray[i]] = {};
-	    obj = obj[pathArray[i]];
-	  }
-	  if (!obj[last]) {
-	    obj[last] = {};
-	  }
-	  return obj[last];
+	function getIndexByValue(array, value) {
+	  return array.findIndex((item) => item === value);
 	}
 	Object.defineProperties(window, {
 	  isObject: { value: isObject },
@@ -215,7 +201,6 @@
 	  ensure: { value: ensure },
 	  between: { value: between },
 	  random: { value: random },
-	  fixed: { value: fixed },
 	  maybe: { value: maybe },
 	  compares: { value: compares },
 	  roll: { value: roll },
@@ -233,136 +218,9 @@
 	  setVByPath: { value: setVByPath },
 	  getByPath: { value: getByPath },
 	  getKeyByValue: { value: getKeyByValue },
-	  setByPath: { value: setByPath }
+	  getIndexByValue: { value: getIndexByValue }
 	});
 
-	class SelectCase {
-	  constructor() {
-	    this.arr = [];
-	    this.defaultresult = "";
-	    this.condtype = "";
-	  }
-	  case(cond, result) {
-	    this.check(cond);
-	    this.arr.push({ cond, result });
-	    return this;
-	  }
-	  else(result) {
-	    this.defaultresult = result;
-	    return this;
-	  }
-	  caseMatch(cond, result) {
-	    const Cond = {
-	      c: cond,
-	      isMatch: true
-	    };
-	    this.arr.push({ Cond, result });
-	    return this;
-	  }
-	  has(pick) {
-	    for (const element of this.arr) {
-	      const { cond, result } = element;
-	      const type = this.type(cond);
-	      if (type == "number[]") {
-	        if (pick >= cond[0] && pick <= cond[1])
-	          return result;
-	      }
-	      if (type == "string[]") {
-	        if (cond.includes(pick))
-	          return result;
-	      }
-	      if (type == "string" || type == "number") {
-	        if (pick === cond)
-	          return result;
-	      }
-	      if (type == "matchmode") {
-	        if (cond.c.includes(pick))
-	          return result;
-	      }
-	    }
-	    return this.defaultresult;
-	  }
-	  isLT(pick) {
-	    for (const element of this.arr) {
-	      const { cond, result } = element;
-	      const type = this.type(cond);
-	      if (type !== "number")
-	        throw new Error("cannot compare types other than numbers");
-	      if (pick < cond)
-	        return result;
-	    }
-	    return this.defaultresult;
-	  }
-	  isGT(pick) {
-	    for (const element of this.arr) {
-	      const { cond, result } = element;
-	      const type = this.type(cond);
-	      if (type !== "number")
-	        throw new Error("cannot compare types other than numbers");
-	      if (pick > cond)
-	        return result;
-	    }
-	    return this.defaultresult;
-	  }
-	  isLTE(pick) {
-	    for (const element of this.arr) {
-	      const { cond, result } = element;
-	      const type = this.type(cond);
-	      if (type !== "number")
-	        throw new Error("cannot compare types other than numbers");
-	      if (pick <= cond)
-	        return result;
-	    }
-	    return this.defaultresult;
-	  }
-	  isGTE(pick) {
-	    for (const element of this.arr) {
-	      const { cond, result } = element;
-	      const type = this.type(cond);
-	      if (type !== "number")
-	        throw new Error("cannot compare types other than numbers");
-	      if (pick >= cond)
-	        return result;
-	    }
-	    return this.defaultresult;
-	  }
-	  check(cond) {
-	    const check = this.type(cond).replace("[]", "");
-	    if (!this.condtype)
-	      this.condtype = check;
-	    else if (this.condtype !== check)
-	      throw new Error("number and string cannot be compare at same time");
-	  }
-	  type(cond) {
-	    if (Array.isArray(cond)) {
-	      switch (typeof cond[0]) {
-	        case "number":
-	          if (cond.length !== 2)
-	            throw new Error("number case must be [number, number]");
-	          return "number[]";
-	        case "string":
-	          return "string[]";
-	        case "object":
-	          if (cond == null ? void 0 : cond.isMatch)
-	            return "matchmode";
-	        default:
-	          throw new Error("selectcase only accept string or number");
-	      }
-	    }
-	    if (typeof cond === "string")
-	      return "string";
-	    if (typeof cond === "number")
-	      return "number";
-	    throw new Error("selectcase only accept string or number");
-	  }
-	}
-	Object.defineProperties(window, {
-	  SelectCase: { value: Object.freeze(SelectCase) }
-	});
-
-	console.log(`It's running on ${os__default["default"].platform()} ${os__default["default"].arch()} ${os__default["default"].release()}`);
-	console.log("the user is", os__default["default"].userInfo().username, "and the home directory is", os__default["default"].homedir());
-	console.log("fs, path, child_process are loaded: ", fs__default["default"], path__default["default"]);
 	console.log("running utils");
 
-})(os, fs, path);
+})();

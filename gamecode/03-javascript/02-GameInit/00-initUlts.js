@@ -95,7 +95,7 @@ Chara.setParasite = function (chara) {
 	};
 };
 
-fix.reveals = function (reveal, equip) {
+Fix.reveals = function (reveal, equip) {
 	const { detail } = reveal;
 
 	//--- 每次穿脱衣服时会初始化一次然后重新记录每个部位的裸露值。

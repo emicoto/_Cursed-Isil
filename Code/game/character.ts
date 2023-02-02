@@ -11,36 +11,12 @@ import {
 	race,
 	sblkey,
 	statskey,
+	creaturetype,
+	sexStats,
+	appearance,
 } from "./types";
 
-export interface sexStats {
-	lv: number;
-	type?: string;
-	trait?: string[];
-
-	size?: number;
-	d?: number;
-	l?: number;
-
-	wet?: number;
-	cum?: number;
-	maxcum?: number;
-	milk?: number;
-	maxmilk?: number;
-}
-
-export interface appearance {
-	eyecolor?: string;
-
-	haircolor?: string;
-	hairstlye?: string;
-
-	skincolor?: string;
-	beauty?: number;
-	bodysize?: number; //0=tiny 137~147, 1=small 147~164, 2=normal 164~174, 3=tall 174~184, 4=huge 184~200, 5=giant 200+
-	tall?: number; //mm
-	weight?: number; //kg
-}
+declare function groupmatch(arg, ...args): boolean;
 
 export interface Creature {
 	type: creaturetype;
@@ -106,7 +82,7 @@ export interface Chara extends Creature {
 	flag: any; //好感、信赖， 学籍情报， 诅咒进展， 诅咒魔力效率等
 	wallet?: number;
 	debt?: number;
-	invetory?: any;
+	inventory?: any;
 	tempture?: { low: number; high: number; best: number; current: number };
 }
 
@@ -117,9 +93,6 @@ interface iName {
 	n?: string; //nick
 	c?: string; //call master
 }
-
-export type creaturetype = "chara" | "nnpc" | "monster";
-declare function groupmatch(arg, ...args): boolean;
 
 export class Creature {
 	static data: Dict<Creature> = {};
@@ -304,8 +277,6 @@ export class Creature {
 		return this;
 	}
 	setUrin() {
-		const size = this.sexstats.u.size;
-
 		this.sexstats.u.d = this.fixUrinDiameter();
 		this.sexstats.u.l = this.GenerateUrinDepth();
 
@@ -346,7 +317,7 @@ export class Creature {
 
 	GenerateTall(size?) {
 		const bodysize = size !== undefined ? size : this.appearance.bodysize;
-		return bodysize * 150 + 1300 + random(1, 148);
+		return bodysize * 150 + 1300 + random(1, 150) + bodysize >= 5 ? random(100, 200) : random(1, 20);
 	}
 
 	GenerateBodysize(_tall?) {
@@ -431,14 +402,13 @@ export class Chara extends Creature {
 		this.initScars();
 		this.initFlag();
 		this.wallet = 1000;
-		this.invetory = [];
+		this.inventory = [];
 		this.tempture = {
 			low: 16,
 			high: 28,
 			best: 23,
 			current: 36,
 		}; //最低适应温度， 最高适应温度, 最佳适应温度， 当前体温. 单位摄氏度
-
 		return this;
 	}
 
@@ -450,7 +420,7 @@ export class Chara extends Creature {
 	}
 
 	initExp() {
-		D.exp.forEach((k) => {
+		Object.keys(D.exp).forEach((k) => {
 			this.exp[k] = { aware: 0, total: 0 };
 		});
 		return this;
@@ -610,15 +580,15 @@ export class Chara extends Creature {
 	}
 
 	unable() {
-		return this.state.has("拘束", "石化") || !cond.isEnergetic(this.cid, 30);
+		return this.state.has("拘束", "石化") || !Cond.isEnergetic(this.cid, 30);
 	}
 
 	active() {
 		return (
 			!this.state.has("睡眠", "晕厥", "拘束", "石化", "精神崩溃") &&
-			!cond.baseLt(this.cid, "health", 0.05) &&
-			!cond.baseLt(this.cid, "sanity", 10) &&
-			!cond.baseLt(this.cid, "stamina", 10)
+			!Cond.baseLt(this.cid, "health", 0.05) &&
+			!Cond.baseLt(this.cid, "sanity", 10) &&
+			!Cond.baseLt(this.cid, "stamina", 10)
 		);
 	}
 
@@ -636,7 +606,7 @@ export class Chara extends Creature {
 			haircolor: haircolor,
 			hairstyle: hairstyle,
 			skincolor: skincolor,
-			beauty: fix.beauty(this),
+			beauty: Fix.beauty(this),
 			bodysize: bodysize !== undefined ? bodysize : tall ? this.GenerateBodysize(tall) : this.appearance.bodysize,
 			tall: tall ? tall : bodysize ? this.GenerateTall() : 1704,
 			weight: weight,
@@ -712,7 +682,15 @@ export class Chara extends Creature {
 	}
 }
 
-Object.defineProperties(window, {
-	Creature: { value: Creature },
-	Chara: { value: Chara },
-});
+const modules = {
+	name: "Creatures",
+	version: "1.0.0",
+	des: "A module for generating creatures, including characters, monsters, and NPCs.",
+	classObj: {
+		Creature,
+		Chara,
+	},
+};
+
+declare function registModule(mod): boolean;
+registModule(modules);

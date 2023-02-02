@@ -53,6 +53,7 @@ export type clothtags =
 	| "raincoat" //雨衣，防淋湿
 	| "dive" //潜水装
 	| "waterproof" //防水布料，不会湿透。
+	| "armor" //防护服，防御力提升
 
 	//有些特殊效果与数值加成
 	| "stage" //舞台装，进行表演时有加分，但在其他有要求的场合会扣分

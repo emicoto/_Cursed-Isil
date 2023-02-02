@@ -132,13 +132,14 @@ game.start = function (skip) {
 
 	if (!skip) {
 		F.setEvent("Story", "Opening");
+		V.mode = "event";
 	} else {
 		F.setMemory("SE_0", "序章 - 故事开头");
 		V.mode = "normal";
 	}
 	if (T.futa == 2) {
 		for (let i in V.chara) {
-			V.chara[i].gender = "inter";
+			V.chara[i].gender = "herm";
 			V.chara[i].initSexOrgan("v");
 			if (V.chara[i].resetVirginity) {
 				V.chara[i].resetVirginity();
@@ -174,7 +175,7 @@ F.initSquareData = function () {
 			if (values instanceof Boards) {
 				let id = values.id.split(".").pop();
 				V.mapdata[id] = {};
-				square = setByPath(V.mapdata, values.id);
+				square = getByPath(V.mapdata, values.id);
 				square.visited = 0;
 				square.explore = 0;
 
@@ -193,7 +194,7 @@ F.initSquareData = function () {
 		const data = GameMap.get(path);
 		for (const [key, values] of Object.entries(data)) {
 			if (values instanceof Spots) {
-				const spot = setByPath(V.mapdata, values.id);
+				const spot = getByPath(V.mapdata, values.id);
 				spot.visited = 0;
 				spot.explore = 0;
 

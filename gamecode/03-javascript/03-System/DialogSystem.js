@@ -15,12 +15,12 @@ P.flow = function (txt, time, dashline) {
 };
 
 //下一步按钮
-ui.next = function () {
+Ui.next = function () {
 	let next = V.event.next;
 	if (!next) next = "Next";
 	return `<<link '${next}'>><<run Dlog.next()>><</link>>`;
 };
-DefineMacroS("eventnext", ui.next);
+DefineMacroS("eventnext", Ui.next);
 
 //-----------------事件系统-----------------
 
@@ -131,8 +131,11 @@ Dlog.record = function (c) {
 		point = `${c}${p}`;
 	}
 
-	if (!V.memory[type][id][c].includes(point)) {
-		V.memory[type][id][c].push(point);
+	let memory = getByPath(V, `memory.${type}.${id}`);
+	if (!memory[c]) memory[c] = [];
+
+	if (!memory[c].includes(point)) {
+		memory[c].push(point);
 	}
 };
 
@@ -237,20 +240,21 @@ Dlog.next = function () {
 		Dlog.flow();
 	}
 
-	if (e.selectwait) ui.replace("next", "");
-	else ui.replace("next", "<<eventnext>>");
+	if (e.selectwait) Ui.replace("next", "");
+	else Ui.replace("next", "<<eventnext>>");
 
 	if (e.phase === S.dialog.logs.length) {
-		if (e.config.type == "return") {
+		if (e.config?.type == "return") {
 			Dlog.return();
-		} else if (e.config.type == "endPhase") {
+		} else if (e.config?.type == "endPhase") {
 			Dlog.endPhase();
-		} else if (e.config.type == "jump") {
+		} else if (e.config?.type == "jump") {
 			Dlog.jump();
-		} else if (e.config.type == "selectEnd") {
+		} else if (e.config?.type == "selectEnd") {
 			Dlog.selectEnd();
 		} else {
 			if (!e.config?.exit) {
+				if (!e.config) e.config = {};
 				e.config.exit = S.defaultExit;
 				e.config.exitlink = "Continue";
 			}

@@ -1,9 +1,5 @@
-;(function (fs) {
+;(function () {
 	'use strict';
-
-	function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-	var fs__default = /*#__PURE__*/_interopDefaultLegacy(fs);
 
 	function lan(txt, ...txts) {
 	  let CN, EN;
@@ -15,40 +11,13 @@
 	    CN = txt;
 	    EN = txts[0] ? txts[0] : txt;
 	  }
-	  if (lang == "CN" && CN)
+	  if (config.lan == "CN" && CN)
 	    return CN;
-	  if (lang == "EN" && EN)
+	  if (config.lan == "EN" && EN)
 	    return EN;
 	  return txt;
 	}
-	var language = "CN";
-	Object.defineProperties(window, {
-	  lan: { value: lan },
-	  lang: {
-	    get: function() {
-	      return language;
-	    },
-	    set(v) {
-	      language = v;
-	    }
-	  }
-	});
-	String.prototype.has = function(...str) {
-	  if (Array.isArray(str[0]))
-	    str = str[0];
-	  for (let i = 0; i < str.length; i++)
-	    if (this.indexOf(str[i]) != -1)
-	      return true;
-	  return false;
-	};
-	Array.prototype.has = function(...str) {
-	  if (Array.isArray(str[0]))
-	    str = str[0];
-	  for (let i = 0; i < str.length; i++)
-	    if (this.indexOf(str[i]) != -1)
-	      return true;
-	  return false;
-	};
+	config.lan = "CN";
 	function percent(...num) {
 	  let min = num[0], max = num[1];
 	  if (num.length == 3) {
@@ -58,26 +27,38 @@
 	  return Math.clamp(Math.trunc(min / max * 100), 1, 100);
 	}
 	Object.defineProperties(window, {
-	  percent: { value: percent }
+	  percent: { value: percent },
+	  lan: { value: lan }
 	});
 
-	class Item {
-	  static newId(type, cate) {
-	    const len = Db[type].length;
+	class Items {
+	  static newId(group, name, cate) {
 	    if (cate) {
-	      return `${type.toUpperCase()[0]}${cate}_${len}`;
+	      return `${group}_${cate[0]}.${name[1].replace(/\s/g, "")}`;
 	    } else {
-	      return `${type}_${len}`;
+	      return `${group}_${name[1]}`;
 	    }
 	  }
-	  static new(name, des, type, cate = "") {
-	    getByPath(Db, type + cate ? `.${cate}` : "");
+	  static getByName(group, name) {
+	    return Array.from(Db[group]).find((item) => item[1].name[0] === name || item[1].name[1] === name);
 	  }
-	  constructor(name, des = name, type = "Items", cate = "") {
-	    this.id = Item.newId(type, cate);
+	  static getTypelist(group, cate) {
+	    return Array.from(Db[group]).filter((item) => item[1].category === cate);
+	  }
+	  static get(Itemid) {
+	    const itemGroup = Itemid.split("_")[0];
+	    return Array.from(Db[itemGroup]).find((item) => item[0] === Itemid);
+	  }
+	  static init() {
+	    D.itemGroup.forEach((group) => {
+	      Db[group] = /* @__PURE__ */ new Map();
+	    });
+	  }
+	  constructor(name, des = name, group = "items", cate = "") {
+	    this.id = Items.newId(group, cate);
 	    this.name = name;
 	    this.des = des;
-	    this.type = type;
+	    this.group = group;
 	    this.category = cate;
 	  }
 	  Price(num) {
@@ -102,16 +83,55 @@
 	    });
 	    return this;
 	  }
-	  Effect(...palam) {
-	    palam.forEach(([key, t, a, m]) => {
-	      this.effect[key] = { t, a, m };
+	  Source(...palam) {
+	    palam.forEach(([key, m, v]) => {
+	      this.source[key] = { m, v };
 	    });
 	    return this;
 	  }
+	  Method(method) {
+	    this.method = method;
+	    return this;
+	  }
 	}
-	class Clothes extends Item {
+	class Potion extends Items {
+	  constructor(name, des, type) {
+	    super(name, des, "items", "potion");
+	    this.type = type;
+	  }
+	  Daily(num) {
+	    this.daily = num;
+	    return this;
+	  }
+	  Lifetime(num) {
+	    this.lifetime = num;
+	    return this;
+	  }
+	  EffectsDecrease(num) {
+	    this.effectsDecrease = num;
+	    return this;
+	  }
+	  SpecialEffects(str) {
+	    this.specialEffects = str;
+	    return this;
+	  }
+	}
+	class SexToy extends Items {
+	  constructor(name, des) {
+	    super(name, des, "accessory", "sextoy");
+	  }
+	  Switchable() {
+	    this.switchable = true;
+	    return this;
+	  }
+	  SpecialEffects(str) {
+	    this.specialEffects = str;
+	    return this;
+	  }
+	}
+	class Clothes extends Items {
 	  constructor(cate, name, des, gender2 = "n") {
-	    super(name, des, "Clothes", cate);
+	    super(name, des, "clothes", cate);
 	    this.gender = gender2;
 	    this.uid = "0";
 	    this.tags = [];
@@ -140,10 +160,18 @@
 	    return this;
 	  }
 	}
-	Object.defineProperties(window, {
-	  Item: { value: Item },
-	  Clothes: { value: Clothes }
-	});
+	const modules$2 = {
+	  name: "Items",
+	  version: "1.0.0",
+	  des: "A module for items.",
+	  classObj: {
+	    Items,
+	    Clothes,
+	    Potion,
+	    SexToy
+	  }
+	};
+	registModule(modules$2);
 
 	const _Creature = class {
 	  constructor(type, name, gender, race2) {
@@ -304,7 +332,6 @@
 	    return this;
 	  }
 	  setUrin() {
-	    this.sexstats.u.size;
 	    this.sexstats.u.d = this.fixUrinDiameter();
 	    this.sexstats.u.l = this.GenerateUrinDepth();
 	    if (this.gender === "female") {
@@ -345,7 +372,7 @@
 	  }
 	  GenerateTall(size) {
 	    const bodysize = size !== void 0 ? size : this.appearance.bodysize;
-	    return bodysize * 150 + 1300 + random(1, 148);
+	    return bodysize * 150 + 1300 + random(1, 150) + bodysize >= 5 ? random(100, 200) : random(1, 20);
 	  }
 	  GenerateBodysize(_tall) {
 	    const tall = _tall ? _tall : this.appearance.tall;
@@ -420,7 +447,7 @@
 	    this.initScars();
 	    this.initFlag();
 	    this.wallet = 1e3;
-	    this.invetory = [];
+	    this.inventory = [];
 	    this.tempture = {
 	      low: 16,
 	      high: 28,
@@ -436,7 +463,7 @@
 	    return this;
 	  }
 	  initExp() {
-	    D.exp.forEach((k) => {
+	    Object.keys(D.exp).forEach((k) => {
 	      this.exp[k] = { aware: 0, total: 0 };
 	    });
 	    return this;
@@ -571,10 +598,10 @@
 	    return this.state.has("\u7761\u7720", "\u6655\u53A5");
 	  }
 	  unable() {
-	    return this.state.has("\u62D8\u675F", "\u77F3\u5316") || !cond.isEnergetic(this.cid, 30);
+	    return this.state.has("\u62D8\u675F", "\u77F3\u5316") || !Cond.isEnergetic(this.cid, 30);
 	  }
 	  active() {
-	    return !this.state.has("\u7761\u7720", "\u6655\u53A5", "\u62D8\u675F", "\u77F3\u5316", "\u7CBE\u795E\u5D29\u6E83") && !cond.baseLt(this.cid, "health", 0.05) && !cond.baseLt(this.cid, "sanity", 10) && !cond.baseLt(this.cid, "stamina", 10);
+	    return !this.state.has("\u7761\u7720", "\u6655\u53A5", "\u62D8\u675F", "\u77F3\u5316", "\u7CBE\u795E\u5D29\u6E83") && !Cond.baseLt(this.cid, "health", 0.05) && !Cond.baseLt(this.cid, "sanity", 10) && !Cond.baseLt(this.cid, "stamina", 10);
 	  }
 	  setAppearance({
 	    eyecolor = "\u84DD\u8272",
@@ -585,21 +612,21 @@
 	    tall,
 	    weight = 0
 	  }) {
-	    const appearance = {
+	    const appearance2 = {
 	      eyecolor,
 	      haircolor,
 	      hairstyle,
 	      skincolor,
-	      beauty: fix.beauty(this),
+	      beauty: Fix.beauty(this),
 	      bodysize: bodysize !== void 0 ? bodysize : tall ? this.GenerateBodysize(tall) : this.appearance.bodysize,
 	      tall: tall ? tall : bodysize ? this.GenerateTall() : 1704,
 	      weight
 	    };
-	    if (!appearance.weight) {
-	      appearance.weight = this.GenerateWeight(appearance.tall);
+	    if (!appearance2.weight) {
+	      appearance2.weight = this.GenerateWeight(appearance2.tall);
 	    }
-	    for (let i in appearance) {
-	      this.appearance[i] = appearance[i];
+	    for (let i in appearance2) {
+	      this.appearance[i] = appearance2[i];
 	    }
 	    return this;
 	  }
@@ -659,10 +686,16 @@
 	};
 	let Chara = _Chara;
 	Chara.data = {};
-	Object.defineProperties(window, {
-	  Creature: { value: Creature },
-	  Chara: { value: Chara }
-	});
+	const modules$1 = {
+	  name: "Creatures",
+	  version: "1.0.0",
+	  des: "A module for generating creatures, including characters, monsters, and NPCs.",
+	  classObj: {
+	    Creature,
+	    Chara
+	  }
+	};
+	registModule(modules$1);
 
 	const moveableTile = ["road", "glass", "field", "passable", "area"];
 	const directions = [
@@ -1416,15 +1449,33 @@
 	  const mapdata = mapdataToBoard(map, map.mapsize.x, map.mapsize.y);
 	  printMap(mapdata);
 	}
-	Object.defineProperties(window, {
-	  printMap: { value: printMap },
-	  printMapFromData: { value: printMapFromData },
+	Object.defineProperties(window.scEra.modules, {
 	  GameMap: { value: GameMap },
 	  Boards: { value: Boards },
 	  Spots: { value: Spots }
 	});
+	Object.defineProperties(window, {
+	  GameMap: {
+	    get() {
+	      return window.scEra.modules.GameMap;
+	    }
+	  },
+	  Boards: {
+	    get() {
+	      return window.scEra.modules.Boards;
+	    }
+	  },
+	  Spots: {
+	    get() {
+	      return window.scEra.modules.Spots;
+	    }
+	  },
+	  printMap: { value: printMap },
+	  printMapFromData: { value: printMapFromData }
+	});
 
 	function setCommon(id) {
+	  const CM = worldMap.CommonSpots;
 	  switch (id) {
 	    case "PublicToilet":
 	      CM[id].Tags("\u5395\u6240", "\u65E0\u7A97", "\u72ED\u7A84", "\u516C\u5171").Placement("\u6D17\u624B\u53F0", "\u955C\u5B50", "\u9A6C\u6876");
@@ -1450,6 +1501,7 @@
 	  }
 	}
 	function setAcademy(id) {
+	  const FMA = worldMap.Academy;
 	  switch (id) {
 	    case "MageTower":
 	      FMA[id].Rooms("Inside", "Observatory", "Storage").Tags("\u9AD8\u53F0", "\u60AC\u6D6E", "\u9632\u5FA1").Placement("\u9632\u5FA1\u70AE\u53F0");
@@ -1503,6 +1555,7 @@
 	  }
 	}
 	function setAcademyRoom(id, roomid) {
+	  const FMA = worldMap.Academy;
 	  switch (id) {
 	    case "MageTower":
 	      if (roomid == "Inside") {
@@ -1523,7 +1576,7 @@
 	    case "Dormitory":
 	      if (FMA[id][roomid].name[0].includes("\u5BBF\u820D")) {
 	        FMA[id][roomid].Rooms("Bathroom").Tags("\u5BBF\u820D", "\u7761\u623F").Placement("\u5E8A", "\u684C\u5B50", "\u6905\u5B50", "\u4E66\u684C", "\u8863\u67DC", "\u4E66\u67B6").MaxSlots(12);
-	        FMA[id][roomid].Bathroom = GameMap.copy(worldMap$1.CommonSpots["Bathroom"], FMA[id][roomid].id, "Bathroom");
+	        FMA[id][roomid].Bathroom = GameMap.copy(worldMap.CommonSpots["Bathroom"], FMA[id][roomid].id, "Bathroom");
 	      }
 	      if (roomid == "Kitchen") {
 	        FMA[id][roomid].MaxSlots(16).Placement("\u6905\u5B50");
@@ -1557,235 +1610,322 @@
 	  }
 	}
 
-	const worldMap$1 = {
-	  Orlania: new Boards("Orlania", "", {
-	    type: "town",
-	    name: ["\u5965\u5170\u5C3C\u4E9A"],
-	    entry: ["Orlania.GateN", "Orlania.GateS", "Orlania.GateW", "Orlania.GateE"],
-	    xy: [35, 35]
-	  }),
-	  Academy: new Boards("Academy", "Orlania", {
-	    type: "academy",
-	    name: ["\u5965\u5170\u5C3C\u4E9A\u7B2C\u4E00\u9B54\u6CD5\u5B66\u9662"],
-	    entry: "Academy.SchoolEntrance",
-	    xy: [7, 25]
-	  }),
-	  CommonSpots: {
-	    groupId: "CommonSpots"
-	  }
-	};
-	Object.defineProperties(window, {
-	  worldMap: { get: () => worldMap$1 }
-	});
-	console.log(window.worldMap);
-	worldMap$1.Orlania["Academy"] = worldMap$1.Academy;
-	worldMap$1.Orlania.Spots(
-	  ["OutskirtN|field", -17, 0, "S", ["field", "mapEntry"]],
-	  ["OutskirtS|field", 17, 0, "N", ["field", "mapEntry"]],
-	  ["OutskirtW|field", 0, -17, "E", ["field", "mapEntry"]],
-	  ["OutskirtE|field", 0, 17, "W", ["field", "mapEntry"]],
-	  ["GateN|passable", -15, 0, "S", ["gate"]],
-	  ["GateS|passable", 15, 0, "N", ["gate"]],
-	  ["GateW|passable", 0, -15, "E", ["gate"]],
-	  ["GateE|passable", 0, 15, "W", ["gate"]],
-	  ["TownCenter|passable", 0, 0, "SNWE", ["buildingEntry"]],
-	  ["CenterSquare|passable", 2, 0, "SN", ["ground"]],
-	  ["Academy", -11, 8, "SW", ["buildingEntry", "mapEntry"]],
-	  ["Hospital", -9, 3, "W", ["building"]],
-	  ["ShopAlley|passable", 11, -4, "E", ["shopAlley", "mapEntry"]],
-	  ["BathHouse", 9, -4, "EN", ["building"]],
-	  ["Aquarium", 12, 13, "N", ["buildingEntry"]],
-	  ["ArtGallery", -8, 8, "WNS", ["building"]],
-	  ["Church", -12, 4, "E", ["buildingEntry"]],
-	  ["BlackCat", -9, 8, "W", ["building"]],
-	  ["OperaHouse", -6, 11, "S", ["building"]],
-	  ["BairdTrading|passable", -4, -11, "SN", ["ground"]],
-	  ["SliverChimes", -4, -8, "N", ["building"]],
-	  ["CentaurBar", -6, -8, "N", ["building"]]
-	);
-	worldMap$1.Academy.Spots(
-	  ["MageTower", -3, -12, "S", ["buildingEntry"]],
-	  ["SchoolEntrance|passable", 0, -12, "EN", ["mapEntry", "gate"]],
-	  ["ActivitySquare|passable", 0, -10, "SNWE", ["ground"]],
-	  ["ClassBuildingR1|passable", 3, -8, "N", ["building"]],
-	  ["ClassBuildingR2|passable", -3, -8, "S", ["building"]],
-	  ["ResearchLabA", 2, -5, "WSN", ["building"]],
-	  ["ResearchLabB", -2, -5, "ESN", ["building"]],
-	  ["Library|passable", 2, -2, "SN", ["building"]],
-	  ["Arena|passable", -2, 1, "SNWE", ["ground", "float"]],
-	  ["HistoryMuseum", 2, 2, "N", ["building"]],
-	  ["DiningHall", 2, 10, "N", ["building"]],
-	  ["GreenGarden|passable", -2, -2, "SN", ["park"]],
-	  ["StudentCenter", -2, 7, "S", ["building"]],
-	  ["Dormitory", 0, 12, "W", ["building"]],
-	  ["SecretTrainingGround|invisible", 3, 12, "", ["secretArea"]]
-	);
-	const OL = worldMap$1.Orlania;
-	const FMA = worldMap$1.Academy;
-	const CM = worldMap$1.CommonSpots;
-	const CMConfig = [
-	  ["RailcarStation", "\u8F68\u9053\u8F66\u7AD9", "stransport"],
-	  ["AirShipPort", "\u98DE\u8239\u6E2F\u53E3", "transport"],
-	  ["PublicToilet", "\u516C\u5171\u5395\u6240", "room"],
-	  ["Storage", "\u50A8\u7269\u95F4", "room"],
-	  ["Bathroom", "\u6D74\u5BA4", "room"],
-	  ["Kitchen", "\u53A8\u623F", "room"],
-	  ["Restroom", "\u5395\u6240", "room"]
-	];
-	CMConfig.forEach((config) => {
-	  let id = config[0], name = [config[1], id], type = "common|" + config[2];
-	  CM[id] = new Spots(["CommonSpots", id, name, type]);
-	  setCommon(id);
-	});
-	const OLConfig = [
-	  "\u57CE\u90CA(\u5317)",
-	  "\u57CE\u90CA(\u5357)",
-	  "\u57CE\u90CA(\u897F)",
-	  "\u57CE\u90CA(\u4E1C)",
-	  "\u57CE\u95E8(\u5317)",
-	  "\u57CE\u95E8(\u5357)",
-	  "\u57CE\u95E8(\u897F)",
-	  "\u57CE\u95E8(\u4E1C)",
-	  "\u57CE\u9547\u4E2D\u5FC3",
-	  "\u4E2D\u5FC3\u5E7F\u573A",
-	  "\u9B54\u6CD5\u5B66\u9662",
-	  "\u533B\u9662",
-	  "\u5546\u5E97\u8857",
-	  "\u5927\u6D74\u573A",
-	  "\u6C34\u65CF\u9986",
-	  "\u827A\u672F\u9986",
-	  "\u5143\u7075\u6559\u5802",
-	  "\u9ED1\u732B\u5496\u5561",
-	  "\u7EEF\u9E1F\u5267\u573A",
-	  "\u767E\u5FB7\u5546\u4F1A",
-	  "\u94F6\u94C3\u9910\u9986",
-	  "\u725B\u9A6C\u9152\u5427"
-	];
-	Array.from(worldMap$1.Orlania.spots).forEach((spot, i) => {
-	  const id = spot[0];
-	  const name = OLConfig[i];
-	  if (worldMap$1.Orlania[id] === void 0)
-	    OL[id] = new Spots(["Orlania", id, [name, id], spot[1].spotType]);
-	});
-	const A0Config = [
-	  "\u6CD5\u5E08\u5854",
-	  "\u9B54\u6CD5\u5B66\u9662|\u5165\u53E3",
-	  "\u9B54\u6CD5\u5B66\u9662|\u5E7F\u573A",
-	  "\u6559\u5B66\u697C|R1",
-	  "\u6559\u5B66\u697C|R2",
-	  "\u9B54\u6CD5\u7814\u7A76\u6240",
-	  "\u7EFC\u5408\u7814\u7A76\u6240",
-	  "\u56FE\u4E66\u9986",
-	  "\u7ADE\u6280\u573A",
-	  "\u535A\u7269\u9986",
-	  "\u5B66\u751F\u996D\u5802",
-	  "\u690D\u7269\u56ED",
-	  "\u5B66\u751F\u4E2D\u5FC3",
-	  "\u5BBF\u820D|\u5927\u5385",
-	  "\u79D8\u5BC6\u8BAD\u7EC3\u573A"
-	];
-	Array.from(worldMap$1.Academy.spots).forEach((spot, i) => {
-	  const id = spot[0];
-	  const name = A0Config[i];
-	  if (worldMap$1.Academy[id] === void 0)
-	    FMA[id] = new Spots(["Academy", id, [name, id], spot[1].spotType]);
-	  setAcademy(id);
-	});
-	const hasroom = Object.values(FMA).filter((spot) => {
-	  var _a;
-	  return (_a = spot.rooms) == null ? void 0 : _a.length;
-	});
-	const roomName = {
-	  GreenHouse: "\u6E29\u5BA4",
-	  Inside: "\u6CD5\u5E08\u5854|\u5185\u90E8",
-	  Observatory: "\u89C2\u6D4B\u53F0",
-	  MagiPysics: "\u9B54\u6CD5\u5B9E\u9A8C\u5BA4",
-	  Analyzing: "\u9B54\u6CD5\u5206\u6790\u5BA4",
-	  Alchemy: "\u70BC\u91D1\u5B9E\u9A8C\u5BA4",
-	  Biologic: "\u751F\u7269\u5B9E\u9A8C\u5BA4",
-	  MagiPotion: "\u9B54\u836F\u5B9E\u9A8C\u5BA4"
-	};
-	hasroom.forEach((spot) => {
-	  let id = spot.id.split(".").pop();
-	  spot.rooms.forEach((room) => {
-	    if (worldMap$1.CommonSpots[room]) {
-	      FMA[id][room] = GameMap.copy(worldMap$1.CommonSpots[room], spot.id, room);
-	    } else if (roomName[room]) {
-	      FMA[id][room] = new Spots([spot.id, room, [roomName[room], room], "room"]);
-	    } else {
-	      switch (id) {
-	        case "ClassBuildingR1":
-	        case "ClassBuildingR2":
-	          FMA[id][room] = new Spots([spot.id, room, ["\u6559\u5BA4|" + room, "Classroom|" + room], "room"]);
-	          break;
-	        case "Dormitory":
-	          FMA[id][room] = new Spots([spot.id, room, ["\u5BBF\u820D|" + room, "Dormitory|" + room], "room"]);
-	          break;
+	function initWorldMap() {
+	  const worldMap = {
+	    Orlania: new Boards("Orlania", "", {
+	      type: "town",
+	      name: ["\u5965\u5170\u5C3C\u4E9A"],
+	      entry: ["Orlania.GateN", "Orlania.GateS", "Orlania.GateW", "Orlania.GateE"],
+	      xy: [35, 35]
+	    }),
+	    Academy: new Boards("Academy", "Orlania", {
+	      type: "academy",
+	      name: ["\u5965\u5170\u5C3C\u4E9A\u7B2C\u4E00\u9B54\u6CD5\u5B66\u9662"],
+	      entry: "Academy.SchoolEntrance",
+	      xy: [7, 25]
+	    }),
+	    CommonSpots: {
+	      groupId: "CommonSpots"
+	    }
+	  };
+	  Object.defineProperties(window.game, {
+	    worldMap: { value: worldMap }
+	  });
+	  Object.defineProperties(window, {
+	    worldMap: {
+	      get() {
+	        return window.game.worldMap;
 	      }
 	    }
-	    setAcademyRoom(id, room);
 	  });
+	  console.log(window.worldMap);
+	  worldMap.Orlania["Academy"] = worldMap.Academy;
+	  worldMap.Orlania.Spots(
+	    ["OutskirtN|field", -17, 0, "S", ["field", "mapEntry"]],
+	    ["OutskirtS|field", 17, 0, "N", ["field", "mapEntry"]],
+	    ["OutskirtW|field", 0, -17, "E", ["field", "mapEntry"]],
+	    ["OutskirtE|field", 0, 17, "W", ["field", "mapEntry"]],
+	    ["GateN|passable", -15, 0, "S", ["gate"]],
+	    ["GateS|passable", 15, 0, "N", ["gate"]],
+	    ["GateW|passable", 0, -15, "E", ["gate"]],
+	    ["GateE|passable", 0, 15, "W", ["gate"]],
+	    ["TownCenter|passable", 0, 0, "SNWE", ["buildingEntry"]],
+	    ["CenterSquare|passable", 2, 0, "SN", ["ground"]],
+	    ["Academy", -11, 8, "SW", ["buildingEntry", "mapEntry"]],
+	    ["Hospital", -9, 3, "W", ["building"]],
+	    ["ShopAlley|passable", 11, -4, "E", ["shopAlley", "mapEntry"]],
+	    ["BathHouse", 9, -4, "EN", ["building"]],
+	    ["Aquarium", 12, 13, "N", ["buildingEntry"]],
+	    ["ArtGallery", -8, 8, "WNS", ["building"]],
+	    ["Church", -12, 4, "E", ["buildingEntry"]],
+	    ["BlackCat", -9, 8, "W", ["building"]],
+	    ["OperaHouse", -6, 11, "S", ["building"]],
+	    ["BairdTrading|passable", -4, -11, "SN", ["ground"]],
+	    ["SliverChimes", -4, -8, "N", ["building"]],
+	    ["CentaurBar", -6, -8, "N", ["building"]]
+	  );
+	  worldMap.Academy.Spots(
+	    ["MageTower", -3, -12, "S", ["buildingEntry"]],
+	    ["SchoolEntrance|passable", 0, -12, "EN", ["mapEntry", "gate"]],
+	    ["ActivitySquare|passable", 0, -10, "SNWE", ["ground"]],
+	    ["ClassBuildingR1|passable", 3, -8, "N", ["building"]],
+	    ["ClassBuildingR2|passable", -3, -8, "S", ["building"]],
+	    ["ResearchLabA", 2, -5, "WSN", ["building"]],
+	    ["ResearchLabB", -2, -5, "ESN", ["building"]],
+	    ["Library|passable", 2, -2, "SN", ["building"]],
+	    ["Arena|passable", -2, 1, "SNWE", ["ground", "float"]],
+	    ["HistoryMuseum", 2, 2, "N", ["building"]],
+	    ["DiningHall", 2, 10, "N", ["building"]],
+	    ["GreenGarden|passable", -2, -2, "SN", ["park"]],
+	    ["StudentCenter", -2, 7, "S", ["building"]],
+	    ["Dormitory", 0, 12, "W", ["building"]],
+	    ["SecretTrainingGround|invisible", 3, 12, "", ["secretArea"]]
+	  );
+	  const OL = worldMap.Orlania;
+	  const FMA = worldMap.Academy;
+	  const CM = worldMap.CommonSpots;
+	  const CMConfig = [
+	    ["RailcarStation", "\u8F68\u9053\u8F66\u7AD9", "stransport"],
+	    ["AirShipPort", "\u98DE\u8239\u6E2F\u53E3", "transport"],
+	    ["PublicToilet", "\u516C\u5171\u5395\u6240", "room"],
+	    ["Storage", "\u50A8\u7269\u95F4", "room"],
+	    ["Bathroom", "\u6D74\u5BA4", "room"],
+	    ["Kitchen", "\u53A8\u623F", "room"],
+	    ["Restroom", "\u5395\u6240", "room"]
+	  ];
+	  CMConfig.forEach((config) => {
+	    let id = config[0], name = [config[1], id], type = "common|" + config[2];
+	    CM[id] = new Spots(["CommonSpots", id, name, type]);
+	    setCommon(id);
+	  });
+	  const OLConfig = [
+	    "\u57CE\u90CA(\u5317)",
+	    "\u57CE\u90CA(\u5357)",
+	    "\u57CE\u90CA(\u897F)",
+	    "\u57CE\u90CA(\u4E1C)",
+	    "\u57CE\u95E8(\u5317)",
+	    "\u57CE\u95E8(\u5357)",
+	    "\u57CE\u95E8(\u897F)",
+	    "\u57CE\u95E8(\u4E1C)",
+	    "\u57CE\u9547\u4E2D\u5FC3",
+	    "\u4E2D\u5FC3\u5E7F\u573A",
+	    "\u9B54\u6CD5\u5B66\u9662",
+	    "\u533B\u9662",
+	    "\u5546\u5E97\u8857",
+	    "\u5927\u6D74\u573A",
+	    "\u6C34\u65CF\u9986",
+	    "\u827A\u672F\u9986",
+	    "\u5143\u7075\u6559\u5802",
+	    "\u9ED1\u732B\u5496\u5561",
+	    "\u7EEF\u9E1F\u5267\u573A",
+	    "\u767E\u5FB7\u5546\u4F1A",
+	    "\u94F6\u94C3\u9910\u9986",
+	    "\u725B\u9A6C\u9152\u5427"
+	  ];
+	  Array.from(worldMap.Orlania.spots).forEach((spot, i) => {
+	    const id = spot[0];
+	    const name = OLConfig[i];
+	    if (worldMap.Orlania[id] === void 0)
+	      OL[id] = new Spots(["Orlania", id, [name, id], spot[1].spotType]);
+	  });
+	  const A0Config = [
+	    "\u6CD5\u5E08\u5854",
+	    "\u9B54\u6CD5\u5B66\u9662|\u5165\u53E3",
+	    "\u9B54\u6CD5\u5B66\u9662|\u5E7F\u573A",
+	    "\u6559\u5B66\u697C|R1",
+	    "\u6559\u5B66\u697C|R2",
+	    "\u9B54\u6CD5\u7814\u7A76\u6240",
+	    "\u7EFC\u5408\u7814\u7A76\u6240",
+	    "\u56FE\u4E66\u9986",
+	    "\u7ADE\u6280\u573A",
+	    "\u535A\u7269\u9986",
+	    "\u5B66\u751F\u996D\u5802",
+	    "\u690D\u7269\u56ED",
+	    "\u5B66\u751F\u4E2D\u5FC3",
+	    "\u5BBF\u820D|\u5927\u5385",
+	    "\u79D8\u5BC6\u8BAD\u7EC3\u573A"
+	  ];
+	  Array.from(worldMap.Academy.spots).forEach((spot, i) => {
+	    const id = spot[0];
+	    const name = A0Config[i];
+	    if (worldMap.Academy[id] === void 0)
+	      FMA[id] = new Spots(["Academy", id, [name, id], spot[1].spotType]);
+	    setAcademy(id);
+	  });
+	  const hasroom = Object.values(FMA).filter((spot) => {
+	    var _a;
+	    return (_a = spot.rooms) == null ? void 0 : _a.length;
+	  });
+	  const roomName = {
+	    GreenHouse: "\u6E29\u5BA4",
+	    Inside: "\u6CD5\u5E08\u5854|\u5185\u90E8",
+	    Observatory: "\u89C2\u6D4B\u53F0",
+	    MagiPysics: "\u9B54\u6CD5\u5B9E\u9A8C\u5BA4",
+	    Analyzing: "\u9B54\u6CD5\u5206\u6790\u5BA4",
+	    Alchemy: "\u70BC\u91D1\u5B9E\u9A8C\u5BA4",
+	    Biologic: "\u751F\u7269\u5B9E\u9A8C\u5BA4",
+	    MagiPotion: "\u9B54\u836F\u5B9E\u9A8C\u5BA4"
+	  };
+	  hasroom.forEach((spot) => {
+	    let id = spot.id.split(".").pop();
+	    spot.rooms.forEach((room) => {
+	      if (worldMap.CommonSpots[room]) {
+	        FMA[id][room] = GameMap.copy(worldMap.CommonSpots[room], spot.id, room);
+	      } else if (roomName[room]) {
+	        FMA[id][room] = new Spots([spot.id, room, [roomName[room], room], "room"]);
+	      } else {
+	        switch (id) {
+	          case "ClassBuildingR1":
+	          case "ClassBuildingR2":
+	            FMA[id][room] = new Spots([spot.id, room, ["\u6559\u5BA4|" + room, "Classroom|" + room], "room"]);
+	            break;
+	          case "Dormitory":
+	            FMA[id][room] = new Spots([spot.id, room, ["\u5BBF\u820D|" + room, "Dormitory|" + room], "room"]);
+	            break;
+	        }
+	      }
+	      setAcademyRoom(id, room);
+	    });
+	  });
+	}
+	Object.defineProperties(window.scEra.initialization, {
+	  WorldMap: { value: initWorldMap }
 	});
 
-	window.database = {};
-	window.gameutils = {
-	  condition: {},
-	  UI: {},
-	  printer: {},
-	  utils: {},
-	  fix: {}
-	};
-	window.gamedata = {};
-	window.languagedata = {};
-	Object.defineProperties(window, {
-	  D: {
-	    get: function() {
-	      return window.gamedata;
-	    }
-	  },
-	  Db: {
-	    get: function() {
-	      return window.database;
-	    }
-	  },
-	  L: {
-	    get: function() {
-	      return window.languagedata;
-	    }
-	  },
-	  F: {
-	    get: function() {
-	      return window.gameutils.utils;
-	    }
-	  },
-	  ui: {
-	    get: function() {
-	      return window.gameutils.UI;
-	    }
-	  },
-	  P: {
-	    get: function() {
-	      return window.gameutils.printer;
-	    }
-	  },
-	  cond: {
-	    get: function() {
-	      return window.gameutils.condition;
-	    }
-	  },
-	  fix: {
-	    get: function() {
-	      return window.gameutils.fix;
+	class Talent {
+	  constructor(name, des) {
+	    this.name = name;
+	    this.des = des;
+	    this.effect = function() {
+	    };
+	  }
+	  Effects(callback) {
+	    this.effect = callback;
+	    return this;
+	  }
+	}
+	Talent.data = {};
+	const _Trait = class extends Talent {
+	  static init() {
+	    D.traits.forEach((obj) => {
+	      _Trait.data[obj.name] = new _Trait(obj);
+	    });
+	    console.log(_Trait.data);
+	  }
+	  static set(name) {
+	    const traitdata = Object.values(_Trait.data).filter((trait) => {
+	      return trait.name.includes(name);
+	    });
+	    if (traitdata) {
+	      return traitdata[0];
+	    } else {
+	      console.log("trait has not found:", name);
+	      return null;
 	    }
 	  }
-	});
+	  static get(name, key = "", event) {
+	    const traitdata = this.set(name);
+	    if (traitdata) {
+	      if (key == "") {
+	        return traitdata;
+	      }
+	      if (traitdata[key] && event) {
+	        return traitdata[key](event);
+	      }
+	      if (traitdata[key])
+	        return traitdata[key];
+	      else {
+	        console.log("key has not found:", name, key);
+	        return null;
+	      }
+	    } else {
+	      return null;
+	    }
+	  }
+	  static list(type) {
+	    return Object.values(_Trait.data).filter((trait) => {
+	      return trait.group == type;
+	    });
+	  }
+	  constructor({ name, des, order, group, conflict, sourceEffect } = {}) {
+	    if (typeof name == "string") {
+	      name = [name, name];
+	    }
+	    if (typeof des == "string") {
+	      des = [des, des];
+	    }
+	    super(name, des);
+	    this.order = order;
+	    this.group = group;
+	    this.conflict = conflict;
+	    this.get = {};
+	    this.lose = {};
+	    this.init(sourceEffect);
+	  }
+	  init(source) {
+	    if (source == null ? void 0 : source.length) {
+	      source.forEach(([key, value, option]) => {
+	        if (option) {
+	          this.lose[key] = value;
+	        } else {
+	          this.get[key] = value;
+	        }
+	      });
+	    }
+	  }
+	  Order(callback) {
+	    this.onOrder = callback;
+	    return this;
+	  }
+	  Source(callback) {
+	    this.onSource = callback;
+	    return this;
+	  }
+	  Fix(callback) {
+	    this.onFix = callback;
+	    return this;
+	  }
+	};
+	let Trait = _Trait;
+	Trait.data = {};
+	function findConflic(source, conflicGroup) {
+	  let conflicArr = source.filter((val) => conflicGroup.includes(val));
+	  if (conflicArr.length < 2) {
+	    return source;
+	  } else {
+	    let index = random(conflicArr.length - 1);
+	    source.delete(conflicGroup);
+	    source.push(conflicArr[index]);
+	    return source;
+	  }
+	}
+	const modules = {
+	  name: "Trait",
+	  version: "1.0.0",
+	  des: "A module for managing and building traits and talents.",
+	  data: {
+	    trait: Trait.data,
+	    talent: Talent.data
+	  },
+	  classObj: {
+	    Trait,
+	    Talent
+	  },
+	  functions: {
+	    findConflic
+	  },
+	  config: {
+	    globalfunction: true
+	  }
+	};
+	registModule(modules);
+
 	console.log(lan("\u6E38\u620F\u5F00\u59CB", "game start"));
 	console.log("utils loaded, the game is", window.game);
-	console.log("package.json", fs__default["default"].readFileSync("./package.json", "utf8"));
-	console.log("config.json", fs__default["default"].readFileSync("./public/config.json", "utf8"));
+	console.log("package.json", fs.readFileSync("./package.json", "utf8"));
+	console.log("config.json", fs.readFileSync("./public/config.json", "utf8"));
 	$.getJSON("./config.json", function(data) {
-	  window.config = data;
 	  console.log("load config", data);
 	});
 
-})(fs);
+})();
