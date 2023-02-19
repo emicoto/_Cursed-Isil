@@ -1,0 +1,37 @@
+/* Chara替换为角色ID */
+
+:: Kojo_Nanaly_Regist[script]
+/* 纯代码区,用于注册角色信息 */
+/*注意：娜娜莉是姛，如果条件允许应当当玩家是女性/双性时才可攻略*/
+Kojo.set('Nanaly', '#66CCFF') //角色id与 名牌颜色
+    .Intro('水属性的晶龙族少女。')
+    .Home('学生宿舍A201') //私室有是 学生宿舍A100, 100自行改成空余的房间
+    .Relation('Isil', '青梅竹马', 110) //与其他角色的关系型. 顺序是 cid, 关系描述, 关系值, 大于100都属于关系友好, 最大200, 最小 20
+
+    .Schedule() //日程表
+    //日程表填写顺序, 日程id(从0开始), [ '地点', [ 星期几 ], 起始时间,  结束时间,  滞留时长,  出现概率 ]
+
+    .Event()
+
+:: Kojo_Nanaly[widget]
+/* 自定义小功能区 */
+<<widget "NanalyToolname">>
+    小功能的名字只能是英文字母.<br>
+    因为不能有重复,所以必须角色id开头来区分.<br>
+    重复使用的文本,自动喘息一类的都可以用小工具写.<br>
+    小功能内就不支持分页了<br>
+    如果是用来召唤单个词语,记住不要有多余空格.<br>
+<</widget>>
+
+/*随机召唤单个词语时*/
+<<widget "NanalyRandomName">><<=either(['词语A','词语B','词语C','词语D'])>><</widget>>
+
+/* 随机召唤某个词语,并带概率设置, 概率由小到大排列 */
+<<widget "NanalyRandom">><<=maybe([
+    ['词语A', 20],
+    ['词语B', 30],
+    ['词语C', 50]
+    ])>><</widget>>
+
+<<widget "NanalyName">><<print $chara.Nanaly.name>><</widget>>
+

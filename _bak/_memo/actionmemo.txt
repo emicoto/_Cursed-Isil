@@ -1,0 +1,143 @@
+Action处理顺序
+
+initScene {
+	load map
+	load character
+	print location infomation
+	print character information
+	init actions menus
+	init actions values
+}
+
+wait player input
+
+get action id
+if action has selectable parts (action parts and target parts)
+	show parts menu
+	wait player input
+
+		get parts id
+		if has selectable options
+			wait player input
+		
+		get options id
+		check action
+
+	else check action
+
+ready for action{
+	if action id == prev id
+		update action options
+	else
+		reset id and update options
+}
+
+check action{
+		if action able
+			do action
+		else
+			cancel action
+			init action values
+}
+
+before action
+	if cancel action
+		reset and init actions values
+
+do action{
+	save actiondetails { action id, target chara id,  action parts id,  target parts id, options id,}
+	if action option has autokeep
+		save action to Using.actor
+
+	action events > print events text
+
+	counter check
+	if counter
+		do counter
+	
+	if has continuos action
+		do keep action
+
+	process sources
+	print action result
+
+	if has palam change event
+		do palam change event
+
+	if has after event
+		do after event
+	
+}
+
+finish action
+	check after event
+	if has after event
+		do after event
+	
+	clear temporary flags and values
+	reset action
+	goto init movement
+
+动作记录用变量
+
+T.select = {
+	id: action id
+	tc: target chara id
+	ap: action parts id
+	tp: target parts id
+  pos: pose id
+}
+记录玩家输入，当action id有变化时会reset
+
+T.action = {
+	id: action id
+	tc: target chara id
+	ap: action parts id
+	tp: target parts id
+  pos: pos id
+}
+确定执行时的记录
+
+T.counter = {
+	id: action id
+	ac: actor chara id
+	ap: action parts id
+	tp: target parts id
+  pos: pos id
+}
+记录npc的counter信息。
+有多少npc就会有多少个？
+或者轮流刷新（处理完一个npc就reset，再处理下一个？）
+
+counter 系统设计大纲
+
+1.获取npc性格特征。以及npc个人设置中对各个动作指令的概率设置。
+2.获取通用的性格特征对各个动作指令的概率设置。
+3.确认当前场景、npc状态、pc状态，排除掉无法执行的指令。
+4.综合npc个人设置与性格特征，对可执行动作指令表完成概率设置。
+5.检查可执行的指令表，如果只有一个可执行动作，则根据程序上默认的概率进行判断是否执行。如果没有可执行动作，则返回‘reset’。如果有多个候选，则根据各动作设置好的概率进行抽选。
+5.如果有多个候选，开始进行抽选。如果什么都没抽到，根据默认概率再进行一次执行检测，如果检测成功则再抽一次，失败则返回'reset'。
+6.如果抽选到动作，则返回npc要执行的动作。
+
+角色的动作设置放口上文档。
+储存于counterRate中
+正常角色只需要对交流、接触类别进行设置。
+随机npc与怪物则追加道具、鬼畜、触手类的设置。随机npc和怪物使用既定的模板生成。
+有部位选项的，则增加partRate项目。
+部位选项如果从略，则默认与rate一致。
+如果部位选项有多个但只对其中一个进行设置，剩余的，以 用1扣掉设置项目概率，剩下项目的则平分剩余概率。
+
+如： 候选部位有： face、ear、neck、hair。 但只对 face设置了0.5， 剩余的则自动分配为 0.167, 0.167, 0.167
+part rate 合计不得超于 1.1 (0.1的浮动是因为小数点经过处理后可能有多)
+
+setCounterRate({
+    actionId: 'touch', rate: 0.8, partRate:{  face: 0.5 }
+})
+可以一个一个塞。也可以一次过塞一堆(；￣д￣)
+
+性格通用设置不在trait 列表。而是额外的trait设置目录中……
+trait列表就不用整那么复杂了！！
+
+counter筛选前，暂时先用globalFilter过滤一下？
+把actor 和 target 暂时反转一下应该就好。
+……action内的判定就不要用 player  和 target ？ 而是用 T.actor 和 T.target？

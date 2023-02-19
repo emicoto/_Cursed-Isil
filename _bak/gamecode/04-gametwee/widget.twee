@@ -1,0 +1,156 @@
+:: Widgets [widget]
+<<widget "dashline">>
+<div style='border-bottom:1px #444 dashed;margin:12px 0px'> </div>
+<</widget>>
+
+<<widget "showmoney">>
+<div class='headbar-li'>资金　<<print $player.wallet>><span style='color: #E3C118'>G</span></div>
+<<if $debt > 0>>
+<div class='headbar-li'>债务 <<print $player.debt>><span style='color: #E3C118'>G</span></div>
+<</if>>
+<div class='headbar-li'>魔力  <<print $cursedLord.MP>><span style='color: #E31EF3'>P</span></div>
+<</widget>>
+
+<<widget "showtime">>
+<div class='headbar-li'><<=P.time()>></div>
+<</widget>>
+
+<<widget "meterbar">>
+<<silently>>
+<<if $args[0]>>
+    <<set _percent to $args[0]>>
+<<else>>
+    <<set _percent to 100>>
+<</if>>
+    <<set _percent2 to (100-_percent) >>
+    
+<<if $args[1] and $args[1].length>>
+    <<set _rgb to $args[1]>>
+<<else>>
+    <<set _rgb to [208,16,68]>>
+<</if>>
+
+<<for _r to 0; _r lt 3; _r++>>
+    <<set _rgb[_r] to Math.floor(_rgb[_r]*(_percent/100))>>
+<</for>>
+
+<<set _color to `rgb(${_rgb[0]}, ${_rgb[1]}, ${_rgb[2]})`>>
+
+<</silently>>
+
+<<print '<div id="meter" class="metercon"><div class="bar" style="width:'+_percent+'%;background-color:'+_color+'"></div></div>'>>
+<</widget>>
+
+
+<<widget "colorbar">>
+<<if $args[0]>>
+    <<set _percent to percent($args[1])>>
+    <div class="metername">$args[0]</div><<meterbar _percent $args[2]>>
+<<else>>
+    <div class="error-view">error：no args</div>
+<</if>>
+<</widget>>
+
+
+<<widget "getmoney">>
+<<if $args[0]>>
+    <<set _money to $args[0]>>
+<<else>>
+    <<set _money to $basicincome>>
+<</if>>
+    <<set $wallet += _money>>
+    <span style='color:#E3C118'>获得了<<print Math.floor(_money)>>G。</span>
+<</widget>>
+
+<<widget "showpalam">>
+
+<<if $Ui.sidebarpalam is true>>
+    <div id="show_palam">
+        <<sidebar_palam>>
+    </div>
+    
+    <<button "▲palam">>
+        <<set $Ui.sidebarpalam to false>>
+        <<replace "#palam">><<showpalam>><</replace>>
+    <</button>>
+<<else>>
+
+    <<button "▼palam">>
+        <<set $Ui.sidebarpalam to true>>
+        <<replace "#palam">><<showpalam>><</replace>>
+    <</button>>
+
+    <div id="show_palam">
+    </div>
+<</if>>
+
+<</widget>>
+
+<<widget "sidebar_base">>
+<<set _base to $pc.base>>
+<<set _keys to Object.keys(_base)>>
+<<for _i to 0; _i lt _keys.length;_i ++>>
+    <<set _k to _keys[_i]>>
+    <<set _n to D.base[_k][0]>>
+    <<if D.basecolor[_k]>>
+        <<set _c to D.basecolor[_k]>>
+    <<else>>
+        <<set _c to ''>>
+    <</if>>
+    <<if _i <= 4 || (_i > 4 && _base[_k][0] >= 10)>>
+        <<colorbar _n _base[_k] _c>><br>
+    <<else>>
+        <<continue>>
+    <</if>>
+    <<if _i == 4>>
+        <hr>
+    <</if>>
+    <<if _i > 4 && _i == _keys.length>>
+        <hr>
+    <</if>>
+<</for>>
+
+<</widget>>
+
+<<widget "sidebar_palam">>
+    <<set _palam to $pc.palam>>
+    <<set _keys to Object.keys(_palam)>>
+
+    <<for _i to 0; _i lt _keys.length;_i ++>>
+        <<set _k to _keys[_i]>>
+        <<set _n to D.palam[_k][0]>>
+        <<colorbar _n _palam[_k] ''>><br>
+    <</for>>
+<</widget>>
+
+/*  HoverTxt : Show notepad icon shows some wikified text in a window of width X pixels above an icon when it's hovered over.  */
+/*  EXAMPLE: <<HoverTxt 200 "text">>  */
+/*  EXAMPLE: <<HoverTxt 300 `someFunction()`>>  */
+<<widget "Hover">>
+	<<if !Number.isInteger($args[0])>>
+		<<set _width = 200>>  /* Default to a width of 200 if an invalid width is passed. */
+	<<else>>
+		<<set _width = $args[0]>>
+	<</if>>
+	<<set _left = Math.trunc(_width / 2) - 11>>
+	<<if ndef _HoverTxtCount>>
+		<<set _HoverTxtCount = 1>>
+	<<else>>
+		<<set _HoverTxtCount += 1>>
+	<</if>>
+	<a class="hoverTxt"><<print $args[1]>>
+		<span @id="'hoverTxt' + _HoverTxtCount" class="hoverBox" @style="'left: -' + _left + 'px; width: ' + _width + 'px;'">
+			<<print $args[2]>>
+		</span>
+	</a>
+<</widget>>
+
+<<widget "showgametime">>
+<<run F.playtime()>>
+<<print `${$gametime.d}D.${$gametime.h}:${$gametime.m}:${$gametime.s}`>>
+<</widget>>
+
+
+<<widget "returnPhase">>
+    <<set $event.phase -= 1>>
+<</widget>>

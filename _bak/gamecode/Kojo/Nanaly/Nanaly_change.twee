@@ -1,0 +1,144 @@
+/* 素质、刻印的变化 */
+:: Kojo_Nanaly_GetMark_Hypnosis
+/* 获得催眠刻印时 */
+<<switch Tsv['Nanaly'].getHypnosis>>
+   <<case 1>>
+      到达1级时。
+   <<case 2>>
+      到达2级时。
+   <<case 3>>
+      到达3级时。
+   <<case 4>>
+      到达4级时。
+   <<case 5>>
+      到达5级时。
+<</switch>>
+
+:: Kojo_Nanaly_GetMark_Ecstacy
+/* 获得快乐刻印时 */
+<<switch Tsv['Nanaly'].getEcstacy>>
+   <<case 1>>
+      到达1级时。
+   <<case 2>>
+      到达2级时。
+   <<case 3>>
+      到达3级时。
+   <<case 4>>
+      到达4级时。
+   <<case 5>>
+      到达5级时。
+<</switch>>
+
+:: Kojo_Nanaly_GetMark_Surrender
+/* 获得屈服刻印时 */
+<<switch Tsv['Nanaly'].getSurrender>>
+   <<case 1>>
+      到达1级时。
+   <<case 2>>
+      到达2级时。
+   <<case 3>>
+      到达3级时。
+   <<case 4>>
+      到达4级时。
+   <<case 5>>
+      到达5级时。
+<</switch>>
+
+:: Kojo_Nanaly_GetMark_Pain
+/* 获得痛苦刻印时 */
+<<switch Tsv['Nanaly'].getPain>>
+   <<case 1>>
+      到达1级时。
+   <<case 2>>
+      到达2级时。
+   <<case 3>>
+      到达3级时。
+   <<case 4>>
+      到达4级时。
+   <<case 5>>
+      到达5级时。
+<</switch>>
+
+:: Kojo_Nanaly_GetMark_Fear
+/* 获得恐惧刻印时 */
+<<switch Tsv['Nanaly'].getFear>>
+   <<case 1>>
+      到达1级时。
+   <<case 2>>
+      到达2级时。
+   <<case 3>>
+      到达3级时。
+   <<case 4>>
+      到达4级时。
+   <<case 5>>
+      到达5级时。
+<</switch>>
+
+:: Kojo_Nanaly_GetMark_Humiliated
+/* 获得耻辱刻印时 */
+<<switch Tsv['Nanaly'].getHumiliated>>
+   <<case 1>>
+      到达1级时。
+   <<case 2>>
+      到达2级时。
+   <<case 3>>
+      到达3级时。
+   <<case 4>>
+      到达4级时。
+   <<case 5>>
+      到达5级时。
+<</switch>>
+
+:: Kojo_Nanaly_GetMark_Mortify
+/* 获得羞耻刻印时 */
+
+<<switch Tsv['Nanaly'].getMortify>>
+   <<case 1>>
+      到达1级时。
+   <<case 2>>
+      到达2级时。
+   <<case 3>>
+      到达3级时。
+   <<case 4>>
+      到达4级时。
+   <<case 5>>
+      到达5级时。
+<</switch>>
+
+:: Kojo_Nanaly_GetMark_Resistance
+/* 获得反抗刻印时 */
+
+<<switch Tsv['Nanaly'].getResistance>>
+   <<case 1>>
+      到达1级时。
+   <<case 2>>
+      到达2级时。
+   <<case 3>>
+      到达3级时。
+   <<case 4>>
+      到达4级时。
+   <<case 5>>
+      到达5级时。
+<</switch>>
+
+:: Kojo_Nanaly_LoseMark_Resistance
+/* 失去反抗刻印时 */
+<<switch Tsv['Nanaly'].loseResistance>>
+   <<case 1>>
+      从5级掉落至3级前后
+   <<case 2>>
+      从任意等级掉落至1级
+   <<case 3>>
+      彻底失去反抗心时
+<</switch>>
+
+:: Kojo_Nanaly_LoseMark_Hypnosis
+/* 失去催眠刻印时 */
+<<switch Tsv['Nanaly'].loseHypnosis>>
+   <<case 1>>
+      从深度催眠稍微恢复一点自我时
+   <<case 2>>
+      半清醒状态
+   <<case 3>>
+      彻底清醒时
+<</switch>>

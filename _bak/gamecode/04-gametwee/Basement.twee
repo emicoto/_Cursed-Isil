@@ -1,0 +1,47 @@
+:: Basement
+
+<<link '苏醒' 'MainLoop'>><<set $mode to 'normal'>><<set $date.time to 900>><<run F.lostState('Isil', '睡眠')>><</link>><br>
+
+<<link '情报'>><</link>><br>
+
+<<link '升级' 'CursedCore'>><</link>><br>
+
+<<link '道具'>><</link>><br>
+
+<<link '调教' 'MainLoop'>><<set $mode to 'train'>><<set $flag.mode to 5>><<set $date.time to 1350>><<run F.getState('Isil', '睡眠')>><</link>><br>
+
+<<link '经典模式' 'CommandLoop'>><</link>><br>
+
+<<link '设定'>><</link>><br>
+
+<<checkbox "$system.debug" 0 1 autocheck>>Debug模式？<br>
+
+
+:: CursedCore
+/* 触手升级界面 */
+/* len长度, thick粗细, count数量, forms形状, drug性毒, hypnos催眠， */
+<<set _abl to $cursedLord.abl>>
+触手目前的等级Lv_abl.scale  <<=F.Evole('scale')>><br>
+长度Lv_abl.len (<<=16+_abl.len*8>>cm)  <<=F.Evole('len')>><br>
+
+粗细Lv_abl.thick (<<=6+_abl.thick*6>>mm)  <<=F.Evole('thick')>><br>
+
+数量Lv_abl.num (<<=2+_abl.num>>根)  <<=F.Evole('num')>><br>
+<<dashline>>
+
+已解锁形态：<<=F.Evole('form')>><br>
+<<=P.mutants(_abl.form)>><br>
+
+<<dashline>>
+
+其他能力：<br>
+
+淫液Lv_abl.drug  剂量：<<=0 + _abl.drug*50>>cc <<=F.Evole('drug')>><br>
+
+催眠Lv_abl.hypnos 效果：意识渗透<<=0 + _abl.hypnos*5 >>%  <<if _abl.hypnos>>睡眠深度+<<=80 + (_abl.hypnos-1)*20>>%<</if>><<=F.Evole('hypnos')>><br>
+
+射精Lv_abl.cum  精力：<<=0 + 50*_abl.cum>>  <<=F.Evole('cum')>><br>
+
+<<dashline>>
+
+<<link '返回' 'Basement'>><</link>>

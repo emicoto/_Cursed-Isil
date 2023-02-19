@@ -1,0 +1,76 @@
+:: PassageHeader
+<<run
+    $passage = passage(); $tags = tags($passage);
+    if($tags.has('title','nobar')){
+        UIBar.stow();
+        UIBar.hide();
+    }
+    else if(UIBar.isHidden()){
+        UIBar.unstow();
+        UIBar.show();
+    }
+    if($tags.has('title','nobar')){
+        $('#story-header').addClass('hidden')
+    }
+    else{
+       $('#story-header').removeClass('hidden') 
+    }
+>>
+
+:: StoryCaption
+
+一个用于制作游戏的范本，稍微能玩的版本。<br>
+ version <<print game.version>><br>
+ author: 狐千月<br>
+
+/* 这里显示目前操作角色的信息 */
+
+
+<div id='random_tips'>
+</div>
+<div id='update_note'>
+</div>
+
+:: PassageFooter
+
+
+:: PassageReady
+<<run
+    _passageready = true;
+    if($lastsession !== $passage)
+      $lastsession = $passage;
+
+    //复原角色的class
+    if(typeof C.m0.bp !== 'function'){
+        console.log('reload class')
+        Chara.onLoad();
+    };
+
+    $player = C[pc];
+    $target = C[tc];
+    
+    if($mode !== 'train')
+      $flag.mode = 0;
+>>
+
+:: PassageDone
+
+
+:: StoryHeader
+<<if !groupmatch($passage, 'Start', 'Start1')>>
+<div id='showtime' class='headbar-container'>
+    <<showtime>>
+    <<showmoney>>
+</div>
+<div id='gametime'>
+    <<showgametime>>
+</div>
+<<repeat 1s>>
+    <<replace '#gametime'>>
+        <<showgametime>>
+    <</replace>>
+<</repeat>>
+<</if>>
+
+:: StoryFooter
+

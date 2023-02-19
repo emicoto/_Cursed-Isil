@@ -1,0 +1,114 @@
+:: TitleName
+最简格式。只在::后加一个事件标题。
+这种格式只会用在游戏机制处理，或关键节点。
+
+:: MainType_EventName
+事件文本的最简格式。
+主线剧情 Story_EventName
+支线剧情 Chapter_EventName
+随机事件 Event_EventName
+地图事件 Map_MapId_EventName
+角色事件 Chara_charaId_EventName
+日常事件 Daily_EventName
+
+:: MainType_EventName_ChapterName
+标题格式
+主分类_事件名/事件分类_章节名/分支名
+
+:: MainType_EventName_ChapterName_ep1
+事件章节的分段1
+#:select:无视|抗议:# 
+/* 选项 #:select: 选项A | 选项B :# */
+会对选项进行自动分配。选择后就会跳到sp1,sp2，并执行s1,s2内的处理。
+用这个方法处理分支的话，在回想模式下就不会因为选项的结果处理，而影响现有的flag和数据了。
+
+//选项处理
+:: MainType_EventName_ChapterName_ep1:s1
+<<set Cflag['cid'].temp to 1>>
+/* 这里塞flag操作跟数据处理. Cflag就是角色个人的flag设置。cid替换为角色id。
+temp可以替换为任意英文变量命名。 */
+
+:: MainType_EventName_ChapterName_ep1:s2
+<<set Cflag['cid'].temp to 2>>
+/* 这里塞flag操作跟数据处理 */
+
+:: MainType_EventName_ChapterName_ep1:sp1
+#:{ "type":"endPhase", ep:2 }
+选项1结果文本。事件模式才需要。
+
+:: MainType_EventName_ChapterName_ep1:sp2
+#:{ "type":"endPhase", ep:2 } 
+/* 分段第一行可以加JSON进行设置。结束时需要，用来设置下一个分支段落。 */
+选项2结果文本。事件模式才需要。
+
+
+:: MainType_EventName_ChapterName_ep2
+事件章节的分段2
+如果有必要，可以用sugarcube的伪代码进行控制。
+
+ /* lastId就是最后一次做选项的id */
+<<if $event.lastId == 1>>
+这里写分支文本。1
+<<else>>
+分支文本2。插入伪代码的话需要注意下分行(￣▽￣")。
+不然会多个换行符。
+<</if>>
+
+空行也是会保留的。分段时用<fr>分割。
+<fr>
+空行符 /L
+/L开头时用可以在前面添加额外的空行。
+
+#:{ "type":"endEvent", exit:"PassageName"}
+剧情结束时要记得设置出口。不设置默认返回主界面。
+
+:: Story_EventName::Before[system]
+事件开始前的前置flag处理
+
+:: Story_EventName::After[system]
+事件结束时的数据处理。前置与后期处理的标签::Before只能跟在事件名字后。
+ep分段sp选项分支是没有的。
+分段范围内添加操作时请善用json行或对应的处理标签。
+
+
+//--------------------------------------------------
+处理顺序
+
+
+PassageReady
+Passage:Before
+PassageHeader
+Passage
+PassageFooter
+Passage:After
+PassageDone
+
+StoryHeader
+StoryCaption
+StoryFooter
+
+:: TestEvent
+你醒来了，突然发现自己失去了记忆。什么都想不起来。
+
+你起床一看，虽然什么都不记得，但不知为何，就是觉得这就是自己的房间。
+
+#:{ "type":"select" }
+你在自己房间里一片茫然。到底怎么办好呢
+<<selection>>
+<<pick '查看电脑'>>
+<<pick '查看手机'>>
+<<pick '查看房间'>>
+<<pick '不如出门吧'>>
+<</selection>>
+
+:: TestEvent:sp1
+#:{ "type":"return"}
+你看了眼电脑，需要输入密码。无奈只好看看别的。
+
+:: TestEvent:sp2
+#:{ "type":"return"}
+你看了眼手机，需要输入密码。无奈之哈看看别的。
+
+:: TestEvent:sp3
+#:{ "type":"return"}
+你看了眼房间，需要输入密码。无奈之哈看看别的。

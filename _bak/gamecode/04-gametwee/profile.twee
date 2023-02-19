@@ -1,0 +1,26 @@
+:: ShowProfile
+<div id='profile'>
+
+$target.fullname<br>
+<hr>
+
+
+</div>
+
+:: BaseInfo
+基础：
+
+状态：
+
+技能：
+
+:: SpecialInfo
+特殊：
+
+刻印：
+
+
+:: ShowExp
+经验：
+
+无自觉经验：

@@ -1,0 +1,36 @@
+:: StoryData
+{
+"ifid": "1926DC5A-5199-4C1A-8E3D-5C68BC061323",
+"format": "SugarCube",
+"format-version": "2.36.1"
+}
+
+:: StoryTitle
+Era the Cursed
+
+:: StoryDisplayTitle
+Era the Cursed
+
+:: StoryInit
+<<run 
+    game.init();
+    Chara.init(); 
+>>
+
+/*诅咒相关 */
+<<set $cursedLord= {
+    name:'诅咒之触',
+    level: 0,
+    MP:0,
+    abl:{
+        len:0,
+        thick:0,
+        num:0,
+        form:0,
+        drug:0,
+        hypnos:0,
+        cum:0,
+        scale:0,
+    },
+    trait:['光滑'],
+}>>

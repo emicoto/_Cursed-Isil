@@ -1,0 +1,65 @@
+:: EventStart:Before
+<<run
+console.log(Dialog, Dlog.initTitle) 
+Dlog.initTitle();
+>>
+
+:: EventStart[system]
+<<if Story.has(_beforecheck)>>
+    <<include _beforecheck>>
+<</if>>
+
+<<if Story.has($event.fullname)>>
+    <<timed 30ms>><<goto EventLoop>><</timed>>
+<<else>>
+    <div class="error-view"><span class="error">Error: 跳转失败。跳转目标：$event.fullname</span></div>
+<</if>>
+
+:: EventLoop
+<div id='hidden' class='hidden'>you can't see me.</div>
+<div id='content' class='content' onClick='if(!V.event?.afterselect)Dlog.next(); else delete V.event.afterselect;'>
+    <div id='contentMsg' >
+    </div>
+<div id="msg_end" style="height:0px; overflow:hidden"></div>
+</div>
+
+<div id='next'>
+    <<eventnext>>
+</div>
+
+<div id='effets'>
+<<if $event.effets>>
+    <<set _effect to `Effects_${$event.effets}`>>
+    <<include _effect>>
+<</if>>
+</div>
+
+<script>
+    Dlog.init()
+</script>
+
+:: EventLoop:After
+<<run
+    if(game.debug)
+        console.log('postEventLoop');
+>>
+
+:: EventEnd:Before
+
+
+:: EventEnd[system]
+<<set _aftercheck = `${$event.fullname}::After`>>
+
+<<if Story.has(_aftercheck)>>
+    <<include _aftercheck>>
+<</if>>
+
+<<timed 120ms>>
+<<if Story.has($event.config.exit)>>
+    <<set _exit to $event.config.exit>>
+    <<=F.resetEvent()>>
+    <<goto _exit>>
+<<else>>
+    <div class="error-view"><span class="error">Error: 跳转失败。跳转目标：$event.exit</span></div>
+<</if>>
+<</timed>>

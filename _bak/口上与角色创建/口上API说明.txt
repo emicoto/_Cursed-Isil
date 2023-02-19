@@ -1,0 +1,146 @@
+class Kojo
+这个类是用来管理角色口上的（也叫 Kojo）的。它有以下几个静态方法：
+
+Kojo.set(id, color)：设置一个角色的 Kojo。参数 id 是角色的 id，color 是 Kojo 的颜色。
+例如：
+Kojo.set("NPC1", "red");
+
+
+Kojo.get(id, type)：获取一个角色的 Kojo。
+参数 id 是角色的 id，type 是要获取的 Kojo 的类型（可选）。
+例如：
+let npc1Kojo = Kojo.get("NPC1");
+
+
+Kojo.title(cid, type, id, dif)：获取一个 Kojo 的标题。
+参数 cid 是角色的 id，type 是 Kojo 的类型，id 是 Kojo 的 id（可选），dif 是 Kojo 的分支（可选）。
+例如：
+let npc1KojoTitle = Kojo.title("NPC1", "Action", "greet");
+
+Kojo.has(cid, { type, id, dif, check })：判断一个 Kojo 是否存在。
+参数 cid 是角色的 id，type 是 Kojo 的类型，id 是 Kojo 的 id（可选），dif 是 Kojo 的分支（可选），check 是用于系统检测。当口上不存在时显示系统默认文本（可选）。
+例如：
+let hasNpc1Kojo = Kojo.has("NPC1", { type: "Action", id: "greet" });
+
+Kojoput(cid, { type, id, dif, tag })：显示一个 Kojo。
+参数 cid 是角色的 id，type 是 Kojo 的类型，id 是 Kojo 的 id（可选），dif 是 Kojo 的分支（可选），tag 是 Kojo 的标签（可选）。
+例如：
+let text = Kojo.put("NPC1", { type: "Action", id: "greet" });
+
+
+使用范例1：
+设置一个NPC的口上
+Kojo.set("NPC1", "red")
+  .Intro('角色简介')
+
+
+使用范例2：
+获取一个角色的口上
+let npc1Kojo = Kojo.get("NPC1")
+
+
+使用范例3：
+判断一个口上是否存在
+if( Kojo.has("NPC1", { type: "Action", id: "greet" }))
+  Kojo.put('NPC1', { type:'Action' , id:'greet' })
+
+
+
+Kojo.set(id, color)：这个方法主要是设置一个角色的 Kojo。首先它会检查 Kojo.data 这个对象里面有没有这个角色的 Kojo，如果没有就新建一个并保存到 Kojo.data 里面。
+
+Kojo.get(id, type)：这个方法主要是获取一个角色的 Kojo。首先它会检查角色口上与角色id是否一致，如果不一致就把 id 替换成角色口上。然后它会从 Kojo.data 里面取出这个角色的 Kojo，如果 type 参数有值就返回这个类型的 Kojo，否则直接返回这个角色的 Kojo。
+
+
+Kojo.title(cid, type, id, dif)：这个方法主要是获取一个 Kojo 的标题。首先它会检查角色口上与角色id是否一致，如果不一致就把 cid 替换成角色口上。然后它会根据参数组合出一个标题。
+
+
+Kojo.has(cid, { type, id, dif, check })：这个方法主要是判断一个 Kojo 是否存在。首先它会调用 title 方法获取一个 Kojo 的标题，如果 type 是 "custom"，就更换标题。然后它会检查这个标题对应的 Kojo 是否存在，如果 check 参数为 true 且 Kojo 不存在就检查其他分支。
+
+Kojo.put(cid, { type, id, dif, tag })：这个方法主要是显示一个 Kojo。首先它会调用 title 方法获取一个 Kojo 的标题，如果 type 是 "custom"，就更换标题。然后它会检查这个标题对应的 Kojo 是否存在，如果存在就获取这个 Kojo 的文本并显示。如果不存在就检查默认的标题对应的 Kojo 是否存在，如果存在就获取这个 Kojo 的文本并显示。
+
+总体来说这个类主要用来管理角色口上，通过设置和获取口上来控制角色的对话，并且通过判断和显示口上来控制对话的流程。
+
+
+继承的方法(在set之后，以chain的方式使用。)
+Kojo.set(cid)
+
+.Intro(string)
+设置角色的简介。
+参数 string 为介绍文本。
+
+.Schedule(id, list)
+设置角色的日程表。
+参数id为日程的数字id。为0时则自动添加到日程表最后一条。
+设置数字时则对该条日程进行修改和覆盖。
+参数list为日程详细内容。格式为数组。
+[ '地点名', [1 , 2, 3 ],  8,  12,  3,  50]
+按输入顺序为：地点名，[ 星期几 ],  起始时间， 结束时间， 在该地点的最少滞留时长， 执行概率
+
+可以通过连chain的方式设置多个日程。
+
+.Filter(cond)
+用于设置特定动作指令的过滤器。
+具体使用方式：
+.Filter((id)=>{
+  if(id=='TrySex')
+    return 0
+  
+  return 1
+})
+设置id参数用于获取动作ID。
+当id为TrySex（推倒）时return 0.（也就是不允许）
+必须以 return 1结尾，确保其他动作指令能顺利出现在列表中。
+
+.Action(id, obj)
+用于设置自定义动作指令。
+id为列表id，必须是数字。为0时默认塞到列表最后尾。
+输入具体数字可以修改覆盖特定指令。
+
+obj为设置项目，必须为对象。
+obj内可用参数：
+id: 动作指令的id。 必须以角色id开头+指令英文id。如：Isil_Research
+name: 指令名。用于显示在选项中。
+type： 指令的分类头字母。如 'C' 交流, 'G' 常规等。
+
+.Event(id, obj )
+用于设置角色事件。
+id 为列表id，必须是数字。为0时默认塞到列表最后尾。
+输入具体数字可以修改覆盖特定事件。
+
+obj内可用参数有：id, title, cond, config
+id为事件id，也就是事件英文标题，用于召唤事件。
+title为事件标题，会显示在回想中。
+cond为callback形式，用于判定是否执行事件。
+
+config为object格式。
+有onStart, onEnd两个调用事件。
+可以用于事件开始或结束时对角色flag进行设置。
+参数是角色flag内的参数名，数值为对参数进行的操作式。
+
+例如：config:{  
+  onEnd : { jobfame: [1], favo:[0, 'set'] }
+  }
+在剧情结束时，就会对这个角色的Cflag下的 jobfame（职业名气） 增加1点。 对favo（好感）设置为0.
+如果onEnd改为 onStart， 就变成在开始时进行数值操作。
+
+.Home(string)
+参数string为 地点名。
+用于设置角色的睡眠点/起始点。
+也就是角色的家。
+
+.Relation(id, des, value)
+参数id 为角色id。 des 为两者关系的描述。 value为具体关系值。关系值必须在 10～200范围内。
+用于设置角色间的关系。
+
+.Counter(id, obj)
+id为列表id，如果为0则默认塞到列表最后尾。
+如果输入有效数值，则对指定的counter动作进行设置与覆盖。
+obj为object格式。
+参数有 id（动作指令id），rate（概率），cond（callback， 筛选条件，可选）
+具体设置方式为：
+.Counter({ 
+    id:'talk', //聊天
+    rate: 30,   //30%触发概率
+    cond:()=>{ return C['cid'].mood >= 50 )}  //只有心情值大于50时才允许触发。
+})
+

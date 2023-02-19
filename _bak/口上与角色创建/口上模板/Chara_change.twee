@@ -1,0 +1,150 @@
+/* 素质、刻印的变化 */
+/* 把 NPCID 替换成自己角色的id。包括NPCIDName这个 */
+/* 
+  跟在标题后的[noMsg]表示这份口上并没有填写内容，只是一个模板。
+  有noMsg的情况下，这份口上会被自动忽略，不会被载入游戏。
+  填写后记得删除[noMsg]。
+*/
+:: Kojo_NPCID_GetMark_Hypnosis[noMsg]
+/* 获得催眠刻印时 */
+<<switch Tsv['NPCID'].getHypnosis>>
+   <<case 1>>
+      到达1级时。
+   <<case 2>>
+      到达2级时。
+   <<case 3>>
+      到达3级时。
+   <<case 4>>
+      到达4级时。
+   <<case 5>>
+      到达5级时。
+<</switch>>
+
+:: Kojo_NPCID_GetMark_Ecstacy[noMsg]
+/* 获得快乐刻印时 */
+<<switch Tsv['NPCID'].getEcstacy>>
+   <<case 1>>
+      到达1级时。
+   <<case 2>>
+      到达2级时。
+   <<case 3>>
+      到达3级时。
+   <<case 4>>
+      到达4级时。
+   <<case 5>>
+      到达5级时。
+<</switch>>
+
+:: Kojo_NPCID_GetMark_Surrender[noMsg]
+/* 获得屈服刻印时 */
+<<switch Tsv['NPCID'].getSurrender>>
+   <<case 1>>
+      到达1级时。
+   <<case 2>>
+      到达2级时。
+   <<case 3>>
+      到达3级时。
+   <<case 4>>
+      到达4级时。
+   <<case 5>>
+      到达5级时。
+<</switch>>
+
+:: Kojo_NPCID_GetMark_Pain[noMsg]
+/* 获得痛苦刻印时 */
+<<switch Tsv['NPCID'].getPain>>
+   <<case 1>>
+      到达1级时。
+   <<case 2>>
+      到达2级时。
+   <<case 3>>
+      到达3级时。
+   <<case 4>>
+      到达4级时。
+   <<case 5>>
+      到达5级时。
+<</switch>>
+
+:: Kojo_NPCID_GetMark_Fear[noMsg]
+/* 获得恐惧刻印时 */
+<<switch Tsv['NPCID'].getFear>>
+   <<case 1>>
+      到达1级时。
+   <<case 2>>
+      到达2级时。
+   <<case 3>>
+      到达3级时。
+   <<case 4>>
+      到达4级时。
+   <<case 5>>
+      到达5级时。
+<</switch>>
+
+:: Kojo_NPCID_GetMark_Humiliated[noMsg]
+/* 获得耻辱刻印时 */
+<<switch Tsv['NPCID'].getHumiliated>>
+   <<case 1>>
+      到达1级时。
+   <<case 2>>
+      到达2级时。
+   <<case 3>>
+      到达3级时。
+   <<case 4>>
+      到达4级时。
+   <<case 5>>
+      到达5级时。
+<</switch>>
+
+:: Kojo_NPCID_GetMark_Mortify[noMsg]
+/* 获得羞耻刻印时 */
+
+<<switch Tsv['NPCID'].getMortify>>
+   <<case 1>>
+      到达1级时。
+   <<case 2>>
+      到达2级时。
+   <<case 3>>
+      到达3级时。
+   <<case 4>>
+      到达4级时。
+   <<case 5>>
+      到达5级时。
+<</switch>>
+
+:: Kojo_NPCID_GetMark_Resistance[noMsg]
+/* 获得反抗刻印时 */
+
+<<switch Tsv['NPCID'].getResistance>>
+   <<case 1>>
+      到达1级时。
+   <<case 2>>
+      到达2级时。
+   <<case 3>>
+      到达3级时。
+   <<case 4>>
+      到达4级时。
+   <<case 5>>
+      到达5级时。
+<</switch>>
+
+:: Kojo_NPCID_LoseMark_Resistance[noMsg]
+/* 失去反抗刻印时 */
+<<switch Tsv['NPCID'].loseResistance>>
+   <<case 1>>
+      从5级掉落至3级前后
+   <<case 2>>
+      从任意等级掉落至1级
+   <<case 3>>
+      彻底失去反抗心时
+<</switch>>
+
+:: Kojo_NPCID_LoseMark_Hypnosis[noMsg]
+/* 失去催眠刻印时 */
+<<switch Tsv['NPCID'].loseHypnosis>>
+   <<case 1>>
+      从深度催眠稍微恢复一点自我时
+   <<case 2>>
+      半清醒状态
+   <<case 3>>
+      彻底清醒时
+<</switch>>

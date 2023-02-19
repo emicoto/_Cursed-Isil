@@ -1,0 +1,55 @@
+:: CharaSheet_Nanaly[csv]
+id, Nanaly
+name, 娜娜莉
+surname, 艾索斯
+
+gender, female
+race, dracon
+position, both
+title, 研究生
+job, scholar
+birthday, 4016, 5, 28
+
+traits, 性开放
+traits, M倾向
+traits, 胆大
+traits, 乐观
+traits, 忠诚
+
+talent, 水属性
+talent, 发光
+talent, 天才
+talent, 探究心
+talent, 迷之知识
+
+skill, water_bubble
+skill, clear_minde
+
+appearance.eyecolor, 水色
+appearance.haircolor, 金色
+appearance.hairstyle, 披肩中长发
+appearance.skincolor, 白皙
+appearance.tall, 1620
+appearance.weight, 45.5
+
+stats.STR, 8
+stats.CON, 10
+stats.DEX, 14
+stats.INT, 16
+stats.WIL, 12
+stats.PSY, 14
+stats.ALR, 14
+
+abl.magica, 6
+abl.craft, 10
+abl.medicine, 12
+abl.ions, 6
+
+sbl.knowledge, 6
+sbl.techinque, 6
+sbl.endurance, 2
+sbl.desire, 2
+
+exp.onani, 30+random(30)
+
+virginity.anal, 震动棒, 不明, 以某人为幻想对象,用震动棒自行破处

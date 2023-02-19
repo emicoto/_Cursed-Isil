@@ -1,0 +1,13 @@
+:: Map
+
+<div id="travel">
+
+</div>
+
+<<link '返回' 'MainLoop'>><</link>><br>
+/* 实际可移动项目与时间会根据目前所在地来计算。跟EWA旧版差不多机制。全自动生成可移动链接。 */
+<<done>>
+<<run
+    F.createLocationLink()
+>>
+<</done>>

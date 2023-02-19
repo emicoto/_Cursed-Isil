@@ -1,0 +1,83 @@
+:: Kojo_Isil_Regist[script]
+/* 代码区，用于注册角色颜色、额外的设定、flag信息等 */
+Kojo.set('Isil','#F9F570')
+    //角色介绍
+    .Intro('来自光森林的精灵王子，为了专研魔法而来到了奥兰尼亚。') 
+    //起始点
+    .Home('宿舍,S303')
+
+    //关系性
+    .Relation('Ayres', '亦敌亦友', 120) 
+
+    .SleepTime(22)
+    .WakeupTime(6)
+
+    //日程表
+    .Schedule(0,['魔法研究所',[1,3,5], 8, 12, 3, 80]) 
+    .Schedule(0, ['植物园', [2, 4], 14, 17, 3, 80])
+    .Schedule(0, ['宿舍,S303', 'allday', 20, 8, 12, 100])
+
+    //过滤器
+    .Filter((actiondata)=>{
+        const {type, id} = actiondata
+
+        //if(Cond.isUncons('Isil') || V.system.debug ) return 1
+        
+        if(Cond.pcIs('Isil') && groupmatch(id,'Firm','Touch','TrySex','Self') && !Cond.isFallen('Isil'))
+            return 0
+
+        switch (type){
+            case '接触':
+                if(Cond.pcIs('Isil') && Cond.hasTarget() && !Cond.isFallen('Isil'))
+                    return 0
+                break
+            case '触手':
+                if( Cond.bothIs('Isil') && !Cond.cursedLvGt('hypnos', 3))
+                    return 0
+                if(Cond.pcIs('Isil') && Cond.hasTarget() && !Cond.isFallen('Isil'))
+                    return 0
+                break
+        }
+        return 1
+    })
+
+    //事件表
+    .Event(0, 
+    { id:'CookTry' , 
+      title:' 伊希露的烹饪尝试', 
+      config:{
+         onEnd:{ cookTry:[1]  }
+      },
+      cond:()=>{
+         return !Cflag.Isil.cookTry && Tsv.Isil.lastAction === 'Cook' && tc === 'Ayres'
+    } }) 
+
+    //自定义动作
+    .Action(0,{id:'Isil_MagicaResearch',name:'研究魔法',type:'G'})
+    
+//自定义动作的设置
+:: Kojo_Isil_Actions_Option[script]
+Action.kojo.Isil = function(){
+   Action.set('Isil_MagicaResearch')
+      .Filter(()=>{
+         return pc === 'Isil' && V.location.name === '魔法研究所'
+      })
+}
+
+:: Kojo_Isil[widget]
+/* 自定义小功能区 */
+<<widget "IsilGetFavo">>
+<<if args[0]>>
+<<set Cflag['Isil'].favo += parseInt(args[0])]>>
+<<else>>
+<<set Cflag['Isil'].favo += random(5)>>
+<</if>>
+<</widget>>
+
+<<widget "IsilName">><<print $chara.Isil.name>><</widget>>
+
+:: Msg_Isil_MagicaResearch
+“嗯……这个法术模型需要的公式是……”<br>
+<<you>>热心地在魔法研究室里研究着魔法。<br>
+
+

@@ -1,0 +1,59 @@
+
+:: Start [nosave, title]
+<div id='gametitle'>
+Era the Cursed
+</div>
+<div id='gamesubtitle'>
+<img src='./image/cursedEye.png'>
+- 伊希露的诅咒 -
+</div>
+<div id='gametitle_selection'>
+<<link '开始游戏' 'Start1'>><</link>><br>
+<<link '游戏设置' 'Option'>><</link>><br>
+</div>
+
+<div id='footer'>
+开发者工具：
+<<link '地图编辑器' 'MapEditor'>><</link>>
+　
+<<link '口上编辑器' 'KojoEditor'>><</link>>
+　
+<<link '获取口上模板'>><<run Action.output('kojo'); Action.output('kojocounter')>><</link>>
+　
+<<link '获取系统文模板'>><<run Action.output('msg')>><</link>>
+　
+<<link '获取指令设置模板'>><<run Action.output('script')>><</link>>
+　
+<<link '快速重启'>><<run Engine.restart()>><</link>><br>
+</div>
+
+
+:: Option[nosave, system]
+<li>总是显示主控角色名称 <<checkbox '$system.alwaysShowPCName' 0 1 autocheck>></li>
+<li>总是显示配合度检测  <<checkbox '$system.showOrder' 0 1 autocheck>></li>
+<li title='推荐打开哦。'>指令模式下，如果存在PC口上则优先显示 <<checkbox '$system.showPCKojo' 0 1 autocheck>></li>
+<li>开发者模式 <<checkbox '$system.debug' false true autocheck>></li>
+
+<<link 'Back' $lastsession>><</link>>
+
+:: Start1[nosave, nobar]
+游戏初始设定<br>
+<<dashline>>
+
+<<tips '你' 'curse'>>：<<textbox "$cursedLord.name" $cursedLord.name>><br>
+<br>
+<<tips '执行者' 'ayres'>>：<<textbox "$player.name" $player.name>> · $player.surname<br>
+<br>
+<<tips '伴侣' 'isil'>>：<<textbox "$target.name" $target.name>> · $target.midname · $target.surname<br>
+<br>
+全员扶她化？ <<checkbox "_futa" _futa autocheck>><br>
+全员清除默认经验？ <<checkbox "_newbie" _newbie 1 autocheck>><br>
+主CP纯女性化？ <<checkbox "_lesCP" _lesCP autocheck>><br>
+
+<<dashline>>
+准备好了吗？ 准备好就开始吧。<br>
+
+<br>
+<<link '开始游戏' 'EventStart'>><<run game.start()>><</link>><br>
+<<link '跳过片头直接开始' 'MainLoop'>><<run game.start(1)>><</link>>
+<br><br> 

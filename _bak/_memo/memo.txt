@@ -1,0 +1,66 @@
+Train执行顺序
+
+进入mainloop
+↓
+初始化场景，获取场景信息和在场角色
+↓
+显示场景文本，在场角色列表。
+↓
+检测角色日常事件，如果存在先执行角色事件
+↓
+进入指令交互模式，等待玩家输入
+↓
+玩家输入指令
+↓
+检测指令执行条件。以及comorder检测配合度（如果存在互动对象）
+
+无论是否到达条件，都可进入com:before事件。
+如果存在对应的com:before则在通用的com:before之后执行。
+如果存在对应的角色事件，则会跟在com:before之后显示角色的combefore事件。
+
+com:before事件中可以在指令执行前让玩家提前取消指令。
+
+如果开了设置，则会在before中显示执行条件和配合度的信息。
+确认能成功执行
+
+comCheck(id){
+T.comorder = 0
+T.reason = ''
+T.orderGoal = globalOrder(id) + com.order(id)
+T.ableCheck = globalCond(id) && com.cond(id)
+
+//指令执行时暂时去掉指令栏（包括过滤菜单和固定菜单）。防止连打出错。 doCommand时再恢复。
+new Wikifier(null, '<<replace #comlist>> <</replace>>)
+
+//这些必须都是纯文本。只能有选项相关的操作。
+new Wikifier(null, `<<append #contentMsg>>${Story.get('Command::Before')}<</appen>>`)
+
+if(system.showOrder && T.reason ) new Wikifier(null,`<<append #contentMsg>>指令执行：${T.reason}<br><</append>>`)
+
+
+if(Story.has('Com_{id}::Before'))
+    new Wikifier(null, `<<timed 1s>><<append #contentMsg>>${Story.get(`Com_{id}::Before`)}<</append>><</timed>>`)
+
+//如果存在Com.before(), 或口上侧存在Com:Script则在这里执行。
+if(com?.before) com.before()
+if(Kojo('Com', id, 'script')) new Wikifier(null, Kojo('Com', id, 'script') )
+
+if(Kojo('Com',id,'before'))
+    new Wikifier(null, `<<timed 1s>><<append #contentMsg>>${Kojo('Com', id, 'before')}<</append>><</timed>>`)
+
+new Wikifier('#contentMsg', '<<timed 1s>> <<linkreplace 'Next'>> <<run F.doCommand(id, 1)>> <</linkreplace>> <</timed>>)
+
+}
+before事件执行时可以用时间延迟分割一下？让文本顺序自然点。
+
+↓
+判定执行并进行数据运算。
+
+执行成功则进入comevent， 并执行sourcecheck, trackcheck。
+并在文本后显示数值变化。
+之后执行comend事件（高潮后续、刻印获得等。）
+
+执行失败或在before取消掉的话，则进入comcancel。
+↓
+执行完毕执行resetcom，让指令表归位，并清除多余数据和flag。
+之后执行LoopFirst，更新角色位置、场景信息等。并反馈到信息板上。如果触发事件，则会进入事件模式。

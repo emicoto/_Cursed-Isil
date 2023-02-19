@@ -1,0 +1,54 @@
+sugarcube-2:
+   macros:
+      setBase:
+         name: setBase
+      setPalam:
+         name: setPalam
+      selection:
+         name: selection
+         container: true
+      select:
+         name: select
+      pick:
+         name: pick
+      you:
+         name: you
+      tips:
+         name: tips
+      sidebar_base:
+         name: sidebar_base
+      showpalam:
+         name: showpalam
+      showmoney:
+         name: showmoney
+      showtime:
+         name: showtime
+      passtime:
+         name: passtime
+      selects:
+         name: selects
+         container: true
+      com:
+         name: com
+         container: true
+      dashline:
+         name: dashline
+      eventSelect:
+         name: eventSelect
+         container: true
+      returnPhase:
+         name: returnPhase
+      resetLink:
+         name: resetLink
+      resetScene:
+         name: resetScene
+      actor:
+         name: actor
+      targetChara:
+         name: targetChara
+      targetPart:
+         name: targetPart
+      target:
+         name: target
+      actPart:
+         name: actPart

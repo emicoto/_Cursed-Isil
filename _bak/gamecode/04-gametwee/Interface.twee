@@ -1,0 +1,154 @@
+:: LeftSide
+<<if $mode is "normal">>
+	<<include "LeftSidePanel">>
+<<else>>
+<</if>>
+
+
+:: RightSide
+<<if $mode is "normal">>
+	<<include "RightSidePanel">>
+<<else>>
+<</if>>
+
+
+:: LeftSidePanel
+<div id="ui-bar">
+	<div id="story-caption">
+		show caption
+	</div>
+</div>
+
+
+:: RightSidePanel
+<div id="sidebar">
+	<div id="story-caption">
+		show character status
+	</div>
+</div>
+
+:: StoryMenu
+<<if $passage == 'MainLoop'>>
+<<link 'Inventory'>><</link>>
+<<link 'Profile' 'Profile'>><</link>>
+<<link 'Magicom'>><</link>>
+<</if>>
+:: Invenory
+
+<<link '返回' $lastsession>><</link>>
+
+
+:: Profile
+<div id='profile'>
+$target.fullname  好感：<<print Cflag[tc].favo>>  信赖：<<print Cflag[tc].trust>>  支配：<<print Cflag[tc].dom>>  依存：<<print Cflag[tc].depend>>
+<br><hr>
+
+基础：<br>
+
+HP: $target.base.health[0] / $target.base.health[1]　　
+EP: $target.base.stamina[0] / $target.base.stamina[1]<br>
+SP: $target.base.sanity[0] / $target.base.sanity[1]　　
+MP: $target.base.mana[0] / $target.base.mana[1]<br>
+<br>
+力量 $target.stats.STR[1]　　
+体质 $target.stats.CON[1]　　
+敏捷 $target.stats.DEX[1]　　
+智力 $target.stats.INT[1]　　
+<br>
+意志 $target.stats.WIL[1]　　
+灵感 $target.stats.PSY[1]　　
+魅力 $target.stats.ALR[1]　　
+幸运 $target.stats.LUK[1]
+
+<br><hr>
+
+状态：<br>
+<<set _keys1 to Object.keys(D.palam)>>
+<<=
+	let retext = ''
+	let n=0
+	for(let i in D.palam){
+		retext += `${D.palam[i]}Lv${$target.palam[i][0]}: ${$target.palam[i][1]} / ${$target.palam[i][2]}　　`;
+		n++;
+		if(n%4==0) retext += '<br>';
+	}
+	retext
+>>
+<hr>
+
+刻印：<br>
+<<=
+   let retext = ''
+   let n=0
+   for(let i in D.mark){
+      retext += `${lan(D.mark[i])} Lv${$target.mark[i]}　` 
+      n++
+      if(n%3==0) retext+='<br>'
+   }
+   retext
+>>
+<br><hr>
+
+技能：<br>
+<<=
+	let txt = ''
+	let n=0
+	for(let i in D.abl){
+		txt += `${D.abl[i]}Lv${$target.abl[i].lv}　`;
+		n++
+		if(n%5==0) txt += '<br>'
+	}
+	txt
+>>
+
+<br><hr>
+
+特殊：<br>
+<<=
+	let txt = ''
+	let n=0
+	for(let i in D.sbl){
+		txt += `${D.sbl[i]}Lv${$target.sbl[i]}　`;
+		n++
+		if(n%5==0) txt += '<br>'
+	}
+	txt
+>>
+
+<br><hr>
+
+经验：<br>
+<<=
+	let txt = ''
+	let n=0
+	D.exp.forEach((k)=>{
+		txt+= `${k}: ${$target.exp[k].total}　`
+		if(groupmatch(k,'A','A高潮','多重高潮','饮精','肛射','子宫开发','被拍摄','触手奸','性转','自慰')) txt+='<br>'
+	})
+	txt
+>>
+
+<br><hr>
+
+
+无自觉经验：<br>
+<<=
+	let txt = ''
+	for(let i=0; i<D.exp.length;i++){
+		let k = D.exp[i]
+		if(k==='眠奸') break
+
+		txt+= `${k}: ${$target.exp[k].total-$target.exp[k].aware}　`
+		if(groupmatch(k,'A','A高潮','多重高潮','饮精','肛射','子宫开发','被拍摄')) txt+='<br>'
+	}
+	txt
+>>
+
+<br><hr>
+
+</div>
+<<link '返回' $lastsession>><</link>>
+
+:: Magicom
+
+<<link '返回' $lastsession>><</link>>

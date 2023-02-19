@@ -1,0 +1,90 @@
+
+/* 角色名字位于$chara.id.name下。伊希露的情况是$chara.Isil.name。 名字不允许玩家更改的话，直接写设定好的名字就可。 */
+/* 常规事件不需要换行符，但需要分段符号<fr>。指令事件文本需要换行符<br>。 */
+/* 地点一览：学院广场，教学栋，宿舍，研究所，图书馆，博物馆，城镇街道，水族馆，植物园，动物园 */
+
+
+
+
+
+:: Kojo_Isil_Com
+/* 纯代码区。每次指令执行时进行flag检测的地方 */
+/* 选择的Com在$selectCom */
+/* 如果要强制取消某个指令的执行，也可以在这里处理。 */
+<<script>>
+
+if(V.date.time >= 1350)
+    F.getState('Isil', '睡眠');
+else if(V.date.time >= 420)
+    F.lostState('Isil', '睡眠');
+
+if(!Cflag['Isil'].fallen && V.selectCom == 30){
+    _comAble = false;
+    _reason += '【未陷落不可推倒】'
+}
+
+<</script>>
+
+
+:: Kojo_Isil_Com_G2:Before
+单个:属于文本分支。
+两个::属于功能分支。
+
+确认执行前的事件文本。
+可以进行flag操作。但尽量不要有数据处理。
+如果有选项可取消执行，则操作_comCancel 变量。<br>
+要记得加 Com.reset()在linkreplace区域里面。<br>
+<br>
+<<linkreplace "取消执行">><<set _comCancel to true>><<resetLink>><<run Com.reset()>><</linkreplace>>
+<<selection replace>>
+<<pick '分支？'>>123
+<<pick '分支2？？'>>abc
+<</selection>>
+
+:: Kojo_Isil_Com_G2:Cancel
+指令取消时的事件文本。
+可以进行flag操作。但尽量不要有数据处理。
+
+:: Kojo_Isil_Com_G2:Failed
+指令失败时的事件文本。
+可以进行flag操作。但尽量不要有数据处理。
+
+:: //Kojo_Isil_Com_G2:Force
+指令无视角色意志强制执行的事件文本。
+如果不是整个脉络都不一样，就不需要:Force分支。
+直接在Com文本内根据_force flag是否存在来进行分支判断就好。
+<<=(_force ? '强制时的小分支' : '正常时的小分支')>>
+<<if _force>>
+    强制时的段落分支。<br>
+<<else>>
+    正常是的段落分支。<br>
+<</if>>
+
+:: Kojo_Isil_Com_G2:After
+执行结束时的事件文本。
+可以进行flag操作。但尽量不要有数据处理。
+
+:: Kojo_Isil_Com_G2
+/* 聊天指令 */
+“有什么事吗？”<br>
+“嗯……这个术式是……”<br>
+$target.name敷衍地附和着你的话。<br>
+<fr>
+进行一个翻页的测试<br>
+<fr>
+翻页！<br>
+<fr>
+最后一页啦
+
+:: Kojo_Isil_Com_X1
+/* 触手，玩弄乳头 */
+<<if Cond.isUncons(tc)>> /* Cond.isUncons() 判定是否失去意识 */
+"……嗯唔……"<br>
+沉睡中的伊希露难受地呼吸着。<br>
+<<else>>
+“…………”<br>
+伊希露咬紧牙关，忍受着触手带来的不适感。<br>
+<</if>>
+
+:: PCKojo
+/* Isil作为PC时所说的话。只有Isil和Ayres有PCKojo */

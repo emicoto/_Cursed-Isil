@@ -1,0 +1,11 @@
+存档用sugarcube的默认功能
+如果纯web端运行,则会变成download,直接输出保存文件
+
+如果是电脑端运行,则是直接保存到save中
+
+
+读取存档信息时
+LZString.decompressFromBase64(base64Str)
+用这个方法读取metadata显示在存档栏中
+
+如果是纯web端,则显示localstorage中的savedetail

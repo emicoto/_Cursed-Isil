@@ -1,0 +1,180 @@
+:: CharaSheet_NPCID[csv]
+/* 这是正确的注释方式 */
+/* CharaSheet_NPCID这是CSV文件的标题。NPCID请替换成自己角色的ID。*/
+/* 创建角色卡时建议把不填的项目还有注释删干净。 */
+/* 表格的第一列是路径名。 第二列之后是变量的值 */
+
+id, Rena, /* 这是你的角色ID。同时也是你的角色的变量名。建议用英文，提高代码和变量的辨别度。如果担心有重名的，可以是 Rena1 之类的 英文+数字的方式。*/
+
+name, 蕾娜, ;注释也可以使用分号。但不要忘记在添加注释前，记得先加个逗号分割。这是角色的名字。
+
+midname, ,/* 中间名。为空的话就代表没有。 空项最好删掉，给程序处理减点重。*/
+surname, 菲尼斯, /* 家族名。也就是姓氏。*/
+
+gender, female, /* 性别。 female是女性，male是男性，inter是双性。*/
+
+race, human, /* 种族。 可用种族有：人类human, 精灵elvin, 魔人 deamon, 狼人 wolves, 矮人 drawf, 地精 goblin, 狐猫 catvinx, 马头人 centaur,  怪兽人 orc, 巨人 titan, 龙人 dracon */
+
+position, both, /* 攻受定位。 攻tachi, 受neko, 可攻可守 both。会影响角色的AI选择 */
+
+title, 治愈师, /* 头衔，随意写。会出现在角色的冒险者名牌上 */
+job, mage, /* 职业。具体有啥职业看tips档案。 */
+
+birthday, 4048, 2, 11, /* 生日，顺序年月日，用于计算年龄和生日事件。 游戏开局是4064年所以……  */
+
+traits, 耐疼, /* 特征。这个可以重复填。就跟era一样。要注意的是，冲突的特征是会被游戏机制自动修复的哦……特征一览请看traitlist.js */
+
+talent, 木属性, /* 天赋才能。这个也可以重复填。一览跟traits放一块了。 */
+
+skill, healing_aura, /* 掌握的技能。也就是法术、战技一类的。暂时没有技能等级这东西。只有熟练度…… 目前不多。详细也是看资料文件。*/
+
+appearance.eyecolor, 蓝色, /* 眼睛颜色，只输入一个值就是双目都一个色。输入两个值就可以设定异色瞳啦！顺序是左右。 */
+
+appearance.haircolor, 棕色, /* 发色*/
+appearance.hairstyle, 及肩卷发 , /* 发型 */
+appearance.tall, 1740, /* 身高， 单位是毫米，不填的话会根据体型自动计算。 */
+appearance.weight, 56.7, /* 体重，单位是kg 不填的话会根据身高体型自动计算。 */
+appearance.bodysize, 3, /* 体型， 0=娇小 137~147cm， 1=矮小 147~164cm, 2=普通 164~174cm, 3=高 174~184cm， 4=高大 184~200cm， 5=巨人， 200cm以上 */
+
+stats.STR, 12, /* 这部分是力量、体质、敏捷、智力、意志、灵感、魅力。 */
+stats.CON, 13, /* 数值标准和DND跑团差不多。 范围在 1~20内。*/
+stats.DEX, 10, /* 正常成年人标准值为 10. */
+stats.INT, 15
+stats.WIL, 16
+stats.PSY, 9
+stats.ALR, 14
+
+/* abl是正常的技能。有熟练经验条 */
+abl.magica, 6,
+abl.lumen, 3, /*光代表秩序之力，也就是世界规则。 */
+abl.ark, 0, /* 暗代表混沌之力，也就是虚空、时间乱流。*/
+abl.flare, 1, /* 水是采用 '离子'，'流体'的概念，所以水不止可以操作水，也可以操控空气，也就是风。*/
+abl.ions, 1, /* 火指能量本身，包括温度操作。本身也带点风的操作。（爆炸、热量导致的热浪冲击） */
+abl.vitae, 6, /* 木并不是指 植物，而是指生命力。*/
+abl.terra, 6, /* 土包括所有没有生命的实体物质。 无论是泥土，还是钢铁，还是普通的石头。当然也包括失去生命力的木块*/
+abl.electron, 2, /* 雷是电、磁场、引力、辐射等广泛的环境能。 */
+
+abl.sword, 0, /* 剑技 */
+abl.wrestle, 0, /*格斗*/
+
+abl.cooking, 0, /* 料理 */
+abl.plant, 0, /* 种植 */
+abl.medicine, 0, /* 药物调合 */
+abl.craft, 0, /* 手工制作 */
+abl.fishing, 0, /* 钓鱼 */
+abl.gathering, 0,/* 采集 */
+
+/*sbl是性相关的技能。与其说是技能……不如说是某个心理属性的深入程度。*/
+/* 没有熟练经验条，而是通过调教数值、累计经验、剧情开关等进行变化升级。 */
+sbl.knowledge, 0, /*性知识。*/
+sbl.technique, 0, /*性技巧 */
+sbl.endurance, 0, /*性耐力， 影响高潮的阈值 */
+sbl.submissive, 0, /*顺从*/
+sbl.refuse, 0, /*抗拒*/
+sbl.desire, 0, /*欲望*/
+sbl.service, 0,/*奉献*/
+sbl.exhibition, 0, /*露出*/
+sbl.promscuity, 0, /*滥交*/
+
+/* exp，就是个人经历过的经验。经验是以具体行为的次数计算的。 */
+/* 就算点了很多次性交指令，但实际只会根据插入~射精的完整流程算一次经验。 */
+/* MBCVA这种的局部开发经验，倒是会根据每次指令算一次。 */
+/* 具体经验表看设定资料。 */
+/* exp可以设定随机值，以基础值+随机值的方式录入，具体就是 10+random(30)，*/
+/* random() 括号中的数值可以随意填。 建议把数值控制在100内。游戏开局时数值就不要太高啦！*/
+exp.M, 0
+exp.B, 0
+exp.C, 0+random(30)
+exp.V, 0
+exp.A, 0
+exp.高潮, 0
+exp.自慰, 0
+
+/* 装备类。因为物品系统还没撸好。所以暂时不用填。大家都是全裸呢！ */
+equip.weapon,,
+equip.shield,,
+
+equip.head,,
+equip.cover,,
+equip.outfitUp,,
+equip.outfitBt,,
+equip.innerUp,,
+equip.innerBt,,
+equip.hands,,
+equip.legs,,
+
+equip.face,,
+equip.ears,,
+
+/* 伤疤。因为狐狐觉得伤疤淤痕吻痕鞭痕什么的很涩，所以是有伤痕系统的。*/
+/* 也会根据衣服暴露度让周围的人意识到这些痕迹…… */
+/* 可用的值有：疤痕scar, 鞭痕whip, 吻痕 kissmark, 淤痕 bruise, 笔迹 pen*/
+/* 部位有：面部face, 脖子neck, 胸部 breast, 肩部 shoulder, 手臂arms, 大腿 thighs, 肚子 abdomen,*/
+/* 背部 back, 胯部 private, 左臀瓣 buttL, 右臀瓣 buttR, */
+/* scar是永久性的，无法自然恢复。其他都有时间值, 默认是24小时。 */
+scar.neck, kissmark,
+scar.back, scar, /* 重复的话这个部位就会记录成多个伤痕。有一个算一个。 */
+scar.back, scar,
+
+
+/* 器官的特殊设定。*/
+/* 可设定部位 m口，b胸，v阴道，p阴茎，c阴蒂，u尿道，a肛门 */
+/* 路径上共通变量：size 大小， sens:感度 */
+/* p的shape值是阴茎的形状描述，恶魔阴茎， 狼阴茎，史莱姆阴茎……*/
+/* shape的内容可以自由填，所有角色面板都会有作者名字。反正尴尬的是你。 */
+/* p还有trait值，但trait具体值是跟种族或部位详情绑定的。所以你瞎填了之后也会被系统修正！*/
+/* size的值从 0到 5， 只有p到7 */
+/* 根据大小，系统会计算出具体的长度深度宽度 */
+/* P的值 0微型， 1迷你，2短小，3普通，4大，5巨大，6马屌，7深渊恶魔 */
+/* 具体长粗为 6x1.5cm, 9x2.2cm, 12x3.2cm, 14x4.2cm, 16x5.2cm, 18x6.2cm, 21x7.4cm, 25x8.6cm */
+/* VA的深度和宽度会根据体型与大小进行换算。 具体值：0紧闭 1初步开发 2柔软 3宽松 4敞口 5大开 */
+/* 感度有20个等级。默认感度值为 2（普通未开发） 0是钝感， 1是弱感。2普通， 3明显，4很明显 */
+/* 5以上都是开发过后的数值。 */
+organ.m.size,0
+organ.m.sens,0
+
+organ.b.size,0
+organ.b.sens,0
+
+organ.v.size,0
+organ.v.sens,0
+
+organ.p.size,0
+organ.p.sens,0
+organ.p.shape,普通阴茎
+
+organ.c.size,0
+organ.c.sens,0
+
+organ.a.size,0
+organ.a.sens,0
+
+organ.u.sens,0
+
+/* 处女童贞，各种第一次的记录 */
+/* 可填项目：kiss, vagina, vaginasex, penis, anal, analsex, handholding */
+/* vagina, anal只是单纯的第一次经验。 */
+/* vaginasex, analsex 才是决定VA处女的变量。 */
+/* 输入顺序为： 对象， 时间， 情景。 */
+virginity.kiss, 初恋, 时间不明, 告白后一个冲动吻上对方
+virginity.vagina, 自己的手指, 时间不明, 进行性幻想时用手指探破了自己的私密之处
+
+
+/* 一些基础flag的设置。 */
+/* 下面这些项目都可以通过口上文件进行设置和固定数值，或在游戏途中进行变化。 */
+flag.jobfame, 30, /*职业名声*/
+flag.schoolfame, 30, /*校内名声*/
+flag.publicfame, 0, /*社会名声*/
+flag.lewdfame, 0, /*性堕落名声*/
+flag.crimefame, 0, /* 犯罪名声 */
+
+
+flag.waketime, 540, /* 起床时间, 单位是分钟 */
+flag.sleeptime, 1380, /* 睡眠时间 */
+
+flag.disallowNameChange, 0, /* 是否允许玩家在开局时修改角色名称， 默认值为0，也就是允许。 设置为1就无法开局改名字。 */
+flag.disallowGenderChange, 0, /* 是否允许玩家在开局时修改角色性别，默认值为0，也就是允许。设置为1就无法开局改名字。 */
+flag.disallowPositionChange, 0, /* 是否允许角色在游戏过程中改变攻受定位。默认值为0，也就是允许，设置为1就无法开局改名字。 */
+
+
+

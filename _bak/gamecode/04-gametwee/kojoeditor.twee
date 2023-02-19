@@ -1,0 +1,150 @@
+:: KojoEditor[tool, nobar]
+<<run F.initKojoEditor()>>
+
+<span style='color:gray;font-size:16px'>[noMsg]是默认tag，表示还没录入内容，不会被系统检测。<br>
+填写内容后记得去掉[noMsg]。<br>
+被<<print `/ *　　* /`>>框住的是注释，不会被系统读取。写的时候记得清除注释。<br>
+连续的空行会被转换为换行符。条件里的那些低于 n的，把条件式的true改为false，就是大于等于 n的意思。条件里的各种name，点选名称一览时会自动替换。<br>
+</span>
+<<dashline>>
+<div id='kojoEditor'>
+<textarea id='kojotext'>:: Kojo_NPCID_Action_Talk[noMsg]</textarea>
+</div>
+
+<<dashline>>
+<div id='kojoEditor'>
+
+<div id = 'charaId'>
+角色ID: <input id='input-npcid' type='text' @value='_npcId'>
+</div>
+
+
+事件选择：<<listbox '_eventID'>><<optionsfrom _eventOption>><</listbox>>
+<<button '获取事件模板'>>
+<<run F.getEventTemplet()>>
+<</button>>
+ 
+<<button '创建选项分支（Event类）'>>
+<<run F.makeSeectionEvent()>>
+<</button>>
+<br>
+动作选择: <<listbox '_selectID'>><<optionsfrom _templetOption>><</listbox>>
+<<button '获取动作模板'>>
+<<run
+    let id = T.selectID.split('|')[0];
+    let txt = Action.output('kojo-id', id)
+    txt = txt.replace('NPCID', $('#input-npcid').val())
+    $('#kojotext').val(txt)
+>>
+<</button>>
+<br>
+插入条件:<<listbox '_condition'>><<optionsfrom _condOption>><</listbox>>
+　
+<<button '插入选项'>>
+<<run F.insertSelection()>>
+<</button>>
+ 
+<<button "插入差分切换">>
+<<run F.insertSwitch() >>
+<</button>>
+ 
+ <<button '插入随机文本'>>
+ <<run F.insertRandomTxt() >>
+ <</button>>
+ 
+ <<button '插入性别差分'>>
+<<run
+    let txt = `<<=P.splitSex( "NPCID", "男性时的文本", "女性时的文本", "扶她时的文本（可选）" )>>`
+    F.insertTxt(txt)
+>>
+ <</button>>
+<br>
+<span style='font-size:14px'>
+baseName一览：<<listbox '_baseName'>><<optionsfrom _baseNamelist>><</listbox>>
+　
+palamName一览：<<listbox '_palamName'>><<optionsfrom _palamNamelist>><</listbox>>
+<br>
+flagName一览：<<listbox '_flagName'>><<optionsfrom _flagNamelist>><</listbox>>
+　
+markName一览：<<listbox '_markName'>><<optionsfrom _markNamelist>><</listbox>>
+<br></span>
+
+
+<<button '保存'>>
+<<run
+    var txt = T.kojotext;
+    if(!fs)
+        download(txt, 'Kojo', 'txt')
+    else
+        fs.writeFileSync('./Kojo/Kojo.twee', txt)
+>>
+<</button>>
+　
+<<button '返回标题'>><<run Engine.restart()>><</button>><br>
+
+</div>
+
+<<done>>
+<<script>>
+//插入键盘监听事件
+document.addEventListener('keydown', (event) => {
+    const keyName = event.key;
+    if(keyName == 'Enter'){
+        event.preventDefault()
+        F.checkEnter()
+    }
+    else{
+        T.lastEnter = false
+    } 
+}, false);
+
+$('#kojotext').on('input propertychange',()=>{
+    T.kojotext = $('#kojotext').val()
+    $('#kojotext').val(T.kojotext)
+})
+
+$('#input-npcid').on('change',async ()=>{
+    F.npcIdOnChange()
+})
+
+$('#listbox--condition').on('change',()=>{
+
+    let txt = `\n<<if ${T.condition.replace('cid', `"${$('#input-npcid').val()}"`)}>>\n/* 当条件为真时 */\n<<else>>\n/* 否则 */\n<</if>>\n`
+    F.insertTxt(txt)
+    
+})
+
+$('#listbox--baseName').on('change',()=>{
+    let txt = $('#kojotext').val().replace(/baseName/g, T.baseName.split('|')[0])
+ 
+    //变换同时保持当前光标位置
+    let pos = $('#kojotext').prop('selectionStart')
+    $('#kojotext').val(txt)
+    $('#kojotext').prop('selectionStart', pos)
+})
+$('#listbox--palamName').on('change',()=>{
+    let txt = $('#kojotext').val().replace(/palamName/g, T.palamName.split('|')[0])
+
+    //变换同时保持当前光标位置
+    let pos = $('#kojotext').prop('selectionStart')
+    $('#kojotext').val(txt)
+    $('#kojotext').prop('selectionStart', pos)
+})
+$('#listbox--flagName').on('change',()=>{
+    let txt = $('#kojotext').val().replace(/flagName/g, T.flagName.split('|')[0])
+
+    //变换同时保持当前光标位置
+    let pos = $('#kojotext').prop('selectionStart')
+    $('#kojotext').val(txt)
+    $('#kojotext').prop('selectionStart', pos)
+})
+$('#listbox--markName').on('change',()=>{
+    let txt = $('#kojotext').val().replace(/markName/g, T.markName.split('|')[0])
+
+    //变换同时保持当前光标位置
+    let pos = $('#kojotext').prop('selectionStart')
+    $('#kojotext').val(txt)
+    $('#kojotext').prop('selectionStart', pos)
+})
+<</script>>
+<</done>>

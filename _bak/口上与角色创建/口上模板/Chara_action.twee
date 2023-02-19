@@ -1,0 +1,839 @@
+/* 把 NPCID 替换成自己角色的id。包括NPCIDName这个 */
+/* 
+  跟在标题后的[noMsg]表示这份口上并没有填写内容，只是一个模板。
+  有noMsg的情况下，这份口上会被自动忽略，不会被载入游戏。
+  填写后记得删除[noMsg]。
+*/
+
+:: Kojo_NPCID_BeforeAction
+<<script>>
+//纯代码区。在这里设置变量，调用函数等等。
+//这里的代码会在每个动作开始前执行。
+
+<</script>>
+
+:: Kojo_NPCID_Action_Relax[noMsg]
+/* 与pc一起放松 */
+<<you>>和<<NPCIDName>>在$location.name找了个舒适的地方，坐下放松。<br>
+
+
+:: Kojo_NPCID_Action_Sing[noMsg]
+/* 听你唱歌或一起唱歌的情景 */
+<<if $pc == 'Isil'>> 
+/* PC是伊希露的情况 */
+精灵的歌声果然很美啊……<br>
+<<NPCIDName>>在心中称赞道。<br>
+
+<<else>>
+/* PC是艾瑞斯的情况 */
+这破坏性的音痴实在是……<br>
+<<NPCIDName>>皱着眉把耳朵捂上了。<br>
+<</if>>
+
+:: Kojo_NPCID_Action_Cook[noMsg]
+/* 看着你煮饭或一起煮饭或换人上手煮饭的情景 */
+<<if $pc == 'Isil'>> 
+/* PC是伊希露的情况 */
+……闻着烧焦的气味，<<NPCIDName>>只好撸起袖子自己上了。<br>
+
+<<else>>
+/* PC是艾瑞斯的情况 */
+啊……好香。<<NPCIDName>>流着口水等着吃美餐<br>
+<</if>>
+
+:: Kojo_NPCID_Action_Dance[noMsg]
+/* 看你跳舞或一起跳舞的情景 */
+
+:: Kojo_NPCID_Action_PlayMusic[noMsg]
+/* 听你演奏或一起演奏的情景 */
+
+:: Kojo_NPCID_Action_Walk[noMsg]
+/* 一起散步的情景 */
+
+:: Kojo_NPCID_Action_Plant[noMsg]
+/* 一起种菜的情景 */
+
+:: Kojo_NPCID_Action_Read[noMsg]
+/* 一起读书的情景 */
+
+:: Kojo_NPCID_Action_HomeWork[noMsg]
+/* 一起做作业或写论文的情景 */
+
+:: Kojo_NPCID_Action_Fish[noMsg]
+/* 钓鱼*/
+
+:: Kojo_NPCID_Action_Gather[noMsg]
+/* 采集 */
+
+:: Kojo_NPCID_Action_Mine[noMsg]
+/* 挖矿 */
+
+
+
+:: Kojo_NPCID_Action_Talk[noMsg]
+/* 随意的闲聊 */
+“嗯？想聊天吗？人家很乐意哟~”<br>
+听到<<you>>的请求，娜娜莉露出了无邪的微笑，坐在<<you>>的身边<br>
+<<NPCIDName>>和<<you>>聊起了今天发生的事，<<you>>们聊得很开心<br>
+
+:: Kojo_NPCID_Action_Look[noMsg]
+角色外观描述+穿着打扮.<br>
+打扮可以根据现在套装分支.<br>
+<<switch $chara.NPCID.outfitset >>
+<<case '套装名'>>
+<</switch>>
+
+:: Kojo_NPCID_Action_Talk2[noMsg]
+谈论近况的内容。可以根据角色事件flag进行分支。<br>
+flagname替换成对应的变量名<br>
+<<if $chara.NPCID.flag.flagname >>
+   分支内容<br>
+<</if>>
+<fr>
+内容过长时可以用分页符进行分页<br>
+<fr>
+最后一页了. 指令模式下, 可不要忘记换行符哦!<br>
+
+:: Kojo_NPCID_Action_Interest[noMsg]
+/* 这里写谈论角色自己感兴趣话题的内容。 */
+<<selection replace>>
+<<pick '自定义话题A'>>
+谈论话题时的文本。
+<<pick '自定义话题B'>>
+谈论话题时的文本。
+<</selection>>
+
+:: Kojo_NPCID_Action_PetHead[noMsg]
+/* 摸头杀时的文本 */
+摸头时的内容<br>
+
+:: Kojo_NPCID_Action_Firm[noMsg]
+/* 被海王勾搭调情时的文本 */
+玩家角色(艾瑞斯)对攻略角色进行调情时的内容<br>
+调情就是只口花花跑火车啦. 没有肢体接触.<br>
+伊希露没堕落的话是不会主动调情的. 基本都是艾瑞斯这个海王在到处勾搭.<br>
+
+
+:: Kojo_NPCID_Action_Gift[noMsg]
+收到礼物时.<br>
+<<switch Tsv[tc].present>>
+<<case '钢笔'>>
+<<case '笔记本'>>
+<<case '魔法吊坠'>>
+<<case '魔晶耳环'>>
+<</switch>>
+
+
+:: Kojo_NPCID_Action_AskMoney[noMsg]
+/* 借钱 */
+/*<<you>>厚着脸皮向<<target>>借钱。<br>*/
+
+:: Kojo_NPCID_Action_PayBack[noMsg]
+/* 还钱 */
+/*<<you>>向<<target>>还了钱。<br>*/
+
+
+:: Kojo_NPCID_Action_TrySex[noMsg]
+<<if Tsv[tc].oksign>>
+合意时的内容
+
+<<elseif Tsv[tc].force>>
+强推成功的内容
+
+<<else>>
+强推失败的内容
+
+<</if>>
+
+
+:: Kojo_NPCID_Action_t0[noMsg]
+/* 接吻 */
+<<switch T.selectPart>>
+<<case 'mouth'>>
+   <<you>>吻上了<<NPCIDName>>的嘴唇。<br>
+<</switch>>
+
+:: Kojo_NPCID_Action_t1[noMsg]
+/* 亲吻 */
+<<switch T.selectPart>>
+<<case 'breast'>>
+   /*<<you>>亲吻在了<<NPCIDName>>的胸部上，轻吮吸舔，试图留下自己的印记。<br>*/
+<<case 'penis'>>
+   /*<<you>>亲吻在了<<NPCIDName>>的阴茎上，轻吮吸舔，试图留下自己的印记。<br>*/
+<<case 'clitoris'>>
+   /*<<you>>亲吻在了<<NPCIDName>>的阴蒂上，轻吮吸舔，试图留下自己的印记。<br>*/
+<<case 'ears'>>
+   /*<<you>>亲吻在了<<NPCIDName>>的耳朵上，轻吮吸舔，试图留下自己的印记。<br>*/
+<<case 'handL'>>
+   /*<<you>>亲吻在了<<NPCIDName>>的左手上，轻吮吸舔，试图留下自己的印记。<br>*/
+<<case 'handR'>>
+   /*<<you>>亲吻在了<<NPCIDName>>的右手上，轻吮吸舔，试图留下自己的印记。<br>*/
+<<case 'foot'>>
+   /*<<you>>亲吻在了<<NPCIDName>>的脚上，轻吮吸舔，试图留下自己的印记。<br>*/
+<<case 'neck'>>
+   /*<<you>>亲吻在了<<NPCIDName>>的脖子上，轻吮吸舔，试图留下自己的印记。<br>*/
+<<case 'butts'>>
+   /*<<you>>亲吻在了<<NPCIDName>>的屁股上，轻吮吸舔，试图留下自己的印记。<br>*/
+<<case 'thighs'>>
+   /*<<you>>亲吻在了<<NPCIDName>>的大腿上，轻吮吸舔，试图留下自己的印记。<br>*/
+<<case 'abdomen'>>
+   /*<<you>>亲吻在了<<NPCIDName>>的腹部上，轻吮吸舔，试图留下自己的印记。<br>*/
+<</switch>>
+
+:: Kojo_NPCID_Action_t2[noMsg]
+/* 抚摸 */
+<<switch T.selectPart>>
+<<case 'mouth'>>
+   /*/*<<you>>的手轻抚着<<NPCIDName>>的嘴巴。<br>*/*/
+<<case 'breast'>>
+   /* 摸胸 */
+   <<you>>抚上了<<NPCIDName>>的胸部，虽然算不上大，但也盈盈一握，柔软细腻的触感就像水馒头一般惹人喜爱<br>
+   “啊……胸部……”<br>
+   少女的声音像是呻吟，又像是叹息，随着胸前的柔软任由<<you>>的揉搓变形而完全沉醉其中<br>
+<<case 'penis'>>
+   /*<<you>>的手轻抚着<<NPCIDName>>的阴茎。<br>*/
+<<case 'clitoris'>>
+   /*<<you>>的手轻抚着<<NPCIDName>>的阴蒂。<br>*/
+<<case 'vagina'>>
+   /*<<you>>的手轻抚着<<NPCIDName>>的阴道。<br>*/
+<<case 'anal'>>
+   /*<<you>>的手轻抚着<<NPCIDName>>的肛门。<br>*/
+<<case 'ears'>>
+   /*<<you>>的手轻抚着<<NPCIDName>>的耳朵。<br>*/
+<<case 'handL'>>
+   /*<<you>>的手轻抚着<<NPCIDName>>的左手。<br>*/
+<<case 'handR'>>
+   /*<<you>>的手轻抚着<<NPCIDName>>的右手。<br>*/
+<<case 'foot'>>
+   /*<<you>>的手轻抚着<<NPCIDName>>的脚。<br>*/
+<<case 'neck'>>
+   /*<<you>>的手轻抚着<<NPCIDName>>的脖子。<br>*/
+<<case 'butts'>>
+   /*<<you>>的手轻抚着<<NPCIDName>>的屁股。<br>*/
+<<case 'thighs'>>
+   /*<<you>>的手轻抚着<<NPCIDName>>的大腿。<br>*/
+<<case 'abdomen'>>
+   /*<<you>>的手轻抚着<<NPCIDName>>的腹部。<br>*/
+<</switch>>
+
+:: Kojo_NPCID_Action_t3[noMsg]
+/* 揉捏 */
+<<switch T.selectPart>>
+<<case 'breast'>>
+   /*<<you>>揉捏着<<NPCIDName>>的胸部。<br>*/
+<<case 'penis'>>
+   /*<<you>>揉捏着<<NPCIDName>>的阴茎。<br>*/
+<<case 'clitoris'>>
+   /*<<you>>揉捏着<<NPCIDName>>的阴蒂。<br>*/
+<<case 'ears'>>
+   /*<<you>>揉捏着<<NPCIDName>>的耳朵。<br>*/
+<<case 'butts'>>
+   /*<<you>>揉捏着<<NPCIDName>>的屁股。<br>*/
+<</switch>>
+
+
+:: Kojo_NPCID_Action_t4[noMsg]
+/* 吸舔 */
+<<switch T.selectPart>>
+<<case 'penis'>>
+   /*<<you>>吸住了<<NPCIDName>>的阴茎，在上面用舌头反复舔舐着。<br>*/
+<<case 'clitoris'>>
+   /*<<you>>吸住了<<NPCIDName>>的阴蒂，在上面用舌头反复舔舐着。<br>
+<*/<case 'vagina'>>
+   /*<<you>>吸住了<<NPCIDName>>的阴道，在上面用舌头反复舔舐着。<br>*/
+<<case 'anal'>>
+   /*<<you>>吸住了<<NPCIDName>>的肛门，在上面用舌头反复舔舐着。<br*/>
+<<case 'ears'>>
+   /*<<you>>吸住了<<NPCIDName>>的耳朵，在上面用舌头反复舔舐着。<br*/>
+<<case 'handL'>>
+   /*<<you>>吸住了<<NPCIDName>>的左手，在上面用舌头反复舔舐着。<br>*/
+<<case 'handR'>>
+   /*<<you>>吸住了<<NPCIDName>>的右手，在上面用舌头反复舔舐着。<br>*/
+<<case 'foot'>>
+   /*<<you>>吸住了<<NPCIDName>>的脚，在上面用舌头反复舔舐着。<br>*/
+<<case 'neck'>>
+   /*<<you>>吸住了<<NPCIDName>>的脖子，在上面用舌头反复舔舐着。<br*/>
+<<case 'butts'>>
+   /*<<you>>吸住了<<NPCIDName>>的屁股，在上面用舌头反复舔舐着。<br>*/
+
+<<case 'nipple'>>
+   <<you>>亲吻着<<NPCIDName>>的乳头，像是想要吸吮汁水一般地轻咬轻吸<br>
+   敏感的皮肤将轻微的刺激转化为了强烈的快感，令少女发出甜美的声音<br>
+   <<NPCIDName>>轻轻抚摸着<<you>>的脑袋，使其靠在自己的胸上，露出了混杂着柔和的母性和甘美的快乐的神情<br>
+   “人家的胸部，美味吗？呵呵，真实的，像小宝宝一样……”<br>
+
+<<case 'thighs'>>
+   /*<<you>>吸住了<<NPCIDName>>的大腿，在上面用舌头反复舔舐着。<br>*/
+<<case 'abdomen'>>
+   /*<<you>>吸住了<<NPCIDName>>的腹部，在上面用舌头反复舔舐着。<br>*/
+<</switch>>
+
+:: Kojo_NPCID_Action_t5[noMsg]
+/* 吸咬 */
+<<switch T.selectPart>>
+<<case 'penis'>>
+   /*/*<<you>>含住<<NPCIDName>>的阴茎，吸吮轻咬着。<br>*/
+<<case 'clitoris'>>
+   /*<<you>>含住<<NPCIDName>>的阴蒂，吸吮轻咬着。<br>*/
+<<case 'ears'>>
+   /*<<you>>含住<<NPCIDName>>的耳朵，吸吮轻咬着。<br>*/
+<<case 'handL'>>
+   /*<<you>>含住<<NPCIDName>>的左手，吸吮轻咬着。<br>*/
+<<case 'handR'>>
+   /*<<you>>含住<<NPCIDName>>的右手，吸吮轻咬着。<br>*/
+<<case 'foot'>>
+   /*<<you>>含住<<NPCIDName>>的脚，吸吮轻咬着。<br>*/
+<<case 'neck'>>
+   /*<<you>>含住<<NPCIDName>>的脖子，吸吮轻咬着。<br>*/
+<<case 'butts'>>
+   /*<<you>>含住<<NPCIDName>>的屁股，吸吮轻咬着。<br>*/
+<<case 'nipple'>>
+   /*<<you>>含住<<NPCIDName>>的乳头，吸吮轻咬着。<br>*/
+<<case 'thighs'>>
+   /*<<you>>含住<<NPCIDName>>的大腿，吸吮轻咬着。<br>*/
+<</switch>>
+
+:: Kojo_NPCID_Action_t6[noMsg]
+/* 逗弄 */
+<<switch T.selectPart>>
+<<case 'penis'>>
+   /*<<you>>反复逗弄着<<NPCIDName>>的阴茎。<br>*/
+<<case 'clitoris'>>
+   /*<<you>>反复逗弄着<<NPCIDName>>的阴蒂。<br>*/
+<<case 'vagina'>>
+   /*<<you>>反复逗弄着<<NPCIDName>>的阴道。<br>*/
+<<case 'anal'>>
+   /*<<you>>反复逗弄着<<NPCIDName>>的肛门。<br>*/
+<<case 'ears'>>
+   /*<<you>>反复逗弄着<<NPCIDName>>的耳朵。<br>*/
+<<case 'nipple'>>
+   /* 玩乳头 */
+<</switch>>
+
+:: Kojo_NPCID_Action_t7[noMsg]
+/* 指交 */
+<<switch T.selectPart>>
+<<case 'mouth'>>
+   /*<<you>>的手指浅浅插入<<NPCIDName>>的嘴巴，在入口附近摩擦着。<br>*/
+<<case 'vagina'>>
+   /*<<you>>的手指浅浅插入<<NPCIDName>>的阴道，在入口附近摩擦着。<br>*/
+<<case 'anal'>>
+   /*<<you>>的手指浅浅插入<<NPCIDName>>的肛门，在入口附近摩擦着。<br>*/
+<<case 'urin'>>
+   /*<<you>>的手指浅浅插入<<NPCIDName>>的尿道，在入口附近摩擦着。<br>*/
+<</switch>>
+
+
+:: Kojo_NPCID_Action_t9[noMsg]
+/* 抽插 */
+<<switch T.selectPart>>
+<<case 'mouth'>>
+   /*<<you>>活动腰身，在<<NPCIDName>>的嘴巴反复出入着。<br>*/
+<<case 'vagina'>>
+   /*<<you>>活动腰身，在<<NPCIDName>>的阴道反复出入着。<br>*/
+<<case 'anal'>>
+   /*<<you>>活动腰身，在<<NPCIDName>>的肛门反复出入着。<br>*/
+<</switch>>
+
+:: Kojo_NPCID_Action_t10[noMsg]
+/* 撸动 */
+<<switch T.selectPart0>>
+<<case 'penis'>>
+   /*<<you>>握住<<NPCIDName>>的阴茎，前后撸动着。<br>*/
+<</switch>>
+
+
+:: Kojo_NPCID_Action_t11[noMsg]
+/* 拳交 */
+<<switch T.selectPart1>>
+<<case 'vagina'>>
+   /*<<you>>的拳头粗暴地捅进了<<NPCIDName>>的阴道里面，反复抽插着。<br>*/
+<<case 'anal'>>
+   /*<<you>>的拳头粗暴地捅进了<<NPCIDName>>的肛门里面，反复抽插着。<br>*/
+<</switch>>
+
+:: Kojo_NPCID_Action_t12[noMsg]
+/* 深入 */
+<<switch T.selectPart>>
+<<case 'vagina'>>
+/*<<you>>深深插入了<<NPCIDName>>的阴道。<br>*/
+<<case 'anal'>>
+/*<<you>>深深插入了<<NPCIDName>>的肛门。<br>*/
+<</switch>>
+
+
+:: Kojo_NPCID_Action_t13[noMsg]
+/* 口交 */
+<<switch T.selectPart>>
+<<case 'mouth'>>
+/*<<you>>让<<NPCIDName>>含住了自己的阴茎。<br>*/
+<</switch>>
+
+
+:: Kojo_NPCID_Action_r0[noMsg]
+/* 逆口交 */
+<<switch T.actPart>>
+<<case 'mouth'>>
+/*<<you>>用嘴巴含住了$target.name的阴茎，用舌头反复舔动。<br>*/
+<</switch>>
+
+
+:: Kojo_NPCID_Action_r2[noMsg]
+/* 收紧 */
+<<switch T.actPart>>
+<<case 'vagina'>>
+/*<<you>>控制自身阴道，紧紧夹住了$target.name的阴茎。<br>*/
+<<case 'anal'>>
+/*<<you>>控制自身肛门，紧紧夹住了$target.name的阴茎。<br>*/
+<</switch>>
+
+
+:: Kojo_NPCID_Action_pose0[noMsg]
+/* 正常位 */
+<<switch T.selectPart>>
+<<case 'vagina'>>
+<<if T.action.id == 't8'>>
+/* PC攻 */
+/*<<you>>把身体覆盖在$target.name身上，掰开$target.name的双腿从正面把阴茎插进了阴道。<br>*/
+<<else>>
+/* PC受 */
+/*<<cidName>>把身体覆盖在<<you>>身上，掰开<<you>>的双腿从正面把阴茎插进了阴道。<br>*/
+<</if>>
+
+<<case 'anal'>>
+<<if T.action.id == 't8'>>
+/* PC攻 */
+/*<<you>>把身体覆盖在$target.name身上，掰开$target.name的双腿从正面把阴茎插进了阴道。<br>*/
+<<else>>
+/* PC受 */
+/*<<cidName>>把身体覆盖在<<you>>身上，掰开<<you>>的双腿从正面把阴茎插进了阴道。<br>*/
+<</if>>
+
+<</switch>>
+
+
+:: Kojo_NPCID_Action_pose1[noMsg]
+/* 背后位 */
+<<switch T.selectPart>>
+<<case 'vagina'>>
+<<if T.action.id == 't8'>>
+/* PC攻 */
+/*<<you>>把身体覆盖在$target.name身上，掰开$target.name的双腿从正面把阴茎插进了阴道。<br>*/
+<<else>>
+/* PC受 */
+/*<<cidName>>把身体覆盖在<<you>>身上，掰开<<you>>的双腿从正面把阴茎插进了阴道。<br>*/
+<</if>>
+
+<<case 'anal'>>
+<<if T.action.id == 't8'>>
+/* PC攻 */
+/*<<you>>把身体覆盖在$target.name身上，掰开$target.name的双腿从正面把阴茎插进了阴道。<br>*/
+<<else>>
+/* PC受 */
+/*<<cidName>>把身体覆盖在<<you>>身上，掰开<<you>>的双腿从正面把阴茎插进了阴道。<br>*/
+<</if>>
+
+<</switch>>
+
+
+:: Kojo_NPCID_Action_pose2[noMsg]
+/* 正座位 */
+<<switch T.selectPart>>
+<<case 'vagina'>>
+<<if T.action.id == 't8'>>
+/* PC攻 */
+/*<<you>>把身体覆盖在$target.name身上，掰开$target.name的双腿从正面把阴茎插进了阴道。<br>*/
+<<else>>
+/* PC受 */
+/*<<cidName>>把身体覆盖在<<you>>身上，掰开<<you>>的双腿从正面把阴茎插进了阴道。<br>*/
+<</if>>
+
+<<case 'anal'>>
+<<if T.action.id == 't8'>>
+/* PC攻 */
+/*<<you>>把身体覆盖在$target.name身上，掰开$target.name的双腿从正面把阴茎插进了阴道。<br>*/
+<<else>>
+/* PC受 */
+/*<<cidName>>把身体覆盖在<<you>>身上，掰开<<you>>的双腿从正面把阴茎插进了阴道。<br>*/
+<</if>>
+
+<</switch>>
+
+:: Kojo_NPCID_Action_pose3[noMsg]
+/* 背座位 */
+<<switch T.selectPart>>
+<<case 'vagina'>>
+<<if T.action.id == 't8'>>
+/* PC攻 */
+/*<<you>>把身体覆盖在$target.name身上，掰开$target.name的双腿从正面把阴茎插进了阴道。<br>*/
+<<else>>
+/* PC受 */
+/*<<cidName>>把身体覆盖在<<you>>身上，掰开<<you>>的双腿从正面把阴茎插进了阴道。<br>*/
+<</if>>
+
+<<case 'anal'>>
+<<if T.action.id == 't8'>>
+/* PC攻 */
+/*<<you>>把身体覆盖在$target.name身上，掰开$target.name的双腿从正面把阴茎插进了阴道。<br>*/
+<<else>>
+/* PC受 */
+/*<<cidName>>把身体覆盖在<<you>>身上，掰开<<you>>的双腿从正面把阴茎插进了阴道。<br>*/
+<</if>>
+
+<</switch>>
+
+
+:: Kojo_NPCID_Action_pose4[noMsg]
+/* 骑乘位 */
+<<switch T.selectPart>>
+<<case 'vagina'>>
+<<if T.action.id == 't8'>>
+/* PC攻 */
+/*<<you>>把身体覆盖在$target.name身上，掰开$target.name的双腿从正面把阴茎插进了阴道。<br>*/
+<<else>>
+/* PC受 */
+/*<<cidName>>把身体覆盖在<<you>>身上，掰开<<you>>的双腿从正面把阴茎插进了阴道。<br>*/
+<</if>>
+
+<<case 'anal'>>
+<<if T.action.id == 't8'>>
+/* PC攻 */
+/*<<you>>把身体覆盖在$target.name身上，掰开$target.name的双腿从正面把阴茎插进了阴道。<br>*/
+<<else>>
+/* PC受 */
+/*<<cidName>>把身体覆盖在<<you>>身上，掰开<<you>>的双腿从正面把阴茎插进了阴道。<br>*/
+<</if>>
+
+<</switch>>
+
+:: Kojo_NPCID_Action_pose5[noMsg]
+/* 侧卧位 */
+<<switch T.selectPart>>
+<<case 'vagina'>>
+<<if T.action.id == 't8'>>
+/* PC攻 */
+/*<<you>>把身体覆盖在$target.name身上，掰开$target.name的双腿从正面把阴茎插进了阴道。<br>*/
+<<else>>
+/* PC受 */
+/*<<cidName>>把身体覆盖在<<you>>身上，掰开<<you>>的双腿从正面把阴茎插进了阴道。<br>*/
+<</if>>
+
+<<case 'anal'>>
+<<if T.action.id == 't8'>>
+/* PC攻 */
+/*<<you>>把身体覆盖在$target.name身上，掰开$target.name的双腿从正面把阴茎插进了阴道。<br>*/
+<<else>>
+/* PC受 */
+/*<<cidName>>把身体覆盖在<<you>>身上，掰开<<you>>的双腿从正面把阴茎插进了阴道。<br>*/
+<</if>>
+
+<</switch>>
+
+
+:: Kojo_NPCID_Action_pose6[noMsg]
+/* 趴卧位 */
+<<switch T.selectPart>>
+<<case 'vagina'>>
+<<if T.action.id == 't8'>>
+/* PC攻 */
+/*<<you>>把身体覆盖在$target.name身上，掰开$target.name的双腿从正面把阴茎插进了阴道。<br>*/
+<<else>>
+/* PC受 */
+/*<<cidName>>把身体覆盖在<<you>>身上，掰开<<you>>的双腿从正面把阴茎插进了阴道。<br>*/
+<</if>>
+
+<<case 'anal'>>
+<<if T.action.id == 't8'>>
+/* PC攻 */
+/*<<you>>把身体覆盖在$target.name身上，掰开$target.name的双腿从正面把阴茎插进了阴道。<br>*/
+<<else>>
+/* PC受 */
+/*<<cidName>>把身体覆盖在<<you>>身上，掰开<<you>>的双腿从正面把阴茎插进了阴道。<br>*/
+<</if>>
+
+<</switch>>
+
+
+:: Kojo_NPCID_Action_pose7[noMsg]
+/* 站立位 */
+<<switch T.selectPart>>
+<</switch>>
+
+
+:: Kojo_NPCID_Action_pose8[noMsg]
+/* 背后立位 */
+<<switch T.selectPart>>
+<</switch>>
+
+
+:: Kojo_NPCID_Action_pose9[noMsg]
+/* 抱立位 */
+<<switch T.selectPart>>
+<</switch>>
+
+
+:: Kojo_NPCID_Action_pose10[noMsg]
+/* 反抱立位 */
+<<switch T.selectPart>>
+<</switch>>
+
+
+:: Kojo_NPCID_Action_pose11[noMsg]
+/* 屈曲位 */
+<<switch T.selectPart>>
+<</switch>>
+
+
+
+:: Kojo_NPCID_Action_Rotor[noMsg]
+/* 跳蛋 */
+<<switch T.selectParttor>>
+<<case 'vagina'>>
+   /*<<you>>将跳蛋贴在<<NPCIDName>>的阴道，刺激着。<br>*/
+<<case 'anal'>>
+   /*<<you>>将跳蛋贴在<<NPCIDName>>的肛门，刺激着。<br>*/
+<<case 'nipple'>>
+   /*<<you>>将跳蛋贴在<<NPCIDName>>的乳头，刺激着。<br>*/
+<<case 'penis'>>
+   /*<<you>>将跳蛋贴在<<NPCIDName>>的阴茎，刺激着。<br>*/
+<<case 'clitoris'>>
+   /*<<you>>将跳蛋贴在<<NPCIDName>>的阴蒂，刺激着。<br>*/
+<</switch>>
+
+:: Kojo_NPCID_Action_Vibrator[noMsg]
+/* 震动棒 */
+<<switch T.selectPartbrator>>
+<<case 'vagina'>>
+   /*<<you>>将震动棒放进了<<NPCIDName>>的阴道。<br>*/
+<<case 'anal'>>
+   /*<<you>>将震动棒放进了<<NPCIDName>>的肛门。<br>*/
+<</switch>>
+
+:: Kojo_NPCID_Action_x0[noMsg]
+/* 揉捏 */
+<<switch T.selectPart>>
+<<case 'breast'>>
+   /*触手缠绕在<<NPCIDName>>的胸部上，巧妙地反复揉捏给予刺激。<br>*/
+<<case 'penis'>>
+   /*触手缠绕在<<NPCIDName>>的阴茎上，巧妙地反复揉捏给予刺激。<br>*/
+<<case 'clitoris'>>
+   /*触手缠绕在<<NPCIDName>>的阴蒂上，巧妙地反复揉捏给予刺激。<br>*/
+<<case 'nipple'>>
+   /*触手缠绕在<<NPCIDName>>的乳头上，巧妙地反复揉捏给予刺激。<br>*/
+<</switch>>
+
+:: Kojo_NPCID_Action_x1[noMsg]
+/* 逗弄 */
+<<switch T.selectPart>>
+<<case 'mouth'>>
+   /*蠕动、摩擦、按捏。触手反复逗弄着<<NPCIDName>>的嘴巴，给予极大的刺激。<br>*/
+<<case 'penis'>>
+   /*蠕动、摩擦、按捏。触手反复逗弄着<<NPCIDName>>的阴茎，给予极大的刺激。<br>*/
+<<case 'clitoris'>>
+   /*蠕动、摩擦、按捏。触手反复逗弄着<<NPCIDName>>的阴蒂，给予极大的刺激。<br>*/
+<<case 'vagina'>>
+   /*蠕动、摩擦、按捏。触手反复逗弄着<<NPCIDName>>的阴道，给予极大的刺激。<br>*/
+<<case 'anal'>>
+   /*蠕动、摩擦、按捏。触手反复逗弄着<<NPCIDName>>的肛门，给予极大的刺激。<br>*/
+<<case 'urin'>>
+   /*蠕动、摩擦、按捏。触手反复逗弄着<<NPCIDName>>的尿道，给予极大的刺激。<br>*/
+<<case 'ears'>>
+   /*蠕动、摩擦、按捏。触手反复逗弄着<<NPCIDName>>的耳朵，给予极大的刺激。<br>*/
+<<case 'nipple'>>
+   /*蠕动、摩擦、按捏。触手反复逗弄着<<NPCIDName>>的乳头，给予极大的刺激。<br>*/
+<</switch>>
+
+:: Kojo_NPCID_Action_x2[noMsg]
+/* 吸舔 */
+<<switch T.selectPart>>
+<<case 'nipple'>>
+   /*吸盘触手吸附在<<NPCIDName>>的乳头上，反复吸舔着。<br>*/
+<<case 'penis'>>
+   /*吸盘触手吸附在<<NPCIDName>>的阴茎上，反复吸舔着。<br>*/
+<<case 'clitoris'>>
+   /*吸盘触手吸附在<<NPCIDName>>的阴蒂上，反复吸舔着。<br>*/
+<</switch>>
+
+:: Kojo_NPCID_Action_x3[noMsg]
+/* 吸咬 */
+<<switch T.selectPart>>
+<<case 'nipple'>>
+   /*口器触手含住<<NPCIDName>>的乳头，吸吮轻咬着。<br>*/
+<<case 'penis'>>
+   /*口器触手含住<<NPCIDName>>的阴茎，吸吮轻咬着。<br>*/
+<<case 'clitoris'>>
+   /*口器触手含住<<NPCIDName>>的阴蒂，吸吮轻咬着。<br>*/
+<</switch>>
+
+:: Kojo_NPCID_Action_x4[noMsg]
+/* 撸动 */
+<<switch T.selectPart>>
+<<case 'penis'>>
+   /*触手缠绕住<<NPCIDName>>的阴茎，反复撸动着。<br>*/
+<</switch>>
+
+:: Kojo_NPCID_Action_x5[noMsg]
+/* 插入 */
+<<switch T.selectPart>>
+<<case 'mouth'>>
+   /*触手钻进了<<NPCIDName>>敞开的嘴巴，缓缓往内深入。<br>*/
+<<case 'vagina'>>
+   /*触手钻进了<<NPCIDName>>敞开的阴道，缓缓往内深入。<br>*/
+<<case 'anal'>>
+   /*触手钻进了<<NPCIDName>>敞开的肛门，缓缓往内深入。<br>*/
+<<case 'urin'>>
+   /*触手钻进了<<NPCIDName>>敞开的尿道，缓缓往内深入。<br>*/
+<<case 'ears'>>
+   /*触手钻进了<<NPCIDName>>敞开的耳朵，缓缓往内深入。<br>*/
+<</switch>>
+
+:: Kojo_NPCID_Action_x6[noMsg]
+/* 蠕动 */
+<<switch T.selectPart>>
+<<case 'mouth'>>
+   /*触手在<<NPCIDName>>的嘴巴慢慢蠕动着。<br>*/
+<<case 'breast'>>
+   /*触手在<<NPCIDName>>的胸部慢慢蠕动着。<br>*/
+<<case 'penis'>>
+   /*触手在<<NPCIDName>>的阴茎慢慢蠕动着。<br>*/
+<<case 'clitoris'>>
+   /*触手在<<NPCIDName>>的阴蒂慢慢蠕动着。<br>*/
+<<case 'vagina'>>
+   /*触手在<<NPCIDName>>的阴道慢慢蠕动着。<br>*/
+<<case 'anal'>>
+   /*触手在<<NPCIDName>>的肛门慢慢蠕动着。<br>*/
+<<case 'urin'>>
+   /*触手在<<NPCIDName>>的尿道慢慢蠕动着。<br>*/
+<<case 'ears'>>
+   /*触手在<<NPCIDName>>的耳朵慢慢蠕动着。<br>*/
+<<case 'neck'>>
+   /*触手在<<NPCIDName>>的脖子慢慢蠕动着。<br>*/
+<<case 'butts'>>
+   /*触手在<<NPCIDName>>的屁股慢慢蠕动着。<br>*/
+<<case 'nipple'>>
+   /*触手在<<NPCIDName>>的乳头慢慢蠕动着。<br>*/
+<<case 'thighs'>>
+   /*触手在<<NPCIDName>>的大腿慢慢蠕动着。<br>*/
+<</switch>>
+
+:: Kojo_NPCID_Action_x7[noMsg]
+/* 抽插 */
+<<switch T.selectPart>>
+<<case 'mouth'>>
+   /*触手不停在<<NPCIDName>>的嘴巴进出，抽插蠕动着。<br>*/
+<<case 'vagina'>>
+   /*触手不停在<<NPCIDName>>的阴道进出，抽插蠕动着。<br>*/
+<<case 'anal'>>
+   /*触手不停在<<NPCIDName>>的肛门进出，抽插蠕动着。<br>*/
+<<case 'urin'>>
+   /*触手不停在<<NPCIDName>>的尿道进出，抽插蠕动着。<br>*/
+<<case 'ears'>>
+   /*触手不停在<<NPCIDName>>的耳朵进出，抽插蠕动着。<br>*/
+<</switch>>
+
+:: Kojo_NPCID_Action_x8[noMsg]
+/* 深入 */
+<<switch T.selectPart>>
+<<case 'mouth'>>
+   /*触手往<<NPCIDName>>的嘴巴内部发出了进攻，往更深处蠕进。<br>*/
+<<case 'vagina'>>
+   /*触手往<<NPCIDName>>的阴道内部发出了进攻，往更深处蠕进。<br>*/
+<<case 'anal'>>
+   /*触手往<<NPCIDName>>的肛门内部发出了进攻，往更深处蠕进。<br>*/
+<<case 'urin'>>
+   /*触手往<<NPCIDName>>的尿道内部发出了进攻，往更深处蠕进。<br>*/
+<</switch>>
+
+:: Kojo_NPCID_Action_x9[noMsg]
+/* 抽送 */
+<<switch T.selectPart>>
+<<case 'mouth'>>
+   /*触手激烈地在<<NPCIDName>>的嘴巴进出着，反复抽送着触身给予莫大的刺激。<br>*/
+<<case 'vagina'>>
+   /*触手激烈地在<<NPCIDName>>的阴道进出着，反复抽送着触身给予莫大的刺激。<br>*/
+<<case 'anal'>>
+   /*触手激烈地在<<NPCIDName>>的肛门进出着，反复抽送着触身给予莫大的刺激。<br>*/
+<<case 'urin'>>
+   /*触手激烈地在<<NPCIDName>>的尿道进出着，反复抽送着触身给予莫大的刺激。<br>*/
+<</switch>>
+
+:: Kojo_NPCID_Action_x10[noMsg]
+/* 鞭打 */
+<<switch T.selectPart>>
+<<case 'breast'>>
+   /*触手甩动触鞭，用巧妙的力度鞭打在<<NPCIDName>>的胸部上。<br>*/
+<<case 'penis'>>
+   /*触手甩动触鞭，用巧妙的力度鞭打在<<NPCIDName>>的阴茎上。<br>*/
+<<case 'clitoris'>>
+   /*触手甩动触鞭，用巧妙的力度鞭打在<<NPCIDName>>的阴蒂上。<br>*/
+<<case 'anal'>>
+   /*触手甩动触鞭，用巧妙的力度鞭打在<<NPCIDName>>的肛门上。<br>*/
+<<case 'butts'>>
+   /*触手甩动触鞭，用巧妙的力度鞭打在<<NPCIDName>>的屁股上。<br>*/
+<<case 'nipple'>>
+   /*触手甩动触鞭，用巧妙的力度鞭打在<<NPCIDName>>的乳头上。<br>*/
+<<case 'thighs'>>
+   /*触手甩动触鞭，用巧妙的力度鞭打在<<NPCIDName>>的大腿上。<br>*/
+<</switch>>
+
+:: Kojo_NPCID_Action_x11[noMsg]
+/* 刺入 */
+<<switch T.selectPart>>
+<<case 'penis'>>
+   /*触手伸出尖锐的细针，狠狠地刺入了<<NPCIDName>>的阴茎。<br>*/
+<<case 'clitoris'>>
+   /*触手伸出尖锐的细针，狠狠地刺入了<<NPCIDName>>的阴蒂。<br>*/
+<<case 'vagina'>>
+   /*触手伸出尖锐的细针，狠狠地刺入了<<NPCIDName>>的阴道。<br>*/
+<<case 'anal'>>
+   /*触手伸出尖锐的细针，狠狠地刺入了<<NPCIDName>>的肛门。<br>*/
+<<case 'neck'>>
+   /*触手伸出尖锐的细针，狠狠地刺入了<<NPCIDName>>的脖子。<br>*/
+<<case 'nipple'>>
+   /*触手伸出尖锐的细针，狠狠地刺入了<<NPCIDName>>的乳头。<br>*/
+<<case 'butts'>>
+   /*触手伸出尖锐的细针，狠狠地刺入了<<NPCIDName>>的屁股。<br>*/
+<</switch>>
+
+:: Kojo_NPCID_Action_x12[noMsg]
+/* 灌入 */
+<<switch T.selectPart>>
+<<case 'mouth'>>
+   /*触手往<<NPCIDName>>的嘴巴灌入大量的药液。<br>*/
+<<case 'vagina'>>
+   /*触手往<<NPCIDName>>的阴道灌入大量的药液。<br>*/
+<<case 'anal'>>
+   /*触手往<<NPCIDName>>的肛门灌入大量的药液。<br>*/
+<</switch>>
+
+:: Kojo_NPCID_Action_x13[noMsg]
+/* 注射 */
+<<switch T.selectPart>>
+<<case 'breast'>>
+   /*触手伸出尖锐的针头，刺入<<NPCIDName>>的胸部并注入药液。<br>*/
+<<case 'penis'>>
+   /*触手伸出尖锐的针头，刺入<<NPCIDName>>的阴茎并注入药液。<br>*/
+<<case 'clitoris'>>
+   /*触手伸出尖锐的针头，刺入<<NPCIDName>>的阴蒂并注入药液。<br>*/
+<<case 'vagina'>>
+   /*触手伸出尖锐的针头，刺入<<NPCIDName>>的阴道并注入药液。<br>*/
+<<case 'anal'>>
+   /*触手伸出尖锐的针头，刺入<<NPCIDName>>的肛门并注入药液。<br>*/
+<<case 'urin'>>
+   /*触手伸出尖锐的针头，刺入<<NPCIDName>>的尿道并注入药液。<br>*/
+<<case 'neck'>>
+   /*触手伸出尖锐的针头，刺入<<NPCIDName>>的脖子并注入药液。<br>*/
+<<case 'butts'>>
+   /*触手伸出尖锐的针头，刺入<<NPCIDName>>的屁股并注入药液。<br>*/
+<<case 'nipple'>>
+   /*触手伸出尖锐的针头，刺入<<NPCIDName>>的乳头并注入药液。<br>*/
+<<case 'abdomen'>>
+   /*触手伸出尖锐的针头，刺入<<NPCIDName>>的腹部并注入药液。<br>*/
+<</switch>>
+
+:: Kojo_NPCID_Action_Stream
+/* 直播 */
+直播时的反应
+
+:: Kojo_NPCID_Action_Behavior[noMsg]
+/* 被海王命令对npc行为进行管理的时候。主要是被命令不穿内衣或塞着玩具过日子之类的。 */

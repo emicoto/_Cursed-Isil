@@ -1,0 +1,59 @@
+/* NPCID替换为角色ID，包括Widget里的 */
+
+:: Kojo_NPCID_Regist[script]
+/* 纯代码区,用于注册角色信息 */
+Kojo.set('NPCID', '#66CCFF') //角色id与 名牌颜色
+    .Intro('水属性的晶龙族少女。')
+    .Home('宿舍A201') //私室有是 学生宿舍A100, 100自行改成空余的房间
+    .Relation('Isil', '青梅竹马', 110) //与其他角色的关系型. 顺序是 cid, 关系描述, 关系值, 大于100都属于关系友好, 最大200, 最小 20
+
+    .Schedule(0, ['地点A', [1,3,5], 8, 12, 3, 50]) //日程表
+    .Schedule(1, ['地点B', [1,3,5], 8, 12, 3, 50]) //日程表
+    //日程表填写顺序, 日程id(从0开始), [ '地点', [ 星期几 ], 起始时间,  结束时间,  滞留时长,  出现概率 ]
+    //可以设置多个日程。
+
+    /* .Event({
+        name:'Test', //事件id, 英文名
+
+        title:'事件标题',
+
+        config:{},  // 设置项目, 可以在事件开始或结束时自动处理数据。详细看系统设置文档
+
+        cond:()=>{
+            return Cflag['cid'].test <= 0  // 事件的执行条件. 根据flag,或其他参数进行设置
+        }
+    })*/
+    //.Action(0,{id:'NPCID_Actionname',name:'指令名',type:'C'}) //id的格式必须是NPCID_ActionName。 自定义指令。type是分类。详细看系统设置文档
+
+:: Kojo_NPCID[widget]
+/* 自定义小功能区 */
+<<widget "NPCIDToolname">>
+    小功能的名字只能是英文字母.<br>
+    因为不能有重复,所以必须角色id开头来区分.<br>
+    重复使用的文本,自动喘息一类的都可以用小工具写.<br>
+    小功能内就不支持分页了<br>
+    如果是用来召唤单个词语,记住不要有多余空格.
+<</widget>>
+
+/*随机召唤单个词语时*/
+<<widget "NPCIDRandomName">><<=either(['词语A','词语B','词语C','词语D'])>><</widget>>
+
+/* 随机召唤某个词语,并带概率设置, 概率由小到大排列 */
+<<widget "NPCIDRandom">><<=maybe([
+    ['词语A', 20],
+    ['词语B', 30],
+    ['词语C', 50]
+    ])>><</widget>>
+
+<<widget "NPCIDName">><<print $chara.NPCID.name>><</widget>>
+
+
+
+:: Kojo_NPCID_Actions_Option[script]
+Action.kojo.NPCID = function(){
+   /*自定义指令的设置。NPCID是角色的英文ID。ActionName是指令的英文id */
+   /*Action.set('NPCID_ActionName')
+      .Filter(()=>{
+         return tc === 'NPCID'
+      })*/
+}
